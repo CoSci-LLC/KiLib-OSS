@@ -1,0 +1,7 @@
+### git commit hook setup
+add_custom_command(
+  TARGET ${projectName}
+  PRE_BUILD
+  COMMAND git config core.hooksPath .githooks
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)

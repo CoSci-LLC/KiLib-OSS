@@ -1,0 +1,51 @@
+# This file contains the source files needed for KiLib 
+
+## Utility Sources
+set(UTIL_SRC 
+    NewtonRaphson.cpp
+    Random.cpp
+    StatisticalOutput.cpp
+    CSVReader.cpp
+)
+list(TRANSFORM UTIL_SRC PREPEND ${projectName}/Utils/)
+
+## (TEST) Utility Sources
+set(TEST_UTIL_SRC 
+    NewtonRaphson.test.cpp
+    Random.test.cpp
+    Sequence.test.cpp
+    StatisticalOutput.test.cpp
+    CSVReader.test.cpp
+)
+list(TRANSFORM TEST_UTIL_SRC PREPEND ${projectName}/Utils/)
+
+## Soil Sources
+set(SOIL_SRC 
+    SoilType.cpp
+)
+list(TRANSFORM SOIL_SRC PREPEND ${projectName}/Soils/)
+
+## (TEST)Soil Sources
+set(TEST_SOIL_SRC 
+    Soil.test.cpp
+)
+list(TRANSFORM TEST_SOIL_SRC PREPEND ${projectName}/Soils/)
+
+## Raster Sources
+set(RASTER_SRC 
+    Raster.cpp
+)
+list(TRANSFORM RASTER_SRC PREPEND ${projectName}/Raster/)
+
+## Main Sources for Library
+set(MAIN_SOURCES
+   ${UTIL_SRC}
+   ${SOIL_SRC}   
+   ${RASTER_SRC}
+)
+
+## Main Sources for Test Program
+set(TEST_SOURCES
+   ${TEST_SOIL_SRC}
+   ${TEST_UTIL_SRC}
+)

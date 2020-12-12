@@ -1,0 +1,25 @@
+### START YAML-CPP SETUP
+
+if(WIN32)
+	set(BYPRODUCT ${CMAKE_INSTALL_PREFIX}/lib/libyaml-cppmd.lib)
+endif(WIN32)
+
+if(UNIX)
+set(BYPRODUCT ${CMAKE_INSTALL_PREFIX}/lib/libyaml-cpp.a)
+endif(UNIX)
+
+
+include(ExternalProject)
+ExternalProject_Add(project_yaml_cpp
+  GIT_REPOSITORY    https://github.com/jbeder/yaml-cpp
+  GIT_TAG           yaml-cpp-0.6.3
+  CMAKE_ARGS        -DYAML_CPP_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release
+  BUILD_BYPRODUCTS   ${BYPRODUCT}
+)
+
+
+add_library(yaml-cpp STATIC IMPORTED GLOBAL)
+set_property(TARGET yaml-cpp PROPERTY IMPORTED_LOCATION ${BYPRODUCT})
+add_dependencies(yaml-cpp project_yaml_cpp)
+
+add_dependencies(${projectName} yaml-cpp)

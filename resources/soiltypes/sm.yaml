@@ -1,0 +1,49 @@
+---
+    longname: 'Silty sand'
+    porosity:              0.37        # [m3/m3]
+    saturatedWaterContent: 0.37        # [m3/m3]
+    residualWaterContent:  0.037       # [m3/m3]
+    fieldCapacity:         0.17        # [m3/m3]
+    initWaterContent:      0.10        # [m3/m3]
+    waterExchangeTerm: 0.3e-05         # [1/s]
+    vgWetAlpha1: 0.00017               # [1/Pa]
+    vgWetN1: 2.20
+    frictionAngle:
+        constant: 34                   # [deg]
+        uniform-primula:
+            min: 33                    # [deg]
+            max: 35                    # [deg]
+        uniform:
+            min: 33                    # [deg]
+            max: 35                    # [deg]
+        normal:
+            mean: 34                   # [deg]
+            stdDev: 1
+    densityDry: 
+        constant: 1530                 # [kg/m3]
+        uniform-primula:
+            min: 1761.43               # [kg/m3]
+            max: 2001.62               # [kg/m3]
+        uniform:
+            min: 1430                  # [kg/m3]
+            max: 1630                  # [kg/m3]
+        normal:
+            mean: 1530                 # [kg/m3]
+            stdDev: 100
+    maxTensileStrain: 0                # [Pa]
+    cohesion:
+        constant: 500                  # [Pa]
+        uniform-primula:
+            min: 5000                  # [Pa]
+            max: 10000                 # [Pa]
+        uniform:
+            min: 0                     # [Pa]
+            max: 1000                  # [Pa]
+        normal:
+            mean: 500                  # [Pa]
+            stdDev: 250                # [Pa]
+    conductivity:
+        constant: 5.0e-4               # [m/s]
+        uniform-primula:
+            min: 1.0e-6                # [m/s]
+            max: 1.0e-3                # [m/s]

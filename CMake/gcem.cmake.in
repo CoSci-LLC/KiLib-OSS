@@ -1,0 +1,9 @@
+### START GCEM SETUP
+include(ExternalProject)
+ExternalProject_Add(gcem
+  GIT_REPOSITORY    https://github.com/kthohr/gcem
+  GIT_TAG           master
+  CMAKE_ARGS        -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_BUILD_TYPE=Release
+)
+
+add_dependencies(${projectName} gcem)
