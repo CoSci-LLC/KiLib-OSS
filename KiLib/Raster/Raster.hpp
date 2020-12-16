@@ -37,6 +37,10 @@ namespace KiLib
       Raster(std::string path);
       Raster();
 
+      // Creates a raster filled with zeros with same metadata as other.
+      static KiLib::Raster zerosLike(const KiLib::Raster &other);
+
+
       void writeToFile(std::string path) const;
 
       /**
