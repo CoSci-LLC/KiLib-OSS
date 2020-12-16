@@ -62,12 +62,15 @@ install(EXPORT ${projectName}Targets
 
 install(DIRECTORY ${projectName}/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${projectName}/
-    FILES_MATCHING PATTERN "*.h*"
+    FILES_MATCHING 
+        PATTERN "*.h*"
 )
 
 install(DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/
-    FILES_MATCHING PATTERN "*.h*"
+    FILES_MATCHING 
+        PATTERN "*.h*"
+        PATTERN "*.ipp"
 )
 
 # Define KILIB_RESOURCE_PATH
