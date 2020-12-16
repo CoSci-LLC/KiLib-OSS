@@ -38,7 +38,12 @@ namespace KiLib
       Raster();
 
       // Creates a raster filled with zeros with same metadata as other.
-      static KiLib::Raster zerosLike(const KiLib::Raster &other);
+      static KiLib::Raster zerosLike(const KiLib::Raster &other)
+      {
+         KiLib::Raster new_(other);
+         std::fill(new_.data.begin(), new_.data.end(), 0.0);
+         return new_;
+      }
 
 
       void writeToFile(std::string path) const;
