@@ -35,7 +35,7 @@ endif()
 
 
    target_compile_definitions(${projectTestName} PUBLIC UNIT_TESTING)
-   target_link_libraries(${projectTestName} gtest_main spdlog KiLib)
+   target_link_libraries(${projectTestName} gtest_main KiLib)
 
    target_include_directories(${projectTestName}
     PUBLIC

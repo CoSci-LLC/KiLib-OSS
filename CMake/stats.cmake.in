@@ -1,10 +1,15 @@
-include(ExternalProject)
-ExternalProject_Add(stats
-  GIT_REPOSITORY    https://github.com/kthohr/stats
-  GIT_TAG           master
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/include/ ${EXTERNAL_INSTALL_LOCATION}/include/
-)
+include(FetchContent)
 
-add_dependencies(${projectName} stats)
+FetchContent_Populate(
+  stats_proj
+  QUIET
+  GIT_REPOSITORY https://github.com/kthohr/stats
+  GIT_TAG master
+  SOURCE_DIR     stats_proj              # (Relative) path within in the build directory.
+)
+ 
+# ------------------------------------------------------------------------------------
+# And now you can already add and use it, like it's a part/target of your own project!
+
+#add_subdirectory(${stats_proj_SOURCE_DIR} stats_proj/build)
+include_directories(${stats_proj_SOURCE_DIR}/include)
