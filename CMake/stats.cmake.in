@@ -8,8 +8,12 @@ FetchContent_Populate(
   SOURCE_DIR     stats_proj              # (Relative) path within in the build directory.
 )
  
-# ------------------------------------------------------------------------------------
-# And now you can already add and use it, like it's a part/target of your own project!
+# Stats is special because it doesn't include a cmake project.
+# we must add an interface target for use
 
-#add_subdirectory(${stats_proj_SOURCE_DIR} stats_proj/build)
-include_directories(${stats_proj_SOURCE_DIR}/include)
+add_library(stats INTERFACE)
+target_include_directories(stats INTERFACE $<BUILD_INTERFACE:${stats_proj_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+
+
+install(TARGETS stats EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/stats)
