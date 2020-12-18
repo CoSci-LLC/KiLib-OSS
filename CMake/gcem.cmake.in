@@ -1,9 +1,18 @@
 ### START GCEM SETUP
-include(ExternalProject)
-ExternalProject_Add(gcem
-  GIT_REPOSITORY    https://github.com/kthohr/gcem
-  GIT_TAG           master
-  CMAKE_ARGS        -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_BUILD_TYPE=Release
-)
+include(FetchContent)
+
+FetchContent_Populate(
+  gcem_proj
+  QUIET
+  GIT_REPOSITORY https://github.com/kthohr/gcem
+  GIT_TAG v1.13.1
+  SOURCE_DIR     gcem_proj              # (Relative) path within in the build directory.
+ )
+ 
+# ------------------------------------------------------------------------------------
+# And now you can already add and use it, like it's a part/target of your own project!
+
+add_subdirectory(${gcem_proj_SOURCE_DIR} gcem_proj/build)
+include_directories(${gcem_proj_SOURCE_DIR}/include)
 
 add_dependencies(${projectName} gcem)

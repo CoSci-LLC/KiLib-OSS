@@ -144,7 +144,7 @@ namespace KiLib
       }
    }
 
-  void Raster::writeToFile(std::string path) const
+   void Raster::writeToFile(std::string path) const
    {
       std::ofstream outFile = std::ofstream(path);
       if (!outFile.is_open()) {
@@ -186,6 +186,5 @@ namespace KiLib
       pos.z = this->getInterpBilinear(pos);
 
       return pos;
-
    }
 } // namespace KiLib

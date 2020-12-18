@@ -1,22 +1,16 @@
 ### START spdlog SETUP
+include(FetchContent)
 
-if(WIN32)
-	set(BYPRODUCT ${CMAKE_INSTALL_PREFIX}/lib/spdlog.lib)
-endif(WIN32)
-
-if(UNIX)
-set(BYPRODUCT ${CMAKE_INSTALL_PREFIX}/lib/libspdlog.a)
-endif(UNIX)
-
-include(ExternalProject)
-ExternalProject_Add(project_spdlog
-  GIT_REPOSITORY    https://github.com/gabime/spdlog.git
-  GIT_TAG           v1.8.0
-  CMAKE_ARGS        -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release
-  BUILD_BYPRODUCTS   ${BYPRODUCT}
+ 
+FetchContent_Populate(
+  spdlog_proj
+  QUIET
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG v1.8.0
+  SOURCE_DIR     spdlog_proj              # (Relative) path within in the build directory.
 )
-
-add_library(spdlog STATIC IMPORTED GLOBAL)
-set_property(TARGET spdlog PROPERTY IMPORTED_LOCATION  ${BYPRODUCT})
-add_dependencies(spdlog project_spdlog)
-add_dependencies(${projectName} spdlog)
+ 
+# ------------------------------------------------------------------------------------
+# And now you can already add and use it, like it's a part/target of your own project!
+add_subdirectory(${spdlog_proj_SOURCE_DIR} spdlog_proj/build)
+include_directories(${spdlog_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)

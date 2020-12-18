@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 set(projectName KiLib)
 set(projectTestName ${projectName}.test)
-project(${projectName} VERSION 2.3.0 LANGUAGES CXX)
+project(${projectName} VERSION 2.3.2 LANGUAGES CXX)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 include(CMake/Sources.cmake.in)
@@ -24,7 +24,6 @@ endif()
   
 
 include(CMake/spdlog.cmake.in)
-include(CMake/gcem.cmake.in)
 include(CMake/stats.cmake.in)
 include(CMake/yaml-cpp.cmake.in)
 include(CMake/KiLibTest.cmake.in)
@@ -48,6 +47,8 @@ include(GNUInstallDirs)
 install(
     TARGETS
         ${projectName}
+        spdlog
+        yaml-cpp
     EXPORT
         ${projectName}Targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -62,12 +63,15 @@ install(EXPORT ${projectName}Targets
 
 install(DIRECTORY ${projectName}/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${projectName}/
-    FILES_MATCHING PATTERN "*.h*"
+    FILES_MATCHING 
+        PATTERN "*.h*"
 )
 
 install(DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/
-    FILES_MATCHING PATTERN "*.h*"
+    FILES_MATCHING 
+        PATTERN "*.h*"
+        PATTERN "*.ipp"
 )
 
 # Define KILIB_RESOURCE_PATH
@@ -128,7 +132,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()
 
-target_link_libraries(${projectName} PRIVATE yaml-cpp spdlog )
+target_link_libraries(${projectName} PUBLIC yaml-cpp spdlog::spdlog stats gcem)
 
 # Git commit hook installation
 include(CMake/GitPreCommitHook.cmake.in)

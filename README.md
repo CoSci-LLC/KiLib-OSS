@@ -1,5 +1,5 @@
 # KiLib-OSS 
-#### Version v2.3.0
+#### Version v2.3.2
 *A Scientific Library for "Earth" (Ki) surface processes*
 
 ## Dependencies
@@ -31,51 +31,22 @@ cmake --build .
 To automatically download KiLib, add the following to your CMakeLists.txt:
 ```
 ### KiLib Install Process
+include(FetchContent)
 
-set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
-
-if(WIN32)
-  set(BYPRODUCT_SPDLOG ${EXTERNAL_INSTALL_LOCATION}/lib/spdlogd.lib)
-  set(BYPRODUCT_YAMLCPP ${EXTERNAL_INSTALL_LOCATION}/lib/libyaml-cppmdd.lib)
-  set(BYPRODUCT_KILIB ${EXTERNAL_INSTALL_LOCATION}/lib/KiLib.lib)
-endif(WIN32)
-
-if(UNIX)
-  set(BYPRODUCT_SPDLOG ${EXTERNAL_INSTALL_LOCATION}/lib/libspdlog.a)
-  set(BYPRODUCT_YAMLCPP ${EXTERNAL_INSTALL_LOCATION}/lib/libyaml-cpp.a)
-  set(BYPRODUCT_KILIB ${EXTERNAL_INSTALL_LOCATION}/lib/libKiLib.a)
-endif(UNIX)
-
-
-# KiLib
-include(ExternalProject)
-ExternalProject_Add(project_KiLib
-  GIT_REPOSITORY git@github.com:CoSci-LLC/KiLib.git
-  GIT_TAG issue/\\\#44
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_PROJECT_NAME=${CMAKE_PROJECT_NAME} -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_INCLUDEDIR=include
-  BUILD_BYPRODUCTS  ${BYPRODUCT_SPDLOG} ${BYPRODUCT_YAMLCPP} ${BYPRODUCT_KILIB}
+FetchContent_Populate(
+	kilib_proj
+	QUIET
+	GIT_REPOSITORY git@github.com:CoSci-LLC/KiLib-OSS.git
+  GIT_TAG v2.3.2
+	SOURCE_DIR     kilib_proj              # (Relative) path within in the build directory.
 )
-include_directories(${EXTERNAL_INSTALL_LOCATION}/include/)
-include_directories(${EXTERNAL_INSTALL_LOCATION}/include/KiLib/)
-add_library(KiLib STATIC IMPORTED)
-set_property(TARGET KiLib PROPERTY IMPORTED_LOCATION ${BYPRODUCT_KILIB})
 
-# Spdlog
-add_library(spdlog STATIC IMPORTED GLOBAL)
-set_property(TARGET spdlog PROPERTY IMPORTED_LOCATION ${BYPRODUCT_SPDLOG})
-add_dependencies(spdlog project_KiLib)
+# ------------------------------------------------------------------------------------
+# And now you can already add and use it, like it's a part/target of your own project!
 
-# yaml-cpp
-add_library(yaml-cpp STATIC IMPORTED GLOBAL)
-set_property(TARGET yaml-cpp PROPERTY IMPORTED_LOCATION ${BYPRODUCT_YAMLCPP})
-add_dependencies(yaml-cpp project_KiLib)
-
-target_link_libraries(KiLib INTERFACE yaml-cpp spdlog)
-
-target_link_libraries(${projectName} KiLib)
+add_subdirectory(${kilib_proj_SOURCE_DIR} kilib_proj/build)
+include_directories(${kilib_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)
 ```
-
-Be sure to replace `${projectName}` with your project name.
 
 ## Classes
 
