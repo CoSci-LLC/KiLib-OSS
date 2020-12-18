@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 set(projectName KiLib)
 set(projectTestName ${projectName}.test)
-project(${projectName} VERSION 2.3.1 LANGUAGES CXX)
+project(${projectName} VERSION 2.3.2 LANGUAGES CXX)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 include(CMake/Sources.cmake.in)
