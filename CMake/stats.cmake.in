@@ -1,5 +1,7 @@
-include(FetchContent)
 
+include(CMake/gcem.cmake.in)
+
+include(FetchContent)
 FetchContent_Populate(
   stats_proj
   QUIET
@@ -14,6 +16,7 @@ FetchContent_Populate(
 add_library(stats INTERFACE)
 target_include_directories(stats INTERFACE $<BUILD_INTERFACE:${stats_proj_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 
+add_dependencies(stats gcem)
 
 install(TARGETS stats EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/stats)

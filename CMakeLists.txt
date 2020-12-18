@@ -24,7 +24,6 @@ endif()
   
 
 include(CMake/spdlog.cmake.in)
-include(CMake/gcem.cmake.in)
 include(CMake/stats.cmake.in)
 include(CMake/yaml-cpp.cmake.in)
 include(CMake/KiLibTest.cmake.in)
@@ -49,6 +48,7 @@ install(
     TARGETS
         ${projectName}
         spdlog
+        yaml-cpp
     EXPORT
         ${projectName}Targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -132,7 +132,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()
 
-target_link_libraries(${projectName} PUBLIC yaml-cpp spdlog::spdlog)
+target_link_libraries(${projectName} PUBLIC yaml-cpp spdlog::spdlog stats)
 
 # Git commit hook installation
 include(CMake/GitPreCommitHook.cmake.in)
