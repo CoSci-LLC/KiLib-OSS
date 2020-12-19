@@ -1,0 +1,49 @@
+## Set up the testing executable
+
+include(CTest)
+include(GoogleTest)
+
+include(CMake/GoogleTestSetup.cmake.in)
+
+
+# Now simply link against gtest or gtest_main as needed. Eg
+add_executable(${projectTestName}
+	main.cpp
+)
+add_dependencies(${projectTestName} ${projectName} gcem yaml-cpp spdlog)
+
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	# using Clang
+	message(STATUS "Clang detected, adding compile flags")
+	target_compile_options(${projectTestName} PRIVATE -Wall -Werror)
+	# Enforce C++17 features
+	target_compile_features(${projectTestName} PRIVATE cxx_std_17)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	# using GCC
+	message(STATUS "GCC detected, adding compile flags")
+	target_compile_options(${projectTestName} PRIVATE -Wall -Werror)
+	# Enforce C++17 features
+	target_compile_features(${projectTestName} PRIVATE cxx_std_17)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	# using Visual Studio C++
+	message(STATUS "msvc detected, adding compile flags")
+	target_compile_options(${projectTestName} PRIVATE  /std:c++latest /EHsc)
+endif()
+
+
+# Define KILIB_RESOURCE_PATH
+target_compile_definitions(${projectTestName} PUBLIC
+		TEST_DIRECTORY="${PROJECT_SOURCE_DIR}/test"
+)
+target_link_libraries(${projectTestName} gtest_main KiLib)
+
+target_include_directories(${projectTestName}
+PUBLIC
+		${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
+PRIVATE
+		./
+)
+
+gtest_discover_tests(${projectTestName})
+add_test(NAME KiLibTest COMMAND ${projectTestName})

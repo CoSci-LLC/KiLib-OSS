@@ -17,6 +17,7 @@ endif()
 # Should we build the test application?
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        message("Building KiLib Tests. To disable, define KILIB_BUILD_TESTS as NO")
         set(KILIB_BUILD_TESTS "YES" CACHE STRING "Build KiLib Tests" FORCE)
     endif()
 endif()
@@ -31,7 +32,11 @@ include(CMake/target_sources_test.cmake)
 include(CMake/spdlog.cmake.in)
 include(CMake/stats.cmake.in)
 include(CMake/yaml-cpp.cmake.in)
-include(CMake/KiLibTest.cmake.in)
+
+if(KILIB_BUILD_TESTS)
+    add_subdirectory(test)
+endif()
+
 
 add_subdirectory(KiLib)
 
@@ -48,63 +53,9 @@ target_include_directories(${projectName}
 
 message("Header File install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
 
-# For install dir features
-include(GNUInstallDirs)
-install(
-    TARGETS
-        ${projectName}
-        spdlog
-        yaml-cpp
-    EXPORT
-        ${projectName}Targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-install(EXPORT ${projectName}Targets
-    FILE ${projectName}Targets.cmake
-    NAMESPACE ${projectName}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${projectName}
-)
-
-install(DIRECTORY ${projectName}/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${projectName}/
-    FILES_MATCHING 
-        PATTERN "*.h*"
-)
-
-
 # Define KILIB_RESOURCE_PATH
-add_compile_definitions(
+target_compile_definitions(${projectName} PUBLIC
     KILIB_RESOURCE_PATH="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources"
-    TEST_DIRECTORY="${PROJECT_SOURCE_DIR}/test"
-)
-
-message("Resource install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources")
-
-
-#####################
-# ConfigVersion file
-#####################
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/${projectName}ConfigVersion.cmake
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion
-)
-
-configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/CMake/${projectName}Config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${projectName}Config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/KiLib
-)
-
-## Install all the helper files
-install(
-    FILES
-      ${CMAKE_CURRENT_BINARY_DIR}/${projectName}Config.cmake
-      ${CMAKE_CURRENT_BINARY_DIR}/${projectName}ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/KiLib
 )
 
 # Install resources
@@ -113,8 +64,9 @@ install(DIRECTORY
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/${projectName}
 )
 
+message("Resource install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources")
 
- if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
     message(STATUS "Clang detected, adding compile flags")
     target_compile_options(${projectName} PRIVATE -Wall -Werror)
