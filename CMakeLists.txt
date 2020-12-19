@@ -87,7 +87,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # using Visual Studio C++
     message(STATUS "msvc detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE  /std:c++17 /EHsc)
+    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()
 
 # Git commit hook installation
