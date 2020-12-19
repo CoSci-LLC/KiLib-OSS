@@ -7,7 +7,7 @@ FetchContent_Populate(
   QUIET
   GIT_REPOSITORY https://github.com/kthohr/stats
   GIT_TAG master
-  SOURCE_DIR     stats_proj              # (Relative) path within in the build directory.
+  SOURCE_DIR     ${CMAKE_SOURCE_DIR}/lib/stats              # (Relative) path within in the build directory.
 )
  
 # Stats is special because it doesn't include a cmake project.
@@ -15,8 +15,7 @@ FetchContent_Populate(
 
 add_library(stats INTERFACE)
 target_include_directories(stats INTERFACE $<BUILD_INTERFACE:${stats_proj_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
-
-add_dependencies(stats gcem)
+target_link_libraries(stats INTERFACE gcem)
 
 install(TARGETS stats EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/stats)

@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.13)
 set(projectName KiLib)
 set(projectTestName ${projectName}.test)
 project(${projectName} VERSION 2.3.2 LANGUAGES CXX)
-set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 add_library(${projectName} STATIC "") 
 
@@ -41,7 +40,6 @@ add_subdirectory(KiLib)
 target_include_directories(${projectName}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<BUILD_INTERFACE:${EXTERNAL_INSTALL_LOCATION}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${projectName}>
     PRIVATE
@@ -75,12 +73,6 @@ install(DIRECTORY ${projectName}/
         PATTERN "*.h*"
 )
 
-install(DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/include/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/
-    FILES_MATCHING 
-        PATTERN "*.h*"
-        PATTERN "*.ipp"
-)
 
 # Define KILIB_RESOURCE_PATH
 add_compile_definitions(
