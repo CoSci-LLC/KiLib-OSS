@@ -10,7 +10,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
    # Now simply link against gtest or gtest_main as needed. Eg
    add_executable(${projectTestName}
       test/main.cpp
-      ${TEST_SOURCES}
    )
    add_dependencies(${projectTestName} ${projectName} gcem yaml-cpp spdlog)
 

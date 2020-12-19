@@ -1,12 +1,11 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13)
 
 set(projectName KiLib)
 set(projectTestName ${projectName}.test)
 project(${projectName} VERSION 2.3.2 LANGUAGES CXX)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
-include(CMake/Sources.cmake.in)
-add_library(${projectName} STATIC ${MAIN_SOURCES} )
+add_library(${projectName} STATIC "") 
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -21,12 +20,12 @@ if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
 
-  
-
 include(CMake/spdlog.cmake.in)
 include(CMake/stats.cmake.in)
 include(CMake/yaml-cpp.cmake.in)
 include(CMake/KiLibTest.cmake.in)
+
+add_subdirectory(KiLib)
 
 
 # Interface for library
