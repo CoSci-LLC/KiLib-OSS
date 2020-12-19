@@ -21,17 +21,17 @@ if ("${CMAKE_INSTALL_INCLUDEDIR}" STREQUAL "")
     message("Header File install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
 endif()
 
+# Default build is release
+if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+endif()
+
 # Should we build the test application?
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         message("Building KiLib Tests. To disable, define KILIB_BUILD_TESTS as NO")
         set(KILIB_BUILD_TESTS "YES" CACHE STRING "Build KiLib Tests" FORCE)
     endif()
-endif()
-
-# Default build is release
-if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
 
 # Include dependencies and helper functions
@@ -42,6 +42,8 @@ include(CMake/yaml-cpp.cmake.in)
 
 # Include the test application
 if(KILIB_BUILD_TESTS)
+    # Enable testing for the project
+    enable_testing()
     add_subdirectory(test)
 endif()
 
