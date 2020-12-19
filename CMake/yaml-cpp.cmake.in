@@ -1,21 +1,32 @@
-### START YAML-CPP SETUP
+# yaml-cpp.cmake.in
+#
+# Add yaml-cpp to a project
+#
+# Written Owen T. Parkins
+
 
 include(FetchContent)
 
+# Download yaml-cpp
 FetchContent_Populate(
   yamlcpp_proj
   QUIET
-  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp
-  GIT_TAG yaml-cpp-0.6.3
-  SOURCE_DIR     ${CMAKE_SOURCE_DIR}/lib/yamlcpp              # (Relative) path within in the build directory.
+  GIT_REPOSITORY  https://github.com/jbeder/yaml-cpp
+  GIT_TAG         yaml-cpp-0.6.3
+  SOURCE_DIR      ${CMAKE_SOURCE_DIR}/lib/yamlcpp
 )
- 
+
+# Disable yaml-cpp tests
 set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "disable yaml tests")
 set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "disable yaml tools")
 set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "disable yaml contrib")
- 
-# ------------------------------------------------------------------------------------
-# And now you can already add and use it, like it's a part/target of your own project!
 
+
+# Add yaml-cpp to this project
 add_subdirectory(${yamlcpp_proj_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/lib/yamlcpp/build)
+
+# Include the headers into our project
 include_directories(${yamlcpp_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)
+
+# Add yaml-cpp to project build dependencies
+target_link_libraries(${projectName} PUBLIC yaml-cpp)
