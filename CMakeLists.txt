@@ -29,7 +29,7 @@ endif()
 # Should we build the test application?
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        message("Building KiLib Tests. To disable, define KILIB_BUILD_TESTS as NO")
+        message("Set to build KiLib Tests. To disable, define KILIB_BUILD_TESTS as NO")
         set(KILIB_BUILD_TESTS "YES" CACHE STRING "Build KiLib Tests" FORCE)
     endif()
 endif()
@@ -42,6 +42,7 @@ include(CMake/yaml-cpp.cmake.in)
 
 # Include the test application
 if(KILIB_BUILD_TESTS)
+    message("Adding KiLib Tests")
     # Enable testing for the project
     enable_testing()
     add_subdirectory(test)
