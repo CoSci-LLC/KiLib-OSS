@@ -6,6 +6,6 @@ target_sources(${projectName} PRIVATE
 )
 
 # Add sources to the test application
-target_sources(${projectTestName} PRIVATE
+target_sources_test(${projectTestName} PRIVATE
 	Soil.test.cpp
 )

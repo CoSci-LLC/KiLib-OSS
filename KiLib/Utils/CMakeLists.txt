@@ -9,7 +9,7 @@ target_sources(${projectName} PRIVATE
 )
 
 # Add sources to the test application
-target_sources(${projectTestName} PRIVATE
+target_sources_test(${projectTestName} PRIVATE
 	CSVReader.test.cpp
 	NewtonRaphson.test.cpp
 	Random.test.cpp

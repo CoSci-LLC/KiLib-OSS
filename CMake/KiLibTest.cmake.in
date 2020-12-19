@@ -1,6 +1,6 @@
 ## Set up the testing executable
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if(KILIB_BUILD_TESTS)
    include(CTest)
    include(GoogleTest)
 

@@ -15,11 +15,20 @@ if ("${CMAKE_INSTALL_INCLUDEDIR}" STREQUAL "")
     message("Updated Install Directory: ${CMAKE_INSTALL_INCLUDEDIR}")
 endif()
 
+# Should we build the test application?
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(KILIB_BUILD_TESTS "YES" CACHE STRING "Build KiLib Tests" FORCE)
+    endif()
+endif()
+
+
 # Default build is release
 if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
 
+include(CMake/target_sources_test.cmake)
 include(CMake/spdlog.cmake.in)
 include(CMake/stats.cmake.in)
 include(CMake/yaml-cpp.cmake.in)
