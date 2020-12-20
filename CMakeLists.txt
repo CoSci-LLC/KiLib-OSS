@@ -27,6 +27,7 @@ include(CMake/spdlog.cmake.in)
 include(CMake/stats.cmake.in)
 include(CMake/yaml-cpp.cmake.in)
 include(CMake/KiLibTest.cmake.in)
+include(CMake/libtiff.cmake.in)
 
 
 # Interface for library

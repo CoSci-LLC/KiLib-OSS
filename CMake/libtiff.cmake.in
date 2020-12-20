@@ -1,0 +1,16 @@
+### START spdlog SETUP
+include(FetchContent)
+
+ 
+FetchContent_Populate(
+  libtiff
+  QUIET
+  GIT_REPOSITORY https://gitlab.com/libtiff/libtiff.git
+  GIT_TAG v4.2.0
+  SOURCE_DIR     libtiff              # (Relative) path within in the build directory.
+)
+ 
+# ------------------------------------------------------------------------------------
+# And now you can already add and use it, like it's a part/target of your own project!
+add_subdirectory(${libtiff_SOURCE_DIR} libtiff/build)
+include_directories(${libtiff_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)
