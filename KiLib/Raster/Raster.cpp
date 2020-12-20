@@ -1,4 +1,5 @@
 #include <KiLib/Raster/Raster.hpp>
+#include <libtiff/tiffio.hxx>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
@@ -76,6 +77,45 @@ namespace KiLib
       this->constructed = true;
 
       rasterFile.close();
+   }
+
+   KiLib::Raster fromTiff(const std::string path)
+   {
+      TIFF *tiff = TIFFOpen(path.c_str(), "r");
+
+      if (tiff == NULL) {
+         spdlog::error("Failed to open {}", path);
+         exit(EXIT_FAILURE);
+      }
+
+      size_t img_width   = 0;
+      size_t img_height  = 0;
+      size_t tile_width  = 0;
+      size_t tile_height = 0;
+      size_t x           = 0;
+      size_t y           = 0;
+
+      tdata_t buf;
+
+      TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &img_width);
+      TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &img_height);
+      TIFFGetField(tiff, TIFFTAG_TILEWIDTH, &tile_width);
+      TIFFGetField(tiff, TIFFTAG_TILELENGTH, &tile_height);
+
+      buf = _TIFFmalloc(TIFFTileSize(tiff));
+
+      for (y = 0; y < img_height; y += tile_height) {
+         for (x = 0; x < img_width; x += tile_width) {
+            if (TIFFReadTile(tiff, buf, x, y, 0, 0) == -1) {
+               spdlog::error("Error reading raster data");
+               exit(EXIT_FAILURE);
+            }
+         }
+      }
+
+      TIFFClose(tiff);
+
+      return Raster();
    }
 
    // Returns (bilinear) interpolated data value at specified position

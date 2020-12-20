@@ -45,6 +45,8 @@ namespace KiLib
          return new_;
       }
 
+      static KiLib::Raster fromTiff(const std::string path);
+
 
       void writeToFile(std::string path) const;
 
