@@ -1,6 +1,7 @@
 #include <KiLib/Raster/Raster.hpp>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+#include <stats.hpp>
 
 namespace KiLib
 {
@@ -181,8 +182,8 @@ namespace KiLib
    KiLib::Vec3 Raster::randPoint()
    {
       KiLib::Vec3 pos(
-         ((double)rand() / (double)RAND_MAX) * this->width, ((double)rand() / (double)RAND_MAX) * this->height, 0);
-
+         stats::runif(this->xllcorner, this->xllcorner + this->width),
+         stats::runif(this->yllcorner, this->yllcorner + this->height), 0);
       pos.z = this->getInterpBilinear(pos);
 
       return pos;
