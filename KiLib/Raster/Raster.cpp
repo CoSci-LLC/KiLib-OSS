@@ -131,9 +131,9 @@ namespace KiLib
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
-      for (size_t row = (this->nRows - 1); row >= 0; row--) {
+      for (size_t row = 1; row <= this->nRows; row++) {
          for (size_t col = 0; col < this->nCols; col++) {
-            double val = this->operator()(row, col);
+            double val = this->operator()(this->nRows - row, col);
 
             if (val == this->nodata_value) {
                fmt::print("{} ", this->nodata_value);
@@ -163,9 +163,9 @@ namespace KiLib
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
-      for (size_t row = (this->nRows - 1); row >= 0; row--) {
+      for (size_t row = 1; row <= this->nRows; row++) {
          for (size_t col = 0; col < this->nCols; col++) {
-            double val = this->operator()(row, col);
+            double val = this->operator()(this->nRows - row, col);
 
             if (val == this->nodata_value) {
                fmt::print(outFile, "{} ", this->nodata_value);
