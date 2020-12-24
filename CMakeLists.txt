@@ -31,6 +31,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         message("Set to build KiLib Tests. To disable, define KILIB_BUILD_TESTS as NO")
         set(KILIB_BUILD_TESTS "YES" CACHE STRING "Build KiLib Tests" FORCE)
+        target_compile_definitions(${projectName} PUBLIC SPDLOG_ACTIVE_LEVEL=1)
     endif()
 endif()
 
