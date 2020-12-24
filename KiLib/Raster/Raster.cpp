@@ -57,14 +57,14 @@ namespace KiLib
 
       this->data.resize(nRows * nCols);
       // Load elevations
-      for (int row = 0; row < this->nRows; row++) {
+      for (size_t row = 0; row < this->nRows; row++) {
          getline(rasterFile, line);
          stream.str(line);
          stream.clear();
 
          // Moving along a row (across columns) is movement through X
          // Moving down a column (across rows) is movement through Y
-         for (int col = 0; col < this->nCols; col++) {
+         for (size_t col = 0; col < this->nCols; col++) {
             double value;
             stream >> value;
             this->at(this->nRows - row - 1, col) = value;
@@ -130,8 +130,8 @@ namespace KiLib
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
-      for (int row = (this->nRows - 1); row >= 0; row--) {
-         for (int col = 0; col < this->nCols; col++) {
+      for (size_t row = (this->nRows - 1); row >= 0; row--) {
+         for (size_t col = 0; col < this->nCols; col++) {
             double val = this->operator()(row, col);
 
             if (val == this->nodata_value) {
@@ -162,8 +162,8 @@ namespace KiLib
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
-      for (int row = (this->nRows - 1); row >= 0; row--) {
-         for (int col = 0; col < this->nCols; col++) {
+      for (size_t row = (this->nRows - 1); row >= 0; row--) {
+         for (size_t col = 0; col < this->nCols; col++) {
             double val = this->operator()(row, col);
 
             if (val == this->nodata_value) {
