@@ -46,6 +46,14 @@ FetchContent_Populate(
 
 add_subdirectory(${kilib_proj_SOURCE_DIR} kilib_proj/build)
 include_directories(${kilib_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)
+
+# To be able to use stats lib
+include_directories(${stats_proj_SOURCE_DIR}/include)
+```
+
+Then to use in your project, use:
+```
+target_link_libraries(${projectName} PUBLIC KiLib)
 ```
 
 ## Classes
