@@ -133,7 +133,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()
 
-target_link_libraries(${projectName} PUBLIC yaml-cpp spdlog::spdlog stats gcem)
+target_link_libraries(${projectName} PUBLIC yaml-cpp spdlog::spdlog stats gcem tiff)
 
 # Git commit hook installation
 include(CMake/GitPreCommitHook.cmake.in)
