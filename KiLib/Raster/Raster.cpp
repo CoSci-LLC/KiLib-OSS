@@ -132,9 +132,8 @@ namespace KiLib
 
       if (!TIFFGetField(tiff, GEOTIFFTAG_NODATAVALUE, &count, &nodat)) {
          spdlog::critical("Failed to find nodata value. Assuming -9999");
-         nodat = new char[6];
+         nodat = new char[7]{'-', '9', '9', '9', '9', '\n'};
          free_flag |= 4;
-         strcpy(nodat, "-9999\n");
       }
 
       r.width        = (r.nCols - 1) * scaling[0];
@@ -171,13 +170,13 @@ namespace KiLib
             for (size_t i = 0; i < ss; i += ss / (rps * r.nCols)) {
                switch (format) {
                case 1:
-                  r.data.emplace_back(*(uint16 *)(buf + i));
+                  r.data.emplace_back(((uint16 *)buf)[i]);
                   break;
                case 2:
-                  r.data.emplace_back(*(int16 *)(buf + i));
+                  r.data.emplace_back(((int16 *)buf)[i]);
                   break;
                case 3:
-                  r.data.emplace_back(*(double *)(buf + i));
+                  r.data.emplace_back(((double *)buf)[i]);
                   break;
                default:
                   spdlog::error("Unknown data format.");
