@@ -83,7 +83,7 @@ namespace KiLib
       rasterFile.close();
    }
 
-   KiLib::Raster fromTiff(const std::string path)
+   KiLib::Raster Raster::fromTiff(const std::string path)
    {
       TIFF *tiff = TIFFOpen(path.c_str(), "r");
 
