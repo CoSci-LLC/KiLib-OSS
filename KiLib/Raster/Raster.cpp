@@ -85,6 +85,8 @@ namespace KiLib
 
    KiLib::Raster Raster::fromTiff(const std::string path)
    {
+      TIFFSetWarningHandler(0);
+
       TIFF *tiff = TIFFOpen(path.c_str(), "r");
 
       if (tiff == NULL) {
@@ -149,6 +151,9 @@ namespace KiLib
          spdlog::error("There is no support for tiled images yet.");
          exit(EXIT_FAILURE);
       } else {
+         // Bits per sample
+         size_t bps = 1;
+
          // Rows per strip
          size_t rps = 1;
 
@@ -160,6 +165,7 @@ namespace KiLib
 
          TIFFGetField(tiff, TIFFTAG_ROWSPERSTRIP, &rps);
          TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
+         TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
 
          // Strips are used to avoid having to deal with decompression of data.
          tdata_t buf = _TIFFmalloc(ss);
@@ -170,13 +176,30 @@ namespace KiLib
             for (size_t i = 0; i < ss; i += ss / (rps * r.nCols)) {
                switch (format) {
                case 1:
-                  r.data.emplace_back(((uint16 *)buf)[i]);
+                  if (bps == 8)
+                     r.data.emplace_back(((uint8 *)buf)[i]);
+                  else if (bps == 16)
+                     r.data.emplace_back(((uint16 *)buf)[i]);
+                  else if (bps == 32)
+                     r.data.emplace_back(((uint32 *)buf)[i]);
+                  else
+                     r.data.emplace_back(((uint64 *)buf)[i]);
                   break;
                case 2:
-                  r.data.emplace_back(((int16 *)buf)[i]);
+                  if (bps == 8)
+                     r.data.emplace_back(((int8 *)buf)[i]);
+                  else if (bps == 16)
+                     r.data.emplace_back(((int16 *)buf)[i]);
+                  else if (bps == 32)
+                     r.data.emplace_back(((int32 *)buf)[i]);
+                  else
+                     r.data.emplace_back(((int64 *)buf)[i]);
                   break;
                case 3:
-                  r.data.emplace_back(((double *)buf)[i]);
+                  if (bps == 32)
+                     r.data.emplace_back(((float *)buf)[i]);
+                  else
+                     r.data.emplace_back(((double *)buf)[i]);
                   break;
                default:
                   spdlog::error("Unknown data format.");
