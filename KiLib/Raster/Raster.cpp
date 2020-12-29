@@ -182,8 +182,7 @@ namespace KiLib
    KiLib::Vec3 Raster::randPoint()
    {
       KiLib::Vec3 pos(
-         stats::runif(this->xllcorner, this->xllcorner + this->width),
-         stats::runif(this->yllcorner, this->yllcorner + this->height), 0);
+         ((double)rand() / (double)RAND_MAX) * this->width, ((double)rand() / (double)RAND_MAX) * this->height, 0);
       pos.z = this->getInterpBilinear(pos);
 
       return pos;
