@@ -1,7 +1,6 @@
 #include <KiLib/Raster/Raster.hpp>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
-#include <stats.hpp>
 
 namespace KiLib
 {
