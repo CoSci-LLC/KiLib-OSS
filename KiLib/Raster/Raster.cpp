@@ -96,6 +96,8 @@ namespace KiLib
 
       size_t free_flag = 0;
       uint count       = 0;
+      uint32 w         = 0;
+      uint32 h         = 0;
       double *scaling;
       double *tiepoint;
       char *nodat;
@@ -115,7 +117,7 @@ namespace KiLib
       KiLib::Raster r;
 
       // Retrieve the width and height of the image. Fail if either can't be retrieved.
-      if (!TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &r.nCols) || !TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &r.nRows)) {
+      if (!(TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &w) && TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h))) {
          spdlog::error("Failed to read image width or image height.");
          exit(EXIT_FAILURE);
       }
@@ -138,6 +140,8 @@ namespace KiLib
          free_flag |= 4;
       }
 
+      r.nCols        = w;
+      r.nRows        = h;
       r.width        = (r.nCols - 1) * scaling[0];
       r.height       = (r.nRows - 1) * scaling[1];
       r.xllcorner    = tiepoint[3];
@@ -145,66 +149,70 @@ namespace KiLib
       r.cellsize     = scaling[0];
       r.nodata_value = std::stod(nodat);
 
-      r.data.reserve(r.nCols * r.nRows);
+      r.data.resize(r.nCols * r.nRows);
 
       if (TIFFIsTiled(tiff)) {
          spdlog::error("There is no support for tiled images yet.");
          exit(EXIT_FAILURE);
       } else {
          // Bits per sample
-         size_t bps = 1;
-
-         // Rows per strip
-         size_t rps = 1;
+         uint16 bps = 1;
 
          // Format is currently undefined: https://www.awaresystems.be/imaging/tiff/tifftags/sampleformat.html
-         int16 format = 4;
+         uint16 format = 4;
 
          // The number of bytes a strip occupies
-         uint64 ss = TIFFStripSize64(tiff);
+         uint64 sls = TIFFScanlineSize64(tiff);
 
-         TIFFGetField(tiff, TIFFTAG_ROWSPERSTRIP, &rps);
-         TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
          TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
+         TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
 
-         // Strips are used to avoid having to deal with decompression of data.
-         tdata_t buf = _TIFFmalloc(ss);
-         for (tstrip_t strip = 0; strip < TIFFNumberOfStrips(tiff); strip += rps) {
-            TIFFReadEncodedStrip(tiff, strip, buf, (tsize_t)-1);
+         tdata_t buf = _TIFFmalloc(sls);
 
-            // There may be issues with in-memory alignment with this approach
-            for (size_t i = 0; i < ss; i += ss / (rps * r.nCols)) {
+         for (size_t row = 0; row < r.nRows; row++) {
+            if (TIFFReadScanline(tiff, buf, row) == -1) {
+               spdlog::error("Error when reading scanline");
+               exit(EXIT_FAILURE);
+            }
+
+            for (size_t col = 0; col < r.nCols; col++) {
+               double val = 0;
+
+               if ((r.nRows - row - 1) * r.nCols + col == 1017)
+                  val = 0;
+
                switch (format) {
                case 1:
                   if (bps == 8)
-                     r.data.emplace_back(((uint8 *)buf)[i]);
+                     val = ((uint8 *)buf)[col];
                   else if (bps == 16)
-                     r.data.emplace_back(((uint16 *)buf)[i]);
+                     val = ((uint16 *)buf)[col];
                   else if (bps == 32)
-                     r.data.emplace_back(((uint32 *)buf)[i]);
+                     val = ((uint32 *)buf)[col];
                   else
-                     r.data.emplace_back(((uint64 *)buf)[i]);
+                     val = ((uint64 *)buf)[col];
                   break;
                case 2:
                   if (bps == 8)
-                     r.data.emplace_back(((int8 *)buf)[i]);
+                     val = ((int8 *)buf)[col];
                   else if (bps == 16)
-                     r.data.emplace_back(((int16 *)buf)[i]);
+                     val = ((int16 *)buf)[col];
                   else if (bps == 32)
-                     r.data.emplace_back(((int32 *)buf)[i]);
+                     val = ((int32 *)buf)[col];
                   else
-                     r.data.emplace_back(((int64 *)buf)[i]);
+                     val = ((int64 *)buf)[col];
                   break;
                case 3:
                   if (bps == 32)
-                     r.data.emplace_back(((float *)buf)[i]);
+                     val = ((float *)buf)[col];
                   else
-                     r.data.emplace_back(((double *)buf)[i]);
+                     val = ((double *)buf)[col];
                   break;
                default:
                   spdlog::error("Unknown data format.");
                   exit(EXIT_FAILURE);
                }
+               r.at(r.nRows - row - 1, col) = val;
             }
          }
          _TIFFfree(buf);
