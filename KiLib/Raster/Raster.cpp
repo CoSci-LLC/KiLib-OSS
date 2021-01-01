@@ -1,7 +1,9 @@
 #include <KiLib/Raster/Raster.hpp>
+#include <filesystem>
 #include <libtiff/tiffio.hxx>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+namespace fs = std::filesystem;
 
 #define GEOTIFFTAG_MODELPIXELSCALE 33550
 #define GEOTIFFTAG_MODELTIEPOINT 33922
@@ -20,6 +22,22 @@ namespace KiLib
    {
       this->constructed = false;
 
+      auto ext = fs::path(path).extension();
+
+      if (ext == ".asc")
+         this->fromDEM(path);
+      else if (ext == ".tif" || ext == ".tiff")
+         this->fromTiff(path);
+      else {
+         spdlog::error("Unsupported file type given to raster constructor: {}", ext);
+         exit(EXIT_FAILURE);
+      }
+
+      this->constructed = true;
+   }
+
+   void Raster::fromDEM(const std::string path)
+   {
       std::ifstream rasterFile;
       std::string line, key;
       std::istringstream stream(line);
@@ -76,14 +94,13 @@ namespace KiLib
          }
       }
 
-      this->width       = (this->nCols - 1) * this->cellsize;
-      this->height      = (this->nRows - 1) * this->cellsize;
-      this->constructed = true;
+      this->width  = (this->nCols - 1) * this->cellsize;
+      this->height = (this->nRows - 1) * this->cellsize;
 
       rasterFile.close();
    }
 
-   KiLib::Raster Raster::fromTiff(const std::string path)
+   void Raster::fromTiff(const std::string path)
    {
       TIFFSetWarningHandler(0);
 
@@ -114,8 +131,6 @@ namespace KiLib
          exit(EXIT_FAILURE);
       }
 
-      KiLib::Raster r;
-
       // Retrieve the width and height of the image. Fail if either can't be retrieved.
       if (!(TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &w) && TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h))) {
          spdlog::error("Failed to read image width or image height.");
@@ -140,16 +155,16 @@ namespace KiLib
          free_flag |= 4;
       }
 
-      r.nCols        = w;
-      r.nRows        = h;
-      r.width        = (r.nCols - 1) * scaling[0];
-      r.height       = (r.nRows - 1) * scaling[1];
-      r.xllcorner    = tiepoint[3];
-      r.yllcorner    = tiepoint[4] - (r.nRows * scaling[1]);
-      r.cellsize     = scaling[0];
-      r.nodata_value = std::stod(nodat);
+      this->nCols        = w;
+      this->nRows        = h;
+      this->width        = (this->nCols - 1) * scaling[0];
+      this->height       = (this->nRows - 1) * scaling[1];
+      this->xllcorner    = tiepoint[3];
+      this->yllcorner    = tiepoint[4] - (this->nRows * scaling[1]);
+      this->cellsize     = scaling[0];
+      this->nodata_value = std::stod(nodat);
 
-      r.data.resize(r.nCols * r.nRows);
+      this->data.resize(this->nCols * this->nRows);
 
       if (TIFFIsTiled(tiff)) {
          spdlog::error("There is no support for tiled images yet.");
@@ -169,16 +184,16 @@ namespace KiLib
 
          tdata_t buf = _TIFFmalloc(sls);
 
-         for (size_t row = 0; row < r.nRows; row++) {
+         for (size_t row = 0; row < this->nRows; row++) {
             if (TIFFReadScanline(tiff, buf, row) == -1) {
                spdlog::error("Error when reading scanline");
                exit(EXIT_FAILURE);
             }
 
-            for (size_t col = 0; col < r.nCols; col++) {
+            for (size_t col = 0; col < this->nCols; col++) {
                double val = 0;
 
-               if ((r.nRows - row - 1) * r.nCols + col == 1017)
+               if ((this->nRows - row - 1) * this->nCols + col == 1017)
                   val = 0;
 
                switch (format) {
@@ -212,7 +227,7 @@ namespace KiLib
                   spdlog::error("Unknown data format.");
                   exit(EXIT_FAILURE);
                }
-               r.at(r.nRows - row - 1, col) = val;
+               this->at(this->nRows - row - 1, col) = val;
             }
          }
          _TIFFfree(buf);
@@ -231,8 +246,6 @@ namespace KiLib
          delete nodat;
 
       TIFFClose(tiff);
-
-      return r;
    }
 
    // Returns (bilinear) interpolated data value at specified position
