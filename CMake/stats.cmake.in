@@ -1,22 +1,38 @@
+# stats.cmake.in
+#
+# Add stats to a project
+#
+# Written Owen T. Parkins
+
 
 include(CMake/gcem.cmake.in)
 
+# Download stats into a lib/ folder to reduce the amount of time it takes to
+# compile
 include(FetchContent)
 FetchContent_Populate(
   stats_proj
   QUIET
-  GIT_REPOSITORY https://github.com/kthohr/stats
-  GIT_TAG master
-  SOURCE_DIR     stats_proj              # (Relative) path within in the build directory.
+  GIT_REPOSITORY  https://github.com/kthohr/stats
+  GIT_TAG         master
+  SOURCE_DIR      ${CMAKE_SOURCE_DIR}/lib/stats
 )
  
 # Stats is special because it doesn't include a cmake project.
-# we must add an interface target for use
-
+# we must add an interface library for use
 add_library(stats INTERFACE)
 target_include_directories(stats INTERFACE $<BUILD_INTERFACE:${stats_proj_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
+target_link_libraries(stats INTERFACE gcem)
 
-add_dependencies(stats gcem)
+# Add STATS_USE_OPENMP and STATS_ENABLE_STDVEC_WRAPPERS to stats log
+target_compile_definitions(stats INTERFACE STATS_ENABLE_STDVEC_WRAPPERS)
 
+find_package(OpenMP REQUIRED)
+target_link_libraries(stats INTERFACE OpenMP::OpenMP_CXX)
+
+# Install stats target for others to use
 install(TARGETS stats EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/stats)
+
+# Link project with stats
+target_link_libraries(${projectName} PUBLIC stats)
