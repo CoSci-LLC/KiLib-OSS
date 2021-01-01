@@ -27,8 +27,12 @@ target_link_libraries(stats INTERFACE gcem)
 # Add STATS_USE_OPENMP and STATS_ENABLE_STDVEC_WRAPPERS to stats log
 target_compile_definitions(stats INTERFACE STATS_ENABLE_STDVEC_WRAPPERS)
 
-find_package(OpenMP REQUIRED)
-target_link_libraries(stats INTERFACE OpenMP::OpenMP_CXX)
+# Default build is with OpenMP
+if (NOT DEFINED STATS_OPENMP_ENABLE OR STATS_OPENMP_ENABLE STREQUAL "YES")
+    message("Enabling OpenMP For Stats Lib")
+    find_package(OpenMP REQUIRED)
+    target_link_libraries(stats INTERFACE OpenMP::OpenMP_CXX)
+endif()
 
 # Install stats target for others to use
 install(TARGETS stats EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
