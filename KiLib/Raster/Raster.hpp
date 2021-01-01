@@ -30,8 +30,8 @@ namespace KiLib
       double height;       // [m] Height in Y
       double nodata_value; // Value associated with no data from DEM
 
-      size_t nCols; // Number of columns (x)
-      size_t nRows; // Number of rows (y)
+      size_t nCols = 0; // Number of columns (x)
+      size_t nRows = 0; // Number of rows (y)
 
       bool constructed; // Flag indicating whether a file was loaded
 
