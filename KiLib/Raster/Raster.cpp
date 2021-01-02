@@ -24,8 +24,8 @@ static void _XTIFFDefaultDirectory(TIFF *tif)
       {GEOTIFFTAG_KEYDIRECTORY, -1, -1, TIFF_SHORT, FIELD_CUSTOM, true, true, (char *)"GeoKeyDirectory"},
       {GEOTIFFTAG_DOUBLEPARAMS, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, true, true, (char *)"GeoDoubleParams"},
       {GEOTIFFTAG_ASCIIPARAMS, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoASCIIParams"},
-      {GEOTIFFTAG_MODELPIXELSCALE, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, true, true, (char *)"GeoPixelScale"},
-      {GEOTIFFTAG_MODELTIEPOINT, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, true, true, (char *)"GeoTiePoints"},
+      {GEOTIFFTAG_MODELPIXELSCALE, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, false, true, (char *)"GeoPixelScale"},
+      {GEOTIFFTAG_MODELTIEPOINT, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, false, true, (char *)"GeoTiePoints"},
       {GEOTIFFTAG_NODATAVALUE, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoNoDataValue"},
    };
 
@@ -408,6 +408,9 @@ namespace KiLib
 
    void Raster::toTiff(const std::string path) const
    {
+      double mps[3] = {this->cellsize, -this->cellsize, 0.0};
+      double mtp[6] = {0.0, 0.0, 0.0, this->xllcorner, this->yllcorner + (this->nRows * this->cellsize), 0.0};
+
       _XTIFFInitialize();
 
       TIFF *tiff = TIFFOpen(path.c_str(), "w");
@@ -424,10 +427,8 @@ namespace KiLib
       TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
       TIFFSetField(tiff, TIFFTAG_FILLORDER, 1);
       TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, 3);
-      TIFFSetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, 3, this->cellsize, -this->cellsize, 0);
-      TIFFSetField(
-         tiff, GEOTIFFTAG_MODELTIEPOINT, 6, 0, 0, 0, this->xllcorner, this->yllcorner + (this->nRows * this->cellsize),
-         0, 0);
+      TIFFSetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, 3, mps);
+      TIFFSetField(tiff, GEOTIFFTAG_MODELTIEPOINT, 6, mtp);
       TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, std::to_string(this->nodata_value).c_str());
 
       TIFFClose(tiff);
