@@ -11,7 +11,7 @@ namespace KiLib
          class SafetyFactor
          {
          public:
-            SafetyFactor();
+            SafetyFactor(){};
 
             double ComputeSF() const;
          };
