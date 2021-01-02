@@ -8,8 +8,6 @@ namespace KiLib
    {
       namespace SafetyFactor
       {
-         double gamma_w = 9810.0; // unit weight of water [kN/m3]
-
          class MDSTab : public SafetyFactor
          {
          public:
