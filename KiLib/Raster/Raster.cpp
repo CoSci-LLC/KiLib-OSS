@@ -16,6 +16,12 @@ namespace fs = std::filesystem;
 // The following code was retrieved from: http://www.simplesystems.org/libtiff/addingtags.html
 #define N(a) (sizeof(a) / sizeof(a[0]))
 static TIFFExtendProc _ParentExtender = NULL;
+
+/**
+ * @brief Defines the GeoTiff tags that are needed to read and write tiff files.
+ *
+ * @param tif the tiff file
+ */
 static void _XTIFFDefaultDirectory(TIFF *tif)
 {
 
@@ -40,6 +46,11 @@ static void _XTIFFDefaultDirectory(TIFF *tif)
    if (_ParentExtender)
       (*_ParentExtender)(tif);
 }
+
+/**
+ * @brief Extends the tags that are defined by Libtiff while respecting other extensions which may be defined.
+ *
+ */
 static void _XTIFFInitialize(void)
 {
    static bool b = false;
@@ -408,7 +419,13 @@ namespace KiLib
 
    void Raster::toTiff(const std::string path) const
    {
+      // key directory
+      // uint16 kd[] = { 1 };
+
+      // model pixel scale values
       double mps[3] = {this->cellsize, -this->cellsize, 0.0};
+
+      // model tiepoint values
       double mtp[6] = {0.0, 0.0, 0.0, this->xllcorner, this->yllcorner + (this->nRows * this->cellsize), 0.0};
 
       _XTIFFInitialize();
@@ -420,17 +437,39 @@ namespace KiLib
          exit(EXIT_FAILURE);
       }
 
+      // TIFF tags
       TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, this->nCols);
       TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, this->nRows);
       TIFFSetField(tiff, TIFFTAG_SOFTWARE, "KiLib");
       TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 64);
       TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
-      TIFFSetField(tiff, TIFFTAG_FILLORDER, 1);
       TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, 3);
+      TIFFSetField(tiff, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
+      TIFFSetField(tiff, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+      TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
+
+      // GeoTIFF tags
+      // TIFFSetField(tiff, GEOTIFFTAG_KEYDIRECTORY, 6, );
       TIFFSetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, 3, mps);
       TIFFSetField(tiff, GEOTIFFTAG_MODELTIEPOINT, 6, mtp);
       TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, std::to_string(this->nodata_value).c_str());
 
+      // Writing data to file
+      uint64 sls  = TIFFScanlineSize64(tiff);
+      tdata_t buf = _TIFFmalloc(sls);
+
+      for (size_t row = 0; row < this->nRows; row++) {
+         for (size_t col = 0; col < this->nCols; col++) {
+            ((double *)buf)[col] = this->at(row, col);
+
+            if (!TIFFWriteScanline(tiff, buf, row)) {
+               spdlog::error("Failed to write data to {}", path);
+               exit(EXIT_FAILURE);
+            }
+         }
+      }
+
+      _TIFFfree(buf);
       TIFFClose(tiff);
    }
 
