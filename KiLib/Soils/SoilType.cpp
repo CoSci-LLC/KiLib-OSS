@@ -21,7 +21,7 @@ namespace KiLib
       }
 
       YAML::Node root = YAML::LoadFile(path);
-      SoilType   s;
+      SoilType s;
       s.name                  = fs::path(path).stem().string();
       s.longname              = root["longname"].as<std::string>();
       s.porosity              = root["porosity"].as<double>();

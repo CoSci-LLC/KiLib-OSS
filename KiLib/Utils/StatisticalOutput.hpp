@@ -30,7 +30,7 @@ namespace KiLib
          void AddData(double);
 
       private:
-         int    count               = 0;
+         int count                  = 0;
          double rollingSum          = 0.0;
          double rollingSumOfSquares = 0.0;
       };

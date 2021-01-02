@@ -1,6 +1,6 @@
 #include <KiLib/Utils/NewtonRaphson.hpp>
-#include <spdlog/spdlog.h>
 #include <gtest/gtest.h>
+#include <spdlog/spdlog.h>
 
 namespace KiLib
 {

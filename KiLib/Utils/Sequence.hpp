@@ -13,9 +13,10 @@ namespace KiLib
    public:
       template <typename T> static std::vector<T> Build(T, T, T);
       template <typename T> static std::vector<T> BuildEqualSpace(T, T, int);
-      template <typename T> static T              min(std::vector<T>);
-      template <typename T> static T              max(std::vector<T>);
-      template <typename T> static T              sum(std::vector<T>);
+
+      template <typename T> static T min(std::vector<T>);
+      template <typename T> static T max(std::vector<T>);
+      template <typename T> static T sum(std::vector<T>);
 
    private:
       static bool almostEqualOrLessThan(double a, double b)
@@ -51,7 +52,7 @@ namespace KiLib
    template <typename T> std::vector<T> Sequence::Build(T start, T end, T step)
    {
       std::vector<T> result;
-      T              temp = start;
+      T temp = start;
       if (start > end) {
          while (almostEqualOrGreaterThan(temp, end)) {
             result.push_back(temp);
