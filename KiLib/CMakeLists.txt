@@ -10,3 +10,6 @@ add_subdirectory(Soils)
 
 # Include Utils Module
 add_subdirectory(Utils)
+
+# Include Stability Module
+add_subdirectory(Stability)
