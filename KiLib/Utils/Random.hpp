@@ -18,6 +18,8 @@ namespace KiLib
       static std::vector<double> pgamma(std::vector<double>, double);
       template <typename T> static double mean(std::vector<T>);
       template <typename T> static double sd(std::vector<T>);
+
+      static double qtri(const double p, const double a, const double b, const double c);
    };
 
    template <typename T> double Random::mean(std::vector<T> data)

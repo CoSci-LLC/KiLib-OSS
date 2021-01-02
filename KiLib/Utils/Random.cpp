@@ -3,6 +3,24 @@
 
 using namespace KiLib;
 
+/**
+ * @brief Returns the quantile of the given value in a triangular distribution
+ *
+ * @param p The probability
+ * @param a The lower bound
+ * @param b The upper bound
+ * @param c The mode
+ * @return double The quantile
+ */
+double Random::qtri(const double p, const double a, const double b, const double c)
+{
+   if (p < c)
+      return a + std::sqrt((b - a) * (c - a) * p);
+   else if (p > c)
+      return b - std::sqrt((b - a) * (b - c) * (1 - p));
+
+   return c;
+}
 
 std::vector<double> Random::runif(int count, double min, double max)
 {
