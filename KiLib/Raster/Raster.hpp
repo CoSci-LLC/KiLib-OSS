@@ -46,7 +46,7 @@ namespace KiLib
          return new_;
       }
 
-      void writeToFile(std::string path) const;
+      void writeToFile(const std::string path) const;
 
       /**
        * @brief Prints basic information about this Raster
@@ -135,6 +135,8 @@ namespace KiLib
    private:
       void fromDEM(const std::string path);
       void fromTiff(const std::string path);
+      void toDEM(const std::string path) const;
+      void toTiff(const std::string path) const;
 
       double getInterpBilinear(const Vec3 &pos) const;
    };

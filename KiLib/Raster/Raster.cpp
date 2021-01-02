@@ -3,11 +3,55 @@
 #include <libtiff/tiffio.hxx>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+
 namespace fs = std::filesystem;
 
+#define GEOTIFFTAG_KEYDIRECTORY 34735
+#define GEOTIFFTAG_DOUBLEPARAMS 34736
+#define GEOTIFFTAG_ASCIIPARAMS 34737
 #define GEOTIFFTAG_MODELPIXELSCALE 33550
 #define GEOTIFFTAG_MODELTIEPOINT 33922
 #define GEOTIFFTAG_NODATAVALUE 42113
+
+// The following code was retrieved from: http://www.simplesystems.org/libtiff/addingtags.html
+#define N(a) (sizeof(a) / sizeof(a[0]))
+static TIFFExtendProc _ParentExtender = NULL;
+static void _XTIFFDefaultDirectory(TIFF *tif)
+{
+
+   // Definitions for GeoTiff fields needed to parse them correctly
+   static const TIFFFieldInfo xtiffFieldInfo[] = {
+      {GEOTIFFTAG_KEYDIRECTORY, -1, -1, TIFF_SHORT, FIELD_CUSTOM, true, true, (char *)"GeoKeyDirectory"},
+      {GEOTIFFTAG_DOUBLEPARAMS, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, true, true, (char *)"GeoDoubleParams"},
+      {GEOTIFFTAG_ASCIIPARAMS, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoASCIIParams"},
+      {GEOTIFFTAG_MODELPIXELSCALE, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, true, true, (char *)"GeoPixelScale"},
+      {GEOTIFFTAG_MODELTIEPOINT, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, true, true, (char *)"GeoTiePoints"},
+      {GEOTIFFTAG_NODATAVALUE, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoNoDataValue"},
+   };
+
+   /* Install the extended Tag field info */
+   TIFFMergeFieldInfo(tif, xtiffFieldInfo, N(xtiffFieldInfo));
+
+   /* Since an XTIFF client module may have overridden
+    * the default directory method, we call it now to
+    * allow it to set up the rest of its own methods.
+    */
+
+   if (_ParentExtender)
+      (*_ParentExtender)(tif);
+}
+static void _XTIFFInitialize(void)
+{
+   static bool b = false;
+
+   if (b)
+      return;
+
+   b = true;
+
+   /* Grab the inherited method and install */
+   _ParentExtender = TIFFSetTagExtender(_XTIFFDefaultDirectory);
+}
 
 namespace KiLib
 {
@@ -102,12 +146,12 @@ namespace KiLib
 
    void Raster::fromTiff(const std::string path)
    {
-      TIFFSetWarningHandler(0);
+      _XTIFFInitialize();
 
       TIFF *tiff = TIFFOpen(path.c_str(), "r");
 
       if (tiff == NULL) {
-         spdlog::error("Failed to open {}", path);
+         spdlog::error("Failed to open {} for reading", path);
          exit(EXIT_FAILURE);
       }
 
@@ -149,7 +193,7 @@ namespace KiLib
          free_flag |= 2;
       }
 
-      if (!TIFFGetField(tiff, GEOTIFFTAG_NODATAVALUE, &count, &nodat)) {
+      if (!TIFFGetField(tiff, GEOTIFFTAG_NODATAVALUE, &nodat)) {
          spdlog::critical("Failed to find nodata value. Assuming -9999");
          nodat = new char[7]{'-', '9', '9', '9', '9', '\n'};
          free_flag |= 4;
@@ -170,7 +214,6 @@ namespace KiLib
          spdlog::error("There is no support for tiled images yet.");
          exit(EXIT_FAILURE);
       } else {
-         // Bits per sample
          uint16 bps = 1;
 
          // Format is currently undefined: https://www.awaresystems.be/imaging/tiff/tifftags/sampleformat.html
@@ -314,7 +357,22 @@ namespace KiLib
       }
    }
 
-   void Raster::writeToFile(std::string path) const
+   void Raster::writeToFile(const std::string path) const
+   {
+
+      auto ext = fs::path(path).extension();
+
+      if (ext == ".asc")
+         this->toDEM(path);
+      else if (ext == ".tif" || ext == ".tiff")
+         this->toTiff(path);
+      else {
+         spdlog::error("Unsupported output file type: {}", ext);
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   void Raster::toDEM(const std::string path) const
    {
       std::ofstream outFile = std::ofstream(path);
       if (!outFile.is_open()) {
@@ -347,6 +405,34 @@ namespace KiLib
 
       outFile.close();
    }
+
+   void Raster::toTiff(const std::string path) const
+   {
+      _XTIFFInitialize();
+
+      TIFF *tiff = TIFFOpen(path.c_str(), "w");
+
+      if (tiff == NULL) {
+         spdlog::error("Failed to open {} for writing", path);
+         exit(EXIT_FAILURE);
+      }
+
+      TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, this->nCols);
+      TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, this->nRows);
+      TIFFSetField(tiff, TIFFTAG_SOFTWARE, "KiLib");
+      TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 64);
+      TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
+      TIFFSetField(tiff, TIFFTAG_FILLORDER, 1);
+      TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, 3);
+      TIFFSetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, 3, this->cellsize, -this->cellsize, 0);
+      TIFFSetField(
+         tiff, GEOTIFFTAG_MODELTIEPOINT, 6, 0, 0, 0, this->xllcorner, this->yllcorner + (this->nRows * this->cellsize),
+         0, 0);
+      TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, std::to_string(this->nodata_value).c_str());
+
+      TIFFClose(tiff);
+   }
+
 
    KiLib::Vec3 Raster::randPoint()
    {
