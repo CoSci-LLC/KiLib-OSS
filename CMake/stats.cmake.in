@@ -14,7 +14,7 @@ FetchContent_Populate(
   stats_proj
   QUIET
   GIT_REPOSITORY  https://github.com/kthohr/stats
-  GIT_TAG         master
+  GIT_TAG         v3.1.1
   SOURCE_DIR      ${CMAKE_SOURCE_DIR}/lib/stats
 )
  
@@ -29,10 +29,13 @@ target_compile_definitions(stats INTERFACE STATS_ENABLE_STDVEC_WRAPPERS)
 
 # Default build is with OpenMP
 if (NOT DEFINED STATS_OPENMP_ENABLE OR STATS_OPENMP_ENABLE STREQUAL "YES")
+  if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message("Enabling OpenMP For Stats Lib")
     find_package(OpenMP REQUIRED)
     target_link_libraries(stats INTERFACE OpenMP::OpenMP_CXX)
+  endif()
 endif()
+
 
 # Install stats target for others to use
 install(TARGETS stats EXPORT statsTargets DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
