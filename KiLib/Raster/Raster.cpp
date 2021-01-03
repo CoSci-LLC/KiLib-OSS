@@ -468,7 +468,7 @@ namespace KiLib
       TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
 
       // GeoTIFF tags
-      if (kd.size() != 4 + kd[3] * 4) {
+      if (kd.size() != (size_t)(4 + kd[3] * 4)) {
          spdlog::error("Invalid number of entries in the GeoTIFF Key Dictionary");
          exit(EXIT_FAILURE);
       }
