@@ -419,28 +419,21 @@ namespace KiLib
 
    void Raster::toTiff(const std::string path) const
    {
+      // clang-format off
       // Key Directory
       // Is a vector in case it needs to expand programatically with new keys
       std::vector<uint16> kd = {
          // The first 4 entries specify the following:
          // GeoTIFF Version Major, Key Revision, Minor Revision, Number of Keys
-         1,
-         1,
-         0,
-         2,
+         1, 1, 0, 2,
          // The following entries are a set of sorted keys organized in the following manner:
          // KeyID, Tag Location, Count, Value Offset
          // The meaning of the values are specified in the GeoTIFF specification, Annex B, section 1, paragraph 4
          // (GeoTIFF File and "Key" Structure) as of GeoTIFF version 1.1
-         1024,
-         0,
-         1,
-         1,
-         1025,
-         0,
-         1,
-         1,
+         1024, 0, 1, 1,
+         1025, 0, 1, 1,
       };
+      // clang-format on
 
       // model pixel scale values
       double mps[3] = {this->cellsize, this->cellsize, 0.0};
@@ -476,20 +469,19 @@ namespace KiLib
       TIFFSetField(tiff, GEOTIFFTAG_KEYDIRECTORY, kd.size(), kd.data());
       TIFFSetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, 3, mps);
       TIFFSetField(tiff, GEOTIFFTAG_MODELTIEPOINT, 6, mtp);
-      TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, std::to_string(this->nodata_value).c_str());
+      TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, fmt::format("{} ", this->nodata_value).c_str());
 
       // Writing data to file
       uint64 sls  = TIFFScanlineSize64(tiff);
       tdata_t buf = _TIFFmalloc(sls);
 
       for (size_t row = 0; row < this->nRows; row++) {
-         for (size_t col = 0; col < this->nCols; col++) {
-            ((double *)buf)[col] = this->at(row, col);
+         for (size_t col = 0; col < this->nCols; col++)
+            ((double *)buf)[col] = this->at(this->nRows - row - 1, col);
 
-            if (!TIFFWriteScanline(tiff, buf, row)) {
-               spdlog::error("Failed to write data to {}", path);
-               exit(EXIT_FAILURE);
-            }
+         if (TIFFWriteScanline(tiff, buf, row) == -1) {
+            spdlog::error("Failed to write data to {}", path);
+            exit(EXIT_FAILURE);
          }
       }
 
