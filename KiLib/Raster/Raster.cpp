@@ -492,10 +492,10 @@ namespace KiLib
 
    KiLib::Vec3 Raster::randPoint()
    {
-      KiLib::Vec3 pos(
-         ((double)rand() / (double)RAND_MAX) * this->width, ((double)rand() / (double)RAND_MAX) * this->height, 0);
-      pos.z = this->getInterpBilinear(pos);
+      const double x = this->xllcorner + ((double)rand() / (double)RAND_MAX) * this->width;
+      const double y = this->yllcorner + ((double)rand() / (double)RAND_MAX) * this->height;
+      const double z = this->getInterpBilinear({x, y, 0});
 
-      return pos;
+      return KiLib::Vec3{x, y, z};
    }
 } // namespace KiLib
