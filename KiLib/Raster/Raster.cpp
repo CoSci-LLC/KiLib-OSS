@@ -419,11 +419,31 @@ namespace KiLib
 
    void Raster::toTiff(const std::string path) const
    {
-      // key directory
-      // uint16 kd[] = { 1 };
+      // Key Directory
+      // Is a vector in case it needs to expand programatically with new keys
+      std::vector<uint16> kd = {
+         // The first 4 entries specify the following:
+         // GeoTIFF Version Major, Key Revision, Minor Revision, Number of Keys
+         1,
+         1,
+         0,
+         2,
+         // The following entries are a set of sorted keys organized in the following manner:
+         // KeyID, Tag Location, Count, Value Offset
+         // The meaning of the values are specified in the GeoTIFF specification, Annex B, section 1, paragraph 4
+         // (GeoTIFF File and "Key" Structure) as of GeoTIFF version 1.1
+         1024,
+         0,
+         1,
+         1,
+         1025,
+         0,
+         1,
+         1,
+      };
 
       // model pixel scale values
-      double mps[3] = {this->cellsize, -this->cellsize, 0.0};
+      double mps[3] = {this->cellsize, this->cellsize, 0.0};
 
       // model tiepoint values
       double mtp[6] = {0.0, 0.0, 0.0, this->xllcorner, this->yllcorner + (this->nRows * this->cellsize), 0.0};
@@ -444,12 +464,16 @@ namespace KiLib
       TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 64);
       TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
       TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, 3);
-      TIFFSetField(tiff, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
       TIFFSetField(tiff, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
       TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
 
       // GeoTIFF tags
-      // TIFFSetField(tiff, GEOTIFFTAG_KEYDIRECTORY, 6, );
+      if (kd.size() != 4 + kd[3] * 4) {
+         spdlog::error("Invalid number of entries in the GeoTIFF Key Dictionary");
+         exit(EXIT_FAILURE);
+      }
+
+      TIFFSetField(tiff, GEOTIFFTAG_KEYDIRECTORY, kd.size(), kd.data());
       TIFFSetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, 3, mps);
       TIFFSetField(tiff, GEOTIFFTAG_MODELTIEPOINT, 6, mtp);
       TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, std::to_string(this->nodata_value).c_str());
