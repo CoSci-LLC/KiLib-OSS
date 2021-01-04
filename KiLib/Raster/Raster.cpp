@@ -167,7 +167,7 @@ namespace KiLib
       }
 
       size_t free_flag = 0;
-      uint count       = 0;
+      uint16 count     = 0;
       uint32 w         = 0;
       uint32 h         = 0;
       double *scaling;
