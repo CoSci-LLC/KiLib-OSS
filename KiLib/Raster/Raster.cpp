@@ -236,7 +236,7 @@ namespace KiLib
          TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
          TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
 
-         tdata_t buf = _TIFFmalloc(sls);
+         tdata_t buf = _TIFFmalloc((signed int)sls);
 
          for (size_t row = 0; row < this->nRows; row++) {
             if (TIFFReadScanline(tiff, buf, row) == -1) {
@@ -253,27 +253,27 @@ namespace KiLib
                switch (format) {
                case 1:
                   if (bps == 8)
-                     val = ((uint8 *)buf)[col];
+                     val = (double)((uint8 *)buf)[col];
                   else if (bps == 16)
-                     val = ((uint16 *)buf)[col];
+                     val = (double)((uint16 *)buf)[col];
                   else if (bps == 32)
-                     val = ((uint32 *)buf)[col];
+                     val = (double)((uint32 *)buf)[col];
                   else
-                     val = ((uint64 *)buf)[col];
+                     val = (double)((uint64 *)buf)[col];
                   break;
                case 2:
                   if (bps == 8)
-                     val = ((int8 *)buf)[col];
+                     val = (double)((int8 *)buf)[col];
                   else if (bps == 16)
-                     val = ((int16 *)buf)[col];
+                     val = (double)((int16 *)buf)[col];
                   else if (bps == 32)
-                     val = ((int32 *)buf)[col];
+                     val = (double)((int32 *)buf)[col];
                   else
-                     val = ((int64 *)buf)[col];
+                     val = (double)((int64 *)buf)[col];
                   break;
                case 3:
                   if (bps == 32)
-                     val = ((float *)buf)[col];
+                     val = (double)((float *)buf)[col];
                   else
                      val = ((double *)buf)[col];
                   break;
@@ -473,7 +473,7 @@ namespace KiLib
 
       // Writing data to file
       uint64 sls  = TIFFScanlineSize64(tiff);
-      tdata_t buf = _TIFFmalloc(sls);
+      tdata_t buf = _TIFFmalloc((signed int)sls);
 
       for (size_t row = 0; row < this->nRows; row++) {
          for (size_t col = 0; col < this->nCols; col++)
