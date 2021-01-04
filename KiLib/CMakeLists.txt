@@ -13,3 +13,6 @@ add_subdirectory(Utils)
 
 # Include Stability Module
 add_subdirectory(Stability)
+
+# Include SoilDepth Module
+add_subdirectory(SoilDepth)
