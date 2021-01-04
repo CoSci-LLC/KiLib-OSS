@@ -22,3 +22,6 @@
 
 // Stability
 #include <KiLib/Stability/Stability.hpp>
+
+// SoilDepth
+#include <KiLib/SoilDepth/SoilDepth.hpp>

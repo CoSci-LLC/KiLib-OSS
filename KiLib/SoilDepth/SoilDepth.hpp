@@ -1,6 +1,7 @@
 #pragma once
 
 #include <KiLib/Exceptions/NotImplemented.hpp>
+#include <KiLib/SoilDepth/TopModel.hpp>
 
 namespace KiLib
 {
