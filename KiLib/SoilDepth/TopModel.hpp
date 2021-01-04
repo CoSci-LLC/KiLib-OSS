@@ -1,12 +1,12 @@
 #pragma once
 
-#include <KiLib/SoilDepth/SoilDepth.hpp>
+#include <KiLib/SoilDepth/BaseSoilDepth.hpp>
 
 namespace KiLib
 {
    namespace SoilDepth
    {
-      class TopModel : public SoilDepth
+      class TopModel : public BaseSoilDepth
       {
       public:
          TopModel();
