@@ -7,7 +7,7 @@ set(projectName KiLib)
 set(projectTestName ${projectName}.test)
 
 # Create the project name and version
-project(${projectName} VERSION 2.3.4 LANGUAGES CXX)
+project(${projectName} VERSION 2.4.0 LANGUAGES CXX)
 
 # Add KiLib Library
 add_library(${projectName} STATIC "") 
