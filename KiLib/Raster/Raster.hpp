@@ -32,6 +32,7 @@ namespace KiLib
 
       size_t nCols; // Number of columns (x)
       size_t nRows; // Number of rows (y)
+      size_t nData; // Total number of datapoints
 
       bool constructed; // Flag indicating whether a file was loaded
 
@@ -131,6 +132,50 @@ namespace KiLib
       double operator()(size_t row, size_t col) const
       {
          return this->data[row * this->nCols + col];
+      }
+
+      /**
+       * @brief Returns the flat index into the DEM. Doesn't do bounds checking.
+       *
+       * @param ind Flat index
+       * @return double Value at position
+       */
+      double operator()(size_t ind) const
+      {
+         return this->data[ind];
+      }
+
+      /**
+       * @brief Returns a REFERENCE to the flat index into the DEM. Doesn't do bounds checking.
+       *
+       * @param ind Flat index
+       * @return double Value at position
+       */
+      double &operator()(size_t ind)
+      {
+         return this->data[ind];
+      }
+
+      /**
+       * @brief Returns a REFERENCE to the flat index into the DEM. Does bounds checking.
+       *
+       * @param ind Flat index
+       * @return double Value at position
+       */
+      double &at(size_t ind)
+      {
+         return this->data.at(ind);
+      }
+
+      /**
+       * @brief Returns the flat index into the DEM. Does bounds checking.
+       *
+       * @param ind Flat index
+       * @return double Value at position
+       */
+      double at(size_t ind) const
+      {
+         return this->data.at(ind);
       }
 
    private:

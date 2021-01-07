@@ -8,6 +8,9 @@ namespace KiLib
    Raster::Raster()
    {
       this->constructed = false;
+      this->nRows       = 0;
+      this->nCols       = 0;
+      this->nData       = 0;
    }
 
    // Load data in Raster format from specified path
@@ -90,6 +93,7 @@ namespace KiLib
 
       this->width       = (this->nCols - 1) * this->cellsize;
       this->height      = (this->nRows - 1) * this->cellsize;
+      this->nData       = this->nRows * this->nCols;
       this->constructed = true;
 
       rasterFile.close();
