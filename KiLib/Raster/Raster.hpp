@@ -47,7 +47,7 @@ namespace KiLib
          return new_;
       }
 
-      // Creates a raster filled with zeros with same metadata as other.
+      // Creates a raster filled with nodatavalue with same metadata as other.
       static KiLib::Raster nodataLike(const KiLib::Raster &other)
       {
          KiLib::Raster new_(other);
