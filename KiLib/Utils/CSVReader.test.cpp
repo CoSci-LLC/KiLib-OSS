@@ -7,9 +7,11 @@ namespace KiLib
    void checkVectors(std::vector<std::vector<std::string>> results, std::vector<std::vector<std::string>> goldValues)
    {
       ASSERT_EQ(results.size(), goldValues.size());
-      for (size_t i = 0; i < results.size(); i++) {
+      for (size_t i = 0; i < results.size(); i++)
+      {
          ASSERT_EQ(results[i].size(), goldValues[i].size());
-         for (size_t j = 0; j < results[i].size(); j++) {
+         for (size_t j = 0; j < results[i].size(); j++)
+         {
             ASSERT_STRCASEEQ(goldValues[i][j].c_str(), results[i][j].c_str());
          }
       }

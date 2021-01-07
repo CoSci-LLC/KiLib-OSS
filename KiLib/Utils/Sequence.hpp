@@ -20,12 +20,15 @@ namespace KiLib
    private:
       static bool almostEqualOrLessThan(double a, double b)
       {
-         if (a == b) {
+         if (a == b)
+         {
             return true;
          }
          double delta = 0.00000000001;
-         if (a < b + delta) {
-            if (a > b - delta) {
+         if (a < b + delta)
+         {
+            if (a > b - delta)
+            {
                return true;
             }
             return true;
@@ -34,12 +37,15 @@ namespace KiLib
       }
       static bool almostEqualOrGreaterThan(double a, double b)
       {
-         if (a == b) {
+         if (a == b)
+         {
             return true;
          }
          double delta = 0.00000000001;
-         if (a > b + delta) {
-            if (a < b - delta) {
+         if (a > b + delta)
+         {
+            if (a < b - delta)
+            {
                return true;
             }
             return true;
@@ -52,14 +58,19 @@ namespace KiLib
    {
       std::vector<T> result;
       T              temp = start;
-      if (start > end) {
-         while (almostEqualOrGreaterThan(temp, end)) {
+      if (start > end)
+      {
+         while (almostEqualOrGreaterThan(temp, end))
+         {
             result.push_back(temp);
             temp += step;
          }
          return result;
-      } else {
-         while (almostEqualOrLessThan(temp, end)) {
+      }
+      else
+      {
+         while (almostEqualOrLessThan(temp, end))
+         {
             result.push_back(temp);
             temp += step;
          }
@@ -69,7 +80,8 @@ namespace KiLib
 
    template <typename T> T Sequence::min(std::vector<T> vector)
    {
-      if (vector.size() == 0) {
+      if (vector.size() == 0)
+      {
          throw VectorSizeException("Sequence::min -> Vector length is invalid");
       }
       return *std::min_element(vector.begin(), vector.end());
@@ -77,7 +89,8 @@ namespace KiLib
 
    template <typename T> T Sequence::max(std::vector<T> vector)
    {
-      if (vector.size() == 0) {
+      if (vector.size() == 0)
+      {
          throw VectorSizeException("Sequence::max -> Vector length is invalid");
       }
       return *std::max_element(vector.begin(), vector.end());
@@ -85,7 +98,8 @@ namespace KiLib
 
    template <typename T> T Sequence::sum(std::vector<T> vector)
    {
-      if (vector.size() == 0) {
+      if (vector.size() == 0)
+      {
          throw VectorSizeException("Sequence::sum -> Vector length is invalid");
       }
 
@@ -97,7 +111,8 @@ namespace KiLib
       std::vector<T> result(length);
       result[0] = start;
       T step    = (end - start) / (double)(length - 1);
-      for (int i = 1; i < length; i++) {
+      for (int i = 1; i < length; i++)
+      {
          result[i] = result[i - 1] + step;
       }
       return result;

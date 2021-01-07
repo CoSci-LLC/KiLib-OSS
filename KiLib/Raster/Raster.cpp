@@ -70,6 +70,9 @@ namespace KiLib
    Raster::Raster()
    {
       this->constructed = false;
+      this->nRows       = 0;
+      this->nCols       = 0;
+      this->nData       = 0;
    }
 
    // Load data in Raster format from specified path
@@ -83,7 +86,8 @@ namespace KiLib
          this->fromDEM(path);
       else if (ext == ".tif" || ext == ".tiff")
          this->fromTiff(path);
-      else {
+      else
+      {
          spdlog::error("Unsupported file type given to raster constructor: {}", ext);
          exit(EXIT_FAILURE);
       }
@@ -93,19 +97,21 @@ namespace KiLib
 
    void Raster::fromDEM(const std::string path)
    {
-      std::ifstream rasterFile;
-      std::string line, key;
+      std::ifstream      rasterFile;
+      std::string        line, key;
       std::istringstream stream(line);
 
       // Open Elevation file
       rasterFile.open(path, std::ios::in);
-      if (!rasterFile.is_open()) {
+      if (!rasterFile.is_open())
+      {
          printf("Could not open %s\n", path.c_str());
          exit(EXIT_FAILURE);
       }
 
       // Load header
-      for (int i = 0; i < 6; i++) {
+      for (int i = 0; i < 6; i++)
+      {
          getline(rasterFile, line);
          stream.str(line);
          stream.clear();
@@ -115,19 +121,32 @@ namespace KiLib
          // Force lower-case keys
          std::transform(key.begin(), key.end(), key.begin(), ::tolower);
 
-         if (key == "ncols") {
+         if (key == "ncols")
+         {
             stream >> this->nCols;
-         } else if (key == "nrows") {
+         }
+         else if (key == "nrows")
+         {
             stream >> this->nRows;
-         } else if (key == "xllcorner") {
+         }
+         else if (key == "xllcorner")
+         {
             stream >> this->xllcorner;
-         } else if (key == "yllcorner") {
+         }
+         else if (key == "yllcorner")
+         {
             stream >> this->yllcorner;
-         } else if (key == "cellsize") {
+         }
+         else if (key == "cellsize")
+         {
             stream >> this->cellsize;
-         } else if (key == "nodata_value") {
+         }
+         else if (key == "nodata_value")
+         {
             stream >> this->nodata_value;
-         } else {
+         }
+         else
+         {
             std::cerr << "Unexpected value in header!" << std::endl;
             return;
          }
@@ -135,22 +154,26 @@ namespace KiLib
 
       this->data.resize(nRows * nCols);
       // Load elevations
-      for (size_t row = 0; row < this->nRows; row++) {
+      for (size_t row = 0; row < this->nRows; row++)
+      {
          getline(rasterFile, line);
          stream.str(line);
          stream.clear();
 
          // Moving along a row (across columns) is movement through X
          // Moving down a column (across rows) is movement through Y
-         for (size_t col = 0; col < this->nCols; col++) {
+         for (size_t col = 0; col < this->nCols; col++)
+         {
             double value;
             stream >> value;
             this->at(this->nRows - row - 1, col) = value;
          }
       }
 
-      this->width  = (this->nCols - 1) * this->cellsize;
-      this->height = (this->nRows - 1) * this->cellsize;
+      this->width       = (this->nCols - 1) * this->cellsize;
+      this->height      = (this->nRows - 1) * this->cellsize;
+      this->nData       = this->nRows * this->nCols;
+      this->constructed = true;
 
       rasterFile.close();
    }
@@ -161,18 +184,19 @@ namespace KiLib
 
       TIFF *tiff = TIFFOpen(path.c_str(), "r");
 
-      if (tiff == NULL) {
+      if (tiff == NULL)
+      {
          spdlog::error("Failed to open {} for reading", path);
          exit(EXIT_FAILURE);
       }
 
-      size_t free_flag = 0;
-      uint16 count     = 0;
-      uint32 w         = 0;
-      uint32 h         = 0;
+      size_t  free_flag = 0;
+      uint16  count     = 0;
+      uint32  w         = 0;
+      uint32  h         = 0;
       double *scaling;
       double *tiepoint;
-      char *nodat;
+      char *  nodat;
 
       size_t num_dir = 1;
 
@@ -181,30 +205,35 @@ namespace KiLib
 
       // The file is can to only contain one directory for now as multiple directories would correspond to multiple
       // rasters
-      if (num_dir > 1) {
+      if (num_dir > 1)
+      {
          spdlog::error("Multi-raster images are not supported as of yet.");
          exit(EXIT_FAILURE);
       }
 
       // Retrieve the width and height of the image. Fail if either can't be retrieved.
-      if (!(TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &w) && TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h))) {
+      if (!(TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &w) && TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h)))
+      {
          spdlog::error("Failed to read image width or image height.");
          exit(EXIT_FAILURE);
       }
 
-      if (!TIFFGetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, &count, &scaling)) {
+      if (!TIFFGetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, &count, &scaling))
+      {
          spdlog::critical("Failed to find pixel scaling. Assuming 1:1");
          scaling = new double[2]{1, 1};
          free_flag |= 1;
       }
 
-      if (!TIFFGetField(tiff, GEOTIFFTAG_MODELTIEPOINT, &count, &tiepoint)) {
+      if (!TIFFGetField(tiff, GEOTIFFTAG_MODELTIEPOINT, &count, &tiepoint))
+      {
          spdlog::critical("Failed to find model tiepoint. Assuming 0, 0");
          tiepoint = new double[6]{0};
          free_flag |= 2;
       }
 
-      if (!TIFFGetField(tiff, GEOTIFFTAG_NODATAVALUE, &nodat)) {
+      if (!TIFFGetField(tiff, GEOTIFFTAG_NODATAVALUE, &nodat))
+      {
          spdlog::critical("Failed to find nodata value. Assuming -9999");
          nodat = new char[7]{'-', '9', '9', '9', '9', '\n'};
          free_flag |= 4;
@@ -221,10 +250,13 @@ namespace KiLib
 
       this->data.resize(this->nCols * this->nRows);
 
-      if (TIFFIsTiled(tiff)) {
+      if (TIFFIsTiled(tiff))
+      {
          spdlog::error("There is no support for tiled images yet.");
          exit(EXIT_FAILURE);
-      } else {
+      }
+      else
+      {
          uint16 bps = 1;
 
          // Format is currently undefined: https://www.awaresystems.be/imaging/tiff/tifftags/sampleformat.html
@@ -238,19 +270,23 @@ namespace KiLib
 
          tdata_t buf = _TIFFmalloc((signed int)sls);
 
-         for (size_t row = 0; row < this->nRows; row++) {
-            if (TIFFReadScanline(tiff, buf, row) == -1) {
+         for (size_t row = 0; row < this->nRows; row++)
+         {
+            if (TIFFReadScanline(tiff, buf, row) == -1)
+            {
                spdlog::error("Error when reading scanline");
                exit(EXIT_FAILURE);
             }
 
-            for (size_t col = 0; col < this->nCols; col++) {
+            for (size_t col = 0; col < this->nCols; col++)
+            {
                double val = 0;
 
                if ((this->nRows - row - 1) * this->nCols + col == 1017)
                   val = 0;
 
-               switch (format) {
+               switch (format)
+               {
                case 1:
                   if (bps == 8)
                      val = (double)((uint8 *)buf)[col];
@@ -309,7 +345,8 @@ namespace KiLib
       double r = std::clamp((pos.y - this->yllcorner) / this->cellsize, 0.0, (double)this->nRows - 1);
       double c = std::clamp((pos.x - this->xllcorner) / this->cellsize, 0.0, (double)this->nCols - 1);
 
-      if (r == floor(r) && c == floor(c)) {
+      if (r == floor(r) && c == floor(c))
+      {
          return this->at(r, c);
       }
 
@@ -327,15 +364,19 @@ namespace KiLib
 
       double fy1 = q12;
       double fy2 = q11;
-      if (x2 != x1) {
+      if (x2 != x1)
+      {
          fy1 = ((x2 - x) / (x2 - x1)) * q11 + ((x - x1) / (x2 - x1)) * q21;
          fy2 = ((x2 - x) / (x2 - x1)) * q12 + ((x - x1) / (x2 - x1)) * q22;
       }
 
       double z = 0;
-      if (y2 != y1) {
+      if (y2 != y1)
+      {
          z = ((y2 - y) / (y2 - y1)) * fy1 + ((y - y1) / (y2 - y1)) * fy2;
-      } else {
+      }
+      else
+      {
          z = (fy1 + fy2) / 2.0;
       }
 
@@ -354,13 +395,18 @@ namespace KiLib
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
-      for (size_t row = 1; row <= this->nRows; row++) {
-         for (size_t col = 0; col < this->nCols; col++) {
+      for (size_t row = 1; row <= this->nRows; row++)
+      {
+         for (size_t col = 0; col < this->nCols; col++)
+         {
             double val = this->operator()(this->nRows - row, col);
 
-            if (val == this->nodata_value) {
+            if (val == this->nodata_value)
+            {
                fmt::print("{} ", this->nodata_value);
-            } else {
+            }
+            else
+            {
                fmt::print("{: .3f} ", val);
             }
          }
@@ -377,7 +423,8 @@ namespace KiLib
          this->toDEM(path);
       else if (ext == ".tif" || ext == ".tiff")
          this->toTiff(path);
-      else {
+      else
+      {
          spdlog::error("Unsupported output file type: {}", ext);
          exit(EXIT_FAILURE);
       }
@@ -386,7 +433,8 @@ namespace KiLib
    void Raster::toDEM(const std::string path) const
    {
       std::ofstream outFile = std::ofstream(path);
-      if (!outFile.is_open()) {
+      if (!outFile.is_open())
+      {
          spdlog::error("Cannot open output {}", path);
          exit(EXIT_FAILURE);
       }
@@ -401,13 +449,18 @@ namespace KiLib
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
-      for (size_t row = 1; row <= this->nRows; row++) {
-         for (size_t col = 0; col < this->nCols; col++) {
+      for (size_t row = 1; row <= this->nRows; row++)
+      {
+         for (size_t col = 0; col < this->nCols; col++)
+         {
             double val = this->operator()(this->nRows - row, col);
 
-            if (val == this->nodata_value) {
+            if (val == this->nodata_value)
+            {
                fmt::print(outFile, "{} ", this->nodata_value);
-            } else {
+            }
+            else
+            {
                fmt::print(outFile, "{: .8f} ", val);
             }
          }
@@ -445,7 +498,8 @@ namespace KiLib
 
       TIFF *tiff = TIFFOpen(path.c_str(), "w");
 
-      if (tiff == NULL) {
+      if (tiff == NULL)
+      {
          spdlog::error("Failed to open {} for writing", path);
          exit(EXIT_FAILURE);
       }
@@ -461,7 +515,8 @@ namespace KiLib
       TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
 
       // GeoTIFF tags
-      if (kd.size() != (size_t)(4 + kd[3] * 4)) {
+      if (kd.size() != (size_t)(4 + kd[3] * 4))
+      {
          spdlog::error("Invalid number of entries in the GeoTIFF Key Dictionary");
          exit(EXIT_FAILURE);
       }
@@ -472,14 +527,16 @@ namespace KiLib
       TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, fmt::format("{} ", this->nodata_value).c_str());
 
       // Writing data to file
-      uint64 sls  = TIFFScanlineSize64(tiff);
+      uint64  sls = TIFFScanlineSize64(tiff);
       tdata_t buf = _TIFFmalloc((signed int)sls);
 
-      for (size_t row = 0; row < this->nRows; row++) {
+      for (size_t row = 0; row < this->nRows; row++)
+      {
          for (size_t col = 0; col < this->nCols; col++)
             ((double *)buf)[col] = this->at(this->nRows - row - 1, col);
 
-         if (TIFFWriteScanline(tiff, buf, row) == -1) {
+         if (TIFFWriteScanline(tiff, buf, row) == -1)
+         {
             spdlog::error("Failed to write data to {}", path);
             exit(EXIT_FAILURE);
          }

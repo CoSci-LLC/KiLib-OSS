@@ -30,7 +30,7 @@ public:
 
    std::string fileName_;
    std::string sep_;
-   int skiprows_;
-   bool token_compress_on_;
-   bool remove_first_sep_;
+   int         skiprows_;
+   bool        token_compress_on_;
+   bool        remove_first_sep_;
 };

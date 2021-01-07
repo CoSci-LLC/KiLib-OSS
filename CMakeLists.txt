@@ -7,7 +7,8 @@ set(projectName KiLib)
 set(projectTestName ${projectName}.test)
 
 # Create the project name and version
-project(${projectName} VERSION 2.3.4 LANGUAGES CXX)
+project(${projectName} VERSION 2.4.0 LANGUAGES CXX)
+
 
 # Add KiLib Library
 add_library(${projectName} STATIC "") 
@@ -26,12 +27,17 @@ if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
 
-# Should we build the test application?
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+
+
+# If we are debugging, add debug statements to every project
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(SPDLOG_ACTIVE_LEVEL=1)
+
+    # Should we build the test application?
+    if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         message("Set to build KiLib Tests. To disable, define KILIB_BUILD_TESTS as NO")
         set(KILIB_BUILD_TESTS "YES" CACHE STRING "Build KiLib Tests" FORCE)
-        target_compile_definitions(${projectName} PUBLIC SPDLOG_ACTIVE_LEVEL=1)
     endif()
 endif()
 
