@@ -20,7 +20,8 @@ public:
    }
    void operator()(double value)
    {
-      if (isnan(value)) {
+      if (isnan(value))
+      {
          throw InvalidArgumentException("Value cannot be NAN");
       }
 

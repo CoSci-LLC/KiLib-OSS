@@ -19,3 +19,9 @@
 #include <KiLib/Utils/CSVReader.hpp>
 #include <KiLib/Utils/Distributions.hpp>
 #include <KiLib/Utils/Vec3.hpp>
+
+// Stability
+#include <KiLib/Stability/Stability.hpp>
+
+// SoilDepth
+#include <KiLib/SoilDepth/SoilDepth.hpp>

@@ -16,7 +16,8 @@ namespace KiLib
    // Loads soiltype from given path, returning success
    bool SoilType::loadFromFile(std::string path)
    {
-      if (fs::exists(path) == false) {
+      if (fs::exists(path) == false)
+      {
          return false;
       }
 
@@ -89,22 +90,26 @@ namespace KiLib
    const SoilType &SoilType::get(std::string nameOrPath)
    {
       // Check if its in under current name or a KiLib path
-      spdlog::debug("KiLib Resource Path:" + std::string(KILIB_RESOURCE_PATH));
+      SPDLOG_DEBUG("KiLib Resource Path:" + std::string(KILIB_RESOURCE_PATH));
       std::string KiLibPath = std::string(KILIB_RESOURCE_PATH) + "/soiltypes/" + nameOrPath + ".yaml";
-      if (soilTypes.count(nameOrPath) > 0) {
+      if (soilTypes.count(nameOrPath) > 0)
+      {
          return soilTypes.at(nameOrPath);
       }
-      if (soilTypes.count(KiLibPath) > 0) {
+      if (soilTypes.count(KiLibPath) > 0)
+      {
          return soilTypes.at(KiLibPath);
       }
 
       // Try to load it in as a KiLib file
-      if (loadFromFile(KiLibPath) == true) {
+      if (loadFromFile(KiLibPath) == true)
+      {
          return soilTypes.at(KiLibPath);
       }
 
       // Try to load it in as a user provided path
-      if (loadFromFile(nameOrPath) == true) {
+      if (loadFromFile(nameOrPath) == true)
+      {
          return soilTypes.at(nameOrPath);
       }
 

@@ -1,7 +1,7 @@
 #pragma once
+#include <algorithm>
 #include <cmath>
 #include <string>
-#include <algorithm>
 
 // Required for math constants on Windows
 #ifdef _WINDOWS

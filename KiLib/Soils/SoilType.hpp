@@ -21,40 +21,43 @@ namespace KiLib
 
    public:
       // Parameters for a uniform distribution of values
-      struct ValueUniform {
+      struct ValueUniform
+      {
          double min;
          double max;
       };
 
       // Parameters for a normal distribution of values
-      struct ValueNormal {
+      struct ValueNormal
+      {
          double mean;
          double stdDev;
       };
 
       // Optional distribution parameters struct
-      struct ValueDistribution {
-         double constant;
+      struct ValueDistribution
+      {
+         double       constant;
          ValueUniform uniformPrimula;
          ValueUniform uniform;
-         ValueNormal normal;
+         ValueNormal  normal;
       };
 
-      std::string name;
-      std::string longname;
-      double porosity;
-      double saturatedWaterContent;
-      double residualWaterContent;
-      double fieldCapacity;
-      double initWaterContent;
-      double waterExchangeTerm;
-      double vgWetAlpha1;
-      double vgWetN1;
+      std::string       name;
+      std::string       longname;
+      double            porosity;
+      double            saturatedWaterContent;
+      double            residualWaterContent;
+      double            fieldCapacity;
+      double            initWaterContent;
+      double            waterExchangeTerm;
+      double            vgWetAlpha1;
+      double            vgWetN1;
       ValueDistribution frictionAngle;
-      double poreFracMatrix;
-      double poreFracFractures;
+      double            poreFracMatrix;
+      double            poreFracFractures;
       ValueDistribution densityDry;
-      double maxTensileStrain;
+      double            maxTensileStrain;
       ValueDistribution cohesion;
       ValueDistribution conductivity;
 
