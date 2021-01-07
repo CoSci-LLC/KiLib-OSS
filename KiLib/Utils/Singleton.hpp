@@ -22,7 +22,8 @@ namespace KiLib
       public:
          static T *GetInstance()
          {
-            if (m_instance == nullptr) {
+            if (m_instance == nullptr)
+            {
                m_instance = new T();
             }
             return m_instance;
