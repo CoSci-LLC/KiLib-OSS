@@ -11,4 +11,4 @@ FetchContent_Populate(
 
 add_subdirectory(${libtiff_proj_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/lib/libtiff/build)
 include_directories(${libtiff_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)
-#target_link_libraries(${projectName} STATIC tiff)
+target_link_libraries(${projectName} PUBLIC tiff)
