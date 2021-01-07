@@ -12,14 +12,12 @@ namespace KiLib
    class Random
    {
    public:
-      static std::vector<double> runif(int, double, double);
-      static std::vector<double> rnorm(int, std::vector<double>, double);
-      static std::vector<double> rnorm(int, double, double);
-      static std::vector<double> pgamma(std::vector<double>, double);
+      static std::vector<double>          runif(int, double, double);
+      static std::vector<double>          rnorm(int, std::vector<double>, double);
+      static std::vector<double>          rnorm(int, double, double);
+      static std::vector<double>          pgamma(std::vector<double>, double);
       template <typename T> static double mean(std::vector<T>);
       template <typename T> static double sd(std::vector<T>);
-
-      static double qtri(const double p, const double a, const double b, const double c);
    };
 
    template <typename T> double Random::mean(std::vector<T> data)
@@ -32,7 +30,8 @@ namespace KiLib
       double mean      = Random::mean(data);
       double summation = 0.0;
 
-      for (unsigned int i = 0; i < data.size(); i++) {
+      for (unsigned int i = 0; i < data.size(); i++)
+      {
          summation += (data[i] - mean) * (data[i] - mean);
       }
       return std::sqrt(summation / (data.size() - 1));

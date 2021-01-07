@@ -54,18 +54,18 @@ namespace KiLib
          return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + "," + std::to_string(this->z) + ")";
       };
 
-      static Vec3 cross(const Vec3 &a, const Vec3 &b);
-      static Vec3 normalise(const Vec3 &a);
+      static Vec3   cross(const Vec3 &a, const Vec3 &b);
+      static Vec3   normalise(const Vec3 &a);
       static double norm(const Vec3 &a);
       static double angle2D(const Vec3 &a);
       static double dot(const Vec3 &a, const Vec3 &b);
 
-      friend Vec3 operator+(const Vec3 &lhs, const Vec3 &rhs);
-      friend Vec3 operator-(const Vec3 &lhs, const Vec3 &rhs);
-      friend Vec3 operator*(const Vec3 &lhs, const Vec3 &rhs);
-      friend Vec3 operator*(const Vec3 &lhs, const double rhs);
-      friend Vec3 operator*(const double lhs, const Vec3 &rhs);
-      friend Vec3 operator/(const Vec3 &lhs, const double rhs);
+      friend Vec3  operator+(const Vec3 &lhs, const Vec3 &rhs);
+      friend Vec3  operator-(const Vec3 &lhs, const Vec3 &rhs);
+      friend Vec3  operator*(const Vec3 &lhs, const Vec3 &rhs);
+      friend Vec3  operator*(const Vec3 &lhs, const double rhs);
+      friend Vec3  operator*(const double lhs, const Vec3 &rhs);
+      friend Vec3  operator/(const Vec3 &lhs, const double rhs);
       friend Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs);
    };
 
