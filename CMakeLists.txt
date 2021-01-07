@@ -9,6 +9,7 @@ set(projectTestName ${projectName}.test)
 # Create the project name and version
 project(${projectName} VERSION 2.4.0 LANGUAGES CXX)
 
+
 # Add KiLib Library
 add_library(${projectName} STATIC "") 
 
