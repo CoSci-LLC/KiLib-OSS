@@ -9,3 +9,8 @@ target_sources(${projectName} PRIVATE
 
 # See other CMakeLists.txt files for examples on how to add test sources to this
 # module if needed in the future.
+
+# Add sources to the test application
+target_sources_test(${projectTestName} PRIVATE
+	Raster.test.cpp
+)
