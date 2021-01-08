@@ -3,6 +3,8 @@
 # Add sources to the main project
 target_sources(${projectName} PRIVATE
 	Raster.cpp
+	Raster_DEM.cpp
+	Raster_TIFF.cpp
 )
 
 # See other CMakeLists.txt files for examples on how to add test sources to this
