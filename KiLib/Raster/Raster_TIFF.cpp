@@ -1,5 +1,6 @@
 #include <KiLib/Raster/Raster.hpp>
 #include <libtiff/tiffio.hxx>
+#include <omp.h>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
@@ -155,59 +156,66 @@ namespace KiLib
          TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
          TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
 
-         tdata_t buf = _TIFFmalloc((signed int)sls);
-
-         for (size_t row = 0; row < this->nRows; row++)
+#pragma omp parallel
          {
-            if (TIFFReadScanline(tiff, buf, row) == -1)
+#pragma omp for schedule(static)
+            for (size_t row = 0; row < this->nRows; row++)
             {
-               spdlog::error("Error when reading scanline");
-               exit(EXIT_FAILURE);
-            }
+               tdata_t buf = _TIFFmalloc((signed int)sls);
 
-            for (size_t col = 0; col < this->nCols; col++)
-            {
-               double val = 0;
-
-               if ((this->nRows - row - 1) * this->nCols + col == 1017)
-                  val = 0;
-
-               switch (format)
+#pragma omp critical
                {
-               case 1:
-                  if (bps == 8)
-                     val = (double)((uint8 *)buf)[col];
-                  else if (bps == 16)
-                     val = (double)((uint16 *)buf)[col];
-                  else if (bps == 32)
-                     val = (double)((uint32 *)buf)[col];
-                  else
-                     val = (double)((uint64 *)buf)[col];
-                  break;
-               case 2:
-                  if (bps == 8)
-                     val = (double)((int8 *)buf)[col];
-                  else if (bps == 16)
-                     val = (double)((int16 *)buf)[col];
-                  else if (bps == 32)
-                     val = (double)((int32 *)buf)[col];
-                  else
-                     val = (double)((int64 *)buf)[col];
-                  break;
-               case 3:
-                  if (bps == 32)
-                     val = (double)((float *)buf)[col];
-                  else
-                     val = ((double *)buf)[col];
-                  break;
-               default:
-                  spdlog::error("Unknown data format.");
-                  exit(EXIT_FAILURE);
+                  if (TIFFReadScanline(tiff, buf, row) == -1)
+                  {
+                     spdlog::error("Error when reading scanline");
+                     exit(EXIT_FAILURE);
+                  }
                }
-               this->at(this->nRows - row - 1, col) = val;
+
+               for (size_t col = 0; col < this->nCols; col++)
+               {
+                  double val = 0;
+
+                  if ((this->nRows - row - 1) * this->nCols + col == 1017)
+                     val = 0;
+
+                  switch (format)
+                  {
+                  case 1:
+                     if (bps == 8)
+                        val = (double)((uint8 *)buf)[col];
+                     else if (bps == 16)
+                        val = (double)((uint16 *)buf)[col];
+                     else if (bps == 32)
+                        val = (double)((uint32 *)buf)[col];
+                     else
+                        val = (double)((uint64 *)buf)[col];
+                     break;
+                  case 2:
+                     if (bps == 8)
+                        val = (double)((int8 *)buf)[col];
+                     else if (bps == 16)
+                        val = (double)((int16 *)buf)[col];
+                     else if (bps == 32)
+                        val = (double)((int32 *)buf)[col];
+                     else
+                        val = (double)((int64 *)buf)[col];
+                     break;
+                  case 3:
+                     if (bps == 32)
+                        val = (double)((float *)buf)[col];
+                     else
+                        val = ((double *)buf)[col];
+                     break;
+                  default:
+                     spdlog::error("Unknown data format.");
+                     exit(EXIT_FAILURE);
+                  }
+                  this->at(this->nRows - row - 1, col) = val;
+               }
+               _TIFFfree(buf);
             }
          }
-         _TIFFfree(buf);
       }
 
       // Remember to free necessary variables
@@ -285,6 +293,7 @@ namespace KiLib
       uint64  sls = TIFFScanlineSize64(tiff);
       tdata_t buf = _TIFFmalloc((signed int)sls);
 
+      // There is no use in parallelizing this as the file has to be written in order
       for (size_t row = 0; row < this->nRows; row++)
       {
          for (size_t col = 0; col < this->nCols; col++)
