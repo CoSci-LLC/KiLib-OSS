@@ -101,9 +101,9 @@ namespace KiLib
          outFile,
          "ncols {}\n"
          "nrows {}\n"
-         "xllcorner {:.4f}\n"
-         "yllcorner {:.4f}\n"
-         "cellsize {:.4f}\n"
+         "xllcorner {}\n"
+         "yllcorner {}\n"
+         "cellsize {}\n"
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
