@@ -11,10 +11,12 @@ namespace KiLib
 {
    TEST(Random, runif)
    {
-      Random::runif(5, 3.2, 3.2);
+      std::mt19937_64 gen(1);
+      Random::runif(5, 3.2, 3.2, gen);
    }
    TEST(Random, rnorm)
    {
-      Random::rnorm(5, 3.2, 3.2);
+      std::mt19937_64 gen(1);
+      Random::rnorm(5, 3.2, 3.2, gen);
    }
 } // namespace KiLib
