@@ -44,11 +44,11 @@ namespace KiLib
       for (auto it : fs::directory_iterator(path))
       {
          std::string base = (path / fs::path(it.path().stem().string())).string();
-         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + ".asc"));
+         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + ".dem"));
       }
 
-      for (const auto &[tif, asc] : files)
-         compare_raster(Raster(tif), Raster(asc), 1e-300, 1e-100);
+      for (const auto &[tif, dem] : files)
+         compare_raster(Raster(tif), Raster(dem), 1e-300, 1e-100);
 
       fs::current_path(cwd);
    }
@@ -69,15 +69,15 @@ namespace KiLib
 
          std::string base = (path / fs::path(it.path().stem().string())).string();
 
-         files.insert(std::make_pair<std::string, std::string>(base + ".asc", base + "_comparison.tif"));
+         files.insert(std::make_pair<std::string, std::string>(base + ".dem", base + "_comparison.tif"));
 
-         Raster tmp(base + ".asc");
+         Raster tmp(base + ".dem");
          tmp.writeToFile(base + "_comparison.tif");
       }
 
-      for (const auto &[asc, tif] : files)
+      for (const auto &[dem, tif] : files)
       {
-         compare_raster(Raster(asc), Raster(tif), 1e-300, 1e-100);
+         compare_raster(Raster(dem), Raster(tif), 1e-300, 1e-100);
          fs::remove(fs::path(tif));
       }
 
@@ -100,17 +100,17 @@ namespace KiLib
 
          std::string base = (path / fs::path(it.path().stem().string())).string();
 
-         files.insert(std::make_pair<std::string, std::string>(base + ".asc", base + "_comparison.asc"));
+         files.insert(std::make_pair<std::string, std::string>(base + ".dem", base + "_comparison.dem"));
 
-         Raster tmp(base + ".asc");
-         tmp.writeToFile(base + "_comparison.asc");
+         Raster tmp(base + ".dem");
+         tmp.writeToFile(base + "_comparison.dem");
       }
 
-      for (const auto &[asc, cmp] : files)
+      for (const auto &[dem, cmp] : files)
       {
-         compare_raster(Raster(asc), Raster(cmp), 1e-300, 1e-100);
+         compare_raster(Raster(dem), Raster(cmp), 1e-300, 1e-100);
          fs::remove(fs::path(cmp));
-      }  
+      }
 
       fs::current_path(cwd);
    }
@@ -162,16 +162,16 @@ namespace KiLib
 
          std::string base = (path / fs::path(it.path().stem().string())).string();
 
-         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + "_comparison.asc"));
+         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + "_comparison.dem"));
 
          Raster tmp(base + ".tif");
-         tmp.writeToFile(base + "_comparison.asc");
+         tmp.writeToFile(base + "_comparison.dem");
       }
 
-      for (const auto &[tif, asc] : files)
+      for (const auto &[tif, dem] : files)
       {
-         compare_raster(Raster(tif), Raster(asc), 1e-300, 1e-100);
-         fs::remove(fs::path(asc));
+         compare_raster(Raster(tif), Raster(dem), 1e-300, 1e-100);
+         fs::remove(fs::path(dem));
       }
 
       fs::current_path(cwd);
