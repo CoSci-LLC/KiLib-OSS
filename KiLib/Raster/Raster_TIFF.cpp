@@ -156,66 +156,56 @@ namespace KiLib
          TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
          TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
 
-#pragma omp parallel
+         tdata_t buf = _TIFFmalloc((signed int)sls);
+         for (size_t row = 0; row < this->nRows; row++)
          {
-#pragma omp for schedule(static)
-            for (size_t row = 0; row < this->nRows; row++)
+
+            if (TIFFReadScanline(tiff, buf, row) == -1)
             {
-               tdata_t buf = _TIFFmalloc((signed int)sls);
+               spdlog::error("Error when reading scanline");
+               exit(EXIT_FAILURE);
+            }
 
-#pragma omp critical
+            for (size_t col = 0; col < this->nCols; col++)
+            {
+               double val = 0;
+
+               switch (format)
                {
-                  if (TIFFReadScanline(tiff, buf, row) == -1)
-                  {
-                     spdlog::error("Error when reading scanline");
-                     exit(EXIT_FAILURE);
-                  }
+               case 1:
+                  if (bps == 8)
+                     val = (double)((uint8 *)buf)[col];
+                  else if (bps == 16)
+                     val = (double)((uint16 *)buf)[col];
+                  else if (bps == 32)
+                     val = (double)((uint32 *)buf)[col];
+                  else
+                     val = (double)((uint64 *)buf)[col];
+                  break;
+               case 2:
+                  if (bps == 8)
+                     val = (double)((int8 *)buf)[col];
+                  else if (bps == 16)
+                     val = (double)((int16 *)buf)[col];
+                  else if (bps == 32)
+                     val = (double)((int32 *)buf)[col];
+                  else
+                     val = (double)((int64 *)buf)[col];
+                  break;
+               case 3:
+                  if (bps == 32)
+                     val = (double)((float *)buf)[col];
+                  else
+                     val = ((double *)buf)[col];
+                  break;
+               default:
+                  spdlog::error("Unknown data format.");
+                  exit(EXIT_FAILURE);
                }
-
-               for (size_t col = 0; col < this->nCols; col++)
-               {
-                  double val = 0;
-
-                  if ((this->nRows - row - 1) * this->nCols + col == 1017)
-                     val = 0;
-
-                  switch (format)
-                  {
-                  case 1:
-                     if (bps == 8)
-                        val = (double)((uint8 *)buf)[col];
-                     else if (bps == 16)
-                        val = (double)((uint16 *)buf)[col];
-                     else if (bps == 32)
-                        val = (double)((uint32 *)buf)[col];
-                     else
-                        val = (double)((uint64 *)buf)[col];
-                     break;
-                  case 2:
-                     if (bps == 8)
-                        val = (double)((int8 *)buf)[col];
-                     else if (bps == 16)
-                        val = (double)((int16 *)buf)[col];
-                     else if (bps == 32)
-                        val = (double)((int32 *)buf)[col];
-                     else
-                        val = (double)((int64 *)buf)[col];
-                     break;
-                  case 3:
-                     if (bps == 32)
-                        val = (double)((float *)buf)[col];
-                     else
-                        val = ((double *)buf)[col];
-                     break;
-                  default:
-                     spdlog::error("Unknown data format.");
-                     exit(EXIT_FAILURE);
-                  }
-                  this->at(this->nRows - row - 1, col) = val;
-               }
-               _TIFFfree(buf);
+               this->at(this->nRows - row - 1, col) = val;
             }
          }
+         _TIFFfree(buf);
       }
 
       // Remember to free necessary variables
@@ -238,17 +228,17 @@ namespace KiLib
       // clang-format off
         // Key Directory
         // Is a vector in case it needs to expand programatically with new keys
-        std::vector<uint16> kd = {
-                // The first 4 entries specify the following:
-                // GeoTIFF Version Major, Key Revision, Minor Revision, Number of Keys
-                1, 1, 0, 2,
-                // The following entries are a set of sorted keys organized in the following manner:
-                // KeyID, Tag Location, Count, Value Offset
-                // The meaning of the values are specified in the GeoTIFF specification, Annex B, section 1, paragraph 4
-                // (GeoTIFF File and "Key" Structure) as of GeoTIFF version 1.1
-                1024, 0, 1, 1,
-                1025, 0, 1, 1,
-        };
+      std::vector<uint16> kd = {
+         // The first 4 entries specify the following:
+         // GeoTIFF Version Major, Key Revision, Minor Revision, Number of Keys
+         1, 1, 0, 2,
+         // The following entries are a set of sorted keys organized in the following manner:
+         // KeyID, Tag Location, Count, Value Offset
+         // The meaning of the values are specified in the GeoTIFF specification, Annex B, section 1, paragraph 4
+         // (GeoTIFF File and "Key" Structure) as of GeoTIFF version 1.1
+         1024, 0, 1, 1,
+         1025, 0, 1, 1,
+      };
       // clang-format on
 
       // model pixel scale values
