@@ -22,7 +22,7 @@ namespace KiLib
 
       auto ext = fs::path(path).extension();
 
-      if (ext == ".asc")
+      if (ext == ".asc" || ext == ".dem")
          this->fromDEM(path);
       else if (ext == ".tif" || ext == ".tiff")
          this->fromTiff(path);
@@ -116,7 +116,7 @@ namespace KiLib
 
       auto ext = fs::path(path).extension();
 
-      if (ext == ".asc")
+      if (ext == ".asc" || ext == ".dem")
          this->toDEM(path);
       else if (ext == ".tif" || ext == ".tiff")
          this->toTiff(path);
