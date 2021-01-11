@@ -46,6 +46,7 @@ include(CMake/target_sources_test.cmake)
 include(CMake/spdlog.cmake.in)
 include(CMake/stats.cmake.in)
 include(CMake/yaml-cpp.cmake.in)
+include(CMake/libtiff.cmake.in)
 
 # Include the test application
 if(KILIB_BUILD_TESTS)
