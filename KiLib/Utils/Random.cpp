@@ -3,17 +3,16 @@
 
 using namespace KiLib;
 
-
-std::vector<double> Random::runif(int count, double min, double max)
+std::vector<double> Random::runif(int count, double min, double max, std::mt19937_64 gen)
 {
-   return stats::runif<std::vector<double>>(count, 1, min, max);
+   std::vector<double> out(count);
+   std::generate(out.begin(), out.end(), [&]() -> double { return stats::runif(min, max, gen); });
+
+   return out;
 }
 
-std::vector<double> Random::rnorm(int count, std::vector<double> means, double sd)
+std::vector<double> Random::rnorm(int count, std::vector<double> means, double sd, std::mt19937_64 gen)
 {
-   std::random_device rd;
-   std::mt19937       gen{rd()};
-
    unsigned int        meansCount = 0;
    std::vector<double> results(count);
 
@@ -27,9 +26,11 @@ std::vector<double> Random::rnorm(int count, std::vector<double> means, double s
    return results;
 }
 
-std::vector<double> Random::rnorm(int count, double mean, double sd)
+std::vector<double> Random::rnorm(int count, double mean, double sd, std::mt19937_64 gen)
 {
-   return stats::rnorm<std::vector<double>>(count, 1, mean, sd);
+   std::vector<double> out(count);
+   std::generate(out.begin(), out.end(), [&]() -> double { return stats::rnorm(mean, sd, gen); });
+   return out;
 }
 
 std::vector<double> Random::pgamma(std::vector<double> x, double shape)

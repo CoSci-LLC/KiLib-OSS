@@ -30,9 +30,9 @@ namespace KiLib
       double height;       // [m] Height in Y
       double nodata_value; // Value associated with no data from DEM
 
-      size_t nCols; // Number of columns (x)
-      size_t nRows; // Number of rows (y)
-      size_t nData; // Total number of datapoints
+      size_t nCols = 0; // Number of columns (x)
+      size_t nRows = 0; // Number of rows (y)
+      size_t nData = 0; // Total number of datapoints
 
       bool constructed; // Flag indicating whether a file was loaded
 
@@ -55,8 +55,7 @@ namespace KiLib
          return new_;
       }
 
-
-      void writeToFile(std::string path) const;
+      void writeToFile(const std::string path) const;
 
       /**
        * @brief Prints basic information about this Raster
@@ -187,6 +186,11 @@ namespace KiLib
       }
 
    private:
+      void fromDEM(const std::string path);
+      void fromTiff(const std::string path);
+      void toDEM(const std::string path) const;
+      void toTiff(const std::string path) const;
+
       double getInterpBilinear(const Vec3 &pos) const;
    };
 

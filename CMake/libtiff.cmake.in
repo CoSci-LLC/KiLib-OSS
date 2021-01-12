@@ -1,0 +1,14 @@
+include(FetchContent)
+
+
+FetchContent_Populate(
+	libtiff_proj
+	QUIET
+	GIT_REPOSITORY https://github.com/CoSci-LLC/libtiff
+	GIT_TAG        only_lib
+	SOURCE_DIR     ${CMAKE_SOURCE_DIR}/lib/libtiff
+)
+
+add_subdirectory(${libtiff_proj_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/lib/libtiff/build)
+include_directories(${libtiff_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)
+target_link_libraries(${projectName} PUBLIC tiff)

@@ -1,5 +1,5 @@
 # KiLib-OSS 
-#### Version v2.4.0
+#### Version v2.4.1
 
 *A Scientific Library for "Earth" (Ki) surface processes*
 
@@ -9,7 +9,8 @@ All dependencies required for this library will be download via the CMake build 
 ## Building and Installation
 
 ### Linux
-```
+
+```bash
 $ mkdir build
 $ cd build 
 $ cmake .. -DCMAKE_INSTALL_PREFIX=<install location>
@@ -21,11 +22,12 @@ $ make install
 Visual Studio 2019 is the preferred method for building KiLib on Windows. CMake is also required.
 
 Clone or download the KiLib Library and open a VS 2019 Developer Console in that directory. Then:
-```
-mkdir build
-cd build
-cmake ..
-cmake --build .
+
+```bash
+$ mkdir build
+$ cd build
+$ cmake ..
+$ cmake --build .
 ```
 
 ## Usage
@@ -37,8 +39,8 @@ include(FetchContent)
 FetchContent_Populate(
 	kilib_proj
 	QUIET
-	GIT_REPOSITORY git@github.com:CoSci-LLC/KiLib-OSS.git
-  GIT_TAG v2.4.0
+	GIT_REPOSITORY https://github.com/CoSci-LLC/KiLib-OSS.git
+  GIT_TAG v2.4.1
 	SOURCE_DIR     kilib_proj              # (Relative) path within in the build directory.
 )
 
@@ -56,6 +58,33 @@ Then to use in your project, use:
 ```
 target_link_libraries(${projectName} PUBLIC KiLib)
 ```
+
+## Debug Builds
+
+KiLib has the option to be built with debugging features. This will enable debug prints (as long as `spdlog` active level is set to debug as well) and it will add stack traces and other useful debugging features. To build KiLib in debug mode, add the `-DCMAKE_BUILD_TYPE=Debug` flag to your CMake command like:
+
+```bash
+...
+$ cmake .. -DCMAKE_INSTALL_PREFIX=<install location> -DCMAKE_BUILD_TYPE=Debug
+...
+```
+
+Building in Debug mode will also build the tests for KiLib.
+
+## Running Tests
+
+To run KiLib tests, follow these commands:
+
+```bash
+$ mkdir build
+$ cd build 
+$ cmake .. -DCMAKE_INSTALL_PREFIX=<install location> -DCMAKE_BUILD_TYPE=Debug
+$ make
+$ make install
+$ ctest
+```
+
+The `make install` or equivalent is important because KiLib tests require the soils to be installed in the proper location for a few of the tests to pass.
 
 ## Classes
 

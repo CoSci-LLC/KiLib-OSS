@@ -7,7 +7,7 @@ set(projectName KiLib)
 set(projectTestName ${projectName}.test)
 
 # Create the project name and version
-project(${projectName} VERSION 2.4.0 LANGUAGES CXX)
+project(${projectName} VERSION 2.4.1 LANGUAGES CXX)
 
 
 # Add KiLib Library
@@ -46,6 +46,7 @@ include(CMake/target_sources_test.cmake)
 include(CMake/spdlog.cmake.in)
 include(CMake/stats.cmake.in)
 include(CMake/yaml-cpp.cmake.in)
+include(CMake/libtiff.cmake.in)
 
 # Include the test application
 if(KILIB_BUILD_TESTS)
