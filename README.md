@@ -1,5 +1,5 @@
 # KiLib-OSS 
-#### Version v2.4.0
+#### Version v2.4.1
 
 *A Scientific Library for "Earth" (Ki) surface processes*
 
@@ -39,8 +39,8 @@ include(FetchContent)
 FetchContent_Populate(
 	kilib_proj
 	QUIET
-	GIT_REPOSITORY git@github.com:CoSci-LLC/KiLib-OSS.git
-  GIT_TAG v2.4.0
+	GIT_REPOSITORY https://github.com/CoSci-LLC/KiLib-OSS.git
+  GIT_TAG v2.4.1
 	SOURCE_DIR     kilib_proj              # (Relative) path within in the build directory.
 )
 
