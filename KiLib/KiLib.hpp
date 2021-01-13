@@ -25,3 +25,6 @@
 
 // SoilDepth
 #include <KiLib/SoilDepth/SoilDepth.hpp>
+
+// Hydrology
+#include <KiLib/Hydrology/Hydrology.hpp>
