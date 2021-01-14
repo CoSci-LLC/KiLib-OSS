@@ -14,7 +14,7 @@ namespace KiLib
       public:
          LinInterpDepth(double depthMin, double depthMax, double valMin, double valMax);
 
-         double computeDepth(double val);
+         double ComputeDepth(double val);
 
          double depthMin;
          double depthMax;
