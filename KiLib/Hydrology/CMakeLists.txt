@@ -1,9 +1,9 @@
-# CMakeLists.txt for SoiLDepth in KiLib
+# CMakeLists.txt for Hydrology in KiLib
 
 # Add sources to the main project
 target_sources(${projectName} PRIVATE
-	LinInterpDepth.cpp
-	BaseSoilDepth.cpp
+	BaseHydrology.cpp
+	TopModel.cpp
 )
 
 # See other CMakeLists.txt files for examples on how to add test sources to this

@@ -1,4 +1,3 @@
 #pragma once
 
-#include <KiLib/SoilDepth/BaseSoilDepth.hpp>
-#include <KiLib/SoilDepth/TopModel.hpp>
+#include <KiLib/SoilDepth/LinInterpDepth.hpp>

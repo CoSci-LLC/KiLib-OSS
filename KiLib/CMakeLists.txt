@@ -16,3 +16,6 @@ add_subdirectory(Stability)
 
 # Include SoilDepth Module
 add_subdirectory(SoilDepth)
+
+# Include Hydrology Module
+add_subdirectory(Hydrology)
