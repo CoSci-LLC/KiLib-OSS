@@ -8,7 +8,7 @@ TopModel::TopModel(){};
 
 double TopModel::ComputeWetness(double rainfall, double ks, double z, double slope, double twi) const
 {
-   double depth = std::min(1.0, ((rainfall * 0.9) / (ks * z * std::cos(slope))) * twi);
+   double wetness = std::min(1.0, ((rainfall * 0.9) / (ks * z * std::cos(slope))) * twi);
 
-   return depth;
+   return wetness;
 }
