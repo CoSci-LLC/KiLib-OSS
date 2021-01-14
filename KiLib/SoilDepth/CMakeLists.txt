@@ -2,7 +2,8 @@
 
 # Add sources to the main project
 target_sources(${projectName} PRIVATE
-	SoilDepth.cpp
+	LinInterpDepth.cpp
+	BaseSoilDepth.cpp
 )
 
 # See other CMakeLists.txt files for examples on how to add test sources to this
