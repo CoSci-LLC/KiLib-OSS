@@ -1,5 +1,6 @@
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Hydrology/Hydrology.hpp>
+#include <algorithm>
 #include <cmath>
 
 using namespace KiLib::Hydrology;
