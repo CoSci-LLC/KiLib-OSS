@@ -8,15 +8,13 @@ namespace KiLib
    {
       namespace SafetyFactor
       {
-         class MDSTab : public SafetyFactor
+         class MDSTAB : public SafetyFactor
          {
          public:
-            MDSTab();
+            MDSTAB();
             double ComputeSF(
                double phi, double m, double z, double Crl, double Crb, double theta, double delta, double gamma_s,
-               double w, double l) const;
-
-            double gamma_w = 9810.0; // unit weight of water [kN/m3]
+               double w, double l, double gamma_w) const;
          };
       } // namespace SafetyFactor
    }    // namespace Stability

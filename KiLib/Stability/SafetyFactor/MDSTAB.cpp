@@ -5,11 +5,11 @@
 
 using namespace KiLib::Stability::SafetyFactor;
 
-MDSTab::MDSTab(){};
+MDSTAB::MDSTAB(){};
 
-double MDSTab::ComputeSF(
+double MDSTAB::ComputeSF(
    double phi, double m, double z, double Crl, double Crb, double theta, double delta, double gamma_s, double w,
-   double l) const
+   double l, double gamma_w) const
 {
    const double stheta = std::sin(theta);
    const double ctheta = std::cos(theta);

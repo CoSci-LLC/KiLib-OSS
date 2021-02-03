@@ -13,7 +13,7 @@ namespace KiLib
          public:
             SafetyFactor(){};
 
-            double ComputeSF() const;
+            virtual double ComputeSF() const = 0;
          };
       } // namespace SafetyFactor
    }    // namespace Stability
