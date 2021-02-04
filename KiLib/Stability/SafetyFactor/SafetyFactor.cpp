@@ -3,7 +3,7 @@
 
 using namespace KiLib::Stability::SafetyFactor;
 
-double SafetyFactor::ComputeSF() const
+double SafetyFactor::ComputeSF()
 {
    throw NotImplementedException("Method not implemented");
 }
