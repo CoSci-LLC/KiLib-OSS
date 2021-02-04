@@ -2,7 +2,6 @@
 
 # Add sources to the main project
 target_sources(${projectName} PRIVATE
-	SafetyFactor.cpp
 	MDSTAB.cpp
 )
 
