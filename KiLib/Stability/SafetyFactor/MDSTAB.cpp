@@ -1,6 +1,7 @@
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Stability/SafetyFactor/MDSTAB.hpp>
 #include <KiLib/Stability/SafetyFactor/SafetyFactor.hpp>
+#include <algorithm>
 #include <cmath>
 
 using namespace KiLib::Stability::SafetyFactor;

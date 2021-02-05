@@ -1,6 +1,8 @@
 #include <KiLib/Raster/Raster.hpp>
 #include <libtiff/tiffio.hxx>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
