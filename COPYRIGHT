@@ -1,27 +1,25 @@
 KiLib-OSS
 
-/*
-    Copyright (c) 2020-2021 CoSci LLC, USA <software@cosci-llc.com>
+Copyright (c) 2020-2021 CoSci LLC, USA <software@cosci-llc.com>
 
-    This file is part of KiLib-OSS.
+This file is part of KiLib-OSS.
 
-    KiLib-OSS is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+KiLib-OSS is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    KiLib-OSS is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+KiLib-OSS is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
-*/
+You should have received a copy of the GNU General Public License
+along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
 
 --------------------------------------------------------------------------------
 
-LibTIFF
+KiLib-OSS uses LibTIFF
 
 Copyright (c) 1988-1997 Sam Leffler
 Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -47,7 +45,7 @@ OF THIS SOFTWARE.
 
 --------------------------------------------------------------------------------
 
-spdlog
+KiLib-OSS uses spdlog
 
 Copyright (c) 2016 Gabi Melman.                                       
 
@@ -75,14 +73,14 @@ and users must comply to its license: https://github.com/fmtlib/fmt/blob/master/
 
 --------------------------------------------------------------------------------
 
-StatsLib: A C++ Library of Statistical Distribution Functions
+KiLib-OSS uses StatsLib: A C++ Library of Statistical Distribution Functions
 Copyright 2011-2020 Keith O'Hara
 
 This product includes software developed by Keith O'Hara (http://www.kthohr.com)
 
 --------------------------------------------------------------------------------
 
-yaml-cpp
+KiLib-OSS uses yaml-cpp
 
 Copyright (c) 2008-2015 Jesse Beder.
 
