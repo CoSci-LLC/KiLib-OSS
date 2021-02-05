@@ -1,5 +1,5 @@
 # KiLib-OSS 
-#### Version v2.4.2
+#### Version v2.4.3
 
 *A Scientific Library for "Earth" (Ki) surface processes*
 
@@ -40,7 +40,7 @@ FetchContent_Populate(
 	kilib_proj
 	QUIET
 	GIT_REPOSITORY https://github.com/CoSci-LLC/KiLib-OSS.git
-    GIT_TAG v2.4.2
+  GIT_TAG v2.4.3
 	SOURCE_DIR     kilib_proj              # (Relative) path within in the build directory.
 )
 
@@ -88,17 +88,26 @@ The `make install` or equivalent is important because KiLib tests require the so
 
 ## Classes
 
-### Root Models
-(`kilib/RootModel.hpp`) Includes `RootModel` base (abstract) class which is inherited by a couple other model implementations. These models are used to compute forces produced by tree roots.
+### Hydrology
+(`KiLib/Hydrology/Hydrology.hpp`) Implements hydrological models such as TOPMODEL.
 
-### Soil Types
-(`kilib/SoilType.hpp`) Includes `SoilType` class that contains properties related to soil force computations.
+### Raster 
+(`KiLib/Raster/Raster.hpp`) Raster class that can read/write DEM (Digital Elevation Model) files in TIFF or ASCII format.
 
-### 3D Vector Class
-(`kilib/Vec3.hpp`) `Vec3` is a general-purpose 3-dimensional vector class. It supports many different operations.
+### SoilDepth
+(`KiLib/SoilDepth/SoilType.hpp`) Implements different models for computing soil depth based on slope or elevation.
 
-### Raster
-(`kilib/Raster.hpp`) `Raster` is a base class that can read DEM files, such as elevation and contributing area.
+### Soils
+(`KiLib/Soils/SoilType.hpp`) Includes `SoilType` class that contains soils physical properties.
 
-### Distributions
-(`kilib/Distributions.hpp`) implements several useful probability distribution related functions that are used throughout this code.
+### Stability
+(`KiLib/Stability/SafetyFactor/MDSTAB.hpp`) Implements factor of safety calculations using the MD-STAB model of Milledge et al. (2014).
+
+### Utils
+(`KiLib/Utils/Distributions.hpp`) Implements several useful probability distribution related functions that are used throughout this code.
+
+(`KiLib/Utils/Vec3.hpp`) General-purpose 3-dimensional vector class. It supports many different operations.
+
+(`KiLib/Utils/NewtonRaphson.hpp`) Implements a Newton-Raphson scheme to find roots of non-linear equations.
+
+
