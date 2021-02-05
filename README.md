@@ -92,20 +92,22 @@ The `make install` or equivalent is important because KiLib tests require the so
 (`KiLib/Hydrology/Hydrology.hpp`) Implements hydrological models such as TOPMODEL.
 
 ### Raster 
-(`KiLib/Raster/Raster.hpp`) `Raster` is a base class that can read DEM (Digital Elevation Model) files such as elevation, slope, and contributing area.
+(`KiLib/Raster/Raster.hpp`) Raster class that can read/write DEM (Digital Elevation Model) files in TIFF or ASCII format.
 
 ### SoilDepth
-(`KiLib/SoilDepth/SoilType.hpp`) `BaseSoilDepth` is a base class that implements different models for computing soil depth based on slope or elevation.
+(`KiLib/SoilDepth/SoilType.hpp`) Implements different models for computing soil depth based on slope or elevation.
 
 ### Soils
 (`KiLib/Soils/SoilType.hpp`) Includes `SoilType` class that contains soils physical properties.
 
 ### Stability
-(`KiLib/Stability/SafetyFactor/MDSTAB.hpp`) implements factor of safety calculations using the MD-STAB model of Milledge et al. (2014).
+(`KiLib/Stability/SafetyFactor/MDSTAB.hpp`) Implements factor of safety calculations using the MD-STAB model of Milledge et al. (2014).
 
 ### Utils
-(`KiLib/Utils/Distributions.hpp`) implements several useful probability distribution related functions that are used throughout this code.
-(`KiLib/Utils/Vec3.hpp`) `Vec3` is a general-purpose 3-dimensional vector class. It supports many different operations.
-(`KiLib/Utils/NewtonRaphson.hpp`) implement a Newton-Raphson scheme to find roots of non-linear equations.
+(`KiLib/Utils/Distributions.hpp`) Implements several useful probability distribution related functions that are used throughout this code.
+
+(`KiLib/Utils/Vec3.hpp`) General-purpose 3-dimensional vector class. It supports many different operations.
+
+(`KiLib/Utils/NewtonRaphson.hpp`) Implements a Newton-Raphson scheme to find roots of non-linear equations.
 
 
