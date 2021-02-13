@@ -20,6 +20,7 @@
 
 #include <KiLib/Raster/Raster.hpp>
 #include <filesystem>
+#include <map>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
@@ -155,4 +156,23 @@ namespace KiLib
 
       return KiLib::Vec3{x, y, z};
    }
+
+   static const auto EnumToSlope =
+      std::map<KiLib::Raster::SlopeMethod, std::function<KiLib::Raster(const KiLib::Raster &)>>{
+         {KiLib::Raster::SlopeMethod::ZevenbergenThorne, KiLib::Raster::computeSlopeZevenbergenThorne},
+      };
+
+   KiLib::Raster KiLib::Raster::computeSlope(KiLib::Raster::SlopeMethod method)
+   {
+      return EnumToSlope.at(method)(*this);
+   }
+
+   KiLib::Raster KiLib::Raster::computeSlopeZevenbergenThorne(const KiLib::Raster &inp)
+   {
+      /**
+       * Implement specific slope method here
+       */
+      return inp;
+   }
+
 } // namespace KiLib

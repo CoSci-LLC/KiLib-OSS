@@ -205,6 +205,15 @@ namespace KiLib
          return this->data.at(ind);
       }
 
+      // Slope methods
+      enum SlopeMethod
+      {
+         ZevenbergenThorne,
+      };
+
+      KiLib::Raster        computeSlope(KiLib::Raster::SlopeMethod method);
+      static KiLib::Raster computeSlopeZevenbergenThorne(const KiLib::Raster &inp);
+
    private:
       void fromDEM(const std::string path);
       void fromTiff(const std::string path);
