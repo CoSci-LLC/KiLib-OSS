@@ -53,6 +53,25 @@ std::vector<double> Random::rnorm(int count, double mean, double sd, std::mt1993
    return out;
 }
 
+// Algorithm 1 from http://web.michaelchughes.com/research/sampling-from-truncated-normal
+// Assumes b = inf
+std::vector<double> Random::rtnorml(int count, double mean, double sd, double a, std::mt19937_64 gen)
+{
+
+   double hatA = (a - mean) / sd;
+
+   // Sample Unif(Phi(hatA, 1))
+   std::vector<double> out(count);
+   std::generate(out.begin(), out.end(), [&]() -> double { return stats::runif(stats::pnorm(hatA, 0, 1), 1, gen); });
+
+   // hat{x}
+   out = stats::qunif(out, 0, 1);
+
+   std::transform(out.begin(), out.end(), out.end(), [&](double x) -> double { return sd * x + mean; });
+
+   return out;
+}
+
 std::vector<double> Random::pgamma(std::vector<double> x, double shape)
 {
    return stats::pgamma(x, shape, 1);
