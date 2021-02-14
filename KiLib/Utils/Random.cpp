@@ -55,7 +55,7 @@ std::vector<double> Random::rnorm(int count, double mean, double sd, std::mt1993
 
 // Algorithm 1 from http://web.michaelchughes.com/research/sampling-from-truncated-normal
 // Assumes b = inf
-std::vector<double> Random::rtruncbelownorm(int count, double mean, double sd, double a, std::mt19937_64 gen)
+std::vector<double> Random::rtnorml(int count, double mean, double sd, double a, std::mt19937_64 gen)
 {
 
    double hatA = (a - mean) / sd;
