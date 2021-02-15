@@ -211,7 +211,7 @@ namespace KiLib
          ZevenbergenThorne,
       };
 
-      KiLib::Raster        computeSlope(KiLib::Raster::SlopeMethod method);
+      KiLib::Raster        computeSlope(KiLib::Raster::SlopeMethod method) const;
       static KiLib::Raster computeSlopeZevenbergenThorne(const KiLib::Raster &inp);
 
    private:

@@ -162,16 +162,85 @@ namespace KiLib
          {KiLib::Raster::SlopeMethod::ZevenbergenThorne, KiLib::Raster::computeSlopeZevenbergenThorne},
       };
 
-   KiLib::Raster KiLib::Raster::computeSlope(KiLib::Raster::SlopeMethod method)
+   KiLib::Raster KiLib::Raster::computeSlope(KiLib::Raster::SlopeMethod method) const
    {
       return EnumToSlope.at(method)(*this);
    }
 
+   // Based on Zevenbergen, L.W. and Thorne, C.R. (1987), Quantitative analysis of land surface topography. Earth Surf.
+   // Process. Landforms, 12: 47-56. https://doi.org/10.1002/esp.3290120107
    KiLib::Raster KiLib::Raster::computeSlopeZevenbergenThorne(const KiLib::Raster &inp)
    {
-      /**
-       * Implement specific slope method here
-       */
+      KiLib::Raster slope = KiLib::Raster::zerosLike(inp);
+
+      double twoL = 2.0 * inp.cellsize;
+      double g, h;
+      // We're going to handle each case (internal, edge, corner) separately so we dont have
+      // branch in the loops
+
+      // Internal nodes
+      for (size_t r = 1; r < (inp.nRows - 1); r++)
+      {
+         for (size_t c = 1; c < (inp.nRows - 1); c++)
+         {
+            g           = (-inp(r, c - 1) + inp(r, c + 1)) / twoL; // Eqn 9
+            h           = (inp(r - 1, c) - inp(r + 1, c)) / twoL;  // Eqn 10
+            slope(r, c) = -std::sqrt(g * g + h * h);               // Eqn 13
+         }
+      }
+
+      // Left edge
+      for (size_t r = 1; r < (inp.nRows - 1); r++)
+      {
+         g           = inp(r, 1) / inp.cellsize;
+         h           = (inp(r - 1, 0) - inp(r + 1, 0)) / twoL;
+         slope(r, 0) = -std::sqrt(g * g + h * h);
+      }
+
+      // Right edge
+      for (size_t r = 1; r < (inp.nRows - 1); r++)
+      {
+         g                       = inp(r, inp.nCols - 2) / inp.cellsize;
+         h                       = (inp(r - 1, inp.nCols - 1) - inp(r + 1, inp.nCols - 1)) / twoL;
+         slope(r, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+      }
+
+      // Top edge
+      for (size_t c = 1; c < (inp.nCols - 1); c++)
+      {
+         g           = (-inp(0, c - 1) + inp(0, c + 1)) / twoL;
+         h           = inp(1, c) / inp.cellsize;
+         slope(0, c) = -std::sqrt(g * g + h * h);
+      }
+
+      // Bottom edge
+      for (size_t c = 1; c < (inp.nCols - 1); c++)
+      {
+         g                       = (-inp(inp.nRows - 1, c - 1) + inp(inp.nRows - 1, c + 1)) / twoL;
+         h                       = inp(inp.nRows - 2, c) / inp.cellsize;
+         slope(inp.nRows - 1, c) = -std::sqrt(g * g + h * h);
+      }
+
+      // Top left
+      g           = inp(0, 1) / inp.cellsize;
+      h           = inp(1, 0) / inp.cellsize;
+      slope(0, 0) = -std::sqrt(g * g + h * h);
+
+      // Top right
+      g                       = inp(0, inp.nCols - 2) / inp.cellsize;
+      h                       = inp(1, inp.nCols - 1) / inp.cellsize;
+      slope(0, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+
+      // Bottom left
+      g                       = inp(inp.nRows - 1, 1) / inp.cellsize;
+      h                       = inp(inp.nRows - 2, 0) / inp.cellsize;
+      slope(inp.nRows - 1, 0) = -std::sqrt(g * g + h * h);
+
+      // Bottom right
+      g                                   = inp(inp.nRows - 1, inp.nCols - 2) / inp.cellsize;
+      h                                   = inp(inp.nRows - 2, inp.nCols - 1) / inp.cellsize;
+      slope(inp.nRows - 1, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+
       return inp;
    }
 
