@@ -181,7 +181,7 @@ namespace KiLib
       // Internal nodes
       for (size_t r = 1; r < (inp.nRows - 1); r++)
       {
-         for (size_t c = 1; c < (inp.nRows - 1); c++)
+         for (size_t c = 1; c < (inp.nCols - 1); c++)
          {
             g           = (-inp(r, c - 1) + inp(r, c + 1)) / twoL; // Eqn 9
             h           = (inp(r - 1, c) - inp(r + 1, c)) / twoL;  // Eqn 10
