@@ -175,6 +175,7 @@ namespace KiLib
 
       double twoL = 2.0 * inp.cellsize;
       double g, h;
+      double ND = inp.nodata_value;
       // We're going to handle each case (internal, edge, corner) separately so we dont have
       // branch in the loops
 
@@ -183,6 +184,11 @@ namespace KiLib
       {
          for (size_t c = 1; c < (inp.nCols - 1); c++)
          {
+            if (inp(r, c - 1) == ND || inp(r, c + 1) == ND || inp(r - 1, c) == ND || inp(r + 1, c) == ND)
+            {
+               slope(r, c) = ND;
+               continue;
+            }
             g           = (-inp(r, c - 1) + inp(r, c + 1)) / twoL; // Eqn 9
             h           = (inp(r - 1, c) - inp(r + 1, c)) / twoL;  // Eqn 10
             slope(r, c) = -std::sqrt(g * g + h * h);               // Eqn 13
@@ -192,6 +198,11 @@ namespace KiLib
       // Left edge
       for (size_t r = 1; r < (inp.nRows - 1); r++)
       {
+         if (inp(r, 1) == ND || inp(r - 1, 0) == ND || inp(r + 1, 0) == ND)
+         {
+            slope(r, 0) = ND;
+            continue;
+         }
          g           = inp(r, 1) / inp.cellsize;
          h           = (inp(r - 1, 0) - inp(r + 1, 0)) / twoL;
          slope(r, 0) = -std::sqrt(g * g + h * h);
@@ -200,6 +211,11 @@ namespace KiLib
       // Right edge
       for (size_t r = 1; r < (inp.nRows - 1); r++)
       {
+         if (inp(r, inp.nCols - 2) == ND || inp(r - 1, inp.nCols - 1) == ND || inp(r + 1, nCols - 1) == ND)
+         {
+            slope(r, inp.nCols - 1) = ND;
+            continue;
+         }
          g                       = inp(r, inp.nCols - 2) / inp.cellsize;
          h                       = (inp(r - 1, inp.nCols - 1) - inp(r + 1, inp.nCols - 1)) / twoL;
          slope(r, inp.nCols - 1) = -std::sqrt(g * g + h * h);
@@ -208,6 +224,11 @@ namespace KiLib
       // Top edge
       for (size_t c = 1; c < (inp.nCols - 1); c++)
       {
+         if (inp(0, c - 1) == ND || inp(0, c + 1) == ND || inp(1, c) == ND)
+         {
+            slope(0, c) = ND;
+            continue;
+         }
          g           = (-inp(0, c - 1) + inp(0, c + 1)) / twoL;
          h           = inp(1, c) / inp.cellsize;
          slope(0, c) = -std::sqrt(g * g + h * h);
@@ -216,30 +237,64 @@ namespace KiLib
       // Bottom edge
       for (size_t c = 1; c < (inp.nCols - 1); c++)
       {
+         if (inp(inp.nRows - 1, c - 1) == ND || inp(inp.nRows - 1, c + 1) == ND || inp(inp.nRows - 2, c) == ND)
+         {
+            slope(inp.nRows - 1, c) = ND;
+            continue;
+         }
          g                       = (-inp(inp.nRows - 1, c - 1) + inp(inp.nRows - 1, c + 1)) / twoL;
          h                       = inp(inp.nRows - 2, c) / inp.cellsize;
          slope(inp.nRows - 1, c) = -std::sqrt(g * g + h * h);
       }
 
       // Top left
-      g           = inp(0, 1) / inp.cellsize;
-      h           = inp(1, 0) / inp.cellsize;
-      slope(0, 0) = -std::sqrt(g * g + h * h);
+      if (inp(0, 1) == ND || inp(1, 0) == ND)
+      {
+         g           = inp(0, 1) / inp.cellsize;
+         h           = inp(1, 0) / inp.cellsize;
+         slope(0, 0) = -std::sqrt(g * g + h * h);
+      }
+      else
+      {
+         slope(0, 0) = ND;
+      }
 
       // Top right
-      g                       = inp(0, inp.nCols - 2) / inp.cellsize;
-      h                       = inp(1, inp.nCols - 1) / inp.cellsize;
-      slope(0, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+      if (inp(0, inp.nCols - 2) == ND || inp(1, inp.nCols - 1) == ND)
+      {
+         g                       = inp(0, inp.nCols - 2) / inp.cellsize;
+         h                       = inp(1, inp.nCols - 1) / inp.cellsize;
+         slope(0, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+      }
+      else
+      {
+         slope(0, inp.nCols - 1) = ND;
+      }
 
       // Bottom left
-      g                       = inp(inp.nRows - 1, 1) / inp.cellsize;
-      h                       = inp(inp.nRows - 2, 0) / inp.cellsize;
-      slope(inp.nRows - 1, 0) = -std::sqrt(g * g + h * h);
+      if (inp(inp.nRows - 1, 1) == ND || inp(inp.nRows - 2, 0) == ND)
+      {
+         g                       = inp(inp.nRows - 1, 1) / inp.cellsize;
+         h                       = inp(inp.nRows - 2, 0) / inp.cellsize;
+         slope(inp.nRows - 1, 0) = -std::sqrt(g * g + h * h);
+      }
+      else
+      {
+         slope(inp.nRows - 1, 0) = ND;
+      }
+
 
       // Bottom right
-      g                                   = inp(inp.nRows - 1, inp.nCols - 2) / inp.cellsize;
-      h                                   = inp(inp.nRows - 2, inp.nCols - 1) / inp.cellsize;
-      slope(inp.nRows - 1, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+      if (inp(inp.nRows - 1, inp.nCols - 2) == ND || inp(inp.nRows - 2, inp.nCols - 1) == ND)
+      {
+         g                                   = inp(inp.nRows - 1, inp.nCols - 2) / inp.cellsize;
+         h                                   = inp(inp.nRows - 2, inp.nCols - 1) / inp.cellsize;
+         slope(inp.nRows - 1, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+      }
+      else
+      {
+         slope(inp.nRows - 1, inp.nCols - 1) = ND;
+      }
 
       return inp;
    }
