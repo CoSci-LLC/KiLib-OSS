@@ -296,7 +296,7 @@ namespace KiLib
          slope(inp.nRows - 1, inp.nCols - 1) = ND;
       }
 
-      return inp;
+      return slope;
    }
 
 } // namespace KiLib
