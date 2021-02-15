@@ -191,7 +191,7 @@ namespace KiLib
             }
             g           = (-inp(r, c - 1) + inp(r, c + 1)) / twoL; // Eqn 9
             h           = (inp(r - 1, c) - inp(r + 1, c)) / twoL;  // Eqn 10
-            slope(r, c) = -std::sqrt(g * g + h * h);               // Eqn 13
+            slope(r, c) = std::sqrt(g * g + h * h);                // Eqn 13
          }
       }
 
@@ -205,7 +205,7 @@ namespace KiLib
          }
          g           = inp(r, 1) / inp.cellsize;
          h           = (inp(r - 1, 0) - inp(r + 1, 0)) / twoL;
-         slope(r, 0) = -std::sqrt(g * g + h * h);
+         slope(r, 0) = std::sqrt(g * g + h * h);
       }
 
       // Right edge
@@ -218,7 +218,7 @@ namespace KiLib
          }
          g                       = inp(r, inp.nCols - 2) / inp.cellsize;
          h                       = (inp(r - 1, inp.nCols - 1) - inp(r + 1, inp.nCols - 1)) / twoL;
-         slope(r, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+         slope(r, inp.nCols - 1) = std::sqrt(g * g + h * h);
       }
 
       // Top edge
@@ -231,7 +231,7 @@ namespace KiLib
          }
          g           = (-inp(0, c - 1) + inp(0, c + 1)) / twoL;
          h           = inp(1, c) / inp.cellsize;
-         slope(0, c) = -std::sqrt(g * g + h * h);
+         slope(0, c) = std::sqrt(g * g + h * h);
       }
 
       // Bottom edge
@@ -244,7 +244,7 @@ namespace KiLib
          }
          g                       = (-inp(inp.nRows - 1, c - 1) + inp(inp.nRows - 1, c + 1)) / twoL;
          h                       = inp(inp.nRows - 2, c) / inp.cellsize;
-         slope(inp.nRows - 1, c) = -std::sqrt(g * g + h * h);
+         slope(inp.nRows - 1, c) = std::sqrt(g * g + h * h);
       }
 
       // Top left
@@ -252,7 +252,7 @@ namespace KiLib
       {
          g           = inp(0, 1) / inp.cellsize;
          h           = inp(1, 0) / inp.cellsize;
-         slope(0, 0) = -std::sqrt(g * g + h * h);
+         slope(0, 0) = std::sqrt(g * g + h * h);
       }
       else
       {
@@ -264,7 +264,7 @@ namespace KiLib
       {
          g                       = inp(0, inp.nCols - 2) / inp.cellsize;
          h                       = inp(1, inp.nCols - 1) / inp.cellsize;
-         slope(0, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+         slope(0, inp.nCols - 1) = std::sqrt(g * g + h * h);
       }
       else
       {
@@ -276,7 +276,7 @@ namespace KiLib
       {
          g                       = inp(inp.nRows - 1, 1) / inp.cellsize;
          h                       = inp(inp.nRows - 2, 0) / inp.cellsize;
-         slope(inp.nRows - 1, 0) = -std::sqrt(g * g + h * h);
+         slope(inp.nRows - 1, 0) = std::sqrt(g * g + h * h);
       }
       else
       {
@@ -289,7 +289,7 @@ namespace KiLib
       {
          g                                   = inp(inp.nRows - 1, inp.nCols - 2) / inp.cellsize;
          h                                   = inp(inp.nRows - 2, inp.nCols - 1) / inp.cellsize;
-         slope(inp.nRows - 1, inp.nCols - 1) = -std::sqrt(g * g + h * h);
+         slope(inp.nRows - 1, inp.nCols - 1) = std::sqrt(g * g + h * h);
       }
       else
       {
