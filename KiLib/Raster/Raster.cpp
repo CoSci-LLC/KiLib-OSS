@@ -211,7 +211,7 @@ namespace KiLib
       // Right edge
       for (size_t r = 1; r < (inp.nRows - 1); r++)
       {
-         if (inp(r, inp.nCols - 2) == ND || inp(r - 1, inp.nCols - 1) == ND || inp(r + 1, nCols - 1) == ND)
+         if (inp(r, inp.nCols - 2) == ND || inp(r - 1, inp.nCols - 1) == ND || inp(r + 1, inp.nCols - 1) == ND)
          {
             slope(r, inp.nCols - 1) = ND;
             continue;
