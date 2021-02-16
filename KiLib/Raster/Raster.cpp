@@ -161,6 +161,17 @@ namespace KiLib
       return point;
    }
 
+   size_t Raster::getNearestCell(const KiLib::Vec3 &pos)
+   {
+      double rF = (pos.y - this->yllcorner) / this->cellsize;
+      double cF = (pos.x - this->xllcorner) / this->cellsize;
+
+      size_t r = std::clamp((size_t)std::round(rF), 0UL, this->nRows - 1);
+      size_t c = std::clamp((size_t)std::round(cF), 0UL, this->nCols - 1);
+
+      return r * this->nCols + c;
+   }
+
    static const auto EnumToSlope =
       std::map<KiLib::Raster::SlopeMethod, std::function<KiLib::Raster(const KiLib::Raster &)>>{
          {KiLib::Raster::SlopeMethod::ZevenbergenThorne, KiLib::Raster::computeSlopeZevenbergenThorne},

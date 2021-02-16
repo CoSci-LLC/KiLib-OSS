@@ -86,6 +86,11 @@ namespace KiLib
       KiLib::Vec3 randPoint(std::mt19937_64 &gen);
 
       /**
+       * Returns flat index to nearest cell in raster
+       */
+      size_t getNearestCell(const KiLib::Vec3 &pos);
+
+      /**
        * @brief Returns distance between pos and nearest boundary point
        *
        * @param pos Position to get distance from
