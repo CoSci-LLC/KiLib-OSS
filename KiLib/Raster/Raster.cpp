@@ -148,13 +148,17 @@ namespace KiLib
       }
    }
 
-   KiLib::Vec3 Raster::randPoint()
+   KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen)
    {
-      const double x = this->xllcorner + ((double)rand() / (double)RAND_MAX) * this->width;
-      const double y = this->yllcorner + ((double)rand() / (double)RAND_MAX) * this->height;
-      const double z = this->getInterpBilinear({x, y, 0});
+      KiLib::Vec3                            point;
+      std::uniform_real_distribution<double> xDist(0, this->width);
+      std::uniform_real_distribution<double> yDist(0, this->height);
 
-      return KiLib::Vec3{x, y, z};
+      point.x = this->xllcorner + xDist(gen);
+      point.y = this->yllcorner + yDist(gen);
+      point.z = this->getInterpBilinear(point);
+
+      return point;
    }
 
    static const auto EnumToSlope =

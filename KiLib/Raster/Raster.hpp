@@ -26,6 +26,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -82,7 +83,7 @@ namespace KiLib
        */
       void print();
 
-      KiLib::Vec3 randPoint();
+      KiLib::Vec3 randPoint(std::mt19937_64 &gen);
 
       /**
        * @brief Returns distance between pos and nearest boundary point
