@@ -23,7 +23,7 @@
 
 using namespace KiLib;
 
-std::vector<double> Random::runif(int count, double min, double max, std::mt19937_64 gen)
+std::vector<double> Random::runif(int count, double min, double max, std::mt19937_64 &gen)
 {
    std::vector<double> out(count);
    std::generate(out.begin(), out.end(), [&]() -> double { return stats::runif(min, max, gen); });
@@ -31,7 +31,7 @@ std::vector<double> Random::runif(int count, double min, double max, std::mt1993
    return out;
 }
 
-std::vector<double> Random::rnorm(int count, std::vector<double> means, double sd, std::mt19937_64 gen)
+std::vector<double> Random::rnorm(int count, std::vector<double> means, double sd, std::mt19937_64 &gen)
 {
    unsigned int        meansCount = 0;
    std::vector<double> results(count);
@@ -46,7 +46,7 @@ std::vector<double> Random::rnorm(int count, std::vector<double> means, double s
    return results;
 }
 
-std::vector<double> Random::rnorm(int count, double mean, double sd, std::mt19937_64 gen)
+std::vector<double> Random::rnorm(int count, double mean, double sd, std::mt19937_64 &gen)
 {
    std::vector<double> out(count);
    std::generate(out.begin(), out.end(), [&]() -> double { return stats::rnorm(mean, sd, gen); });
@@ -55,7 +55,7 @@ std::vector<double> Random::rnorm(int count, double mean, double sd, std::mt1993
 
 // Algorithm 1 from http://web.michaelchughes.com/research/sampling-from-truncated-normal
 // Assumes b = inf
-std::vector<double> Random::rtnorml(int count, double mean, double sd, double a, std::mt19937_64 gen)
+std::vector<double> Random::rtnorml(int count, double mean, double sd, double a, std::mt19937_64 &gen)
 {
 
    double hatA = (a - mean) / sd;
