@@ -26,6 +26,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -82,7 +83,12 @@ namespace KiLib
        */
       void print();
 
-      KiLib::Vec3 randPoint();
+      KiLib::Vec3 randPoint(std::mt19937_64 &gen);
+
+      /**
+       * Returns flat index to nearest cell in raster
+       */
+      size_t getNearestCell(const KiLib::Vec3 &pos);
 
       /**
        * @brief Returns distance between pos and nearest boundary point
@@ -204,6 +210,15 @@ namespace KiLib
       {
          return this->data.at(ind);
       }
+
+      // Slope methods
+      enum SlopeMethod
+      {
+         ZevenbergenThorne,
+      };
+
+      KiLib::Raster        ComputeSlope(KiLib::Raster::SlopeMethod method) const;
+      static KiLib::Raster ComputeSlopeZevenbergenThorne(const KiLib::Raster &inp);
 
    private:
       void fromDEM(const std::string path);
