@@ -54,4 +54,12 @@ namespace KiLib
          ASSERT_EQ(vec1[i], vec2[i]);
       }
    }
+
+   TEST(Random, gen)
+   {
+      std::mt19937_64 gen1(1);
+      auto            vec1 = Random::rnorm(1, 3.2, 0.3, gen1)[0];
+      auto            vec2 = Random::rnorm(1, 3.2, 0.3, gen1)[0];
+      ASSERT_NE(vec1, vec2);
+   }
 } // namespace KiLib
