@@ -191,8 +191,6 @@ namespace KiLib
       double ND = inp.nodata_value;
       int    NR = inp.nRows;
       int    NC = inp.nCols;
-      // We're going to handle each case (internal, edge, corner) separately so we dont have
-      // branch in the loops
 
       // Slope over 4 adj points
       auto getSlope = [&](const size_t r, const size_t c) {
