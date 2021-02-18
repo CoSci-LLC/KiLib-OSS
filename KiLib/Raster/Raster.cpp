@@ -60,8 +60,8 @@ namespace KiLib
    // Takes in a vec3 for convenience, ignores Z
    double Raster::getInterpBilinear(const Vec3 &pos) const
    {
-      double r = std::clamp((pos.y - this->yllcorner) / this->cellsize, 0.0, (double)this->nRows - 1);
-      double c = std::clamp((pos.x - this->xllcorner) / this->cellsize, 0.0, (double)this->nCols - 1);
+      double r = std::clamp<double>((pos.y - this->yllcorner) / this->cellsize, 0.0, (double)this->nRows - 1);
+      double c = std::clamp<double>((pos.x - this->xllcorner) / this->cellsize, 0.0, (double)this->nCols - 1);
 
       if (r == floor(r) && c == floor(c))
       {
@@ -166,8 +166,8 @@ namespace KiLib
       double rF = (pos.y - this->yllcorner) / this->cellsize;
       double cF = (pos.x - this->xllcorner) / this->cellsize;
 
-      size_t r = std::clamp((size_t)std::round(rF), 0UL, this->nRows - 1);
-      size_t c = std::clamp((size_t)std::round(cF), 0UL, this->nCols - 1);
+      size_t r = std::clamp<size_t>((size_t)std::round(rF), 0UL, this->nRows - 1);
+      size_t c = std::clamp<size_t>((size_t)std::round(cF), 0UL, this->nCols - 1);
 
       return r * this->nCols + c;
    }

@@ -209,7 +209,7 @@ namespace KiLib
 
       for (std::string size : sizes)
       {
-         std::string base = (path / size);
+         std::string base = (path / size).string();
 
          Raster dem(base + ".dem");
          Raster slope_ref(base + "_slope.dem");
