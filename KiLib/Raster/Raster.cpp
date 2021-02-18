@@ -188,129 +188,58 @@ namespace KiLib
    {
       KiLib::Raster slope = KiLib::Raster::zerosLike(inp);
 
-      double twoL = 2.0 * inp.cellsize;
-      double g, h;
       double ND = inp.nodata_value;
-      size_t NR = inp.nRows;
-      size_t NC = inp.nCols;
+      int    NR = inp.nRows;
+      int    NC = inp.nCols;
       // We're going to handle each case (internal, edge, corner) separately so we dont have
       // branch in the loops
 
-      // Internal nodes
-      for (size_t r = 1; r < (NR - 1); r++)
-      {
-         for (size_t c = 1; c < (NC - 1); c++)
+      // Slope over 4 adj points
+      auto getSlope = [&](const size_t r, const size_t c) {
+         int r1 = r - 1;
+         int r2 = r + 1;
+         int c1 = c - 1;
+         int c2 = c + 1;
+
+         double xDiv = inp.cellsize * 2;
+         double yDiv = inp.cellsize * 2;
+
+         if ((r1 < 0) or (inp.at(r1, c) == ND))
          {
-            if (inp(r, c - 1) == ND || inp(r, c + 1) == ND || inp(r - 1, c) == ND || inp(r + 1, c) == ND)
+            r1 = r;
+            yDiv /= 2;
+         }
+         if ((r2 > (NR - 1)) or (inp.at(r2, c) == ND))
+         {
+            r2 = r;
+            yDiv /= 2;
+         }
+         if ((c1 < 0) or (inp.at(r, c1) == ND))
+         {
+            c1 = c;
+            xDiv /= 2;
+         }
+         if ((c2 > (NC - 1)) or (inp.at(r, c2) == ND))
+         {
+            c2 = c;
+            xDiv /= 2;
+         }
+         double g = (-inp(r, c1) + inp(r, c2)) / xDiv; // Eqn 9
+         double h = (inp(r1, c) - inp(r2, c)) / yDiv;  // Eqn 10
+         return std::sqrt(g * g + h * h);              // Eqn 13
+      };
+
+      for (int r = 0; r < NR; r++)
+      {
+         for (int c = 0; c < NC; c++)
+         {
+            if (inp(r, c) == ND)
             {
                slope(r, c) = ND;
                continue;
             }
-            g           = (-inp(r, c - 1) + inp(r, c + 1)) / twoL; // Eqn 9
-            h           = (inp(r - 1, c) - inp(r + 1, c)) / twoL;  // Eqn 10
-            slope(r, c) = std::sqrt(g * g + h * h);                // Eqn 13
+            slope(r, c) = getSlope(r, c);
          }
-      }
-
-      // Left edge
-      for (size_t r = 1; r < (NR - 1); r++)
-      {
-         if (inp(r, 1) == ND || inp(r - 1, 0) == ND || inp(r + 1, 0) == ND)
-         {
-            slope(r, 0) = ND;
-            continue;
-         }
-         g           = inp(r, 1) / inp.cellsize;
-         h           = (inp(r - 1, 0) - inp(r + 1, 0)) / twoL;
-         slope(r, 0) = std::sqrt(g * g + h * h);
-      }
-
-      // Right edge
-      for (size_t r = 1; r < (NR - 1); r++)
-      {
-         if (inp(r, NC - 2) == ND || inp(r - 1, NC - 1) == ND || inp(r + 1, NC - 1) == ND)
-         {
-            slope(r, NC - 1) = ND;
-            continue;
-         }
-         g                = inp(r, NC - 2) / inp.cellsize;
-         h                = (inp(r - 1, NC - 1) - inp(r + 1, NC - 1)) / twoL;
-         slope(r, NC - 1) = std::sqrt(g * g + h * h);
-      }
-
-      // Top edge
-      for (size_t c = 1; c < (NC - 1); c++)
-      {
-         if (inp(0, c - 1) == ND || inp(0, c + 1) == ND || inp(1, c) == ND)
-         {
-            slope(0, c) = ND;
-            continue;
-         }
-         g           = (-inp(0, c - 1) + inp(0, c + 1)) / twoL;
-         h           = inp(1, c) / inp.cellsize;
-         slope(0, c) = std::sqrt(g * g + h * h);
-      }
-
-      // Bottom edge
-      for (size_t c = 1; c < (NC - 1); c++)
-      {
-         if (inp(NR - 1, c - 1) == ND || inp(NR - 1, c + 1) == ND || inp(NR - 2, c) == ND)
-         {
-            slope(NR - 1, c) = ND;
-            continue;
-         }
-         g                = (-inp(NR - 1, c - 1) + inp(NR - 1, c + 1)) / twoL;
-         h                = inp(NR - 2, c) / inp.cellsize;
-         slope(NR - 1, c) = std::sqrt(g * g + h * h);
-      }
-
-      // Top left
-      if (inp(0, 1) == ND || inp(1, 0) == ND)
-      {
-         g           = inp(0, 1) / inp.cellsize;
-         h           = inp(1, 0) / inp.cellsize;
-         slope(0, 0) = std::sqrt(g * g + h * h);
-      }
-      else
-      {
-         slope(0, 0) = ND;
-      }
-
-      // Top right
-      if (inp(0, NC - 2) == ND || inp(1, NC - 1) == ND)
-      {
-         g                = inp(0, NC - 2) / inp.cellsize;
-         h                = inp(1, NC - 1) / inp.cellsize;
-         slope(0, NC - 1) = std::sqrt(g * g + h * h);
-      }
-      else
-      {
-         slope(0, NC - 1) = ND;
-      }
-
-      // Bottom left
-      if (inp(NR - 1, 1) == ND || inp(NR - 2, 0) == ND)
-      {
-         g                = inp(NR - 1, 1) / inp.cellsize;
-         h                = inp(NR - 2, 0) / inp.cellsize;
-         slope(NR - 1, 0) = std::sqrt(g * g + h * h);
-      }
-      else
-      {
-         slope(NR - 1, 0) = ND;
-      }
-
-
-      // Bottom right
-      if (inp(NR - 1, NC - 2) == ND || inp(NR - 2, NC - 1) == ND)
-      {
-         g                     = inp(NR - 1, NC - 2) / inp.cellsize;
-         h                     = inp(NR - 2, NC - 1) / inp.cellsize;
-         slope(NR - 1, NC - 1) = std::sqrt(g * g + h * h);
-      }
-      else
-      {
-         slope(NR - 1, NC - 1) = ND;
       }
 
       return slope;

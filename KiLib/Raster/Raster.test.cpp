@@ -199,19 +199,24 @@ namespace KiLib
 
    TEST(Raster, ComputeSlopeZevenbergenThorne)
    {
-      std::set<std::pair<std::string, std::string>> files;
+      KiLib::Raster::SlopeMethod method = KiLib::Raster::SlopeMethod::ZevenbergenThorne;
 
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
+      auto                     cwd  = fs::current_path();
+      auto                     path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
+      std::vector<std::string> sizes{"5x5", "7x7"};
 
       fs::current_path(path);
 
-      std::string                base = (path / "5x5").string();
-      Raster                     dem(base + ".dem");
-      Raster                     slope_ref(base + "_slope.dem");
-      KiLib::Raster::SlopeMethod method    = KiLib::Raster::SlopeMethod::ZevenbergenThorne;
-      Raster                     slope_cal = dem.computeSlope(method);
-      compare_raster(slope_ref, slope_cal, 1e-300, 1e-100);
+      for (std::string size : sizes)
+      {
+         std::string base = (path / size);
+
+         Raster dem(base + ".dem");
+         Raster slope_ref(base + "_slope.dem");
+         Raster slope_cal = dem.computeSlope(method);
+
+         compare_raster(slope_ref, slope_cal, 1e-300, 1e-100);
+      }
    }
 
 } // namespace KiLib
