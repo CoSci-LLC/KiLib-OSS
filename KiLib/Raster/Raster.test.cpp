@@ -213,7 +213,7 @@ namespace KiLib
 
          Raster dem(base + ".dem");
          Raster slope_ref(base + "_slope.dem");
-         Raster slope_cal = dem.computeSlope(method);
+         Raster slope_cal = dem.ComputeSlope(method);
 
          compare_raster(slope_ref, slope_cal, 1e-300, 1e-100);
       }

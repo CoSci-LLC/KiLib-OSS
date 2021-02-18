@@ -174,17 +174,17 @@ namespace KiLib
 
    static const auto EnumToSlope =
       std::map<KiLib::Raster::SlopeMethod, std::function<KiLib::Raster(const KiLib::Raster &)>>{
-         {KiLib::Raster::SlopeMethod::ZevenbergenThorne, KiLib::Raster::computeSlopeZevenbergenThorne},
+         {KiLib::Raster::SlopeMethod::ZevenbergenThorne, KiLib::Raster::ComputeSlopeZevenbergenThorne},
       };
 
-   KiLib::Raster KiLib::Raster::computeSlope(KiLib::Raster::SlopeMethod method) const
+   KiLib::Raster KiLib::Raster::ComputeSlope(KiLib::Raster::SlopeMethod method) const
    {
       return EnumToSlope.at(method)(*this);
    }
 
    // Based on Zevenbergen, L.W. and Thorne, C.R. (1987), Quantitative analysis of land surface topography. Earth Surf.
    // Process. Landforms, 12: 47-56. https://doi.org/10.1002/esp.3290120107
-   KiLib::Raster KiLib::Raster::computeSlopeZevenbergenThorne(const KiLib::Raster &inp)
+   KiLib::Raster KiLib::Raster::ComputeSlopeZevenbergenThorne(const KiLib::Raster &inp)
    {
       KiLib::Raster slope = KiLib::Raster::zerosLike(inp);
 

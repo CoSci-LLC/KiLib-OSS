@@ -217,8 +217,8 @@ namespace KiLib
          ZevenbergenThorne,
       };
 
-      KiLib::Raster        computeSlope(KiLib::Raster::SlopeMethod method) const;
-      static KiLib::Raster computeSlopeZevenbergenThorne(const KiLib::Raster &inp);
+      KiLib::Raster        ComputeSlope(KiLib::Raster::SlopeMethod method) const;
+      static KiLib::Raster ComputeSlopeZevenbergenThorne(const KiLib::Raster &inp);
 
    private:
       void fromDEM(const std::string path);
