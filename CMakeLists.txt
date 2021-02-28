@@ -20,10 +20,9 @@ set_property(TARGET ${projectName} PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 # shared and static libraries built from the same object files
 add_library(${projectNameShared} SHARED $<TARGET_OBJECTS:${projectName}>)
-
+target_link_libraries(${projectNameShared} PUBLIC ${projectName})
 
 add_library(${projectNameStatic} STATIC $<TARGET_OBJECTS:${projectName}>)
-set_target_properties(${projectNameStatic} PROPERTIES OUTPUT_NAME "kilib")
 target_link_libraries(${projectNameStatic} ${projectName})
 
 
@@ -40,9 +39,6 @@ endif()
 if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
-
-
-
 
 # If we are debugging, add debug statements to every project
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -82,19 +78,7 @@ target_include_directories(${projectName}
         ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-target_include_directories(${projectNameStatic}
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PRIVATE
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
-)
 
-target_include_directories(${projectNameShared}
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PRIVATE
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
-)
 
 # Define KILIB_RESOURCE_PATH
 target_compile_definitions(${projectName} PUBLIC
