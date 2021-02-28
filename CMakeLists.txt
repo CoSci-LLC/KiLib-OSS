@@ -23,7 +23,7 @@ add_library(${projectNameShared} SHARED $<TARGET_OBJECTS:${projectName}>)
 target_link_libraries(${projectNameShared} PUBLIC ${projectName})
 
 add_library(${projectNameStatic} STATIC $<TARGET_OBJECTS:${projectName}>)
-target_link_libraries(${projectNameStatic} ${projectName})
+target_link_libraries(${projectNameStatic} PUBLIC ${projectName})
 
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -74,11 +74,14 @@ add_subdirectory(KiLib)
 target_include_directories(${projectName}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PRIVATE
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
+        "$<INSTALL_INTERFACE:include>"
 )
 
-
+install(TARGETS ${projectName} tiff spdlog
+        EXPORT KiLibOSSTargets
+        INCLUDES DESTINATION include
+)
+install(FILES KiLib/KiLib.hpp DESTINATION include/KiLib)
 
 # Define KILIB_RESOURCE_PATH
 target_compile_definitions(${projectName} PUBLIC
@@ -89,7 +92,25 @@ target_compile_definitions(${projectName} PUBLIC
 message("Resource install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources")
 install(DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/resources
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/${projectName}
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/KiLib
+)
+
+install(EXPORT KiLibOSSTargets
+        FILE KiLibOSSTargets.cmake
+        NAMESPACE KiLib::
+        DESTINATION lib/cmake
+)
+
+install(TARGETS ${projectNameStatic} 
+        EXPORT KiLibOSSTargets
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib  
+)
+
+install(TARGETS ${projectNameShared} 
+        EXPORT KiLibOSSTargets
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
 )
 
 # Define compiler options for each compiler
