@@ -3,15 +3,29 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Set the project and test app name
-set(projectName KiLib)
+set(projectName KiLibOSSObjLib)
+set(projectNameStatic KiLibOSS_static)
+set(projectNameShared KiLibOSS_shared)
 set(projectTestName ${projectName}.test)
 
 # Create the project name and version
 project(${projectName} VERSION 2.4.4 LANGUAGES CXX)
 
 
-# Add KiLib Library
-add_library(${projectName} STATIC "") 
+# Add KiLib Object Library
+add_library(${projectName} OBJECT "") 
+
+# shared libraries need PIC
+set_property(TARGET ${projectName} PROPERTY POSITION_INDEPENDENT_CODE 1)
+
+# shared and static libraries built from the same object files
+add_library(${projectNameShared} SHARED $<TARGET_OBJECTS:${projectName}>)
+
+
+add_library(${projectNameStatic} STATIC $<TARGET_OBJECTS:${projectName}>)
+set_target_properties(${projectNameStatic} PROPERTIES OUTPUT_NAME "kilib")
+target_link_libraries(${projectNameStatic} ${projectName})
+
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -68,6 +82,20 @@ target_include_directories(${projectName}
         ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+target_include_directories(${projectNameStatic}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    PRIVATE
+        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+target_include_directories(${projectNameShared}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    PRIVATE
+        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
+)
+
 # Define KILIB_RESOURCE_PATH
 target_compile_definitions(${projectName} PUBLIC
     KILIB_RESOURCE_PATH="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources"
@@ -85,12 +113,13 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
     message(STATUS "Clang detected, adding compile flags")
     target_compile_options(${projectName} PRIVATE -Wall -Werror)
+    
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
     message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE -Wall -Werror)
+    target_compile_options(${projectName} PRIVATE -Wall -Werror )
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -98,6 +127,3 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(STATUS "msvc detected, adding compile flags")
     target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()
-
-# Git commit hook installation
-include(CMake/GitPreCommitHook.cmake.in)

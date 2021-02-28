@@ -13,7 +13,7 @@ FetchContent_Populate(
   QUIET
   GIT_REPOSITORY  https://github.com/jbeder/yaml-cpp
   GIT_TAG         yaml-cpp-0.6.3
-  SOURCE_DIR      ${CMAKE_SOURCE_DIR}/lib/yamlcpp
+  SOURCE_DIR      yamlcpp_proj
 )
 
 # Disable yaml-cpp tests
@@ -23,7 +23,7 @@ set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "disable yaml contrib")
 
 
 # Add yaml-cpp to this project
-add_subdirectory(${yamlcpp_proj_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/lib/yamlcpp/build)
+add_subdirectory(${yamlcpp_proj_SOURCE_DIR} yamlcpp_proj/build)
 
 # Include the headers into our project
 include_directories(${yamlcpp_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)

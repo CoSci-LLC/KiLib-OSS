@@ -72,7 +72,7 @@ namespace KiLib
       std::string toString() const
       {
          return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + "," + std::to_string(this->z) + ")";
-      };
+      }
 
       static Vec3   cross(const Vec3 &a, const Vec3 &b);
       static Vec3   normalise(const Vec3 &a);
