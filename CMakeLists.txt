@@ -3,13 +3,11 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Set the project and test app name
-set(projectName KiLibOSSObjLib)
-set(projectNameStatic KiLibOSS_static)
-set(projectNameShared KiLibOSS_shared)
-set(projectTestName ${projectName}.test)
+set(projectName KiLibObjLib)
+set(projectTestName KiLib.test)
 
 # Create the project name and version
-project(${projectName} VERSION 2.4.4 LANGUAGES CXX)
+project(KiLib VERSION 2.4.4 LANGUAGES CXX)
 
 
 # Add KiLib Object Library
@@ -19,14 +17,8 @@ add_library(${projectName} OBJECT "")
 set_property(TARGET ${projectName} PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 # shared and static libraries built from the same object files
-add_library(${projectNameShared} SHARED $<TARGET_OBJECTS:${projectName}>)
-target_link_libraries(${projectNameShared} PUBLIC ${projectName})
-
-add_library(${projectNameStatic} STATIC $<TARGET_OBJECTS:${projectName}>)
-target_link_libraries(${projectNameStatic} PUBLIC ${projectName})
-
-
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+add_library(KiLib STATIC $<TARGET_OBJECTS:${projectName}>)
+target_link_libraries(KiLib PUBLIC ${projectName})
 
 # Ensure that the install directory is all setup properly
 message("Install Directory: ${CMAKE_INSTALL_INCLUDEDIR}")
@@ -78,10 +70,9 @@ target_include_directories(${projectName}
 )
 
 install(TARGETS ${projectName} tiff spdlog
-        EXPORT KiLibOSSTargets
+        EXPORT KiLibTargets
         INCLUDES DESTINATION include
 )
-install(FILES KiLib/KiLib.hpp DESTINATION include/KiLib)
 
 # Define KILIB_RESOURCE_PATH
 target_compile_definitions(${projectName} PUBLIC
@@ -95,23 +86,18 @@ install(DIRECTORY
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/KiLib
 )
 
-install(EXPORT KiLibOSSTargets
-        FILE KiLibOSSTargets.cmake
+install(EXPORT KiLibTargets
+        FILE KiLibTargets.cmake
         NAMESPACE KiLib::
         DESTINATION lib/cmake
 )
 
-install(TARGETS ${projectNameStatic} 
-        EXPORT KiLibOSSTargets
+install(TARGETS KiLib 
+        EXPORT KiLibTargets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib  
 )
 
-install(TARGETS ${projectNameShared} 
-        EXPORT KiLibOSSTargets
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-)
 
 # Define compiler options for each compiler
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

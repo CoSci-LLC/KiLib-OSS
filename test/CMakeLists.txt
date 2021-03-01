@@ -37,7 +37,7 @@ target_compile_definitions(${projectTestName} PUBLIC
 )
 
 # Link to the KiLib library
-target_link_libraries(${projectTestName} gtest_main KiLibOSS_static)
+target_link_libraries(${projectTestName} gtest_main KiLib)
 
 target_include_directories(${projectTestName}
 PUBLIC
