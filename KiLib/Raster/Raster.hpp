@@ -90,6 +90,8 @@ namespace KiLib
        */
       size_t getNearestCell(const KiLib::Vec3 &pos);
 
+      KiLib::Vec3 getCellPos(size_t ind);
+
       /**
        * @brief Returns distance between pos and nearest boundary point
        *

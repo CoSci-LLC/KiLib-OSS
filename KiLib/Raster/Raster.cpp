@@ -172,6 +172,17 @@ namespace KiLib
       return r * this->nCols + c;
    }
 
+   KiLib::Vec3 Raster::getCellPos(size_t ind)
+   {
+      size_t r = this->nCols / ind;
+      size_t c = this->nCols % ind;
+
+      KiLib::Vec3 pos = KiLib::Vec3(this->xllcorner + c * this->cellsize, this->yllcorner + r * this->cellsize, 0);
+      pos.z           = this->getInterpBilinear(pos);
+
+      return pos;
+   }
+
    static const auto EnumToSlope =
       std::map<KiLib::Raster::SlopeMethod, std::function<KiLib::Raster(const KiLib::Raster &)>>{
          {KiLib::Raster::SlopeMethod::ZevenbergenThorne, KiLib::Raster::ComputeSlopeZevenbergenThorne},
