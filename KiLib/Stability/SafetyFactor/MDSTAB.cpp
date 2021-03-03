@@ -30,7 +30,7 @@ MDSTAB::MDSTAB(){};
 
 double MDSTAB::ComputeSF(
    double phi, double m, double z, double Crl, double Crb, double theta, double delta, double gamma_s, double w,
-   double l, double gamma_w) const
+   double l, double gamma_w, bool calcFrd) const
 {
    const double stheta = std::sin(theta);
    const double ctheta = std::cos(theta);
@@ -69,10 +69,13 @@ double MDSTAB::ComputeSF(
    const double Fnu = 0.5 * Ka * pow(z, 2.0) * (gamma_s - gamma_w * pow(m, 2.0)) * w * sin(delta - theta);
 
    // Slope-parallel passive force on the downslope margin (Milledge Equation 12)
-   const double Frd = 0.5 * Kp * pow(z, 2.0) * (gamma_s - gamma_w * pow(m, 2.0)) * w * cos(delta - theta);
+   double Frd = 0.0;
+   if (calcFrd)
+   {
+      Frd = 0.5 * Kp * pow(z, 2.0) * (gamma_s - gamma_w * pow(m, 2.0)) * w * cos(delta - theta);
+   }
 
    // THIS IS IN THE MATLAB CODE. MAY NEED AN OPTION HERE TO NOT SET IT TO ZERO AND USE EQUATION ABOVE. TBD
-   // const double Frd = 0.0;
 
    // Slope-normal passive force on the downslope margin (Milledge Equation 13)
    const double Fnd = 0.5 * Kp * pow(z, 2.0) * (gamma_s - gamma_w * pow(m, 2.0)) * w * sin(delta - theta);
