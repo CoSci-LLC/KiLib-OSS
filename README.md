@@ -14,9 +14,16 @@ All dependencies required for this library will be download via the CMake build 
 $ mkdir build
 $ cd build 
 $ cmake .. -DCMAKE_INSTALL_PREFIX=<install location>
-$ make
-$ make install
+$ cmake --build .
+$ cmake --install .
 ```
+
+If you wish to build using Ninja, change the generator that `cmake` uses by:
+
+```bash
+cmake -G Ninja ...<continue your other settings>
+```
+
 
 ### Windows
 Visual Studio 2019 is the preferred method for building KiLib on Windows. CMake is also required.
@@ -79,8 +86,8 @@ To run KiLib tests, follow these commands:
 $ mkdir build
 $ cd build 
 $ cmake .. -DCMAKE_INSTALL_PREFIX=<install location> -DCMAKE_BUILD_TYPE=Debug
-$ make
-$ make install
+$ cmake --build .
+$ cmake --install .
 $ ctest
 ```
 

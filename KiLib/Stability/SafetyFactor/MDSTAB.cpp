@@ -75,8 +75,6 @@ double MDSTAB::ComputeSF(
       Frd = 0.5 * Kp * pow(z, 2.0) * (gamma_s - gamma_w * pow(m, 2.0)) * w * cos(delta - theta);
    }
 
-   // THIS IS IN THE MATLAB CODE. MAY NEED AN OPTION HERE TO NOT SET IT TO ZERO AND USE EQUATION ABOVE. TBD
-
    // Slope-normal passive force on the downslope margin (Milledge Equation 13)
    const double Fnd = 0.5 * Kp * pow(z, 2.0) * (gamma_s - gamma_w * pow(m, 2.0)) * w * sin(delta - theta);
 
