@@ -34,7 +34,7 @@ namespace KiLib
             MDSTAB();
             double ComputeSF(
                double phi, double m, double z, double Crl, double Crb, double theta, double delta, double gamma_s,
-               double w, double l, double gamma_w) const;
+               double w, double l, double gamma_w, bool calcFrd) const;
             using SafetyFactor::ComputeSF;
          };
       } // namespace SafetyFactor

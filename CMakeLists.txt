@@ -3,17 +3,22 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Set the project and test app name
-set(projectName KiLib)
-set(projectTestName ${projectName}.test)
+set(projectName KiLibObjLib)
+set(projectTestName KiLib.test)
 
 # Create the project name and version
-project(${projectName} VERSION 2.4.4 LANGUAGES CXX)
+project(KiLib VERSION 2.5.0 LANGUAGES CXX)
 
 
-# Add KiLib Library
-add_library(${projectName} STATIC "") 
+# Add KiLib Object Library
+add_library(${projectName} OBJECT "") 
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# shared libraries need PIC
+set_property(TARGET ${projectName} PROPERTY POSITION_INDEPENDENT_CODE 1)
+
+# shared and static libraries built from the same object files
+add_library(KiLib STATIC $<TARGET_OBJECTS:${projectName}>)
+target_link_libraries(KiLib PUBLIC ${projectName})
 
 # Ensure that the install directory is all setup properly
 message("Install Directory: ${CMAKE_INSTALL_INCLUDEDIR}")
@@ -26,9 +31,6 @@ endif()
 if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
-
-
-
 
 # If we are debugging, add debug statements to every project
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -64,8 +66,12 @@ add_subdirectory(KiLib)
 target_include_directories(${projectName}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PRIVATE
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
+        "$<INSTALL_INTERFACE:include>"
+)
+
+install(TARGETS ${projectName} tiff spdlog
+        EXPORT KiLibTargets
+        INCLUDES DESTINATION include
 )
 
 # Define KILIB_RESOURCE_PATH
@@ -77,20 +83,34 @@ target_compile_definitions(${projectName} PUBLIC
 message("Resource install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources")
 install(DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/resources
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/${projectName}
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/KiLib
 )
+
+install(EXPORT KiLibTargets
+        FILE KiLibTargets.cmake
+        NAMESPACE KiLib::
+        DESTINATION lib/cmake
+)
+
+install(TARGETS KiLib 
+        EXPORT KiLibTargets
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib  
+)
+
 
 # Define compiler options for each compiler
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
     message(STATUS "Clang detected, adding compile flags")
     target_compile_options(${projectName} PRIVATE -Wall -Werror)
+    
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
     message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE -Wall -Werror)
+    target_compile_options(${projectName} PRIVATE -Wall -Werror )
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -98,6 +118,3 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(STATUS "msvc detected, adding compile flags")
     target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()
-
-# Git commit hook installation
-include(CMake/GitPreCommitHook.cmake.in)

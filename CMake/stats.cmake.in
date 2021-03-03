@@ -15,7 +15,7 @@ FetchContent_Populate(
   QUIET
   GIT_REPOSITORY  https://github.com/kthohr/stats
   GIT_TAG         v3.1.1
-  SOURCE_DIR      ${CMAKE_SOURCE_DIR}/lib/stats
+  SOURCE_DIR      stats_proj
 )
  
 # Stats is special because it doesn't include a cmake project.
