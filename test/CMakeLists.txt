@@ -6,7 +6,7 @@ include(CTest)
 include(GoogleTest)
 
 # Setup the test framework
-include(CMake/GoogleTestSetup.cmake.in)
+include(./CMake/GoogleTestSetup.cmake.in)
 
 # Add the test exe
 add_executable(${projectTestName}
