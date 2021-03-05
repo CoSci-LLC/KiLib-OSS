@@ -22,16 +22,13 @@
 
 #include <KiLib/Hydrology/BaseHydrology.hpp>
 
-namespace KiLib
+namespace KiLib::Hydrology
 {
-   namespace Hydrology
+   class TopModel : public BaseHydrology
    {
-      class TopModel : public BaseHydrology
-      {
-      public:
-         TopModel();
+   public:
+      TopModel();
 
-         double ComputeWetness(double rainfall, double ks, double z, double slope, double twi) const;
-      };
-   } // namespace Hydrology
-} // namespace KiLib
+      double ComputeWetness(double rainfall, double ks, double z, double slope, double twi) const;
+   };
+} // namespace KiLib::Hydrology

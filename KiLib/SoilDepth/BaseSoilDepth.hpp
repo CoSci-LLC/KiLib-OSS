@@ -22,16 +22,13 @@
 
 #include <KiLib/Exceptions/NotImplemented.hpp>
 
-namespace KiLib
+namespace KiLib::SoilDepth
 {
-   namespace SoilDepth
+   class BaseSoilDepth
    {
-      class BaseSoilDepth
-      {
-      public:
-         BaseSoilDepth(){};
+   public:
+      BaseSoilDepth(){};
 
-         double ComputeDepth() const;
-      };
-   } // namespace SoilDepth
-} // namespace KiLib
+      double ComputeDepth() const;
+   };
+} // namespace KiLib::SoilDepth
