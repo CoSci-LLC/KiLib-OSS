@@ -28,13 +28,13 @@ namespace KiLib
    namespace fs = std::filesystem;
    std::unordered_map<std::string, const SoilType> SoilType::soilTypes;
 
-   double optionalParam(YAML::Node node, double alternate)
+   double optionalParam(const YAML::Node &node, double alternate)
    {
       return node.IsDefined() ? node.as<double>() : alternate;
    }
 
    // Loads soiltype from given path, returning success
-   bool SoilType::loadFromFile(std::string path)
+   bool SoilType::loadFromFile(const std::string &path)
    {
       if (fs::exists(path) == false)
       {
@@ -107,7 +107,7 @@ namespace KiLib
    }
 
    // Returns a reference to the soiltype of given name OR at given path
-   const SoilType &SoilType::get(std::string nameOrPath)
+   const SoilType &SoilType::get(const std::string &nameOrPath)
    {
       // Check if its in under current name or a KiLib path
       SPDLOG_DEBUG("KiLib Resource Path:" + std::string(KILIB_RESOURCE_PATH));

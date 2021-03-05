@@ -36,7 +36,7 @@ namespace KiLib
       static std::vector<double>          rnorm(int, std::vector<double>, double, std::mt19937_64 &);
       static std::vector<double>          rnorm(int, double, double, std::mt19937_64 &);
       static std::vector<double>          rtnorml(int, double, double, double, std::mt19937_64 &);
-      static std::vector<double>          pgamma(std::vector<double>, double);
+      static std::vector<double>          pgamma(const std::vector<double> &, double);
       template <typename T> static double mean(std::vector<T>);
       template <typename T> static double sd(std::vector<T>);
 

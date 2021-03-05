@@ -37,7 +37,7 @@ namespace KiLib
    }
 
    // Load data in Raster format from specified path
-   Raster::Raster(std::string path)
+   Raster::Raster(const std::string &path)
    {
       this->constructed = false;
 
@@ -132,7 +132,7 @@ namespace KiLib
       }
    }
 
-   void Raster::writeToFile(const std::string path) const
+   void Raster::writeToFile(const std::string &path) const
    {
 
       auto ext = fs::path(path).extension();

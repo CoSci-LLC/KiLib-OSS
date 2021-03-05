@@ -61,7 +61,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          std::string base = (path / fs::path(it.path().stem().string())).string();
          files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + ".dem"));
@@ -82,7 +82,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          if (!it.is_regular_file() && it.path().extension() != ".tif")
             continue;
@@ -113,7 +113,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          if (!it.is_regular_file() && it.path().extension() != ".tif")
             continue;
@@ -144,7 +144,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          if (!it.is_regular_file() && it.path().extension() != ".tif")
             continue;
@@ -175,7 +175,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          if (!it.is_regular_file() && it.path().extension() != ".tif")
             continue;
@@ -207,7 +207,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (std::string size : sizes)
+      for (const std::string &size : sizes)
       {
          std::string base = (path / size).string();
 

@@ -72,7 +72,7 @@ std::vector<double> Random::rtnorml(int count, double mean, double sd, double a,
    return out;
 }
 
-std::vector<double> Random::pgamma(std::vector<double> x, double shape)
+std::vector<double> Random::pgamma(const std::vector<double> &x, double shape)
 {
    return stats::pgamma(x, shape, 1);
 }

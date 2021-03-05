@@ -37,7 +37,7 @@ namespace KiLib
    private:
       static std::unordered_map<std::string, const SoilType> soilTypes;
 
-      static bool loadFromFile(std::string path);
+      static bool loadFromFile(const std::string &path);
 
    public:
       // Parameters for a uniform distribution of values
@@ -87,7 +87,7 @@ namespace KiLib
        * @param nameOrPath Name of included KiLib soil type, or path to custom soil type file
        * @return const SoilType&
        */
-      static const SoilType &get(std::string nameOrPath);
+      static const SoilType &get(const std::string &nameOrPath);
    };
 
 } // namespace KiLib
