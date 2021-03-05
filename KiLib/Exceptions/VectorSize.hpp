@@ -31,7 +31,7 @@ public:
       this->message = message;
    }
 
-   virtual const char *what() const throw()
+   const char *what() const throw() override
    {
       return message;
    }
