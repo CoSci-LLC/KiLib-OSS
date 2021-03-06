@@ -20,11 +20,15 @@
 
 #pragma once
 
+#include <KiLib/Soils/Soils.hpp>
+#include <KiLib/Utils/AbstractFactory.hpp>
+#include <KiLib/Utils/enum.hpp>
 #include <string>
-
 
 namespace KiLib::Soils
 {
+   BETTER_ENUM(SoilID, int, ch, cl, gc, gm, gp, gw, mh, ml, oh, ol, sc, sm, sp, sw)
+
    // Parameters for a uniform distribution of values
    struct ValueUniform
    {
@@ -81,6 +85,8 @@ namespace KiLib::Soils
    class Soil
    {
    public:
+      static const AbsFac<SoilID, Soil> factory;
+
       std::string name;
       std::string longname;
 
