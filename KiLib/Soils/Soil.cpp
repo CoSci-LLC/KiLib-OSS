@@ -21,6 +21,7 @@
 #include <KiLib/Soils/Soils.hpp>
 
 using namespace KiLib::Soils;
+
 const AbsFac<SoilID, Soil> Soil::factory = {{
    {SoilID::ch, []() -> Soil { return Soils::ch(); }},
    {SoilID::cl, []() -> Soil { return Soils::cl(); }},
@@ -37,3 +38,111 @@ const AbsFac<SoilID, Soil> Soil::factory = {{
    {SoilID::sp, []() -> Soil { return Soils::sp(); }},
    {SoilID::sw, []() -> Soil { return Soils::sw(); }},
 }};
+
+
+std::string Soil::GetName() const
+{
+   return this->name;
+}
+std::string Soil::GetLongName() const
+{
+   return this->longname;
+}
+
+double Soil::GetPorosity() const
+{
+   return this->porosity;
+}
+double Soil::GetSaturatedWaterContent() const
+{
+   return this->saturatedWaterContent;
+}
+double Soil::GetResidualWaterContent() const
+{
+   return this->residualWaterContent;
+}
+double Soil::GetFieldCapacity() const
+{
+   return this->fieldCapacity;
+}
+double Soil::GetInitWaterContent() const
+{
+   return this->initWaterContent;
+}
+double Soil::GetWaterExchangeTerm() const
+{
+   return this->waterExchangeTerm;
+}
+double Soil::GetVgWetAlpha1() const
+{
+   return this->vgWetAlpha1;
+}
+double Soil::GetVgWetN1() const
+{
+   return this->vgWetN1;
+}
+double Soil::GetPoreFracMatrix() const
+{
+   return this->poreFracMatrix;
+}
+double Soil::GetPoreFracFractures() const
+{
+   return this->poreFracFractures;
+}
+double Soil::GetMaxTensileStrain() const
+{
+   return this->maxTensileStrain;
+}
+
+ValueDistribution Soil::GetFrictionAngle() const
+{
+   return this->frictionAngle;
+}
+
+ValueDistribution Soil::GetDensityDry() const
+{
+   return this->densityDry;
+}
+
+ValueDistribution Soil::GetCohesion() const
+{
+   return this->cohesion;
+}
+
+ValueDistribution Soil::GetConductivity() const
+{
+   return this->conductivity;
+}
+
+
+double ValueUniform::GetMin() const
+{
+   return this->min;
+}
+double ValueUniform::GetMax() const
+{
+   return this->max;
+}
+
+// Parameters for a normal distribution of values
+double ValueNormal::GetMean() const
+{
+   return this->mean;
+}
+double ValueNormal::GetStdDev() const
+{
+   return this->stdDev;
+}
+
+ValueUniform ValueDistribution::GetUniformPrimula() const
+{
+   return this->uniformPrimula;
+}
+ValueUniform ValueDistribution::GetUniform() const
+{
+   return this->uniform;
+}
+ValueNormal ValueDistribution::GetNormal() const
+{
+   return this->normal;
+}

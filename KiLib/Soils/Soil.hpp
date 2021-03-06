@@ -34,15 +34,8 @@ namespace KiLib::Soils
    {
       double min;
       double max;
-
-      double GetMin() const
-      {
-         return this->min;
-      }
-      double GetMax() const
-      {
-         return this->max;
-      }
+      double GetMin() const;
+      double GetMax() const;
    };
 
    // Parameters for a normal distribution of values
@@ -50,14 +43,8 @@ namespace KiLib::Soils
    {
       double mean;
       double stdDev;
-      double GetMean() const
-      {
-         return this->mean;
-      }
-      double GetStdDev() const
-      {
-         return this->stdDev;
-      }
+      double GetMean() const;
+      double GetStdDev() const;
    };
 
    // Optional distribution parameters struct
@@ -67,19 +54,9 @@ namespace KiLib::Soils
       ValueUniform uniformPrimula;
       ValueUniform uniform;
       ValueNormal  normal;
-
-      ValueUniform GetUniformPrimula() const
-      {
-         return this->uniformPrimula;
-      }
-      ValueUniform GetUniform() const
-      {
-         return this->uniform;
-      }
-      ValueNormal GetNormal() const
-      {
-         return this->normal;
-      }
+      ValueUniform GetUniformPrimula() const;
+      ValueUniform GetUniform() const;
+      ValueNormal  GetNormal() const;
    };
 
    class Soil
@@ -107,78 +84,24 @@ namespace KiLib::Soils
       ValueDistribution cohesion;
       ValueDistribution conductivity;
 
-      std::string GetName() const
-      {
-         return this->name;
-      }
-      std::string GetLongName() const
-      {
-         return this->longname;
-      }
+      std::string GetName() const;
+      std::string GetLongName() const;
 
-      double GetPorosity() const
-      {
-         return this->porosity;
-      }
-      double GetSaturatedWaterContent() const
-      {
-         return this->saturatedWaterContent;
-      }
-      double GetResidualWaterContent() const
-      {
-         return this->residualWaterContent;
-      }
-      double GetFieldCapacity() const
-      {
-         return this->fieldCapacity;
-      }
-      double GetInitWaterContent() const
-      {
-         return this->initWaterContent;
-      }
-      double GetWaterExchangeTerm() const
-      {
-         return this->waterExchangeTerm;
-      }
-      double GetVgWetAlpha1() const
-      {
-         return this->vgWetAlpha1;
-      }
-      double GetVgWetN1() const
-      {
-         return this->vgWetN1;
-      }
-      double GetPoreFracMatrix() const
-      {
-         return this->poreFracMatrix;
-      }
-      double GetPoreFracFractures() const
-      {
-         return this->poreFracFractures;
-      }
-      double GetMaxTensileStrain() const
-      {
-         return this->maxTensileStrain;
-      }
+      double GetPorosity() const;
+      double GetSaturatedWaterContent() const;
+      double GetResidualWaterContent() const;
+      double GetFieldCapacity() const;
+      double GetInitWaterContent() const;
+      double GetWaterExchangeTerm() const;
+      double GetVgWetAlpha1() const;
+      double GetVgWetN1() const;
+      double GetPoreFracMatrix() const;
+      double GetPoreFracFractures() const;
+      double GetMaxTensileStrain() const;
 
-      ValueDistribution GetFrictionAngle() const
-      {
-         return this->frictionAngle;
-      }
-
-      ValueDistribution GetDensityDry() const
-      {
-         return this->densityDry;
-      }
-
-      ValueDistribution GetCohesion() const
-      {
-         return this->cohesion;
-      }
-
-      ValueDistribution GetConductivity() const
-      {
-         return this->conductivity;
-      }
+      ValueDistribution GetFrictionAngle() const;
+      ValueDistribution GetDensityDry() const;
+      ValueDistribution GetCohesion() const;
+      ValueDistribution GetConductivity() const;
    };
 } // namespace KiLib::Soils
