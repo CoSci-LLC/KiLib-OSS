@@ -5,22 +5,22 @@
 #include <typeinfo>
 
 
-template <typename E, class B> class AbsFac
+template <typename Enum, class Base> class AbsFac
 {
 public:
-   const std::map<E, std::function<B()>> m;
+   const std::map<Enum, std::function<Base()>> map;
 
-   AbsFac(std::map<E, std::function<B()>> m) : m(m)
+   AbsFac(std::map<Enum, std::function<Base()>> map) : map(map)
    {
    }
 
-   B get(E o) const
+   Base get(Enum val) const
    {
-      return this->m.at(o)();
+      return this->map.at(val)();
    }
 
-   B get(std::string o) const
+   Base get(std::string val) const
    {
-      return this->m.at(E::_from_string(o.c_str()))();
+      return this->map.at(Enum::_from_string(val.c_str()))();
    }
 };
