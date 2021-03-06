@@ -101,6 +101,60 @@ namespace KiLib::Soils
       ValueDistribution cohesion;
       ValueDistribution conductivity;
 
+      std::string GetName() const
+      {
+         return this->name;
+      }
+      std::string GetLongName() const
+      {
+         return this->longname;
+      }
+
+      double GetPorosity() const
+      {
+         return this->porosity;
+      }
+      double GetSaturatedWaterContent() const
+      {
+         return this->saturatedWaterContent;
+      }
+      double GetResidualWaterContent() const
+      {
+         return this->residualWaterContent;
+      }
+      double GetFieldCapacity() const
+      {
+         return this->fieldCapacity;
+      }
+      double GetInitWaterContent() const
+      {
+         return this->initWaterContent;
+      }
+      double GetWaterExchangeTerm() const
+      {
+         return this->waterExchangeTerm;
+      }
+      double GetVgWetAlpha1() const
+      {
+         return this->vgWetAlpha1;
+      }
+      double GetVgWetN1() const
+      {
+         return this->vgWetN1;
+      }
+      double GetPoreFracMatrix() const
+      {
+         return this->poreFracMatrix;
+      }
+      double GetPoreFracFractures() const
+      {
+         return this->poreFracFractures;
+      }
+      double GetMaxTensileStrain() const
+      {
+         return this->maxTensileStrain;
+      }
+
       ValueDistribution GetFrictionAngle() const
       {
          return this->frictionAngle;

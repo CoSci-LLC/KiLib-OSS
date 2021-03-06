@@ -30,9 +30,14 @@ namespace KiLib
       KiLib::Soils::Soil a = KiLib::Soils::ch();
       ASSERT_EQ(a.GetConductivity().GetUniformPrimula().GetMax(), 1e-06);
       ASSERT_EQ(a.conductivity.uniformPrimula.max, 1e-06);
+      ASSERT_EQ(a.GetLongName(), a.longname);
+      ASSERT_EQ(a.GetLongName(), "Clay of high plasticity, fat clay");
 
       KiLib::Soils::Soil b = KiLib::Soils::ml();
       ASSERT_EQ(b.GetFrictionAngle().GetNormal().GetMean(), 33 * M_PI / 180.0);
       ASSERT_EQ(b.frictionAngle.normal.mean, 33 * M_PI / 180.0);
+      ASSERT_EQ(b.GetLongName(), b.longname);
+      ASSERT_EQ(b.GetLongName(), "Silt");
+      ASSERT_NE(b.GetLongName(), "SDJKFLJSdKLFJSDFKL");
    }
 } // namespace KiLib
