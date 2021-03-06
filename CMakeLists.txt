@@ -74,18 +74,6 @@ install(TARGETS ${projectName} tiff spdlog
         INCLUDES DESTINATION include
 )
 
-# Define KILIB_RESOURCE_PATH
-target_compile_definitions(${projectName} PUBLIC
-    KILIB_RESOURCE_PATH="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources"
-)
-
-# Install soil resources
-message("Resource install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources")
-install(DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/KiLib
-)
-
 install(EXPORT KiLibTargets
         FILE KiLibTargets.cmake
         NAMESPACE KiLib::

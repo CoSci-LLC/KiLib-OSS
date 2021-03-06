@@ -18,7 +18,7 @@
  */
 
 
-#include <KiLib/Soils/SoilType.hpp>
+#include <KiLib/KiLib.hpp>
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
 
@@ -27,6 +27,12 @@ namespace KiLib
 {
    TEST(Soil, getTest)
    {
-      KiLib::SoilType::get("ch");
+      KiLib::Soils::Soil a = KiLib::Soils::ch();
+      ASSERT_EQ(a.GetConductivity().GetUniformPrimula().GetMax(), 1e-06);
+      ASSERT_EQ(a.conductivity.uniformPrimula.max, 1e-06);
+
+      KiLib::Soils::Soil b = KiLib::Soils::ml();
+      ASSERT_EQ(b.GetFrictionAngle().GetNormal().GetMean(), 33 * M_PI / 180.0);
+      ASSERT_EQ(b.frictionAngle.normal.mean, 33 * M_PI / 180.0);
    }
 } // namespace KiLib

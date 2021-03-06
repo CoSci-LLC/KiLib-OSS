@@ -47,7 +47,7 @@
 #include <KiLib/Raster/Raster.hpp>
 
 // Soils
-#include <KiLib/Soils/SoilType.hpp>
+#include <KiLib/Soils/Soils.hpp>
 
 // Utils
 #include <KiLib/Utils/CSVReader.hpp>
