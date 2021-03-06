@@ -22,12 +22,14 @@
 
 #include <KiLib/Soils/Soil.hpp>
 #include <assert.h>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <filesystem>
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <unordered_map>
+
 
 namespace KiLib::Soils
 {

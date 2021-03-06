@@ -21,6 +21,7 @@
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Hydrology/Hydrology.hpp>
 #include <algorithm>
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 using namespace KiLib::Hydrology;

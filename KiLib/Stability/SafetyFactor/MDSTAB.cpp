@@ -22,6 +22,7 @@
 #include <KiLib/Stability/SafetyFactor/MDSTAB.hpp>
 #include <KiLib/Stability/SafetyFactor/SafetyFactor.hpp>
 #include <algorithm>
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 using namespace KiLib::Stability::SafetyFactor;
