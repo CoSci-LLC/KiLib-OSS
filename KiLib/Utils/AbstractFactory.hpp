@@ -2,6 +2,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <spdlog/spdlog.h>
 #include <typeinfo>
 
 
@@ -21,6 +22,14 @@ public:
 
    Base get(std::string val) const
    {
-      return this->map.at(Enum::_from_string(val.c_str()))();
+      try
+      {
+         return this->map.at(Enum::_from_string_nocase(val.c_str()))();
+      }
+      catch (std::exception &e)
+      {
+         spdlog::error("Unknown {}! Available options: {}", Enum::_name(), fmt::join(Enum::_names(), ", "));
+         exit(EXIT_FAILURE);
+      }
    }
 };

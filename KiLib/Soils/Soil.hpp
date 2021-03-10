@@ -28,6 +28,7 @@
 namespace KiLib::Soils
 {
    BETTER_ENUM(SoilID, int, ch, cl, gc, gm, gp, gw, mh, ml, oh, ol, sc, sm, sp, sw)
+   const std::vector<std::string> availableSoils(SoilID::_names().begin(), SoilID::_names().end());
 
    // Parameters for a uniform distribution of values
    struct ValueUniform
