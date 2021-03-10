@@ -219,4 +219,21 @@ namespace KiLib
       }
    }
 
+   TEST(Raster, getCellPos)
+   {
+      auto                     cwd  = fs::current_path();
+      auto                     path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
+      std::vector<std::string> sizes{"5x5", "7x7"};
+
+      fs::current_path(path);
+
+      for (const std::string &size : sizes)
+      {
+         std::string base = (path / size).string();
+
+         Raster dem(base + ".dem");
+         dem.getCellPos(0);
+      }
+   }
+
 } // namespace KiLib
