@@ -103,5 +103,5 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # using Visual Studio C++
     message(STATUS "msvc detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
+    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc /D_USE_MATH_DEFINES)
 endif()
