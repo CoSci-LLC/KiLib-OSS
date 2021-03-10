@@ -223,7 +223,7 @@ namespace KiLib
    {
       auto                     cwd  = fs::current_path();
       auto                     path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
-      std::vector<std::string> sizes{"5x5", "7x7"};
+      std::vector<std::string> sizes{"5x5", "7x7", "7x3"};
 
       fs::current_path(path);
 
@@ -232,8 +232,27 @@ namespace KiLib
          std::string base = (path / size).string();
 
          Raster dem(base + ".dem");
-         dem.getCellPos(0);
+         for (size_t r = 0; r < dem.nRows; r++)
+         {
+            for (size_t c = 0; c < dem.nCols; c++)
+            {
+               size_t      ind = dem.flattenIndex(r, c);
+               KiLib::Vec3 pos = dem.getCellPos(ind);
+               double      z   = dem.at(r, c);
+
+               ASSERT_DOUBLE_EQ(pos.z, z);
+               ASSERT_DOUBLE_EQ(pos.y, dem.yllcorner + (double)r * dem.cellsize);
+               ASSERT_DOUBLE_EQ(pos.x, dem.xllcorner + (double)c * dem.cellsize);
+               ASSERT_EQ(ind, dem.getNearestCell(pos));
+            }
+         }
       }
    }
-
 } // namespace KiLib
+
+// ncols        3
+// nrows        7
+// xllcorner    1.0
+// yllcorner    2.0
+// cellsize     2.0
+// NODATA_value  -99999
