@@ -20,10 +20,9 @@
 
 #pragma once
 
+#define _USE_MATH_DEFINES
 #include <KiLib/Soils/Soil.hpp>
 #include <assert.h>
-#define _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <filesystem>
 #include <iostream>
