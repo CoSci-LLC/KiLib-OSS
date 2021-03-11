@@ -61,7 +61,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          std::string base = (path / fs::path(it.path().stem().string())).string();
          files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + ".dem"));
@@ -82,7 +82,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          if (!it.is_regular_file() && it.path().extension() != ".tif")
             continue;
@@ -113,7 +113,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          if (!it.is_regular_file() && it.path().extension() != ".tif")
             continue;
@@ -144,7 +144,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          if (!it.is_regular_file() && it.path().extension() != ".tif")
             continue;
@@ -175,7 +175,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (auto it : fs::directory_iterator(path))
+      for (const auto &it : fs::directory_iterator(path))
       {
          if (!it.is_regular_file() && it.path().extension() != ".tif")
             continue;
@@ -207,7 +207,7 @@ namespace KiLib
 
       fs::current_path(path);
 
-      for (std::string size : sizes)
+      for (const std::string &size : sizes)
       {
          std::string base = (path / size).string();
 
@@ -219,4 +219,33 @@ namespace KiLib
       }
    }
 
+   TEST(Raster, getCellPos)
+   {
+      auto                     cwd  = fs::current_path();
+      auto                     path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
+      std::vector<std::string> sizes{"5x5", "7x7", "7x3"};
+
+      fs::current_path(path);
+
+      for (const std::string &size : sizes)
+      {
+         std::string base = (path / size).string();
+
+         Raster dem(base + ".dem");
+         for (size_t r = 0; r < dem.nRows; r++)
+         {
+            for (size_t c = 0; c < dem.nCols; c++)
+            {
+               size_t      ind = dem.flattenIndex(r, c);
+               KiLib::Vec3 pos = dem.getCellPos(ind);
+               double      z   = dem.at(r, c);
+
+               ASSERT_DOUBLE_EQ(pos.z, z);
+               ASSERT_DOUBLE_EQ(pos.y, dem.yllcorner + (double)r * dem.cellsize);
+               ASSERT_DOUBLE_EQ(pos.x, dem.xllcorner + (double)c * dem.cellsize);
+               ASSERT_EQ(ind, dem.getNearestCell(pos));
+            }
+         }
+      }
+   }
 } // namespace KiLib
