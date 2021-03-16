@@ -248,4 +248,47 @@ namespace KiLib
          }
       }
    }
+
+   TEST(Raster, Rasterize)
+   {
+      class TestClass
+      {
+      public:
+         TestClass(KiLib::Vec3 pos, double safetyFactor)
+         {
+            this->pos          = pos;
+            this->safetyFactor = safetyFactor;
+         }
+
+         KiLib::Vec3 pos;
+         double      safetyFactor;
+      };
+
+      auto                   cwd  = fs::current_path();
+      auto                   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+      Raster                 dem(path.string());
+      std::vector<TestClass> objs{
+         {{0.4, 0.3, -1.0}, 0.03},  // 0, 0
+         {{0.1, 0.49, -1.0}, 0.12}, // 0, 0
+         {{0.5, 0.5, -1.0}, 0.3},   // 1, 1
+         {{1.2, 5.1, -1.0}, 0.7},   // 5, 1
+         {{0.9, 4.6, -1.0}, 0.3},   // 5, 1
+         {{1.4, 4.6, -1.0}, 1.1},   // 5, 1
+      };
+
+      //clang-format off
+      KiLib::Raster rasterized = KiLib::Raster::Rasterize<TestClass>(
+         dem,                      // Reference dem to construct sizes
+         objs,                     // Our vector of objects to rasterize
+         &TestClass::pos,          // Our objects position attribute
+         &TestClass::safetyFactor, // Our objects attribute to rasterize
+         [](const auto &obj) {
+            return true;
+         } // Function to determine whether or not to rasterize (i.e. check if safety factor < 1.0)
+      );
+      //clang-format on
+
+      rasterized.print();
+      dem.print();
+   }
 } // namespace KiLib
