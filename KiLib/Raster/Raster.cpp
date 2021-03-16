@@ -37,7 +37,7 @@ namespace KiLib
    }
 
    // Load data in Raster format from specified path
-   Raster::Raster(std::string path)
+   Raster::Raster(const std::string &path)
    {
       this->constructed = false;
 
@@ -132,7 +132,7 @@ namespace KiLib
       }
    }
 
-   void Raster::writeToFile(const std::string path) const
+   void Raster::writeToFile(const std::string &path) const
    {
 
       auto ext = fs::path(path).extension();
@@ -161,6 +161,11 @@ namespace KiLib
       return point;
    }
 
+   size_t Raster::flattenIndex(size_t r, size_t c)
+   {
+      return r * this->nCols + c;
+   }
+
    size_t Raster::getNearestCell(const KiLib::Vec3 &pos)
    {
       double rF = (pos.y - this->yllcorner) / this->cellsize;
@@ -174,8 +179,8 @@ namespace KiLib
 
    KiLib::Vec3 Raster::getCellPos(size_t ind)
    {
-      size_t r = this->nCols / ind;
-      size_t c = this->nCols % ind;
+      size_t r = ind / this->nCols;
+      size_t c = ind % this->nCols;
 
       KiLib::Vec3 pos = KiLib::Vec3(this->xllcorner + c * this->cellsize, this->yllcorner + r * this->cellsize, 0);
       pos.z           = this->getInterpBilinear(pos);

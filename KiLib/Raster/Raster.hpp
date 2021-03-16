@@ -57,7 +57,7 @@ namespace KiLib
 
       bool constructed; // Flag indicating whether a file was loaded
 
-      Raster(std::string path);
+      Raster(const std::string &path);
       Raster();
 
       // Creates a raster filled with zeros with same metadata as other.
@@ -76,7 +76,7 @@ namespace KiLib
          return new_;
       }
 
-      void writeToFile(const std::string path) const;
+      void writeToFile(const std::string &path) const;
 
       /**
        * @brief Prints basic information about this Raster
@@ -89,6 +89,11 @@ namespace KiLib
        * Returns flat index to nearest cell in raster
        */
       size_t getNearestCell(const KiLib::Vec3 &pos);
+
+      /**
+       * Returns flat index to nearest cell in raster
+       */
+      size_t flattenIndex(size_t r, size_t c);
 
       KiLib::Vec3 getCellPos(size_t ind);
 
