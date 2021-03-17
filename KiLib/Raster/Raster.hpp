@@ -261,23 +261,14 @@ namespace KiLib
        */
       template <class T>
       static KiLib::Raster Rasterize(
-         const KiLib::Raster &ref, const std::vector<T> &objs, KiLib::Vec3 T::*posP, double T::*attrP,
-         std::function<bool(const T &)> doPopulate)
+         const KiLib::Raster &ref, const std::vector<T> &objs, std::function<KiLib::Vec3(T)> getPos,
+         std::function<double(T)> getAttr)
       {
          KiLib::Raster            outRast = KiLib::Raster::fillLike(ref, 0.0, true);
          std::map<size_t, double> counts;
 
-         // Set up getters for the attributes
-         auto getPos  = std::bind(posP, std::placeholders::_1);
-         auto getAttr = std::bind(attrP, std::placeholders::_1);
-
          for (auto &obj : objs)
          {
-            if (!doPopulate(obj))
-            {
-               continue;
-            }
-
             KiLib::Vec3 pos  = getPos(obj);
             double      attr = getAttr(obj);
 

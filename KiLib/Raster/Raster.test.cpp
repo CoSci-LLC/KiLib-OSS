@@ -277,18 +277,29 @@ namespace KiLib
       };
 
       //clang-format off
-      KiLib::Raster rasterized = KiLib::Raster::Rasterize<TestClass>(
-         dem,                      // Reference dem to construct sizes
-         objs,                     // Our vector of objects to rasterize
-         &TestClass::pos,          // Our objects position attribute
-         &TestClass::safetyFactor, // Our objects attribute to rasterize
-         [](const auto &obj) {
-            return true;
-         } // Function to determine whether or not to rasterize (i.e. check if safety factor < 1.0)
+      KiLib::Raster rasterizedNoTrunc = KiLib::Raster::Rasterize<TestClass>(
+         dem,                                                  // Reference dem to construct sizes
+         objs,                                                 // Our vector of objects to rasterize
+         [](const TestClass &obj) { return obj.pos; },         // Our objects position
+         [](const TestClass &obj) { return obj.safetyFactor; } // Our objects attribute to rasterize
       );
       //clang-format on
 
-      rasterized.print();
-      dem.print();
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(5, 1), 0.70);
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(1, 1), 0.30);
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(0, 0), 0.075);
+
+      //clang-format off
+      KiLib::Raster rasterizedTrunc = KiLib::Raster::Rasterize<TestClass>(
+         dem,                                                        // Reference dem to construct sizes
+         objs,                                                       // Our vector of objects to rasterize
+         [](const TestClass &obj) { return obj.pos; },               // Our objects position
+         [](const TestClass &obj) { return obj.safetyFactor < 1.0; } // Our objects attribute to rasterize
+      );
+      //clang-format on
+
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(5, 1), 2.0 / 3.0);
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(1, 1), 1.0);
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(0, 0), 1.0);
    }
 } // namespace KiLib
