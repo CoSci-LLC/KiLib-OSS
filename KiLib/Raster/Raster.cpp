@@ -292,7 +292,7 @@ namespace KiLib
             const double dist = sqrt(dr * dr + dc * dc);
             if (dist > radius)
             {
-               fmt::print("SKIPPING\n");
+               SPDLOG_DEBUG("SKIPPING\n");
                continue;
             }
             sum += this->at(ri, ci);
