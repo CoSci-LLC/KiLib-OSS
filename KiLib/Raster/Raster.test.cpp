@@ -302,4 +302,21 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(rasterizedTrunc(1, 1), 1.0);
       ASSERT_DOUBLE_EQ(rasterizedTrunc(0, 0), 1.0);
    }
+
+
+   TEST(Raster, GetAverage)
+   {
+      auto   cwd  = fs::current_path();
+      auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+      Raster dem(path.string());
+
+      double avg1 = dem.GetAverage(0, 4.0);
+      ASSERT_DOUBLE_EQ(avg1, 6.0);
+
+      double avg2 = dem.GetAverage(4, 1.0);
+      ASSERT_DOUBLE_EQ(avg2, 4.0);
+
+      double avg3 = dem.GetAverage(14, 2.0);
+      ASSERT_DOUBLE_EQ(avg3, 13.5);
+   }
 } // namespace KiLib

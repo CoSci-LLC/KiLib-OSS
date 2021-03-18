@@ -8,6 +8,7 @@ Notable changes to this project will be documented in this file.
 
 - Add flattenIndex method to Raster
 - Add Rasterize method to raster
+- Add GetAverage method to raster
 
 ### Fixed
 

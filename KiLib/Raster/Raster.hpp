@@ -286,6 +286,8 @@ namespace KiLib
          return outRast;
       }
 
+      double GetAverage(size_t ind, double radius);
+
    private:
       void fromDEM(const std::string path);
       void fromTiff(const std::string path);
