@@ -27,9 +27,14 @@ using namespace KiLib::Hydrology;
 
 TopModel::TopModel(){};
 
-double TopModel::ComputeWetness(double rainfall, double ks, double z, double slope, double twi) const
+// clang-format off
+double TopModel::ComputeWetness(
+   const double rainfall,   // Rainfall intensity [L/T]
+   const double ks,         // Hydraulic conductivity [L/T]
+   const double depth,      // Depth [L]
+   const double slope,      // Slope [rad]
+   const double twi) const  // Topographic Wetness Index [-]
 {
-   double wetness = std::min(1.0, ((rainfall * 0.9) / (ks * z * std::cos(slope))) * twi);
-
-   return wetness;
+   return std::clamp(rainfall / (ks * depth * std::cos(slope)) * twi, 0.0, 1.0);
 }
+// clang-format on
