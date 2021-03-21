@@ -264,8 +264,8 @@ namespace KiLib
          const KiLib::Raster &ref, const std::vector<T> &objs, std::function<KiLib::Vec3(T)> getPos,
          std::function<double(T)> getAttr)
       {
-         KiLib::Raster            outRast = KiLib::Raster::fillLike(ref, 0.0, true);
-         std::map<size_t, double> counts;
+         KiLib::Raster                      outRast = KiLib::Raster::fillLike(ref, 0.0, true);
+         std::unordered_map<size_t, double> counts;
 
          for (auto &obj : objs)
          {
@@ -275,12 +275,12 @@ namespace KiLib
             size_t flatInd  = outRast.getNearestCell(pos);
             counts[flatInd] = counts.count(flatInd) == 0 ? 1.0 : counts[flatInd] + 1;
 
-            outRast.at(flatInd) += attr;
+            outRast(flatInd) += attr;
          }
 
          for (auto [ind, count] : counts)
          {
-            outRast.at(ind) /= count;
+            outRast(ind) /= count;
          }
 
          return outRast;
