@@ -35,6 +35,6 @@ double TopModel::ComputeWetness(
    const double slope,      // Slope [rad]
    const double twi) const  // Topographic Wetness Index [-]
 {
-   return std::clamp(rainfall / (ks * depth * std::cos(slope)) * twi, 0.0, 1.0);
+   return std::clamp(rainfall / (ks * depth * std::cos(slope)) * std::exp(twi), 0.0, 1.0);
 }
 // clang-format on
