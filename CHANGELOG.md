@@ -14,6 +14,7 @@ Notable changes to this project will be documented in this file.
 
 - When compiling on windows we define _USE_MATH_DEFINES to make sure there are no math constant issues
 - getCellPos div by zero
+- rtnorml insertion past bound of vector
 
 ## v2.5.0 (2020-03-03)
 ---

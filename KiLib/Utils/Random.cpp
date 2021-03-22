@@ -67,7 +67,7 @@ std::vector<double> Random::rtnorml(int count, double mean, double sd, double a,
    // hat{x}
    out = stats::qunif(out, 0, 1);
 
-   std::transform(out.begin(), out.end(), out.end(), [&](double x) -> double { return sd * x + mean; });
+   std::transform(out.begin(), out.end(), out.begin(), [&](double x) -> double { return sd * x + mean; });
 
    return out;
 }
