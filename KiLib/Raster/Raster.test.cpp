@@ -278,10 +278,10 @@ namespace KiLib
 
       //clang-format off
       KiLib::Raster rasterizedNoTrunc = KiLib::Raster::Rasterize<TestClass>(
-         dem,                                                  // Reference dem to construct sizes
-         objs,                                                 // Our vector of objects to rasterize
-         [](const TestClass &obj) { return obj.pos; },         // Our objects position
-         [](const TestClass &obj) { return obj.safetyFactor; } // Our objects attribute to rasterize
+         dem,                                             // Reference dem to construct sizes
+         objs,                                            // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },         // Our objects position
+         [](const auto &obj) { return obj.safetyFactor; } // Our objects attribute to rasterize
       );
       //clang-format on
 
@@ -290,11 +290,26 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(rasterizedNoTrunc(0, 0), 0.075);
 
       //clang-format off
+      KiLib::Raster rasterizedNoTruncWidth = KiLib::Raster::Rasterize<TestClass>(
+         dem,                                              // Reference dem to construct sizes
+         objs,                                             // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },          // Our objects position
+         [](const auto &obj) { return obj.safetyFactor; }, // Our objects attribute to rasterize
+         1                                                 // Expand width by 1
+      );
+      //clang-format on
+
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(5, 1), 0.70);
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(1, 1), 0.15);
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(0, 0), 0.15);
+
+
+      //clang-format off
       KiLib::Raster rasterizedTrunc = KiLib::Raster::Rasterize<TestClass>(
-         dem,                                                        // Reference dem to construct sizes
-         objs,                                                       // Our vector of objects to rasterize
-         [](const TestClass &obj) { return obj.pos; },               // Our objects position
-         [](const TestClass &obj) { return obj.safetyFactor < 1.0; } // Our objects attribute to rasterize
+         dem,                                                   // Reference dem to construct sizes
+         objs,                                                  // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },               // Our objects position
+         [](const auto &obj) { return obj.safetyFactor < 1.0; } // Our objects attribute to rasterize
       );
       //clang-format on
 

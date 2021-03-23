@@ -256,15 +256,18 @@ namespace KiLib
        * @param posP Pointer to position attribute (i.e. &Landslide::pos)
        * @param attrP Pointer to attribute to rasterize (i.e. &Landslide::safetyFactor)
        * @param doPopulate function that dictates whether or not that instace will be rasterized
+       * @param width Number of cells to average over. 0 is just cell at i,j; 1 is 9x9 region around i,j; and so on.
        * @return KiLib::Raster
        *
        */
       template <class T>
       static KiLib::Raster Rasterize(
          const KiLib::Raster &ref, const std::vector<T> &objs, std::function<KiLib::Vec3(T)> getPos,
-         std::function<double(T)> getAttr)
+         std::function<double(T)> getAttr, int width = 0)
       {
-         KiLib::Raster                      outRast = KiLib::Raster::fillLike(ref, 0.0, true);
+         KiLib::Raster sumRast = KiLib::Raster::fillLike(ref, 0.0, true);
+         KiLib::Raster outRast = KiLib::Raster::fillLike(ref, 0.0, true);
+
          std::unordered_map<size_t, double> counts;
 
          for (auto &obj : objs)
@@ -272,15 +275,41 @@ namespace KiLib
             KiLib::Vec3 pos  = getPos(obj);
             double      attr = getAttr(obj);
 
-            size_t flatInd  = outRast.getNearestCell(pos);
+            size_t flatInd  = sumRast.getNearestCell(pos);
             counts[flatInd] = counts.count(flatInd) == 0 ? 1.0 : counts[flatInd] + 1;
 
-            outRast(flatInd) += attr;
+            sumRast(flatInd) += attr;
          }
 
-         for (auto [ind, count] : counts)
+         for (int r = 0; r < (int)sumRast.nRows; r++)
          {
-            outRast(ind) /= count;
+            for (int c = 0; c < (int)sumRast.nCols; c++)
+            {
+               // Skip nodata
+               if (sumRast.at(r, c) == sumRast.nodata_value)
+               {
+                  continue;
+               }
+               double count = 0.0;
+               double sum   = 0.0;
+               for (int ri = r - width; ri <= (r + width); ri++)
+               {
+                  for (int ci = c - width; ci <= (c + width); ci++)
+                  {
+                     // Dont sum out of bounds, cant sum where we have no points
+                     if (
+                        counts.count(sumRast.flattenIndex(ri, ci)) == 0 or ri < 0 or ri >= (int)sumRast.nRows or
+                        ci < 0 or ci >= (int)sumRast.nCols)
+                     {
+                        continue;
+                     }
+
+                     count += counts[sumRast.flattenIndex(ri, ci)];
+                     sum += sumRast.at(ri, ci);
+                  }
+               }
+               outRast.at(r, c) = sum / count;
+            }
          }
 
          return outRast;
