@@ -57,17 +57,20 @@ std::vector<double> Random::rnorm(int count, double mean, double sd, std::mt1993
 // Assumes b = inf
 std::vector<double> Random::rtnorml(int count, double mean, double sd, double a, std::mt19937_64 &gen)
 {
-
-   double hatA = (a - mean) / sd;
-
-   // Sample Unif(Phi(hatA, 1))
-   std::vector<double> out(count);
-   std::generate(out.begin(), out.end(), [&]() -> double { return stats::runif(stats::pnorm(hatA, 0, 1), 1, gen); });
-
-   // hat{x}
-   out = stats::qunif(out, 0, 1);
-
-   std::transform(out.begin(), out.end(), out.begin(), [&](double x) -> double { return sd * x + mean; });
+   std::vector<double> out;
+   for (int i = 0; i < count; i++)
+   {
+      double x;
+      while (true)
+      {
+         x = stats::rnorm(mean, sd, gen);
+         if (x > a)
+         {
+            break;
+         }
+      }
+      out.push_back(x);
+   }
 
    return out;
 }
