@@ -102,7 +102,6 @@ namespace KiLib
       this->width       = (this->nCols - 1) * this->cellsize;
       this->height      = (this->nRows - 1) * this->cellsize;
       this->nData       = this->nRows * this->nCols;
-      this->constructed = true;
 
       rasterFile.close();
    }

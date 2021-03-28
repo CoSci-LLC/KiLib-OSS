@@ -30,7 +30,6 @@ namespace KiLib
 {
    Raster::Raster()
    {
-      this->constructed = false;
       this->nRows       = 0;
       this->nCols       = 0;
       this->nData       = 0;
@@ -39,8 +38,6 @@ namespace KiLib
    // Load data in Raster format from specified path
    Raster::Raster(const std::string &path)
    {
-      this->constructed = false;
-
       auto ext = fs::path(path).extension();
 
       if (ext == ".asc" || ext == ".dem")
@@ -52,8 +49,6 @@ namespace KiLib
          spdlog::error("Unsupported file type given to raster constructor: {}", ext);
          exit(EXIT_FAILURE);
       }
-
-      this->constructed = true;
    }
 
    // Returns (bilinear) interpolated data value at specified position

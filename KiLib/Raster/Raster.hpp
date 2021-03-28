@@ -57,8 +57,6 @@ namespace KiLib
       size_t nRows = 0; // Number of rows (y)
       size_t nData = 0; // Total number of datapoints
 
-      bool constructed; // Flag indicating whether a file was loaded
-
       Raster(const std::string &path);
       Raster();
 
