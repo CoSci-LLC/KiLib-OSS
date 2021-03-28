@@ -23,6 +23,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <string>
+#include <spdlog/spdlog.h>
 
 // Required for math constants on Windows
 #ifdef _WINDOWS
@@ -72,7 +73,7 @@ namespace KiLib
        */
       std::string toString() const
       {
-         return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + "," + std::to_string(this->z) + ")";
+         return fmt::format("({}, {}, {})", this->x, this->y, this->z);
       }
 
       static Vec3   cross(const Vec3 &a, const Vec3 &b);
