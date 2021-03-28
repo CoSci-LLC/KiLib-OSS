@@ -248,11 +248,90 @@ namespace KiLib
          }
       }
    }
-} // namespace KiLib
 
-// ncols        3
-// nrows        7
-// xllcorner    1.0
-// yllcorner    2.0
-// cellsize     2.0
-// NODATA_value  -99999
+   TEST(Raster, Rasterize)
+   {
+      class TestClass
+      {
+      public:
+         TestClass(KiLib::Vec3 pos, double safetyFactor)
+         {
+            this->pos          = pos;
+            this->safetyFactor = safetyFactor;
+         }
+
+         KiLib::Vec3 pos;
+         double      safetyFactor;
+      };
+
+      auto                   cwd  = fs::current_path();
+      auto                   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+      Raster                 dem(path.string());
+      std::vector<TestClass> objs{
+         {{0.4, 0.3, -1.0}, 0.03},  // 0, 0
+         {{0.1, 0.49, -1.0}, 0.12}, // 0, 0
+         {{0.5, 0.5, -1.0}, 0.3},   // 1, 1
+         {{1.2, 5.1, -1.0}, 0.7},   // 5, 1
+         {{0.9, 4.6, -1.0}, 0.3},   // 5, 1
+         {{1.4, 4.6, -1.0}, 1.1},   // 5, 1
+      };
+
+      //clang-format off
+      KiLib::Raster rasterizedNoTrunc = KiLib::Raster::Rasterize<TestClass>(
+         dem,                                             // Reference dem to construct sizes
+         objs,                                            // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },         // Our objects position
+         [](const auto &obj) { return obj.safetyFactor; } // Our objects attribute to rasterize
+      );
+      //clang-format on
+
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(5, 1), 0.70);
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(1, 1), 0.30);
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(0, 0), 0.075);
+
+      //clang-format off
+      KiLib::Raster rasterizedNoTruncWidth = KiLib::Raster::Rasterize<TestClass>(
+         dem,                                              // Reference dem to construct sizes
+         objs,                                             // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },          // Our objects position
+         [](const auto &obj) { return obj.safetyFactor; }, // Our objects attribute to rasterize
+         1                                                 // Expand width by 1
+      );
+      //clang-format on
+
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(5, 1), 0.70);
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(1, 1), 0.15);
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(0, 0), 0.15);
+
+
+      //clang-format off
+      KiLib::Raster rasterizedTrunc = KiLib::Raster::Rasterize<TestClass>(
+         dem,                                                   // Reference dem to construct sizes
+         objs,                                                  // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },               // Our objects position
+         [](const auto &obj) { return obj.safetyFactor < 1.0; } // Our objects attribute to rasterize
+      );
+      //clang-format on
+
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(5, 1), 2.0 / 3.0);
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(1, 1), 1.0);
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(0, 0), 1.0);
+   }
+
+
+   TEST(Raster, GetAverage)
+   {
+      auto   cwd  = fs::current_path();
+      auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+      Raster dem(path.string());
+
+      double avg1 = dem.GetAverage(0, 4.0);
+      ASSERT_DOUBLE_EQ(avg1, 6.0);
+
+      double avg2 = dem.GetAverage(4, 1.0);
+      ASSERT_DOUBLE_EQ(avg2, 4.0);
+
+      double avg3 = dem.GetAverage(14, 2.0);
+      ASSERT_DOUBLE_EQ(avg3, 13.5);
+   }
+} // namespace KiLib

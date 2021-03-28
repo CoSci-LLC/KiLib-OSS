@@ -55,6 +55,18 @@ namespace KiLib
       }
    }
 
+   TEST(Random, rtnorm)
+   {
+      std::mt19937_64 gen1(1);
+      size_t          n    = 100;
+      auto            vec1 = Random::rtnorml(n, 0.1, 0.1, 0.0, gen1);
+      for (size_t i = 0; i < n; ++i)
+      {
+         SPDLOG_DEBUG("{}", vec1[i]);
+         // ASSERT_EQ(vec1[i], vec2[i]);
+      }
+   }
+
    TEST(Random, gen)
    {
       std::mt19937_64 gen1(1);

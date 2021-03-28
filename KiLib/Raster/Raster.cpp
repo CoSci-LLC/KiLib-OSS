@@ -259,4 +259,48 @@ namespace KiLib
       return slope;
    }
 
+   double Raster::GetAverage(size_t ind, double radius)
+   {
+      if (ind >= this->nData)
+      {
+         throw std::out_of_range(fmt::format("Index {} out of range for Raster with {} datapoints", ind, this->nData));
+      }
+
+      int r      = ind / this->nCols;
+      int c      = ind % this->nCols;
+      int extent = std::floor(radius / this->cellsize);
+
+      int leftB  = std::clamp(c - extent, 0, (int)this->nCols - 1);
+      int rightB = std::clamp(c + extent, 0, (int)this->nCols - 1);
+      int upB    = std::clamp(r + extent, 0, (int)this->nRows - 1);
+      int lowB   = std::clamp(r - extent, 0, (int)this->nRows - 1);
+
+      double sum = 0.0;
+      double num = 0.0;
+      for (int ri = lowB; ri <= upB; ri++)
+      {
+         for (int ci = leftB; ci <= rightB; ci++)
+         {
+            // Skip nodata
+            if (this->at(ri, ci) == this->nodata_value)
+            {
+               continue;
+            }
+            // this can probably be done faster, handles the corners being out of the radius
+            const double dr   = std::abs((double)(r - ri)) * cellsize;
+            const double dc   = std::abs((double)(c - ci)) * cellsize;
+            const double dist = sqrt(dr * dr + dc * dc);
+            if (dist > radius)
+            {
+               SPDLOG_DEBUG("SKIPPING\n");
+               continue;
+            }
+            sum += this->at(ri, ci);
+            num += 1;
+         }
+      }
+
+      return sum / num;
+   }
+
 } // namespace KiLib
