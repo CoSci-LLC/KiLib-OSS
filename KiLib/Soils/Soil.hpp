@@ -54,6 +54,7 @@ namespace KiLib::Soils
       ValueUniform GetUniformPrimula() const;
       ValueUniform GetUniform() const;
       ValueNormal  GetNormal() const;
+      double       GetConstant() const;
    };
 
    class Soil

@@ -32,6 +32,7 @@ namespace KiLib
 
       ASSERT_EQ(a.GetConductivity().GetUniformPrimula().GetMax(), 1e-06);
       ASSERT_EQ(a.GetLongName(), "Clay of high plasticity, fat clay");
+      ASSERT_EQ(a.GetCohesion().GetConstant(), 25000.0);
 
       ASSERT_EQ(b.GetFrictionAngle().GetNormal().GetMean(), 33 * M_PI / 180.0);
       ASSERT_EQ(b.GetLongName(), "Silt");

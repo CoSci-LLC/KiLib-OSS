@@ -128,3 +128,7 @@ ValueNormal ValueDistribution::GetNormal() const
 {
    return this->normal;
 }
+double ValueDistribution::GetConstant() const
+{
+   return this->constant;
+}
