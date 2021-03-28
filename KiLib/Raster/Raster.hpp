@@ -22,14 +22,7 @@
 
 #include <KiLib/Utils/Vec3.hpp>
 #include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <functional>
-#include <iomanip>
-#include <iostream>
-#include <map>
 #include <random>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -60,37 +53,10 @@ namespace KiLib
       Raster(const std::string &path);
       Raster();
 
-      // Creates a raster filled with zeros with same metadata as other.
-      static KiLib::Raster zerosLike(const KiLib::Raster &other)
-      {
-         KiLib::Raster new_(other);
-         std::fill(new_.data.begin(), new_.data.end(), 0.0);
-         return new_;
-      }
-
       // Creates a raster with same metadata as other, filled with fillValue.
       // If keepNoData is true, returned raster will have nodata in same locations as other.
       // Otherwise every value will be fillValue
-      static KiLib::Raster fillLike(const KiLib::Raster &other, double fillValue, bool keepNoData)
-      {
-         KiLib::Raster new_(other);
-         for (size_t i = 0; i < other.nData; i++)
-         {
-            if (new_(i) != new_.nodata_value)
-            {
-               new_(i) = fillValue;
-            }
-         }
-         return new_;
-      }
-
-      // Creates a raster filled with nodatavalue with same metadata as other.
-      static KiLib::Raster nodataLike(const KiLib::Raster &other)
-      {
-         KiLib::Raster new_(other);
-         std::fill(new_.data.begin(), new_.data.end(), other.nodata_value);
-         return new_;
-      }
+      static KiLib::Raster fillLike(const KiLib::Raster &other, double fillValue, bool keepNoData);
 
       void writeToFile(const std::string &path) const;
 
@@ -119,15 +85,7 @@ namespace KiLib
        * @param pos Position to get distance from
        * @return double Distance
        */
-      double distFromBoundary(const Vec3 &pos)
-      {
-         const double left   = pos.x - this->xllcorner;
-         const double right  = this->xllcorner + this->width - pos.x;
-         const double top    = this->yllcorner + this->height - pos.y;
-         const double bottom = pos.y - this->yllcorner;
-
-         return std::min(std::min(left, right), std::min(top, bottom));
-      }
+      double distFromBoundary(const Vec3 &pos);
 
       /**
        * @brief Interpolates raster value at pos (takes in 3D vector but ignores Z)
@@ -135,10 +93,7 @@ namespace KiLib
        * @param pos Pos to interpolate
        * @return double Raster value, using bilinear interpolation
        */
-      double operator()(const Vec3 &pos) const
-      {
-         return this->getInterpBilinear(pos);
-      }
+      double operator()(const Vec3 &pos) const;
 
       /**
        * @brief Returns a REFERENCE to the (row, col) index into the Raster
@@ -148,10 +103,7 @@ namespace KiLib
        * @param col X value
        * @return double& Reference to raster value at position
        */
-      double &at(size_t row, size_t col)
-      {
-         return this->data.at(row * this->nCols + col);
-      }
+      double &at(size_t row, size_t col);
 
       /**
        * @brief Returns the (row, col) index into the DEM. Does bounds checking
@@ -160,10 +112,7 @@ namespace KiLib
        * @param col X value
        * @return double Value at position
        */
-      double at(size_t row, size_t col) const
-      {
-         return this->data.at(row * this->nCols + col);
-      }
+      double at(size_t row, size_t col) const;
 
       /**
        * @brief Returns a REFERENCE to the (row, col) index into the Raster
@@ -173,10 +122,7 @@ namespace KiLib
        * @param col X value
        * @return double& Reference to raster value at position
        */
-      double &operator()(size_t row, size_t col)
-      {
-         return this->data[row * this->nCols + col];
-      }
+      double &operator()(size_t row, size_t col);
 
       /**
        * @brief Returns the (row, col) index into the DEM. Doesn't do bounds checking.
@@ -185,10 +131,7 @@ namespace KiLib
        * @param col X value
        * @return double Value at position
        */
-      double operator()(size_t row, size_t col) const
-      {
-         return this->data[row * this->nCols + col];
-      }
+      double operator()(size_t row, size_t col) const;
 
       /**
        * @brief Returns the flat index into the DEM. Doesn't do bounds checking.
@@ -196,10 +139,7 @@ namespace KiLib
        * @param ind Flat index
        * @return double Value at position
        */
-      double operator()(size_t ind) const
-      {
-         return this->data[ind];
-      }
+      double operator()(size_t ind) const;
 
       /**
        * @brief Returns a REFERENCE to the flat index into the DEM. Doesn't do bounds checking.
@@ -207,10 +147,7 @@ namespace KiLib
        * @param ind Flat index
        * @return double Value at position
        */
-      double &operator()(size_t ind)
-      {
-         return this->data[ind];
-      }
+      double &operator()(size_t ind);
 
       /**
        * @brief Returns a REFERENCE to the flat index into the DEM. Does bounds checking.
@@ -218,10 +155,7 @@ namespace KiLib
        * @param ind Flat index
        * @return double Value at position
        */
-      double &at(size_t ind)
-      {
-         return this->data.at(ind);
-      }
+      double &at(size_t ind);
 
       /**
        * @brief Returns the flat index into the DEM. Does bounds checking.
@@ -229,10 +163,7 @@ namespace KiLib
        * @param ind Flat index
        * @return double Value at position
        */
-      double at(size_t ind) const
-      {
-         return this->data.at(ind);
-      }
+      double at(size_t ind) const;
 
       // Slope methods
       enum SlopeMethod

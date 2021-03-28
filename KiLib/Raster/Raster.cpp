@@ -22,7 +22,6 @@
 #include <filesystem>
 #include <map>
 #include <spdlog/fmt/ostr.h>
-#include <spdlog/spdlog.h>
 
 namespace fs = std::filesystem;
 
@@ -30,9 +29,10 @@ namespace KiLib
 {
    Raster::Raster()
    {
-      this->nRows       = 0;
-      this->nCols       = 0;
-      this->nData       = 0;
+      this->nRows = 0;
+      this->nCols = 0;
+      this->nData = 0;
+      this->data.resize(0);
    }
 
    // Load data in Raster format from specified path
@@ -146,11 +146,11 @@ namespace KiLib
    KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen)
    {
       KiLib::Vec3                            point;
-      std::uniform_real_distribution<double> xDist(0, this->width);
-      std::uniform_real_distribution<double> yDist(0, this->height);
+      std::uniform_real_distribution<double> xDist(this->xllcorner, this->width);
+      std::uniform_real_distribution<double> yDist(this->yllcorner, this->height);
 
-      point.x = this->xllcorner + xDist(gen);
-      point.y = this->yllcorner + yDist(gen);
+      point.x = xDist(gen);
+      point.y = yDist(gen);
       point.z = this->getInterpBilinear(point);
 
       return point;
@@ -197,7 +197,7 @@ namespace KiLib
    // Process. Landforms, 12: 47-56. https://doi.org/10.1002/esp.3290120107
    KiLib::Raster KiLib::Raster::ComputeSlopeZevenbergenThorne(const KiLib::Raster &inp)
    {
-      KiLib::Raster slope = KiLib::Raster::zerosLike(inp);
+      KiLib::Raster slope = KiLib::Raster::fillLike(inp, 0.0, true);
 
       double ND = inp.nodata_value;
       int    NR = inp.nRows;
@@ -296,6 +296,76 @@ namespace KiLib
       }
 
       return sum / num;
+   }
+
+   double Raster::distFromBoundary(const Vec3 &pos)
+   {
+      const double left   = pos.x - this->xllcorner;
+      const double right  = this->xllcorner + this->width - pos.x;
+      const double top    = this->yllcorner + this->height - pos.y;
+      const double bottom = pos.y - this->yllcorner;
+
+      return std::min(std::min(left, right), std::min(top, bottom));
+   }
+
+   double Raster::operator()(const Vec3 &pos) const
+   {
+      return this->getInterpBilinear(pos);
+   }
+
+   double &Raster::at(size_t row, size_t col)
+   {
+      return this->data.at(row * this->nCols + col);
+   }
+
+   double Raster::at(size_t row, size_t col) const
+   {
+      return this->data.at(row * this->nCols + col);
+   }
+
+   double &Raster::operator()(size_t row, size_t col)
+   {
+      return this->data[row * this->nCols + col];
+   }
+
+   double Raster::operator()(size_t row, size_t col) const
+   {
+      return this->data[row * this->nCols + col];
+   }
+
+   double Raster::operator()(size_t ind) const
+   {
+      return this->data[ind];
+   }
+
+   double &Raster::operator()(size_t ind)
+   {
+      return this->data[ind];
+   }
+
+   double &Raster::at(size_t ind)
+   {
+      return this->data.at(ind);
+   }
+
+   double Raster::at(size_t ind) const
+   {
+      return this->data.at(ind);
+   }
+
+
+   KiLib::Raster Raster::fillLike(const KiLib::Raster &other, double fillValue, bool keepNoData)
+   {
+      KiLib::Raster new_(other);
+      for (double &val : new_.data)
+      {
+         if (keepNoData and (val == new_.nodata_value))
+         {
+            continue;
+         }
+         val = fillValue;
+      }
+      return new_;
    }
 
 } // namespace KiLib

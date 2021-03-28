@@ -28,7 +28,7 @@ namespace fs = std::filesystem;
 
 namespace KiLib
 {
-   void compare_raster(Raster r1, Raster r2, double meta_dt, double data_dt)
+   void compareMSE(const Raster& r1, const Raster& r2, double meta_dt, double data_dt)
    {
       // METADATA
       ASSERT_EQ(r1.nCols, r2.nCols);
@@ -52,151 +52,6 @@ namespace KiLib
       ASSERT_LE(mse, data_dt);
    }
 
-   TEST(Raster, CompareTiff2DEM)
-   {
-      std::set<std::pair<std::string, std::string>> files;
-
-      fs::path cwd  = fs::current_path();
-      fs::path path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
-
-      fs::current_path(path);
-
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         std::string base = (path / fs::path(it.path().stem().string())).string();
-         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + ".dem"));
-      }
-
-      for (const auto &[tif, dem] : files)
-         compare_raster(Raster(tif), Raster(dem), 1e-300, 1e-100);
-
-      fs::current_path(cwd);
-   }
-
-   TEST(Raster, Produce_CompareDEM2Tiff)
-   {
-      std::set<std::pair<std::string, std::string>> files;
-
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
-
-      fs::current_path(path);
-
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         if (!it.is_regular_file() && it.path().extension() != ".tif")
-            continue;
-
-         std::string base = (path / fs::path(it.path().stem().string())).string();
-
-         files.insert(std::make_pair<std::string, std::string>(base + ".dem", base + "_comparison.tif"));
-
-         Raster tmp(base + ".dem");
-         tmp.writeToFile(base + "_comparison.tif");
-      }
-
-      for (const auto &[dem, tif] : files)
-      {
-         compare_raster(Raster(dem), Raster(tif), 1e-300, 1e-100);
-         fs::remove(fs::path(tif));
-      }
-
-      fs::current_path(cwd);
-   }
-
-   TEST(Raster, Produce_CompareDEM2DEM)
-   {
-      std::set<std::pair<std::string, std::string>> files;
-
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
-
-      fs::current_path(path);
-
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         if (!it.is_regular_file() && it.path().extension() != ".tif")
-            continue;
-
-         std::string base = (path / fs::path(it.path().stem().string())).string();
-
-         files.insert(std::make_pair<std::string, std::string>(base + ".dem", base + "_comparison.dem"));
-
-         Raster tmp(base + ".dem");
-         tmp.writeToFile(base + "_comparison.dem");
-      }
-
-      for (const auto &[dem, cmp] : files)
-      {
-         compare_raster(Raster(dem), Raster(cmp), 1e-300, 1e-100);
-         fs::remove(fs::path(cmp));
-      }
-
-      fs::current_path(cwd);
-   }
-
-   TEST(Raster, Produce_CompareTiff2Tiff)
-   {
-      std::set<std::pair<std::string, std::string>> files;
-
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
-
-      fs::current_path(path);
-
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         if (!it.is_regular_file() && it.path().extension() != ".tif")
-            continue;
-
-         std::string base = (path / fs::path(it.path().stem().string())).string();
-
-         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + "_comparison.tif"));
-
-         Raster tmp(base + ".tif");
-         tmp.writeToFile(base + "_comparison.tif");
-      }
-
-      for (const auto &[tif, cmp] : files)
-      {
-         compare_raster(Raster(tif), Raster(cmp), 1e-300, 1e-100);
-         fs::remove(fs::path(cmp));
-      }
-
-      fs::current_path(cwd);
-   }
-
-   TEST(Raster, Produce_CompareTIFF2DEM)
-   {
-      std::set<std::pair<std::string, std::string>> files;
-
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
-
-      fs::current_path(path);
-
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         if (!it.is_regular_file() && it.path().extension() != ".tif")
-            continue;
-
-         std::string base = (path / fs::path(it.path().stem().string())).string();
-
-         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + "_comparison.dem"));
-
-         Raster tmp(base + ".tif");
-         tmp.writeToFile(base + "_comparison.dem");
-      }
-
-      for (const auto &[tif, dem] : files)
-      {
-         compare_raster(Raster(tif), Raster(dem), 1e-300, 1e-100);
-         fs::remove(fs::path(dem));
-      }
-
-      fs::current_path(cwd);
-   }
-
    TEST(Raster, ComputeSlopeZevenbergenThorne)
    {
       KiLib::Raster::SlopeMethod method = KiLib::Raster::SlopeMethod::ZevenbergenThorne;
@@ -215,7 +70,7 @@ namespace KiLib
          Raster slope_ref(base + "_slope.dem");
          Raster slope_cal = dem.ComputeSlope(method);
 
-         compare_raster(slope_ref, slope_cal, 1e-300, 1e-100);
+         compareMSE(slope_ref, slope_cal, 1e-300, 1e-100);
       }
    }
 
@@ -333,5 +188,34 @@ namespace KiLib
 
       double avg3 = dem.GetAverage(14, 2.0);
       ASSERT_DOUBLE_EQ(avg3, 13.5);
+   }
+
+   TEST(Raster, fillLike)
+   {
+      auto   cwd  = fs::current_path();
+      auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+      Raster dem(path.string());
+
+      Raster filledNODATA = Raster::fillLike(dem, 1.0, true);
+      Raster fullFilled   = Raster::fillLike(dem, 0.0, false);
+
+      double sumNODATA = std::accumulate(filledNODATA.data.begin(), filledNODATA.data.end(), 0.0); 
+      ASSERT_EQ(filledNODATA.nRows, dem.nRows);
+      ASSERT_EQ(filledNODATA.nCols, dem.nCols);
+      ASSERT_EQ(filledNODATA.xllcorner, dem.xllcorner);
+      ASSERT_EQ(filledNODATA.yllcorner, dem.yllcorner);
+      ASSERT_EQ(filledNODATA.cellsize, dem.cellsize);
+      ASSERT_EQ(filledNODATA.nodata_value, dem.nodata_value);
+      ASSERT_EQ(sumNODATA, -99979.0);
+
+      double sumFull = std::accumulate(fullFilled.data.begin(), fullFilled.data.end(), 0.0); 
+      ASSERT_EQ(fullFilled.nRows, dem.nRows);
+      ASSERT_EQ(fullFilled.nCols, dem.nCols);
+      ASSERT_EQ(fullFilled.xllcorner, dem.xllcorner);
+      ASSERT_EQ(fullFilled.yllcorner, dem.yllcorner);
+      ASSERT_EQ(fullFilled.cellsize, dem.cellsize);
+      ASSERT_EQ(fullFilled.nodata_value, dem.nodata_value);
+      ASSERT_EQ(sumFull, 0);
+
    }
 } // namespace KiLib

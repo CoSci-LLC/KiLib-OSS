@@ -24,12 +24,6 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-// Required for math constants on Windows
-#ifdef _WINDOWS
-#include <corecrt_math_defines.h>
-#endif
-
-
 namespace KiLib
 {
 

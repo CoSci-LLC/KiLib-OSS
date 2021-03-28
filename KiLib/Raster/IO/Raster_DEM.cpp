@@ -19,8 +19,10 @@
 
 
 #include <KiLib/Raster/Raster.hpp>
+#include <fstream>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+#include <sstream>
 
 namespace KiLib
 {
@@ -76,8 +78,8 @@ namespace KiLib
          }
          else
          {
-            std::cerr << "Unexpected value in header!" << std::endl;
-            return;
+            spdlog::error("Unexpected value in header!");
+            exit(EXIT_FAILURE);
          }
       }
 
@@ -99,9 +101,9 @@ namespace KiLib
          }
       }
 
-      this->width       = (this->nCols - 1) * this->cellsize;
-      this->height      = (this->nRows - 1) * this->cellsize;
-      this->nData       = this->nRows * this->nCols;
+      this->width  = (this->nCols - 1) * this->cellsize;
+      this->height = (this->nRows - 1) * this->cellsize;
+      this->nData  = this->nRows * this->nCols;
 
       rasterFile.close();
    }
