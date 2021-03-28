@@ -20,10 +20,9 @@
 
 #pragma once
 #include <algorithm>
-#define _USE_MATH_DEFINES
 #include <cmath>
-#include <string>
 #include <spdlog/spdlog.h>
+#include <string>
 
 // Required for math constants on Windows
 #ifdef _WINDOWS

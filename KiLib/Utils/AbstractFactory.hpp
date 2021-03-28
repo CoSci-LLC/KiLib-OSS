@@ -28,7 +28,7 @@ public:
       }
       catch (std::exception &e)
       {
-         spdlog::error("Unknown {}! Available options: {}", Enum::_name(), fmt::join(Enum::_names(), ", "));
+         spdlog::error("Unknown {} '{}'! Available options: {}", Enum::_name(), val, fmt::join(Enum::_names(), ", "));
          exit(EXIT_FAILURE);
       }
    }

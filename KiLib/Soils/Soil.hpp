@@ -20,16 +20,12 @@
 
 #pragma once
 
-#include <KiLib/Soils/Soils.hpp>
-#include <KiLib/Utils/AbstractFactory.hpp>
-#include <KiLib/Utils/enum.hpp>
+#include <KiLib/Soils/Soil.hpp>
+#include <cmath>
 #include <string>
 
 namespace KiLib::Soils
 {
-   BETTER_ENUM(SoilID, int, ch, cl, gc, gm, gp, gw, mh, ml, oh, ol, sc, sm, sp, sw)
-   const std::vector<std::string> availableSoils(SoilID::_names().begin(), SoilID::_names().end());
-
    // Parameters for a uniform distribution of values
    struct ValueUniform
    {
@@ -63,28 +59,6 @@ namespace KiLib::Soils
    class Soil
    {
    public:
-      static const AbsFac<SoilID, Soil> factory;
-
-      std::string name;
-      std::string longname;
-
-      double porosity;
-      double saturatedWaterContent;
-      double residualWaterContent;
-      double fieldCapacity;
-      double initWaterContent;
-      double waterExchangeTerm;
-      double vgWetAlpha1;
-      double vgWetN1;
-      double poreFracMatrix;
-      double poreFracFractures;
-      double maxTensileStrain;
-
-      ValueDistribution frictionAngle;
-      ValueDistribution densityDry;
-      ValueDistribution cohesion;
-      ValueDistribution conductivity;
-
       std::string GetName() const;
       std::string GetLongName() const;
 
@@ -104,5 +78,26 @@ namespace KiLib::Soils
       ValueDistribution GetDensityDry() const;
       ValueDistribution GetCohesion() const;
       ValueDistribution GetConductivity() const;
+
+   protected:
+      std::string name;
+      std::string longname;
+
+      double porosity;
+      double saturatedWaterContent;
+      double residualWaterContent;
+      double fieldCapacity;
+      double initWaterContent;
+      double waterExchangeTerm;
+      double vgWetAlpha1;
+      double vgWetN1;
+      double poreFracMatrix;
+      double poreFracFractures;
+      double maxTensileStrain;
+
+      ValueDistribution frictionAngle;
+      ValueDistribution densityDry;
+      ValueDistribution cohesion;
+      ValueDistribution conductivity;
    };
 } // namespace KiLib::Soils

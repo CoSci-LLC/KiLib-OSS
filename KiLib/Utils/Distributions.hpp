@@ -20,7 +20,6 @@
 
 #pragma once
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 
 // Required for math constants on Windows

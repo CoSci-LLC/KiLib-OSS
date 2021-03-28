@@ -22,24 +22,6 @@
 
 using namespace KiLib::Soils;
 
-const AbsFac<SoilID, Soil> Soil::factory = {{
-   {SoilID::ch, []() -> Soil { return Soils::ch(); }},
-   {SoilID::cl, []() -> Soil { return Soils::cl(); }},
-   {SoilID::gc, []() -> Soil { return Soils::gc(); }},
-   {SoilID::gm, []() -> Soil { return Soils::gm(); }},
-   {SoilID::gp, []() -> Soil { return Soils::gp(); }},
-   {SoilID::gw, []() -> Soil { return Soils::gw(); }},
-   {SoilID::mh, []() -> Soil { return Soils::mh(); }},
-   {SoilID::ml, []() -> Soil { return Soils::ml(); }},
-   {SoilID::oh, []() -> Soil { return Soils::oh(); }},
-   {SoilID::ol, []() -> Soil { return Soils::ol(); }},
-   {SoilID::sc, []() -> Soil { return Soils::sc(); }},
-   {SoilID::sm, []() -> Soil { return Soils::sm(); }},
-   {SoilID::sp, []() -> Soil { return Soils::sp(); }},
-   {SoilID::sw, []() -> Soil { return Soils::sw(); }},
-}};
-
-
 std::string Soil::GetName() const
 {
    return this->name;

@@ -22,7 +22,6 @@
 
 #include <KiLib/Utils/Vec3.hpp>
 #include <algorithm>
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <fstream>
 #include <functional>

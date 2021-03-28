@@ -20,20 +20,12 @@
 
 #pragma once
 
-#define _USE_MATH_DEFINES
 #include <KiLib/Soils/Soil.hpp>
-#include <assert.h>
-#include <cmath>
-#include <filesystem>
-#include <iostream>
-#include <spdlog/spdlog.h>
-#include <string>
-#include <unordered_map>
 
 
 namespace KiLib::Soils
 {
-   class gp : public virtual Soil
+   class gp : public Soil
    {
    public:
       gp()
