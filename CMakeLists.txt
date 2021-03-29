@@ -86,6 +86,8 @@ install(TARGETS KiLib
 )
 
 
+add_compile_definitions(_USE_MATH_DEFINES)
+
 # Define compiler options for each compiler
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
@@ -103,5 +105,5 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # using Visual Studio C++
     message(STATUS "msvc detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc /D_USE_MATH_DEFINES)
+    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()
