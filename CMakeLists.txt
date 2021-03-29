@@ -86,8 +86,6 @@ install(TARGETS KiLib
 )
 
 
-add_compile_definitions(_USE_MATH_DEFINES)
-
 # Define compiler options for each compiler
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
