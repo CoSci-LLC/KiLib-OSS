@@ -17,11 +17,11 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Hydrology/Hydrology.hpp>
 #include <algorithm>
-#include <cmath>
 
 using namespace KiLib::Hydrology;
 

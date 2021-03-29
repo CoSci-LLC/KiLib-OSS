@@ -23,8 +23,9 @@
  * Makes sure that the double is a safe value before returning it.
  */
 #pragma once
-#include <KiLib/Exceptions/InvalidArgument.hpp>
+#define _USE_MATH_DEFINES
 #include <cmath>
+#include <KiLib/Exceptions/InvalidArgument.hpp>
 
 class UnsafeDouble
 {
