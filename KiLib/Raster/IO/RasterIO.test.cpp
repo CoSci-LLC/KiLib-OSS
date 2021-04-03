@@ -28,7 +28,7 @@ namespace fs = std::filesystem;
 
 namespace KiLib
 {
-   void compare_raster(const Raster& r1, const Raster& r2, double meta_dt, double data_dt)
+   void compare_raster(const Raster &r1, const Raster &r2, double meta_dt, double data_dt)
    {
       // METADATA
       ASSERT_EQ(r1.nCols, r2.nCols);

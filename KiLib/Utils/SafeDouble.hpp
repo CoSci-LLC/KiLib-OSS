@@ -24,8 +24,8 @@
  */
 #pragma once
 #define _USE_MATH_DEFINES
-#include <cmath>
 #include <KiLib/Exceptions/InvalidArgument.hpp>
+#include <cmath>
 
 class SafeDouble
 {

@@ -1,6 +1,6 @@
 #include <KiLib/Raster/Raster.hpp>
-#include <map>
 #include <functional>
+#include <map>
 
 namespace KiLib
 {
@@ -74,4 +74,4 @@ namespace KiLib
 
       return slope;
    }
-}
+} // namespace KiLib
