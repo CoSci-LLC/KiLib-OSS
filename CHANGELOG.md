@@ -10,6 +10,8 @@ Notable changes to this project will be documented in this file.
 - Add Rasterize method to raster
 - Add GetAverage method to raster
 - Refactored soil class, construction now with factory and enum
+- Add getValid indices and assertAgreeDim to Raster class
+- Split raster class up a bit
 
 ### Fixed
 
