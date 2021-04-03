@@ -296,4 +296,61 @@ namespace KiLib
       return new_;
    }
 
+   std::vector<size_t> Raster::getValidIndices(const std::vector<const KiLib::Raster *> &rasts)
+   {
+      Raster::assertAgreeDim(rasts);
+      std::vector<size_t> inds;
+
+      for (size_t i = 0; i < rasts[0]->data.size(); i++)
+      {
+         bool foundBad = false;
+
+         // Check all rasters at index i for nodata
+         for (const KiLib::Raster *rast : rasts)
+         {
+            if (rast->operator()(i) == rast->nodata_value)
+            {
+               foundBad = true;
+               break;
+            }
+         }
+
+         // If found none, append i
+         if (foundBad == false)
+         {
+            inds.push_back(i);
+         }
+      }
+
+      return inds;
+   }
+
+   void Raster::assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts)
+   {
+      if (rasts.size() == 0)
+      {
+         return;
+      }
+
+      double cellsize = rasts[0]->cellsize;
+      double width    = rasts[0]->width;
+      double height   = rasts[0]->height;
+      size_t nCols    = rasts[0]->nCols;
+      size_t nRows    = rasts[0]->nRows;
+      size_t nData    = rasts[0]->nData;
+
+      // clang-format off
+      for (const KiLib::Raster* rast : rasts) {
+         if (
+            (rast->cellsize != cellsize) or
+            (rast->width    != width)    or
+            (rast->height   != height)   or
+            (rast->nRows    != nRows)    or
+            (rast->nCols    != nCols)    or
+            (rast->nData    != nData)
+         ) {
+            throw std::invalid_argument("Raster dimensions do not agree!");
+         }
+      }
+   }
 } // namespace KiLib

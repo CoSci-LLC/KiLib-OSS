@@ -244,7 +244,9 @@ namespace KiLib
          return outRast;
       }
 
-      double GetAverage(size_t ind, double radius);
+      double                     GetAverage(size_t ind, double radius);
+      static std::vector<size_t> getValidIndices(const std::vector<const KiLib::Raster *> &rasts);
+      static void                assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
 
    private:
       void fromDEM(const std::string &path);

@@ -28,7 +28,7 @@ namespace fs = std::filesystem;
 
 namespace KiLib
 {
-   void compareMSE(const Raster& r1, const Raster& r2, double meta_dt, double data_dt)
+   void compareMSE(const Raster &r1, const Raster &r2, double meta_dt, double data_dt)
    {
       // METADATA
       ASSERT_EQ(r1.nCols, r2.nCols);
@@ -199,7 +199,7 @@ namespace KiLib
       Raster filledNODATA = Raster::fillLike(dem, 1.0, true);
       Raster fullFilled   = Raster::fillLike(dem, 0.0, false);
 
-      double sumNODATA = std::accumulate(filledNODATA.data.begin(), filledNODATA.data.end(), 0.0); 
+      double sumNODATA = std::accumulate(filledNODATA.data.begin(), filledNODATA.data.end(), 0.0);
       ASSERT_EQ(filledNODATA.nRows, dem.nRows);
       ASSERT_EQ(filledNODATA.nCols, dem.nCols);
       ASSERT_EQ(filledNODATA.xllcorner, dem.xllcorner);
@@ -208,7 +208,7 @@ namespace KiLib
       ASSERT_EQ(filledNODATA.nodata_value, dem.nodata_value);
       ASSERT_EQ(sumNODATA, -99979.0);
 
-      double sumFull = std::accumulate(fullFilled.data.begin(), fullFilled.data.end(), 0.0); 
+      double sumFull = std::accumulate(fullFilled.data.begin(), fullFilled.data.end(), 0.0);
       ASSERT_EQ(fullFilled.nRows, dem.nRows);
       ASSERT_EQ(fullFilled.nCols, dem.nCols);
       ASSERT_EQ(fullFilled.xllcorner, dem.xllcorner);
@@ -216,6 +216,60 @@ namespace KiLib
       ASSERT_EQ(fullFilled.cellsize, dem.cellsize);
       ASSERT_EQ(fullFilled.nodata_value, dem.nodata_value);
       ASSERT_EQ(sumFull, 0);
+   }
 
+   TEST(Raster, assertAgreeDim)
+   {
+      auto cwd = fs::current_path();
+
+      auto path1 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      auto path2 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_slope.dem");
+      auto path3 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3.dem");
+
+      Raster dem1(path1.string());
+      Raster dem2(path2.string());
+      Raster dem3(path3.string());
+
+      Raster::assertAgreeDim({&dem1, &dem2, &dem1, &dem2});
+
+      // this tests that the expected exception is thrown
+      EXPECT_THROW(Raster::assertAgreeDim({&dem1, &dem3}), std::invalid_argument);
+   }
+
+   TEST(Raster, getValidIndices)
+   {
+      auto cwd = fs::current_path();
+
+      auto path1 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/validRast1.dem");
+      auto path2 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/validRast2.dem");
+      auto path3 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3.dem");
+
+      Raster dem1(path1.string());
+      Raster dem2(path2.string());
+      Raster dem3(path3.string());
+
+      // this tests that the expected exception is thrown
+      EXPECT_THROW(Raster::getValidIndices({&dem1, &dem3}), std::invalid_argument);
+
+      std::vector<size_t> inds = Raster::getValidIndices({&dem1, &dem2});
+      ASSERT_TRUE(std::is_sorted(inds.begin(), inds.end()));
+
+      // Make sure all inds are valid data
+      for (auto ind : inds)
+      {
+         ASSERT_NE(dem1(ind), dem1.nodata_value);
+         ASSERT_NE(dem2(ind), dem2.nodata_value);
+      }
+
+      // Make sure all valid indices are in inds
+      for (size_t i = 0; i < dem1.data.size(); i++)
+      {
+         if ((dem1(i) == dem1.nodata_value) or (dem2(i) == dem2.nodata_value))
+         {
+            continue;
+         }
+
+         ASSERT_TRUE(std::find(inds.begin(), inds.end(), i) != inds.end());
+      }
    }
 } // namespace KiLib
