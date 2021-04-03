@@ -3,6 +3,7 @@
 # Add sources to the main project
 target_sources(${projectName} PRIVATE
 	Raster.cpp
+	ComputeSlope.cpp
 )
 
 # See other CMakeLists.txt files for examples on how to add test sources to this
