@@ -37,6 +37,18 @@ $ cmake ..
 $ cmake --build .
 ```
 
+### MacOS
+
+To install on MacOS, you first need to install [HomeBrew](https://brew.sh/).
+
+Then, run:
+
+```bash
+brew install libomp cmake
+```
+
+Then you can build normally
+
 ## Usage
 To automatically download KiLib, add the following to your CMakeLists.txt:
 ```
