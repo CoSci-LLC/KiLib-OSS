@@ -41,12 +41,12 @@ namespace KiLib::Random
    double qtri(const double p, const double a, const double b, const double c);
    double qtri(const double p, const double a, const double b, const double c);
 
-   template <typename T> double Random::mean(std::vector<T> data)
+   template <typename T> double mean(std::vector<T> data)
    {
       return std::accumulate(data.begin(), data.end(), 0.0) / data.size();
    };
 
-   template <typename T> double Random::sd(std::vector<T> data)
+   template <typename T> double sd(std::vector<T> data)
    {
       double mean      = Random::mean(data);
       double summation = 0.0;
