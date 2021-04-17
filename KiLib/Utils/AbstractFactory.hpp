@@ -1,3 +1,5 @@
+#pragma once
+
 #include <KiLib/Utils/enum.hpp>
 #include <functional>
 #include <iostream>
