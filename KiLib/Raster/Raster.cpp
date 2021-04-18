@@ -324,33 +324,33 @@ namespace KiLib
 
       return inds;
    }
-
+   
    void Raster::assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts)
    {
       if (rasts.size() == 0)
       {
          return;
       }
-
-      double cellsize = rasts[0]->cellsize;
-      double width    = rasts[0]->width;
-      double height   = rasts[0]->height;
-      size_t nCols    = rasts[0]->nCols;
-      size_t nRows    = rasts[0]->nRows;
-      size_t nData    = rasts[0]->nData;
-
-      // clang-format off
-      for (const KiLib::Raster* rast : rasts) {
-         if (
-            (rast->cellsize != cellsize) or
-            (rast->width    != width)    or
-            (rast->height   != height)   or
-            (rast->nRows    != nRows)    or
-            (rast->nCols    != nCols)    or
-            (rast->nData    != nData)
-         ) {
-            throw std::invalid_argument("Raster dimensions do not agree!");
+      
+      auto cmp = [&](double a, double b, double eps, std::string val) {
+         if (std::abs(a-b) > eps) {
+            throw std::invalid_argument(fmt::format("Raster {} sizes do not agree! Got {} and {}", val, a, b));
          }
+      };
+
+      // Cell Size
+      for (const KiLib::Raster* rast : rasts) {
+         cmp(rast->cellsize, rasts.at(0)->cellsize, 1e-2, "CellSize");
+      }
+      
+      // nRows
+      for (const KiLib::Raster* rast : rasts) {
+         cmp(rast->nRows, rasts.at(0)->nRows, 0.0, "Num Rows");
+      }
+      
+      // nCols
+      for (const KiLib::Raster* rast : rasts) {
+         cmp(rast->nCols, rasts.at(0)->nCols, 0.0, "Num Cols");
       }
    }
 } // namespace KiLib
