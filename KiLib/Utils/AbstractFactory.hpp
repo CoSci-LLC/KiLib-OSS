@@ -34,4 +34,14 @@ public:
          exit(EXIT_FAILURE);
       }
    }
+
+   Enum IDToString(Enum val) const
+   {
+      return Enum::_to_string(val);
+   }
+   
+   std::string StringToID(std::string val) const
+   {
+      return Enum::_from_string_nocase(val.c_str());
+   }
 };
