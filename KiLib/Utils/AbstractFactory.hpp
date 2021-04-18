@@ -42,6 +42,14 @@ public:
    
    Enum StringToID(std::string val) const
    {
-      return Enum::_from_string_nocase(val.c_str());
+      try
+      {
+         return Enum::_from_string_nocase(val.c_str());
+      }
+      catch (std::exception &e)
+      {
+         spdlog::error("Unknown {} '{}'! Available options: {}", Enum::_name(), val, fmt::join(Enum::_names(), ", "));
+         exit(EXIT_FAILURE);
+      }
    }
 };
