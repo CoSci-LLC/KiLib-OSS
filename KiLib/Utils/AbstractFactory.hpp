@@ -35,12 +35,12 @@ public:
       }
    }
 
-   Enum IDToString(Enum val) const
+   std::string IDToString(Enum val) const
    {
       return Enum::_to_string(val);
    }
    
-   std::string StringToID(std::string val) const
+   Enum StringToID(std::string val) const
    {
       return Enum::_from_string_nocase(val.c_str());
    }
