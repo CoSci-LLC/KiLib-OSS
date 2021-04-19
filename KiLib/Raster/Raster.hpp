@@ -24,8 +24,10 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <random>
 #include <sstream>
 #include <string>
@@ -57,7 +59,7 @@ namespace KiLib
 
       bool constructed; // Flag indicating whether a file was loaded
 
-      Raster(std::string path);
+      Raster(const std::string &path);
       Raster();
 
       // Creates a raster filled with zeros with same metadata as other.
@@ -65,6 +67,22 @@ namespace KiLib
       {
          KiLib::Raster new_(other);
          std::fill(new_.data.begin(), new_.data.end(), 0.0);
+         return new_;
+      }
+
+      // Creates a raster with same metadata as other, filled with fillValue.
+      // If keepNoData is true, returned raster will have nodata in same locations as other.
+      // Otherwise every value will be fillValue
+      static KiLib::Raster fillLike(const KiLib::Raster &other, double fillValue, bool keepNoData)
+      {
+         KiLib::Raster new_(other);
+         for (size_t i = 0; i < other.nData; i++)
+         {
+            if (new_(i) != new_.nodata_value)
+            {
+               new_(i) = fillValue;
+            }
+         }
          return new_;
       }
 
@@ -76,7 +94,7 @@ namespace KiLib
          return new_;
       }
 
-      void writeToFile(const std::string path) const;
+      void writeToFile(const std::string &path) const;
 
       /**
        * @brief Prints basic information about this Raster
@@ -89,6 +107,11 @@ namespace KiLib
        * Returns flat index to nearest cell in raster
        */
       size_t getNearestCell(const KiLib::Vec3 &pos);
+
+      /**
+       * Returns flat index to nearest cell in raster
+       */
+      size_t flattenIndex(size_t r, size_t c);
 
       KiLib::Vec3 getCellPos(size_t ind);
 
@@ -221,6 +244,78 @@ namespace KiLib
 
       KiLib::Raster        ComputeSlope(KiLib::Raster::SlopeMethod method) const;
       static KiLib::Raster ComputeSlopeZevenbergenThorne(const KiLib::Raster &inp);
+
+      /**
+       * @brief Takes in a vector of objects, and takes the mean of a given attribute at each cell position in a raster.
+       * The attributes and corresponding positions are mapped to the nearest cell in the raster, and the mean is taken
+       * over cells.
+       *
+       * @tparam T obj
+       * @param ref Reference raster to determine shape, size, nodata, etc
+       * @param objs vector of objects
+       * @param posP Pointer to position attribute (i.e. &Landslide::pos)
+       * @param attrP Pointer to attribute to rasterize (i.e. &Landslide::safetyFactor)
+       * @param doPopulate function that dictates whether or not that instace will be rasterized
+       * @param width Number of cells to average over. 0 is just cell at i,j; 1 is 9x9 region around i,j; and so on.
+       * @return KiLib::Raster
+       *
+       */
+      template <class T>
+      static KiLib::Raster Rasterize(
+         const KiLib::Raster &ref, const std::vector<T> &objs, std::function<KiLib::Vec3(T)> getPos,
+         std::function<double(T)> getAttr, int width = 0)
+      {
+         KiLib::Raster sumRast = KiLib::Raster::fillLike(ref, 0.0, true);
+         KiLib::Raster outRast = KiLib::Raster::fillLike(ref, 0.0, true);
+
+         std::unordered_map<size_t, double> counts;
+
+         for (auto &obj : objs)
+         {
+            KiLib::Vec3 pos  = getPos(obj);
+            double      attr = getAttr(obj);
+
+            size_t flatInd  = sumRast.getNearestCell(pos);
+            counts[flatInd] = counts.count(flatInd) == 0 ? 1.0 : counts[flatInd] + 1;
+
+            sumRast(flatInd) += attr;
+         }
+
+         for (int r = 0; r < (int)sumRast.nRows; r++)
+         {
+            for (int c = 0; c < (int)sumRast.nCols; c++)
+            {
+               // Skip nodata
+               if (sumRast.at(r, c) == sumRast.nodata_value)
+               {
+                  continue;
+               }
+               double count = 0.0;
+               double sum   = 0.0;
+               for (int ri = r - width; ri <= (r + width); ri++)
+               {
+                  for (int ci = c - width; ci <= (c + width); ci++)
+                  {
+                     // Dont sum out of bounds, cant sum where we have no points
+                     if (
+                        counts.count(sumRast.flattenIndex(ri, ci)) == 0 or ri < 0 or ri >= (int)sumRast.nRows or
+                        ci < 0 or ci >= (int)sumRast.nCols)
+                     {
+                        continue;
+                     }
+
+                     count += counts[sumRast.flattenIndex(ri, ci)];
+                     sum += sumRast.at(ri, ci);
+                  }
+               }
+               outRast.at(r, c) = sum / count;
+            }
+         }
+
+         return outRast;
+      }
+
+      double GetAverage(size_t ind, double radius);
 
    private:
       void fromDEM(const std::string path);

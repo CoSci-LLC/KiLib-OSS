@@ -7,7 +7,7 @@ set(projectName KiLibObjLib)
 set(projectTestName KiLib.test)
 
 # Create the project name and version
-project(KiLib VERSION 2.5.0 LANGUAGES CXX)
+project(KiLib VERSION 2.5.1 LANGUAGES CXX)
 
 
 # Add KiLib Object Library
@@ -116,5 +116,5 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # using Visual Studio C++
     message(STATUS "msvc detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
+    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc /D_USE_MATH_DEFINES)
 endif()
