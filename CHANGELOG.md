@@ -2,7 +2,7 @@
 
 Notable changes to this project will be documented in this file.
 
-## vX.X.X
+## v2.5.1
 ---
 ### Added
 
