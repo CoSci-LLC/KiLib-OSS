@@ -22,19 +22,13 @@
 
 #include <KiLib/Exceptions/NotImplemented.hpp>
 
-namespace KiLib
+namespace KiLib::Stability::SafetyFactor
 {
-   namespace Stability
+   class SafetyFactor
    {
-      namespace SafetyFactor
-      {
-         class SafetyFactor
-         {
-         public:
-            SafetyFactor(){};
+   public:
+      SafetyFactor(){};
 
-            virtual double ComputeSF();
-         };
-      } // namespace SafetyFactor
-   }    // namespace Stability
-} // namespace KiLib
+      virtual double ComputeSF();
+   };
+} // namespace KiLib::Stability::SafetyFactor

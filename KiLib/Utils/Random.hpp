@@ -27,28 +27,26 @@
 #include <random>
 #include <vector>
 
-namespace KiLib
+namespace KiLib::Random
 {
-   class Random
-   {
-   public:
-      static std::vector<double>          runif(int, double, double, std::mt19937_64 &);
-      static std::vector<double>          rnorm(int, std::vector<double>, double, std::mt19937_64 &);
-      static std::vector<double>          rnorm(int, double, double, std::mt19937_64 &);
-      static std::vector<double>          rtnorml(int, double, double, double, std::mt19937_64 &);
-      static std::vector<double>          pgamma(std::vector<double>, double);
-      template <typename T> static double mean(std::vector<T>);
-      template <typename T> static double sd(std::vector<T>);
+   std::vector<double> runif(int count, double min, double max, std::mt19937_64 &gen);
+   std::vector<double> rnorm(int count, std::vector<double> means, double sd, std::mt19937_64 &gen);
+   std::vector<double> rnorm(int count, double mean, double sd, std::mt19937_64 &gen);
+   std::vector<double> rtnorml(int count, double mean, double sd, double a, std::mt19937_64 &gen);
+   std::vector<double> pgamma(const std::vector<double> &x, double shape);
 
-      static double qtri(const double p, const double a, const double b, const double c);
-   };
+   template <typename T> double mean(std::vector<T>);
+   template <typename T> double sd(std::vector<T>);
 
-   template <typename T> double Random::mean(std::vector<T> data)
+   double qtri(const double p, const double a, const double b, const double c);
+   double qtri(const double p, const double a, const double b, const double c);
+
+   template <typename T> double mean(std::vector<T> data)
    {
       return std::accumulate(data.begin(), data.end(), 0.0) / data.size();
    };
 
-   template <typename T> double Random::sd(std::vector<T> data)
+   template <typename T> double sd(std::vector<T> data)
    {
       double mean      = Random::mean(data);
       double summation = 0.0;
@@ -59,4 +57,4 @@ namespace KiLib
       }
       return std::sqrt(summation / (data.size() - 1));
    };
-} // namespace KiLib
+} // namespace KiLib::Random

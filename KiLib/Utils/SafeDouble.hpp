@@ -23,6 +23,7 @@
  * Makes sure that the double is a safe value before returning it.
  */
 #pragma once
+#define _USE_MATH_DEFINES
 #include <KiLib/Exceptions/InvalidArgument.hpp>
 #include <cmath>
 

@@ -19,12 +19,14 @@
 
 
 #include <KiLib/Raster/Raster.hpp>
+#include <fstream>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+#include <sstream>
 
 namespace KiLib
 {
-   void Raster::fromDEM(const std::string path)
+   void Raster::fromDEM(const std::string &path)
    {
       std::ifstream      rasterFile;
       std::string        line, key;
@@ -76,8 +78,8 @@ namespace KiLib
          }
          else
          {
-            std::cerr << "Unexpected value in header!" << std::endl;
-            return;
+            spdlog::error("Unexpected value in header!");
+            exit(EXIT_FAILURE);
          }
       }
 
@@ -99,16 +101,15 @@ namespace KiLib
          }
       }
 
-      this->width       = (this->nCols - 1) * this->cellsize;
-      this->height      = (this->nRows - 1) * this->cellsize;
-      this->nData       = this->nRows * this->nCols;
-      this->constructed = true;
+      this->width  = (this->nCols - 1) * this->cellsize;
+      this->height = (this->nRows - 1) * this->cellsize;
+      this->nData  = this->nRows * this->nCols;
 
       rasterFile.close();
    }
 
 
-   void Raster::toDEM(const std::string path) const
+   void Raster::toDEM(const std::string &path) const
    {
       std::ofstream outFile = std::ofstream(path);
       if (!outFile.is_open())

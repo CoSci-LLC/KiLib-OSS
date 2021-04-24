@@ -47,7 +47,6 @@ endif()
 include(CMake/target_sources_test.cmake)
 include(CMake/spdlog.cmake.in)
 include(CMake/stats.cmake.in)
-include(CMake/yaml-cpp.cmake.in)
 include(CMake/libtiff.cmake.in)
 
 # Include the test application
@@ -72,18 +71,6 @@ target_include_directories(${projectName}
 install(TARGETS ${projectName} tiff spdlog
         EXPORT KiLibTargets
         INCLUDES DESTINATION include
-)
-
-# Define KILIB_RESOURCE_PATH
-target_compile_definitions(${projectName} PUBLIC
-    KILIB_RESOURCE_PATH="${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources"
-)
-
-# Install soil resources
-message("Resource install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/KiLib/resources")
-install(DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/KiLib
 )
 
 install(EXPORT KiLibTargets
@@ -116,5 +103,5 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # using Visual Studio C++
     message(STATUS "msvc detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc /D_USE_MATH_DEFINES)
+    target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()

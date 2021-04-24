@@ -20,12 +20,8 @@
 
 #pragma once
 
+#define _USE_MATH_DEFINES
 #include <cmath>
-
-// Required for math constants on Windows
-#ifdef _WINDOWS
-#include <corecrt_math_defines.h>
-#endif
 
 namespace KiLib
 {

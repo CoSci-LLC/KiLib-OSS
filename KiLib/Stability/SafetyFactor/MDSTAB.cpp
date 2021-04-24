@@ -18,6 +18,7 @@
  */
 
 
+#define _USE_MATH_DEFINES
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Stability/SafetyFactor/MDSTAB.hpp>
 #include <KiLib/Stability/SafetyFactor/SafetyFactor.hpp>
