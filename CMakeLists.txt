@@ -7,7 +7,7 @@ set(projectName KiLibObjLib)
 set(projectTestName KiLib.test)
 
 # Create the project name and version
-project(KiLib VERSION 2.5.1 LANGUAGES CXX)
+project(KiLib VERSION 3.0.0 LANGUAGES CXX)
 
 
 # Add KiLib Object Library
