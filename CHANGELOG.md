@@ -2,6 +2,21 @@
 
 Notable changes to this project will be documented in this file.
 
+## v3.0.0
+---
+
+### Fixed
+
+- MacOS compilation will work now
+- Compiles with Clang
+
+### Changed
+
+- Breaking changes with soils class
+- Raster has been updated
+- Random is now a namespace
+
+
 ## v2.5.1
 ---
 ### Added
