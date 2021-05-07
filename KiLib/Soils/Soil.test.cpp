@@ -18,7 +18,7 @@
  */
 
 
-#include <KiLib/Soils/SoilType.hpp>
+#include <KiLib/KiLib.hpp>
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
 
@@ -27,6 +27,15 @@ namespace KiLib
 {
    TEST(Soil, getTest)
    {
-      KiLib::SoilType::get("ch");
+      KiLib::Soils::Soil a = KiLib::Soils::factory.get("ch");
+      KiLib::Soils::Soil b = KiLib::Soils::factory.get(KiLib::Soils::SoilID::ml);
+
+      ASSERT_EQ(a.GetConductivity().GetUniformPrimula().GetMax(), 1e-06);
+      ASSERT_EQ(a.GetLongName(), "Clay of high plasticity, fat clay");
+      ASSERT_EQ(a.GetCohesion().GetConstant(), 25000.0);
+
+      ASSERT_EQ(b.GetFrictionAngle().GetNormal().GetMean(), 33 * M_PI / 180.0);
+      ASSERT_EQ(b.GetLongName(), "Silt");
+      ASSERT_NE(b.GetLongName(), "SDJKFLJSdKLFJSDFKL");
    }
 } // namespace KiLib

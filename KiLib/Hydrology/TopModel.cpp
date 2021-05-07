@@ -17,7 +17,7 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
+#define _USE_MATH_DEFINES
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Hydrology/Hydrology.hpp>
 #include <algorithm>

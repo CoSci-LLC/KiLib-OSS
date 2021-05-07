@@ -2,6 +2,21 @@
 
 Notable changes to this project will be documented in this file.
 
+## v3.0.0
+---
+
+### Fixed
+
+- MacOS compilation will work now
+- Compiles with Clang
+
+### Changed
+
+- Breaking changes with soils class
+- Raster has been updated
+- Random is now a namespace
+
+
 ## v2.5.1
 ---
 ### Added
@@ -9,6 +24,9 @@ Notable changes to this project will be documented in this file.
 - Add flattenIndex method to Raster
 - Add Rasterize method to raster
 - Add GetAverage method to raster
+- Refactored soil class, construction now with factory and enum
+- Add getValid indices and assertAgreeDim to Raster class
+- Split raster class up a bit
 
 ### Fixed
 

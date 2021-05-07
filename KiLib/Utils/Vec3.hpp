@@ -19,15 +19,11 @@
 
 
 #pragma once
+#define _USE_MATH_DEFINES
 #include <algorithm>
 #include <cmath>
+#include <spdlog/spdlog.h>
 #include <string>
-
-// Required for math constants on Windows
-#ifdef _WINDOWS
-#include <corecrt_math_defines.h>
-#endif
-
 
 namespace KiLib
 {
@@ -71,7 +67,7 @@ namespace KiLib
        */
       std::string toString() const
       {
-         return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + "," + std::to_string(this->z) + ")";
+         return fmt::format("({}, {}, {})", this->x, this->y, this->z);
       }
 
       static Vec3   cross(const Vec3 &a, const Vec3 &b);

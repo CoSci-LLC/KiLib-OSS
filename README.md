@@ -1,5 +1,5 @@
 # KiLib-OSS 
-#### Version v2.5.1
+#### Version v3.0.0
 
 *A Scientific Library for "Earth" (Ki) surface processes*
 
@@ -37,6 +37,18 @@ $ cmake ..
 $ cmake --build .
 ```
 
+### MacOS
+
+To install on MacOS, you first need to install [HomeBrew](https://brew.sh/).
+
+Then, run:
+
+```bash
+brew install libomp cmake
+```
+
+Then you can build normally
+
 ## Usage
 To automatically download KiLib, add the following to your CMakeLists.txt:
 ```
@@ -47,7 +59,7 @@ FetchContent_Populate(
 	kilib_proj
 	QUIET
 	GIT_REPOSITORY https://github.com/CoSci-LLC/KiLib-OSS.git
-  GIT_TAG v2.5.1
+    GIT_TAG v3.0.0
 	SOURCE_DIR     kilib_proj              # (Relative) path within in the build directory.
 )
 

@@ -22,16 +22,13 @@
 
 #include <KiLib/Exceptions/NotImplemented.hpp>
 
-namespace KiLib
+namespace KiLib::Hydrology
 {
-   namespace Hydrology
+   class BaseHydrology
    {
-      class BaseHydrology
-      {
-      public:
-         BaseHydrology(){};
+   public:
+      BaseHydrology(){};
 
-         double ComputeWetness() const;
-      };
-   } // namespace Hydrology
-} // namespace KiLib
+      double ComputeWetness() const;
+   };
+} // namespace KiLib::Hydrology

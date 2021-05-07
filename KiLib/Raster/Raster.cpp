@@ -20,9 +20,7 @@
 
 #include <KiLib/Raster/Raster.hpp>
 #include <filesystem>
-#include <map>
 #include <spdlog/fmt/ostr.h>
-#include <spdlog/spdlog.h>
 
 namespace fs = std::filesystem;
 
@@ -30,17 +28,15 @@ namespace KiLib
 {
    Raster::Raster()
    {
-      this->constructed = false;
-      this->nRows       = 0;
-      this->nCols       = 0;
-      this->nData       = 0;
+      this->nRows = 0;
+      this->nCols = 0;
+      this->nData = 0;
+      this->data.resize(0);
    }
 
    // Load data in Raster format from specified path
    Raster::Raster(const std::string &path)
    {
-      this->constructed = false;
-
       auto ext = fs::path(path).extension();
 
       if (ext == ".asc" || ext == ".dem")
@@ -52,8 +48,6 @@ namespace KiLib
          spdlog::error("Unsupported file type given to raster constructor: {}", ext);
          exit(EXIT_FAILURE);
       }
-
-      this->constructed = true;
    }
 
    // Returns (bilinear) interpolated data value at specified position
@@ -151,11 +145,11 @@ namespace KiLib
    KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen)
    {
       KiLib::Vec3                            point;
-      std::uniform_real_distribution<double> xDist(0, this->width);
-      std::uniform_real_distribution<double> yDist(0, this->height);
+      std::uniform_real_distribution<double> xDist(this->xllcorner, this->width);
+      std::uniform_real_distribution<double> yDist(this->yllcorner, this->height);
 
-      point.x = this->xllcorner + xDist(gen);
-      point.y = this->yllcorner + yDist(gen);
+      point.x = xDist(gen);
+      point.y = yDist(gen);
       point.z = this->getInterpBilinear(point);
 
       return point;
@@ -186,77 +180,6 @@ namespace KiLib
       pos.z           = this->getInterpBilinear(pos);
 
       return pos;
-   }
-
-   static const auto EnumToSlope =
-      std::map<KiLib::Raster::SlopeMethod, std::function<KiLib::Raster(const KiLib::Raster &)>>{
-         {KiLib::Raster::SlopeMethod::ZevenbergenThorne, KiLib::Raster::ComputeSlopeZevenbergenThorne},
-      };
-
-   KiLib::Raster KiLib::Raster::ComputeSlope(KiLib::Raster::SlopeMethod method) const
-   {
-      return EnumToSlope.at(method)(*this);
-   }
-
-   // Based on Zevenbergen, L.W. and Thorne, C.R. (1987), Quantitative analysis of land surface topography. Earth Surf.
-   // Process. Landforms, 12: 47-56. https://doi.org/10.1002/esp.3290120107
-   KiLib::Raster KiLib::Raster::ComputeSlopeZevenbergenThorne(const KiLib::Raster &inp)
-   {
-      KiLib::Raster slope = KiLib::Raster::zerosLike(inp);
-
-      double ND = inp.nodata_value;
-      int    NR = inp.nRows;
-      int    NC = inp.nCols;
-
-      // Slope over 4 adj points
-      auto getSlope = [&](const size_t r, const size_t c) {
-         int r1 = r - 1;
-         int r2 = r + 1;
-         int c1 = c - 1;
-         int c2 = c + 1;
-
-         double xDiv = inp.cellsize * 2;
-         double yDiv = inp.cellsize * 2;
-
-         if ((r1 < 0) or (inp.at(r1, c) == ND))
-         {
-            r1 = r;
-            yDiv /= 2;
-         }
-         if ((r2 > (NR - 1)) or (inp.at(r2, c) == ND))
-         {
-            r2 = r;
-            yDiv /= 2;
-         }
-         if ((c1 < 0) or (inp.at(r, c1) == ND))
-         {
-            c1 = c;
-            xDiv /= 2;
-         }
-         if ((c2 > (NC - 1)) or (inp.at(r, c2) == ND))
-         {
-            c2 = c;
-            xDiv /= 2;
-         }
-         double g = (-inp(r, c1) + inp(r, c2)) / xDiv; // Eqn 9
-         double h = (inp(r1, c) - inp(r2, c)) / yDiv;  // Eqn 10
-         return std::sqrt(g * g + h * h);              // Eqn 13
-      };
-
-      for (int r = 0; r < NR; r++)
-      {
-         for (int c = 0; c < NC; c++)
-         {
-            if (inp(r, c) == ND)
-            {
-               slope(r, c) = ND;
-               continue;
-            }
-            slope(r, c) = getSlope(r, c);
-         }
-      }
-
-      return slope;
    }
 
    double Raster::GetAverage(size_t ind, double radius)
@@ -303,4 +226,131 @@ namespace KiLib
       return sum / num;
    }
 
+   double Raster::distFromBoundary(const Vec3 &pos)
+   {
+      const double left   = pos.x - this->xllcorner;
+      const double right  = this->xllcorner + this->width - pos.x;
+      const double top    = this->yllcorner + this->height - pos.y;
+      const double bottom = pos.y - this->yllcorner;
+
+      return std::min(std::min(left, right), std::min(top, bottom));
+   }
+
+   double Raster::operator()(const Vec3 &pos) const
+   {
+      return this->getInterpBilinear(pos);
+   }
+
+   double &Raster::at(size_t row, size_t col)
+   {
+      return this->data.at(row * this->nCols + col);
+   }
+
+   double Raster::at(size_t row, size_t col) const
+   {
+      return this->data.at(row * this->nCols + col);
+   }
+
+   double &Raster::operator()(size_t row, size_t col)
+   {
+      return this->data[row * this->nCols + col];
+   }
+
+   double Raster::operator()(size_t row, size_t col) const
+   {
+      return this->data[row * this->nCols + col];
+   }
+
+   double Raster::operator()(size_t ind) const
+   {
+      return this->data[ind];
+   }
+
+   double &Raster::operator()(size_t ind)
+   {
+      return this->data[ind];
+   }
+
+   double &Raster::at(size_t ind)
+   {
+      return this->data.at(ind);
+   }
+
+   double Raster::at(size_t ind) const
+   {
+      return this->data.at(ind);
+   }
+
+
+   KiLib::Raster Raster::fillLike(const KiLib::Raster &other, double fillValue, bool keepNoData)
+   {
+      KiLib::Raster new_(other);
+      for (double &val : new_.data)
+      {
+         if (keepNoData and (val == new_.nodata_value))
+         {
+            continue;
+         }
+         val = fillValue;
+      }
+      return new_;
+   }
+
+   std::vector<size_t> Raster::getValidIndices(const std::vector<const KiLib::Raster *> &rasts)
+   {
+      Raster::assertAgreeDim(rasts);
+      std::vector<size_t> inds;
+
+      for (size_t i = 0; i < rasts[0]->data.size(); i++)
+      {
+         bool foundBad = false;
+
+         // Check all rasters at index i for nodata
+         for (const KiLib::Raster *rast : rasts)
+         {
+            if (rast->operator()(i) == rast->nodata_value)
+            {
+               foundBad = true;
+               break;
+            }
+         }
+
+         // If found none, append i
+         if (foundBad == false)
+         {
+            inds.push_back(i);
+         }
+      }
+
+      return inds;
+   }
+   
+   void Raster::assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts)
+   {
+      if (rasts.size() == 0)
+      {
+         return;
+      }
+      
+      auto cmp = [&](double a, double b, double eps, std::string val) {
+         if (std::abs(a-b) > eps) {
+            throw std::invalid_argument(fmt::format("Raster {} sizes do not agree! Got {} and {}", val, a, b));
+         }
+      };
+
+      // Cell Size
+      for (const KiLib::Raster* rast : rasts) {
+         cmp(rast->cellsize, rasts.at(0)->cellsize, 1e-2, "CellSize");
+      }
+      
+      // nRows
+      for (const KiLib::Raster* rast : rasts) {
+         cmp(rast->nRows, rasts.at(0)->nRows, 0.0, "Num Rows");
+      }
+      
+      // nCols
+      for (const KiLib::Raster* rast : rasts) {
+         cmp(rast->nCols, rasts.at(0)->nCols, 0.0, "Num Cols");
+      }
+   }
 } // namespace KiLib

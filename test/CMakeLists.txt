@@ -13,7 +13,7 @@ add_executable(${projectTestName}
 	main.cpp
 )
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     # using Clang
     message(STATUS "Clang detected, adding compile flags")
     target_compile_options(${projectTestName} PRIVATE -Wall -Werror)
