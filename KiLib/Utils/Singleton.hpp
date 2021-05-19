@@ -33,8 +33,6 @@ namespace KiLib
       template <typename T> class Singleton
       {
       private:
-         static T *m_instance;
-
          Singleton()
          {
          }
@@ -42,13 +40,10 @@ namespace KiLib
       public:
          static T *GetInstance()
          {
-            if (m_instance == nullptr)
-            {
-               m_instance = new T();
-            }
-            return m_instance;
+            static T m_instance;
+            return &m_instance;
          }
       };
-      template <typename T> T *Singleton<T>::m_instance = nullptr; // only change here
-   }                                                               // namespace Utils
+      // template <typename T> T *Singleton<T>::m_instance = nullptr; // only change here
+   } // namespace Utils
 } // namespace KiLib
