@@ -90,7 +90,7 @@ install(TARGETS KiLib
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     # using Clang
     message(STATUS "Clang detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE -Wall -Werror -Wno-reserved-id-macro -Wno-c++98-compat -Wno-c++98-compat-pedantic)
+    target_compile_options(${projectName} PRIVATE -Wall -Werror -Wno-reserved-id-macro -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-documentation-unknown-command)
     
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
