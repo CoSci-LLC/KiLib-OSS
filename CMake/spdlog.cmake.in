@@ -22,8 +22,5 @@ add_subdirectory(${spdlog_proj_SOURCE_DIR} spdlog_proj/build)
 # Add the include directory into this project
 include_directories(${spdlog_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)
 
-
-target_compile_options(spdlog PRIVATE -Wno-reserved-id-macro -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-error=signed-enum-bitfield)
-
 # Link spdlog to the current project
 target_link_libraries(${projectName} PUBLIC spdlog::spdlog)
