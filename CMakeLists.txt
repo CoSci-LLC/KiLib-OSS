@@ -34,8 +34,10 @@ endif()
 
 # If we are debugging, add debug statements to every project
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    # only add the Werror flag for debug builds. Production builds won't have this.
-    target_compile_options(${projectName} PRIVATE -Werror)
+    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        # only add the Werror flag for debug builds. Production builds won't have this.
+        target_compile_options(${projectName} PRIVATE -Werror)
+    endif()
     add_compile_definitions(SPDLOG_ACTIVE_LEVEL=1)
 
     # Should we build the test application?
