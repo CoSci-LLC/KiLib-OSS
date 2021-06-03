@@ -4,7 +4,7 @@ on:
   pull_request
 
 jobs:
-  build:
+  build and test:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
@@ -42,25 +42,6 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config ${{matrix.buildVer}}
 
-    - uses: actions/upload-artifact@main
-      with:
-        name: ${{ matrix.os }}-${{ matrix.buildVer }}
-        path: ${{runner.workspace}}/build
-
-  test:
-    needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        buildVer: [ Debug, Release ]
-
-    steps:
-    - uses: actions/download-artifact@main
-      with:
-        name: ${{ matrix.os }}-${{ matrix.buildVer }}
-        path: ${{runner.workspace}}/build
-      
     - name: Test
       working-directory: ${{runner.workspace}}/build
       shell: bash
