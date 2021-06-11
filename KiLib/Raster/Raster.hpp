@@ -237,7 +237,9 @@ namespace KiLib
                      sum += sumRast.at(ri, ci);
                   }
                }
-               outRast.at(r, c) = sum / count;
+               if (count != 0) {
+                  outRast.at(r, c) = sum / count;
+               }
             }
          }
 
