@@ -16,13 +16,13 @@ add_executable(${projectTestName}
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     # using Clang
     message(STATUS "Clang detected, adding compile flags")
-    target_compile_options(${projectTestName} PRIVATE -Wall -Werror)
+    target_compile_options(${projectTestName} PRIVATE -Wall)
     # Enforce C++17 features
     target_compile_features(${projectTestName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
     message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${projectTestName} PRIVATE -Wall -Werror)
+    target_compile_options(${projectTestName} PRIVATE -Wall)
     # Enforce C++17 features
     target_compile_features(${projectTestName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -30,6 +30,15 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(STATUS "msvc detected, adding compile flags")
     target_compile_options(${projectTestName} PRIVATE  /std:c++latest /EHsc)
 endif()
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        # only add the Werror flag for debug builds. Production builds won't have this.
+        target_compile_options(${projectTestName} PRIVATE -Werror)
+    endif()
+endif()
+
+
 
 # Need this to help find test files
 target_compile_definitions(${projectTestName} PUBLIC
