@@ -1,6 +1,7 @@
 #pragma once
 
 #include <KiLib/Soils/Soil.hpp>
+#include <KiLib/Soils/UserDefined.hpp>
 #include <KiLib/Soils/ch.hpp>
 #include <KiLib/Soils/cl.hpp>
 #include <KiLib/Soils/gc.hpp>

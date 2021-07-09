@@ -41,8 +41,6 @@ namespace KiLib::Soils
          this->waterExchangeTerm     = 3e-06;   // [1/s]
          this->vgWetAlpha1           = 0.00013; // [1/Pa]
          this->vgWetN1               = 1.46;
-         this->poreFracMatrix        = fieldCapacity / porosity;
-         this->poreFracFractures     = 1.0 - poreFracMatrix;
          this->maxTensileStrain      = 0; // [Pa]
 
          this->frictionAngle = {

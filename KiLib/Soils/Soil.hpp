@@ -21,6 +21,7 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
+#include <KiLib/Utils/SafeDouble.hpp>
 #include <cmath>
 #include <string>
 
@@ -29,32 +30,35 @@ namespace KiLib::Soils
    // Parameters for a uniform distribution of values
    struct ValueUniform
    {
-      double min;
-      double max;
       double GetMin() const;
       double GetMax() const;
+
+      SafeDouble min;
+      SafeDouble max;
    };
 
    // Parameters for a normal distribution of values
    struct ValueNormal
    {
-      double mean;
-      double stdDev;
       double GetMean() const;
       double GetStdDev() const;
+
+      SafeDouble mean;
+      SafeDouble stdDev;
    };
 
    // Optional distribution parameters struct
    struct ValueDistribution
    {
-      double       constant;
-      ValueUniform uniformPrimula;
-      ValueUniform uniform;
-      ValueNormal  normal;
       ValueUniform GetUniformPrimula() const;
       ValueUniform GetUniform() const;
       ValueNormal  GetNormal() const;
       double       GetConstant() const;
+
+      SafeDouble   constant;
+      ValueUniform uniformPrimula;
+      ValueUniform uniform;
+      ValueNormal  normal;
    };
 
    class Soil
@@ -84,17 +88,17 @@ namespace KiLib::Soils
       std::string name;
       std::string longname;
 
-      double porosity;
-      double saturatedWaterContent;
-      double residualWaterContent;
-      double fieldCapacity;
-      double initWaterContent;
-      double waterExchangeTerm;
-      double vgWetAlpha1;
-      double vgWetN1;
-      double poreFracMatrix;
-      double poreFracFractures;
-      double maxTensileStrain;
+      // Use SafeDouble so that if a value is called and not set, it throws an
+      // exception
+      SafeDouble porosity;
+      SafeDouble saturatedWaterContent;
+      SafeDouble residualWaterContent;
+      SafeDouble fieldCapacity;
+      SafeDouble initWaterContent;
+      SafeDouble waterExchangeTerm;
+      SafeDouble vgWetAlpha1;
+      SafeDouble vgWetN1;
+      SafeDouble maxTensileStrain;
 
       ValueDistribution frictionAngle;
       ValueDistribution densityDry;
