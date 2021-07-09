@@ -33,47 +33,47 @@ std::string Soil::GetLongName() const
 
 double Soil::GetPorosity() const
 {
-   return this->porosity;
+   return this->porosity();
 }
 double Soil::GetSaturatedWaterContent() const
 {
-   return this->saturatedWaterContent;
+   return this->saturatedWaterContent();
 }
 double Soil::GetResidualWaterContent() const
 {
-   return this->residualWaterContent;
+   return this->residualWaterContent();
 }
 double Soil::GetFieldCapacity() const
 {
-   return this->fieldCapacity;
+   return this->fieldCapacity();
 }
 double Soil::GetInitWaterContent() const
 {
-   return this->initWaterContent;
+   return this->initWaterContent();
 }
 double Soil::GetWaterExchangeTerm() const
 {
-   return this->waterExchangeTerm;
+   return this->waterExchangeTerm();
 }
 double Soil::GetVgWetAlpha1() const
 {
-   return this->vgWetAlpha1;
+   return this->vgWetAlpha1();
 }
 double Soil::GetVgWetN1() const
 {
-   return this->vgWetN1;
+   return this->vgWetN1();
 }
 double Soil::GetPoreFracMatrix() const
 {
-   return this->poreFracMatrix;
+   return fieldCapacity() / porosity();
 }
 double Soil::GetPoreFracFractures() const
 {
-   return this->poreFracFractures;
+   return 1.0 - GetPoreFracMatrix();
 }
 double Soil::GetMaxTensileStrain() const
 {
-   return this->maxTensileStrain;
+   return this->maxTensileStrain();
 }
 
 ValueDistribution Soil::GetFrictionAngle() const
@@ -99,21 +99,21 @@ ValueDistribution Soil::GetConductivity() const
 
 double ValueUniform::GetMin() const
 {
-   return this->min;
+   return this->min();
 }
 double ValueUniform::GetMax() const
 {
-   return this->max;
+   return this->max();
 }
 
 // Parameters for a normal distribution of values
 double ValueNormal::GetMean() const
 {
-   return this->mean;
+   return this->mean();
 }
 double ValueNormal::GetStdDev() const
 {
-   return this->stdDev;
+   return this->stdDev();
 }
 
 ValueUniform ValueDistribution::GetUniformPrimula() const
@@ -130,5 +130,5 @@ ValueNormal ValueDistribution::GetNormal() const
 }
 double ValueDistribution::GetConstant() const
 {
-   return this->constant;
+   return this->constant();
 }

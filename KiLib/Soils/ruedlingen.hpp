@@ -32,16 +32,14 @@ namespace KiLib::Soils
          this->name     = "ruedlingen";
          this->longname = "Ruedlingen soil";
 
-         this->porosity              = 0.47;  // [m3/m3]
-         this->saturatedWaterContent = 0.47;  // [m3/m3]
-         this->residualWaterContent  = 0.047; // [m3/m3]
-         this->fieldCapacity         = 0.30;  // [m3/m3]
-         this->initWaterContent      = 0.20;  // [m3/m3]
-         this->waterExchangeTerm     = 3e-06; // [1/s]
+         this->porosity              = 0.47;   // [m3/m3]
+         this->saturatedWaterContent = 0.47;   // [m3/m3]
+         this->residualWaterContent  = 0.047;  // [m3/m3]
+         this->fieldCapacity         = 0.30;   // [m3/m3]
+         this->initWaterContent      = 0.20;   // [m3/m3]
+         this->waterExchangeTerm     = 3e-06;  // [1/s]
          this->vgWetAlpha1           = 1.3e-4; // [1/Pa]
          this->vgWetN1               = 1.46;
-         this->poreFracMatrix        = fieldCapacity / porosity;
-         this->poreFracFractures     = 1.0 - poreFracMatrix;
          this->maxTensileStrain      = 0; // [Pa]
 
          this->frictionAngle = {
