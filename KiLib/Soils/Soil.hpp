@@ -23,6 +23,7 @@
 #define _USE_MATH_DEFINES
 #include <KiLib/Utils/SafeDouble.hpp>
 #include <cmath>
+#include <optional>
 #include <string>
 
 namespace KiLib::Soils
@@ -33,8 +34,8 @@ namespace KiLib::Soils
       double GetMin() const;
       double GetMax() const;
 
-      SafeDouble min;
-      SafeDouble max;
+      std::optional<double> min;
+      std::optional<double> max;
    };
 
    // Parameters for a normal distribution of values
@@ -43,8 +44,8 @@ namespace KiLib::Soils
       double GetMean() const;
       double GetStdDev() const;
 
-      SafeDouble mean;
-      SafeDouble stdDev;
+      std::optional<double> mean;
+      std::optional<double> stdDev;
    };
 
    // Optional distribution parameters struct
@@ -55,10 +56,10 @@ namespace KiLib::Soils
       ValueNormal  GetNormal() const;
       double       GetConstant() const;
 
-      SafeDouble   constant;
-      ValueUniform uniformPrimula;
-      ValueUniform uniform;
-      ValueNormal  normal;
+      std::optional<double> constant;
+      ValueUniform          uniformPrimula;
+      ValueUniform          uniform;
+      ValueNormal           normal;
    };
 
    class Soil
@@ -90,15 +91,15 @@ namespace KiLib::Soils
 
       // Use SafeDouble so that if a value is called and not set, it throws an
       // exception
-      SafeDouble porosity;
-      SafeDouble saturatedWaterContent;
-      SafeDouble residualWaterContent;
-      SafeDouble fieldCapacity;
-      SafeDouble initWaterContent;
-      SafeDouble waterExchangeTerm;
-      SafeDouble vgWetAlpha1;
-      SafeDouble vgWetN1;
-      SafeDouble maxTensileStrain;
+      std::optional<double> porosity;
+      std::optional<double> saturatedWaterContent;
+      std::optional<double> residualWaterContent;
+      std::optional<double> fieldCapacity;
+      std::optional<double> initWaterContent;
+      std::optional<double> waterExchangeTerm;
+      std::optional<double> vgWetAlpha1;
+      std::optional<double> vgWetN1;
+      std::optional<double> maxTensileStrain;
 
       ValueDistribution frictionAngle;
       ValueDistribution densityDry;

@@ -39,7 +39,7 @@ namespace KiLib
       ASSERT_EQ(ud.GetName(), new_name);
 
       // Test uninitialized Values
-      EXPECT_THROW(ud.GetPorosity(), InvalidArgumentException);
+      EXPECT_THROW(ud.GetPorosity(), std::bad_optional_access);
 
       // Set value
       const double porosity = 54.32;
@@ -54,11 +54,11 @@ namespace KiLib
       // Create user defined soil
       KiLib::Soils::UserDefined ud;
 
-      EXPECT_THROW(ud.GetFrictionAngle().GetConstant(), InvalidArgumentException);
+      EXPECT_THROW(ud.GetFrictionAngle().GetConstant(), std::bad_optional_access);
 
       // Create uniform values (1)
       KiLib::Soils::UserDefinedValueUniform udvu1;
-      EXPECT_THROW(udvu1.GetMin(), InvalidArgumentException);
+      EXPECT_THROW(udvu1.GetMin(), std::bad_optional_access);
       const double min = 1.4;
       udvu1.SetMin(min);
       ASSERT_EQ(udvu1.GetMin(), min);
@@ -71,7 +71,7 @@ namespace KiLib
 
       // Create normal value
       KiLib::Soils::UserDefinedValueNormal udvn;
-      EXPECT_THROW(udvn.GetMean(), InvalidArgumentException);
+      EXPECT_THROW(udvn.GetMean(), std::bad_optional_access);
       udvn.SetMean(5.3);
       udvn.SetStdDev(1.1);
 
@@ -80,7 +80,7 @@ namespace KiLib
       udvd.SetUniformPrimula(udvu1);
       udvd.SetUniform(udvu2);
       udvd.SetNormal(udvn);
-      EXPECT_THROW(udvd.GetConstant(), InvalidArgumentException);
+      EXPECT_THROW(udvd.GetConstant(), std::bad_optional_access);
       udvd.SetConstant(4.3);
       ASSERT_EQ(udvd.GetConstant(), 4.3);
 
