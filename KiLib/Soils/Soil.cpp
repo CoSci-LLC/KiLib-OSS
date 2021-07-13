@@ -33,39 +33,39 @@ std::string Soil::GetLongName() const
 
 double Soil::GetPorosity() const
 {
-   return this->porosity();
+   return this->porosity.value();
 }
 double Soil::GetSaturatedWaterContent() const
 {
-   return this->saturatedWaterContent();
+   return this->saturatedWaterContent.value();
 }
 double Soil::GetResidualWaterContent() const
 {
-   return this->residualWaterContent();
+   return this->residualWaterContent.value();
 }
 double Soil::GetFieldCapacity() const
 {
-   return this->fieldCapacity();
+   return this->fieldCapacity.value();
 }
 double Soil::GetInitWaterContent() const
 {
-   return this->initWaterContent();
+   return this->initWaterContent.value();
 }
 double Soil::GetWaterExchangeTerm() const
 {
-   return this->waterExchangeTerm();
+   return this->waterExchangeTerm.value();
 }
 double Soil::GetVgWetAlpha1() const
 {
-   return this->vgWetAlpha1();
+   return this->vgWetAlpha1.value();
 }
 double Soil::GetVgWetN1() const
 {
-   return this->vgWetN1();
+   return this->vgWetN1.value();
 }
 double Soil::GetPoreFracMatrix() const
 {
-   return fieldCapacity() / porosity();
+   return this->fieldCapacity.value() / this->porosity.value();
 }
 double Soil::GetPoreFracFractures() const
 {
@@ -73,7 +73,7 @@ double Soil::GetPoreFracFractures() const
 }
 double Soil::GetMaxTensileStrain() const
 {
-   return this->maxTensileStrain();
+   return this->maxTensileStrain.value();
 }
 
 ValueDistribution Soil::GetFrictionAngle() const
@@ -99,21 +99,21 @@ ValueDistribution Soil::GetConductivity() const
 
 double ValueUniform::GetMin() const
 {
-   return this->min();
+   return this->min.value();
 }
 double ValueUniform::GetMax() const
 {
-   return this->max();
+   return this->max.value();
 }
 
 // Parameters for a normal distribution of values
 double ValueNormal::GetMean() const
 {
-   return this->mean();
+   return this->mean.value();
 }
 double ValueNormal::GetStdDev() const
 {
-   return this->stdDev();
+   return this->stdDev.value();
 }
 
 ValueUniform ValueDistribution::GetUniformPrimula() const
@@ -130,5 +130,5 @@ ValueNormal ValueDistribution::GetNormal() const
 }
 double ValueDistribution::GetConstant() const
 {
-   return this->constant();
+   return this->constant.value();
 }
