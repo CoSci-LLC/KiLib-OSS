@@ -54,45 +54,26 @@ namespace KiLib
    // Takes in a vec3 for convenience, ignores Z
    double Raster::getInterpBilinear(const Vec3 &pos) const
    {
-      double r = std::clamp<double>((pos.y - this->yllcorner) / this->cellsize, 0.0, (double)this->nRows - 1);
-      double c = std::clamp<double>((pos.x - this->xllcorner) / this->cellsize, 0.0, (double)this->nCols - 1);
+      double x = (pos.x - this->xllcorner) / this->cellsize;
+      double y = (pos.y - this->yllcorner) / this->cellsize;
 
-      if (r == floor(r) && c == floor(c))
-      {
-         return this->at(r, c);
-      }
+      const size_t r = std::floor(y);
+      const size_t c = std::floor(x);
+      
+      const size_t ru  = std::min(r+1ul, this->nRows-1ul);
+      const size_t cr  = std::min(c+1ul, this->nCols-1ul);
 
-      const double y1  = floor(r) * this->cellsize;
-      const double y2  = ceil(r) * this->cellsize;
-      const double x1  = floor(c) * this->cellsize;
-      const double x2  = ceil(c) * this->cellsize;
-      const double q11 = this->operator()(floor(r), floor(c));
-      const double q12 = this->operator()(ceil(r), floor(c));
-      const double q21 = this->operator()(floor(r), ceil(c));
-      const double q22 = this->operator()(ceil(r), ceil(c));
-
-      const double x = c * this->cellsize;
-      const double y = r * this->cellsize;
-
-      double fy1 = q12;
-      double fy2 = q11;
-      if (x2 != x1)
-      {
-         fy1 = ((x2 - x) / (x2 - x1)) * q11 + ((x - x1) / (x2 - x1)) * q21;
-         fy2 = ((x2 - x) / (x2 - x1)) * q12 + ((x - x1) / (x2 - x1)) * q22;
-      }
-
-      double z = 0;
-      if (y2 != y1)
-      {
-         z = ((y2 - y) / (y2 - y1)) * fy1 + ((y - y1) / (y2 - y1)) * fy2;
-      }
-      else
-      {
-         z = (fy1 + fy2) / 2.0;
-      }
-
-      return z;
+      const double f00 = this->operator()(r, c);
+      const double f10 = this->operator()(r, cr);
+      const double f01 = this->operator()(ru, c);
+      const double f11 = this->operator()(ru, cr);
+      
+      const double sx = x - std::floor(x);
+      const double sy = y - std::floor(y);
+      
+      const double val = f00*(1.0-sx)*(1.0-sy) + f10*sx*(1.0-sy) + f01*(1.0-sx)*sy + f11*sx*sy;
+      
+      return val;
    }
 
    // Print Raster metadata
