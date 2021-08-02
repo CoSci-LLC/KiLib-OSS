@@ -145,8 +145,8 @@ namespace KiLib
    KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen)
    {
       KiLib::Vec3                            point;
-      std::uniform_real_distribution<double> xDist(this->xllcorner, this->width);
-      std::uniform_real_distribution<double> yDist(this->yllcorner, this->height);
+      std::uniform_real_distribution<double> xDist(this->xllcorner, this->xllcorner + this->width);
+      std::uniform_real_distribution<double> yDist(this->yllcorner, this->yllcorner + this->height);
 
       point.x = xDist(gen);
       point.y = yDist(gen);
