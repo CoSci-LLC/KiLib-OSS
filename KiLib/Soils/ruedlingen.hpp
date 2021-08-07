@@ -29,9 +29,8 @@ namespace KiLib::Soils
    public:
       ruedlingen()
       {
-         this->name     = "ruedlingen";
-         this->longname = "Ruedlingen soil";
-
+         this->name                  = "ruedlingen";
+         this->longname              = "Ruedlingen soil";
          this->porosity              = 0.47;   // [m3/m3]
          this->saturatedWaterContent = 0.47;   // [m3/m3]
          this->residualWaterContent  = 0.047;  // [m3/m3]
