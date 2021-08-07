@@ -63,21 +63,21 @@ namespace KiLib
       /**
        * @brief Prints basic information about this Raster
        */
-      void print();
+      void print() const;
 
-      KiLib::Vec3 randPoint(std::mt19937_64 &gen);
-
-      /**
-       * Returns flat index to nearest cell in raster
-       */
-      size_t getNearestCell(const KiLib::Vec3 &pos);
+      KiLib::Vec3 randPoint(std::mt19937_64 &gen) const;
 
       /**
        * Returns flat index to nearest cell in raster
        */
-      size_t flattenIndex(size_t r, size_t c);
+      size_t getNearestCell(const KiLib::Vec3 &pos) const;
 
-      KiLib::Vec3 getCellPos(size_t ind);
+      /**
+       * Returns flat index to nearest cell in raster
+       */
+      size_t flattenIndex(size_t r, size_t c) const;
+
+      KiLib::Vec3 getCellPos(size_t ind) const;
 
       /**
        * @brief Returns distance between pos and nearest boundary point
@@ -85,7 +85,7 @@ namespace KiLib
        * @param pos Position to get distance from
        * @return double Distance
        */
-      double distFromBoundary(const Vec3 &pos);
+      double distFromBoundary(const Vec3 &pos) const;
 
       /**
        * @brief Interpolates raster value at pos (takes in 3D vector but ignores Z)
@@ -246,7 +246,7 @@ namespace KiLib
          return outRast;
       }
 
-      double                     GetAverage(size_t ind, double radius);
+      double                     GetAverage(size_t ind, double radius) const;
       static std::vector<size_t> getValidIndices(const std::vector<const KiLib::Raster *> &rasts);
       static void                assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
 

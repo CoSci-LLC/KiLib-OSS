@@ -77,7 +77,7 @@ namespace KiLib
    }
 
    // Print Raster metadata
-   void Raster::print()
+   void Raster::print() const
    {
       fmt::print(
          "ncols {}\n"
@@ -123,7 +123,7 @@ namespace KiLib
       }
    }
 
-   KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen)
+   KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen) const
    {
       KiLib::Vec3                            point;
       std::uniform_real_distribution<double> xDist(this->xllcorner, this->xllcorner + this->width);
@@ -136,12 +136,12 @@ namespace KiLib
       return point;
    }
 
-   size_t Raster::flattenIndex(size_t r, size_t c)
+   size_t Raster::flattenIndex(size_t r, size_t c) const
    {
       return r * this->nCols + c;
    }
 
-   size_t Raster::getNearestCell(const KiLib::Vec3 &pos)
+   size_t Raster::getNearestCell(const KiLib::Vec3 &pos) const
    {
       double rF = (pos.y - this->yllcorner) / this->cellsize;
       double cF = (pos.x - this->xllcorner) / this->cellsize;
@@ -152,7 +152,7 @@ namespace KiLib
       return r * this->nCols + c;
    }
 
-   KiLib::Vec3 Raster::getCellPos(size_t ind)
+   KiLib::Vec3 Raster::getCellPos(size_t ind) const
    {
       size_t r = ind / this->nCols;
       size_t c = ind % this->nCols;
@@ -163,7 +163,7 @@ namespace KiLib
       return pos;
    }
 
-   double Raster::GetAverage(size_t ind, double radius)
+   double Raster::GetAverage(size_t ind, double radius) const
    {
       if (ind >= this->nData)
       {
@@ -207,7 +207,7 @@ namespace KiLib
       return sum / num;
    }
 
-   double Raster::distFromBoundary(const Vec3 &pos)
+   double Raster::distFromBoundary(const Vec3 &pos) const
    {
       const double left   = pos.x - this->xllcorner;
       const double right  = this->xllcorner + this->width - pos.x;
