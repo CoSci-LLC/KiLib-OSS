@@ -59,20 +59,20 @@ namespace KiLib
 
       const size_t r = std::floor(y);
       const size_t c = std::floor(x);
-      
-      const size_t ru  = std::min(r+1ul, this->nRows-1ul);
-      const size_t cr  = std::min(c+1ul, this->nCols-1ul);
+
+      const size_t ru = std::min(r + 1ul, this->nRows - 1ul);
+      const size_t cr = std::min(c + 1ul, this->nCols - 1ul);
 
       const double f00 = this->operator()(r, c);
       const double f10 = this->operator()(r, cr);
       const double f01 = this->operator()(ru, c);
       const double f11 = this->operator()(ru, cr);
-      
+
       const double sx = x - std::floor(x);
       const double sy = y - std::floor(y);
-      
-      const double val = f00*(1.0-sx)*(1.0-sy) + f10*sx*(1.0-sy) + f01*(1.0-sx)*sy + f11*sx*sy;
-      
+
+      const double val = f00 * (1.0 - sx) * (1.0 - sy) + f10 * sx * (1.0 - sy) + f01 * (1.0 - sx) * sy + f11 * sx * sy;
+
       return val;
    }
 
@@ -313,7 +313,8 @@ namespace KiLib
          return;
       }
 
-      auto cmp = [&](double a, double b, double eps, std::string val) {
+      auto cmp = [&](double a, double b, double eps, std::string val)
+      {
          if (std::abs(a - b) > eps)
          {
             throw std::invalid_argument(fmt::format("Raster {} sizes do not agree! Got {} and {}", val, a, b));

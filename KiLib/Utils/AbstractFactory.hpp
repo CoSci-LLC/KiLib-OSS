@@ -1,12 +1,12 @@
 #pragma once
 
 #include <KiLib/Utils/enum.hpp>
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <map>
 #include <spdlog/spdlog.h>
 #include <typeinfo>
-#include <algorithm>
 
 template <typename Enum, class Base> class AbsFac
 {
@@ -42,7 +42,7 @@ public:
    {
       return Enum::_to_string(val);
    }
-   
+
    Enum StringToID(std::string val) const
    {
       try
@@ -62,7 +62,7 @@ public:
 private:
    std::string removeSpaces(std::string input) const
    {
-     input.erase(std::remove(input.begin(),input.end(),' '),input.end());
-     return input;
+      input.erase(std::remove(input.begin(), input.end(), ' '), input.end());
+      return input;
    }
 };
