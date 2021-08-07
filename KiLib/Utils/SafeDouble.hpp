@@ -26,26 +26,35 @@
 #define _USE_MATH_DEFINES
 #include <KiLib/Exceptions/InvalidArgument.hpp>
 #include <cmath>
+#include <limits>
 
 class SafeDouble
 {
 public:
+   SafeDouble()
+   {
+      this->value = NAN;
+   }
+
    SafeDouble(double value)
    {
-      this(value);
+      this->value = value;
    }
 
    double operator()() const
    {
+      if (std::isnan(value))
+      {
+         throw InvalidArgumentException("Value cannot be NAN");
+      }
       return value;
    }
    void operator()(double value)
    {
-      if (isnan(value))
+      if (std::isnan(value))
       {
          throw InvalidArgumentException("Value cannot be NAN");
       }
-
       this->value = value;
    }
 
