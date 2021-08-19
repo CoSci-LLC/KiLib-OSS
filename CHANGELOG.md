@@ -2,6 +2,17 @@
 
 Notable changes to this project will be documented in this file.
 
+## v3.1.0
+---
+
+### Added
+
+- New Soils
+
+### Fixed
+
+- Random point generation in RAster
+
 ## v3.0.0
 ---
 
