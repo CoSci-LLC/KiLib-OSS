@@ -25,7 +25,8 @@ namespace KiLib
       int    NC = inp.nCols;
 
       // Slope over 4 adj points
-      auto getSlope = [&](const size_t r, const size_t c) {
+      auto getSlope = [&](const size_t r, const size_t c)
+      {
          int r1 = r - 1;
          int r2 = r + 1;
          int c1 = c - 1;

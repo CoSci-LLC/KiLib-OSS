@@ -25,74 +25,74 @@
 
 namespace KiLib::Soils
 {
-   class sc : public Soil
+   class gmgl : public Soil
    {
    public:
-      sc()
+      gmgl()
       {
-         this->name     = "sc";
-         this->longname = "Clayey sand";
+         this->name     = "gm-gl";
+         this->longname = "Silty gravel";
 
-         this->porosity              = 0.4;    // [m3/m3]
-         this->saturatedWaterContent = 0.4;    // [m3/m3]
-         this->residualWaterContent  = 0.04;   // [m3/m3]
-         this->fieldCapacity         = 0.2;    // [m3/m3]
-         this->initWaterContent      = 0.15;   // [m3/m3]
-         this->waterExchangeTerm     = 3e-06;  // [1/s]
-         this->vgWetAlpha1           = 0.0002; // [1/Pa]
-         this->vgWetN1               = 2.0;
+         this->porosity              = 0.30;    // [m3/m3]
+         this->saturatedWaterContent = 0.30;    // [m3/m3]
+         this->residualWaterContent  = 0.030;   // [m3/m3]
+         this->fieldCapacity         = 0.14;    // [m3/m3]
+         this->initWaterContent      = 0.10;    // [m3/m3]
+         this->waterExchangeTerm     = 3e-06;   // [1/s]
+         this->vgWetAlpha1           = 0.00051; // [1/Pa]
+         this->vgWetN1               = 2.6;
          this->maxTensileStrain      = 0; // [Pa]
 
          this->frictionAngle = {
-            .constant = 32 * M_PI / 180.0,
+            .constant = 35 * M_PI / 180.0,
             .uniformPrimula{
-               .min = 27 * M_PI / 180.0,
-               .max = 35 * M_PI / 180.0,
+               .min = 33 * M_PI / 180.0,
+               .max = 37 * M_PI / 180.0,
             },
             .uniform{
-               .min = 31 * M_PI / 180.0,
-               .max = 31 * M_PI / 180.0,
+               .min = 35 * M_PI / 180.0,
+               .max = 35 * M_PI / 180.0,
             },
             .normal{
-               .mean   = 32 * M_PI / 180.0,
-               .stdDev = 1 * M_PI / 180.0,
+               .mean   = 35 * M_PI / 180.0,
+               .stdDev = 5 * M_PI / 180.0,
             }};
 
          this->densityDry = {
-            .constant = 1500,
+            .constant = 1600,
             .uniformPrimula{
-               .min = 1681.36,
-               .max = 2001.62,
+               .min = 1921.56,
+               .max = 2161.75,
             },
             .uniform{
-               .min = 1400,
-               .max = 1400,
+               .min = 1600,
+               .max = 1600,
             },
             .normal{
-               .mean   = 1500,
+               .mean   = 1600,
                .stdDev = 100,
             }};
 
          this->cohesion = {
             .constant = 500,
             .uniformPrimula{
-               .min = 5000,
-               .max = 11000,
-            },
-            .uniform{
                .min = 0,
                .max = 0,
             },
+            .uniform{
+               .min = 500,
+               .max = 500,
+            },
             .normal{
                .mean   = 500,
-               .stdDev = 250,
+               .stdDev = 50,
             }};
 
          this->conductivity = {
-            .constant = 5e-05,
+            .constant = 0.0005,
             .uniformPrimula{
-               .min = 1e-08,
-               .max = 1e-06,
+               .min = 1e-06,
+               .max = 0.0005,
             }};
       }
    };

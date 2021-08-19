@@ -22,74 +22,72 @@
 
 #include <KiLib/Soils/Soil.hpp>
 
-
 namespace KiLib::Soils
 {
-   class sc : public Soil
+   class ruedlingen : public Soil
    {
    public:
-      sc()
+      ruedlingen()
       {
-         this->name     = "sc";
-         this->longname = "Clayey sand";
-
-         this->porosity              = 0.4;    // [m3/m3]
-         this->saturatedWaterContent = 0.4;    // [m3/m3]
-         this->residualWaterContent  = 0.04;   // [m3/m3]
-         this->fieldCapacity         = 0.2;    // [m3/m3]
-         this->initWaterContent      = 0.15;   // [m3/m3]
+         this->name                  = "ruedlingen";
+         this->longname              = "Ruedlingen soil";
+         this->porosity              = 0.47;   // [m3/m3]
+         this->saturatedWaterContent = 0.47;   // [m3/m3]
+         this->residualWaterContent  = 0.047;  // [m3/m3]
+         this->fieldCapacity         = 0.30;   // [m3/m3]
+         this->initWaterContent      = 0.20;   // [m3/m3]
          this->waterExchangeTerm     = 3e-06;  // [1/s]
-         this->vgWetAlpha1           = 0.0002; // [1/Pa]
-         this->vgWetN1               = 2.0;
+         this->vgWetAlpha1           = 1.3e-4; // [1/Pa]
+         this->vgWetN1               = 1.46;
          this->maxTensileStrain      = 0; // [Pa]
 
          this->frictionAngle = {
-            .constant = 32 * M_PI / 180.0,
+            .constant = 29 * M_PI / 180.0,
             .uniformPrimula{
-               .min = 27 * M_PI / 180.0,
-               .max = 35 * M_PI / 180.0,
+               .min = 29 * M_PI / 180.0,
+               .max = 29 * M_PI / 180.0,
             },
             .uniform{
-               .min = 31 * M_PI / 180.0,
-               .max = 31 * M_PI / 180.0,
+               .min = 29 * M_PI / 180.0,
+               .max = 29 * M_PI / 180.0,
             },
             .normal{
-               .mean   = 32 * M_PI / 180.0,
+               .mean   = 29 * M_PI / 180.0,
                .stdDev = 1 * M_PI / 180.0,
             }};
 
          this->densityDry = {
-            .constant = 1500,
+            .constant = 1700,
             .uniformPrimula{
-               .min = 1681.36,
-               .max = 2001.62,
+               .min = 1700,
+               .max = 1700,
             },
             .uniform{
-               .min = 1400,
-               .max = 1400,
+               .min = 1700,
+               .max = 1700,
             },
             .normal{
-               .mean   = 1500,
+               .mean   = 1700,
                .stdDev = 100,
             }};
 
          this->cohesion = {
-            .constant = 500,
+            .constant = 0,
             .uniformPrimula{
-               .min = 5000,
-               .max = 11000,
+               .min = 0,
+               .max = 500,
             },
             .uniform{
                .min = 0,
-               .max = 0,
+               .max = 500,
             },
             .normal{
-               .mean   = 500,
-               .stdDev = 250,
+               .mean   = 250,
+               .stdDev = 100,
             }};
 
          this->conductivity = {
-            .constant = 5e-05,
+            .constant = 5e-07,
             .uniformPrimula{
                .min = 1e-08,
                .max = 1e-06,

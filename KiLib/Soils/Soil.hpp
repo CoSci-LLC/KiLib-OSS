@@ -21,7 +21,9 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
+#include <KiLib/Utils/SafeDouble.hpp>
 #include <cmath>
+#include <optional>
 #include <string>
 
 namespace KiLib::Soils
@@ -29,32 +31,35 @@ namespace KiLib::Soils
    // Parameters for a uniform distribution of values
    struct ValueUniform
    {
-      double min;
-      double max;
       double GetMin() const;
       double GetMax() const;
+
+      std::optional<double> min;
+      std::optional<double> max;
    };
 
    // Parameters for a normal distribution of values
    struct ValueNormal
    {
-      double mean;
-      double stdDev;
       double GetMean() const;
       double GetStdDev() const;
+
+      std::optional<double> mean;
+      std::optional<double> stdDev;
    };
 
    // Optional distribution parameters struct
    struct ValueDistribution
    {
-      double       constant;
-      ValueUniform uniformPrimula;
-      ValueUniform uniform;
-      ValueNormal  normal;
       ValueUniform GetUniformPrimula() const;
       ValueUniform GetUniform() const;
       ValueNormal  GetNormal() const;
       double       GetConstant() const;
+
+      std::optional<double> constant;
+      ValueUniform          uniformPrimula;
+      ValueUniform          uniform;
+      ValueNormal           normal;
    };
 
    class Soil
@@ -84,17 +89,17 @@ namespace KiLib::Soils
       std::string name;
       std::string longname;
 
-      double porosity;
-      double saturatedWaterContent;
-      double residualWaterContent;
-      double fieldCapacity;
-      double initWaterContent;
-      double waterExchangeTerm;
-      double vgWetAlpha1;
-      double vgWetN1;
-      double poreFracMatrix;
-      double poreFracFractures;
-      double maxTensileStrain;
+      // Use SafeDouble so that if a value is called and not set, it throws an
+      // exception
+      std::optional<double> porosity;
+      std::optional<double> saturatedWaterContent;
+      std::optional<double> residualWaterContent;
+      std::optional<double> fieldCapacity;
+      std::optional<double> initWaterContent;
+      std::optional<double> waterExchangeTerm;
+      std::optional<double> vgWetAlpha1;
+      std::optional<double> vgWetN1;
+      std::optional<double> maxTensileStrain;
 
       ValueDistribution frictionAngle;
       ValueDistribution densityDry;

@@ -54,49 +54,30 @@ namespace KiLib
    // Takes in a vec3 for convenience, ignores Z
    double Raster::getInterpBilinear(const Vec3 &pos) const
    {
-      double r = std::clamp<double>((pos.y - this->yllcorner) / this->cellsize, 0.0, (double)this->nRows - 1);
-      double c = std::clamp<double>((pos.x - this->xllcorner) / this->cellsize, 0.0, (double)this->nCols - 1);
+      double x = (pos.x - this->xllcorner) / this->cellsize;
+      double y = (pos.y - this->yllcorner) / this->cellsize;
 
-      if (r == floor(r) && c == floor(c))
-      {
-         return this->at(r, c);
-      }
+      const size_t r = std::floor(y);
+      const size_t c = std::floor(x);
 
-      const double y1  = floor(r) * this->cellsize;
-      const double y2  = ceil(r) * this->cellsize;
-      const double x1  = floor(c) * this->cellsize;
-      const double x2  = ceil(c) * this->cellsize;
-      const double q11 = this->operator()(floor(r), floor(c));
-      const double q12 = this->operator()(ceil(r), floor(c));
-      const double q21 = this->operator()(floor(r), ceil(c));
-      const double q22 = this->operator()(ceil(r), ceil(c));
+      const size_t ru = std::min(r + 1ul, this->nRows - 1ul);
+      const size_t cr = std::min(c + 1ul, this->nCols - 1ul);
 
-      const double x = c * this->cellsize;
-      const double y = r * this->cellsize;
+      const double f00 = this->operator()(r, c);
+      const double f10 = this->operator()(r, cr);
+      const double f01 = this->operator()(ru, c);
+      const double f11 = this->operator()(ru, cr);
 
-      double fy1 = q12;
-      double fy2 = q11;
-      if (x2 != x1)
-      {
-         fy1 = ((x2 - x) / (x2 - x1)) * q11 + ((x - x1) / (x2 - x1)) * q21;
-         fy2 = ((x2 - x) / (x2 - x1)) * q12 + ((x - x1) / (x2 - x1)) * q22;
-      }
+      const double sx = x - std::floor(x);
+      const double sy = y - std::floor(y);
 
-      double z = 0;
-      if (y2 != y1)
-      {
-         z = ((y2 - y) / (y2 - y1)) * fy1 + ((y - y1) / (y2 - y1)) * fy2;
-      }
-      else
-      {
-         z = (fy1 + fy2) / 2.0;
-      }
+      const double val = f00 * (1.0 - sx) * (1.0 - sy) + f10 * sx * (1.0 - sy) + f01 * (1.0 - sx) * sy + f11 * sx * sy;
 
-      return z;
+      return val;
    }
 
    // Print Raster metadata
-   void Raster::print()
+   void Raster::print() const
    {
       fmt::print(
          "ncols {}\n"
@@ -142,11 +123,11 @@ namespace KiLib
       }
    }
 
-   KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen)
+   KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen) const
    {
       KiLib::Vec3                            point;
-      std::uniform_real_distribution<double> xDist(this->xllcorner, this->width);
-      std::uniform_real_distribution<double> yDist(this->yllcorner, this->height);
+      std::uniform_real_distribution<double> xDist(this->xllcorner, this->xllcorner + this->width);
+      std::uniform_real_distribution<double> yDist(this->yllcorner, this->yllcorner + this->height);
 
       point.x = xDist(gen);
       point.y = yDist(gen);
@@ -155,12 +136,12 @@ namespace KiLib
       return point;
    }
 
-   size_t Raster::flattenIndex(size_t r, size_t c)
+   size_t Raster::flattenIndex(size_t r, size_t c) const
    {
       return r * this->nCols + c;
    }
 
-   size_t Raster::getNearestCell(const KiLib::Vec3 &pos)
+   size_t Raster::getNearestCell(const KiLib::Vec3 &pos) const
    {
       double rF = (pos.y - this->yllcorner) / this->cellsize;
       double cF = (pos.x - this->xllcorner) / this->cellsize;
@@ -171,7 +152,7 @@ namespace KiLib
       return r * this->nCols + c;
    }
 
-   KiLib::Vec3 Raster::getCellPos(size_t ind)
+   KiLib::Vec3 Raster::getCellPos(size_t ind) const
    {
       size_t r = ind / this->nCols;
       size_t c = ind % this->nCols;
@@ -182,7 +163,7 @@ namespace KiLib
       return pos;
    }
 
-   double Raster::GetAverage(size_t ind, double radius)
+   double Raster::GetAverage(size_t ind, double radius) const
    {
       if (ind >= this->nData)
       {
@@ -226,7 +207,7 @@ namespace KiLib
       return sum / num;
    }
 
-   double Raster::distFromBoundary(const Vec3 &pos)
+   double Raster::distFromBoundary(const Vec3 &pos) const
    {
       const double left   = pos.x - this->xllcorner;
       const double right  = this->xllcorner + this->width - pos.x;
@@ -324,32 +305,37 @@ namespace KiLib
 
       return inds;
    }
-   
+
    void Raster::assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts)
    {
       if (rasts.size() == 0)
       {
          return;
       }
-      
-      auto cmp = [&](double a, double b, double eps, std::string val) {
-         if (std::abs(a-b) > eps) {
+
+      auto cmp = [&](double a, double b, double eps, std::string val)
+      {
+         if (std::abs(a - b) > eps)
+         {
             throw std::invalid_argument(fmt::format("Raster {} sizes do not agree! Got {} and {}", val, a, b));
          }
       };
 
       // Cell Size
-      for (const KiLib::Raster* rast : rasts) {
+      for (const KiLib::Raster *rast : rasts)
+      {
          cmp(rast->cellsize, rasts.at(0)->cellsize, 1e-2, "CellSize");
       }
-      
+
       // nRows
-      for (const KiLib::Raster* rast : rasts) {
+      for (const KiLib::Raster *rast : rasts)
+      {
          cmp(rast->nRows, rasts.at(0)->nRows, 0.0, "Num Rows");
       }
-      
+
       // nCols
-      for (const KiLib::Raster* rast : rasts) {
+      for (const KiLib::Raster *rast : rasts)
+      {
          cmp(rast->nCols, rasts.at(0)->nCols, 0.0, "Num Cols");
       }
    }

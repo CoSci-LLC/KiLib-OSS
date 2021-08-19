@@ -109,6 +109,28 @@ namespace KiLib
       }
    }
 
+   TEST(Raster, getInterpBilinear)
+   {
+      auto cwd  = fs::current_path();
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
+
+      fs::current_path(path);
+
+      Raster      dem("5x5.dem");
+      KiLib::Vec3 p1{780099.2947926898, 205426.59516664856, 1909.8001915739701};
+      KiLib::Vec3 p2{780099.3343145008, 205427.51547149016, 1910.3570077815384};
+      KiLib::Vec3 p3{780096.0843788842, 205427.65816391885, 1910.520074732899};
+
+      double z1 = dem(p1);
+      ASSERT_DOUBLE_EQ(z1, p1.z);
+
+      double z2 = dem(p2);
+      ASSERT_DOUBLE_EQ(z2, p2.z);
+
+      double z3 = dem(p3);
+      ASSERT_DOUBLE_EQ(z3, p3.z);
+   }
+
    TEST(Raster, Rasterize)
    {
       class TestClass

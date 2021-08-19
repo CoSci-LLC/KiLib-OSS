@@ -7,7 +7,7 @@ set(projectName KiLibObjLib)
 set(projectTestName KiLib.test)
 
 # Create the project name and version
-project(KiLib VERSION 3.0.0 LANGUAGES CXX)
+project(KiLib VERSION 3.1.0 LANGUAGES CXX)
 
 
 # Add KiLib Object Library
@@ -34,6 +34,10 @@ endif()
 
 # If we are debugging, add debug statements to every project
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        # only add the Werror flag for debug builds. Production builds won't have this.
+        target_compile_options(${projectName} PRIVATE -Werror)
+    endif()
     add_compile_definitions(SPDLOG_ACTIVE_LEVEL=1)
 
     # Should we build the test application?
@@ -90,14 +94,13 @@ install(TARGETS KiLib
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     # using Clang
     message(STATUS "Clang detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE -Wall -Werror)
-    
+    target_compile_options(${projectName} PRIVATE -Wall)
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
     message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE -Wall -Werror )
+    target_compile_options(${projectName} PRIVATE -Wall)
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
