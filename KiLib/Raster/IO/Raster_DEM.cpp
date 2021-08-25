@@ -101,8 +101,8 @@ namespace KiLib
          }
       }
 
-      this->width  = (this->nCols - 1) * this->cellsize;
-      this->height = (this->nRows - 1) * this->cellsize;
+      this->width  = this->nCols * this->cellsize;
+      this->height = this->nRows * this->cellsize;
       this->nData  = this->nRows * this->nCols;
 
       rasterFile.close();

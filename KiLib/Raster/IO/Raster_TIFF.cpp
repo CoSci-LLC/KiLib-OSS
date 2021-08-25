@@ -150,8 +150,8 @@ namespace KiLib
 
       this->nCols        = w;
       this->nRows        = h;
-      this->width        = (this->nCols - 1) * scaling[0];
-      this->height       = (this->nRows - 1) * scaling[1];
+      this->width        = this->nCols * scaling[0];
+      this->height       = this->nRows * scaling[1];
       this->xllcorner    = tiepoint[3];
       this->yllcorner    = tiepoint[4] - (this->nRows * scaling[1]);
       this->cellsize     = scaling[0];
