@@ -87,13 +87,13 @@ std::vector<double> Random::pgamma(const std::vector<double> &x, double shape)
    return stats::pgamma(x, shape, 1);
 }
 
-//std::pair<double, double> TransformNormalToLogNormal(double m, double s)
-//{
-//   auto phi = std::sqrt(std::pow(s,2) + std::pow(m,2));
-//   auto mu  = std::log(std::pow(m,2)/phi);
-//   auto sigma = std::sqrt(std::log(std::pow(phi,2)/std::pow(m,2)));
-//   return std::make_pair(mu, sigma);
-//}
+std::pair<double, double> TransformNormalToLogNormal(double m, double s)
+{
+   auto phi = std::sqrt(std::pow(s,2) + std::pow(m,2));
+   auto mu  = std::log(std::pow(m,2)/phi);
+   auto sigma = std::sqrt(std::log(std::pow(phi,2)/std::pow(m,2)));
+   return std::make_pair(mu, sigma);
+}
 
 /**
  * @brief Returns the quantile of the given value in a triangular distribution
