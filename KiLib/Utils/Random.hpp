@@ -35,6 +35,8 @@ namespace KiLib::Random
    std::vector<double> rlnorm(int count, double mean, double sd, std::mt19937_64 &gen);
    std::vector<double> rtnorml(int count, double mean, double sd, double a, std::mt19937_64 &gen);
    std::vector<double> pgamma(const std::vector<double> &x, double shape);
+ 
+   std::tuple<double, double> TransformNormalToLogNormal(const double m, const double s);
 
    template <typename T> double mean(std::vector<T>);
    template <typename T> double sd(std::vector<T>);
