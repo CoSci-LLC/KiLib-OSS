@@ -92,7 +92,7 @@ std::pair<double, double> TransformNormalToLogNormal(double m, double s)
    auto phi = std::sqrt(pow(s,2) + pow(m,2));
    auto mu  = std::log(pow(m,2)/phi);
    auto sigma = std::sqrt(std::log(pow(phi,2)/pow(m,2)));
-   return std::make_pair{mu, sigma};
+   return std::make_pair(mu, sigma);
 }
 
 /**
