@@ -26,6 +26,7 @@
 #include <numeric>
 #include <random>
 #include <vector>
+#include <tuple>
 
 namespace KiLib::Random
 {

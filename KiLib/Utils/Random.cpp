@@ -90,7 +90,7 @@ std::vector<double> Random::pgamma(const std::vector<double> &x, double shape)
 std::tuple<double, double> TransformNormalToLogNormal(const double m, const double s)
 {
    auto phi = std::sqrt(pow(s,2) + pow(m,2));
-   auto mu  = std::log(pow(m2)/phi);
+   auto mu  = std::log(pow(m,2)/phi);
    auto sigma = std::sqrt(std::log(pow(phi,2)/pow(m,2)));
    return {mu, sigma};
 }
