@@ -67,6 +67,16 @@ namespace KiLib
       }
    }
 
+   TEST(Random, TransformNormalToLogNormal)
+   {
+      const auto mean = 1.0;
+      const auto sd   = 0.1;
+      auto vec1 = Random::TransformNormalToLogNormal(mean, sd);
+      SPDLOG_DEBUG("Mean {} {}", mean, vec1[0]);
+      SPDLOG_DEBUG("SD   {} {}", sd, vec1[1]);
+   }
+
+
    TEST(Random, gen)
    {
       std::mt19937_64 gen1(1);
