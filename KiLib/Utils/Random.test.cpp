@@ -72,8 +72,8 @@ namespace KiLib
       const auto mean = 1.0;
       const auto sd   = 0.1;
       auto vec1 = Random::TransformNormalToLogNormal(mean, sd);
-      SPDLOG_DEBUG("Mean {} {}", mean, vec1[0]);
-      SPDLOG_DEBUG("SD   {} {}", sd, vec1[1]);
+      SPDLOG_DEBUG("Mean {} {}", mean, vec1.first);
+      SPDLOG_DEBUG("SD   {} {}", sd, vec1.second);
    }
 
 
