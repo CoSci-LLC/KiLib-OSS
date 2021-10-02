@@ -87,12 +87,13 @@ std::vector<double> Random::pgamma(const std::vector<double> &x, double shape)
    return stats::pgamma(x, shape, 1);
 }
 
-std::pair<double, double> TransformNormalToLogNormal(double m, double s)
+std::vector<double> TransformNormalToLogNormal(double mean, double sd)
 {
-   auto phi = std::sqrt(std::pow(s,2) + std::pow(m,2));
-   auto mu  = std::log(std::pow(m,2)/phi);
-   auto sigma = std::sqrt(std::log(std::pow(phi,2)/std::pow(m,2)));
-   return std::make_pair(mu, sigma);
+   std::vector<double> logNormalParams;
+   auto phi   = std::sqrt(std::pow(mean,2) + std::pow(sd,2));
+   logNormalParams.push_back(std::log(std::pow(mean,2)/phi));
+   logNormalParams.push_back(std::sqrt(std::log(std::pow(phi,2)/std::pow(mean,2))));
+   return logNormalParams;
 }
 
 /**
