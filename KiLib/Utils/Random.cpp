@@ -87,6 +87,11 @@ std::vector<double> Random::pgamma(const std::vector<double> &x, double shape)
    return stats::pgamma(x, shape, 1);
 }
 
+std::vector<double> Random::pgamma(const std::vector<double> &x, double shape, double scale)
+{
+   return stats::pgamma(x, shape, scale);
+}
+
 std::pair<double, double> Random::TransformNormalToLogNormal(double mean, double sd)
 {
    const auto m2 = pow(mean,2);
