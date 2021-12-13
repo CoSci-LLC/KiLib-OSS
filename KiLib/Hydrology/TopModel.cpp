@@ -31,10 +31,9 @@ TopModel::TopModel(){};
 double TopModel::ComputeWetness(
    const double rainfall,   // Rainfall intensity [L/T]
    const double ks,         // Hydraulic conductivity [L/T]
-   const double depth,      // Depth [L]
-   const double slope,      // Slope [rad]
+   const double thickness,  // Soil thickness [L]
    const double twi) const  // Topographic Wetness Index [-]
 {
-   return std::clamp(rainfall / (ks * depth * std::cos(slope)) * std::exp(twi), 0.0, 1.0);
+   return std::clamp(rainfall / (ks * thickness) * std::exp(twi), 0.0, 1.0);
 }
 // clang-format on
