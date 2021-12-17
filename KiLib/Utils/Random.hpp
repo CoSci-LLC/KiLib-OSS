@@ -32,8 +32,12 @@ namespace KiLib::Random
    std::vector<double> runif(int count, double min, double max, std::mt19937_64 &gen);
    std::vector<double> rnorm(int count, std::vector<double> means, double sd, std::mt19937_64 &gen);
    std::vector<double> rnorm(int count, double mean, double sd, std::mt19937_64 &gen);
+   std::vector<double> rlnorm(int count, double mean, double sd, std::mt19937_64 &gen);
    std::vector<double> rtnorml(int count, double mean, double sd, double a, std::mt19937_64 &gen);
-   std::vector<double> pgamma(const std::vector<double> &x, double shape);
+   double pgamma(const double x, double shape, double scale = 1);
+   std::vector<double> pgamma(const std::vector<double> &x, double shape, double scale = 1);
+ 
+   std::pair<double, double> TransformNormalToLogNormal(double mean, double sd);
 
    template <typename T> double mean(std::vector<T>);
    template <typename T> double sd(std::vector<T>);

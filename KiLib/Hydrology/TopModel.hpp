@@ -33,8 +33,7 @@ namespace KiLib::Hydrology
       double ComputeWetness(
          const double rainfall,   // Rainfall intensity [L/T]
          const double ks,         // Hydraulic conductivity [L/T]
-         const double depth,      // Depth [L]
-         const double slope,      // Slope [rad]
+         const double thickness,      // Soil thickness [L]
          const double twi) const; // Topographic Wetness Index [-]
       // clang-format on
    };

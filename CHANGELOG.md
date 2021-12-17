@@ -2,6 +2,17 @@
 
 Notable changes to this project will be documented in this file.
 
+## v3.2.0
+---
+
+### Added
+
+- New distrubtions
+
+### Fixed
+
+- Added Random to KiLib.hpp
+
 ## v3.1.0
 ---
 
