@@ -165,13 +165,8 @@ namespace KiLib
 
    double Raster::GetAverage(size_t ind, double radius) const
    {
-      if (ind >= this->nData)
-      {
-         throw std::out_of_range(fmt::format("Index {} out of range for Raster with {} datapoints", ind, this->nData));
-      }
+      auto [r, c] = Raster::GetRowCol(ind);
 
-      int r      = ind / this->nCols;
-      int c      = ind % this->nCols;
       int extent = std::floor(radius / this->cellsize);
 
       int leftB  = std::clamp(c - extent, 0, (int)this->nCols - 1);
@@ -215,6 +210,18 @@ namespace KiLib
       const double bottom = pos.y - this->yllcorner;
 
       return std::min(std::min(left, right), std::min(top, bottom));
+   }
+
+   std::pair<int, int> Raster::GetRowCol(const size_t ind) const
+   {
+      if (ind >= this->nData)
+      {
+         throw std::out_of_range(fmt::format("Index {} out of range for Raster with {} datapoints", ind, this->nData));
+      }
+
+      const int r      = ind / this->nCols;
+      const int c      = ind % this->nCols;
+      return std::make_pair(r,c);
    }
 
    double Raster::operator()(const Vec3 &pos) const
@@ -342,13 +349,8 @@ namespace KiLib
 
    std::optional<KiLib::Vec3> Raster::GetCoordMinDistance(size_t ind, double radius, double threshold) const
    {
-      if (ind >= this->nData)
-      {
-         throw std::out_of_range(fmt::format("Index {} out of range for Raster with {} datapoints", ind, this->nData));
-      }
+      auto [r, c] = Raster::GetRowCol(ind);
 
-      const int r      = ind / this->nCols;
-      const int c      = ind % this->nCols;
       const int extent = std::floor(radius / this->cellsize);
 
       const int leftB  = std::clamp(c - extent, 0, (int)this->nCols - 1);

@@ -86,6 +86,14 @@ namespace KiLib
        * @return double Distance
        */
       double distFromBoundary(const Vec3 &pos) const;
+     
+      /**
+       * @brief Returns row and col of raster flat index
+       *
+       * @param ind Flatten index
+       * @return pair row, col
+       */
+      std::pair<int, int> GetRowCol(const size_t ind) const;
 
       /**
        * @brief Interpolates raster value at pos (takes in 3D vector but ignores Z)
