@@ -30,7 +30,7 @@ namespace KiLib
 {
 
    /**
-    * @brief Loads in Rasters (like DEMs) and provides nice helper funcitons such
+    * @brief Loads in Rasters (like DEMs) and provides nice helper functions such
     * as interpolation, matrix-like access, and so on.
     *
     */
@@ -250,6 +250,7 @@ namespace KiLib
       double                     GetAverage(size_t ind, double radius) const;
       static std::vector<size_t> getValidIndices(const std::vector<const KiLib::Raster *> &rasts);
       static void                assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
+      std::optional<KiLib::Vec3> GetCoordMinDistance(size_t ind, double radius, double threshold) const;
 
    private:
       void fromDEM(const std::string &path);

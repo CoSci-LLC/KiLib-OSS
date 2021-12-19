@@ -190,7 +190,7 @@ namespace KiLib
             {
                continue;
             }
-            // this can probably be done faster, handles the corners being out of the radius
+            // This can probably be done faster, handles the corners being out of the radius
             const double dr   = std::abs((double)(r - ri)) * cellsize;
             const double dc   = std::abs((double)(c - ci)) * cellsize;
             const double dist = sqrt(dr * dr + dc * dc);
@@ -339,4 +339,67 @@ namespace KiLib
          cmp(rast->nCols, rasts.at(0)->nCols, 0.0, "Num Cols");
       }
    }
+
+   std::optional<KiLib::Vec3> Raster::GetCoordMinDistance(size_t ind, double radius, double threshold) const
+   {
+      if (ind >= this->nData)
+      {
+         throw std::out_of_range(fmt::format("Index {} out of range for Raster with {} datapoints", ind, this->nData));
+      }
+
+      const int r      = ind / this->nCols;
+      const int c      = ind % this->nCols;
+      const int extent = std::floor(radius / this->cellsize);
+
+      const int leftB  = std::clamp(c - extent, 0, (int)this->nCols - 1);
+      const int rightB = std::clamp(c + extent, 0, (int)this->nCols - 1);
+      const int upB    = std::clamp(r + extent, 0, (int)this->nRows - 1);
+      const int lowB   = std::clamp(r - extent, 0, (int)this->nRows - 1);
+
+      auto dist2value  = std::numeric_limits<double>::max();
+      auto value       = std::numeric_limits<double>::max();
+
+      KiLib::Vec3 pos; // Return value if position found
+      bool found = false;
+
+      for (int ri = lowB; ri <= upB; ri++)
+      {
+         for (int ci = leftB; ci <= rightB; ci++)
+         {
+            // Skip nodata and values less than threshold
+            if (this->at(ri, ci) == this->nodata_value || this->at(ri,ci) < threshold)
+            {
+               continue;
+            }
+            // This can probably be done faster, handles the corners being out of the radius
+            const double dr   = std::abs((double)(r - ri)) * cellsize;
+            const double dc   = std::abs((double)(c - ci)) * cellsize;
+            const double dist = sqrt(dr * dr + dc * dc);
+            if (dist > radius)
+            {
+               SPDLOG_DEBUG("SKIPPING\n");
+               continue;
+            }
+            // Get position if
+            if (this->at(ri,ci) < value && dist <= dist2value) 
+            {
+               dist2value = dist;
+               value      = this->at(ri,ci);
+               auto ind   = this->flattenIndex(ri,ci);
+               pos        = this->getCellPos(ind);
+               found      = true;
+            }
+         }
+      }
+      // Check that pos was found
+      if (found)
+      {
+         return pos;
+      }
+      else
+      {
+         return std::nullopt;
+      }
+   }
+
 } // namespace KiLib

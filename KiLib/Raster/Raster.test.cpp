@@ -22,6 +22,7 @@
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <numeric>
+#include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
 #ifdef __APPLE__
@@ -129,6 +130,28 @@ namespace KiLib
 
       double z3 = dem(p3);
       ASSERT_DOUBLE_EQ(z3, p3.z);
+   }
+
+   TEST(Raster, GetCoordMinDistance)
+   {
+      auto cwd  = fs::current_path();
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_CA.dem");
+
+      Raster dem(path.string());
+
+      size_t ind = 30;
+      auto radius = 8.0;
+      auto threshold = 21.0;
+      std::optional<KiLib::Vec3> pos = dem.GetCoordMinDistance(ind, radius, threshold);
+      if (pos)
+      {
+         ASSERT_DOUBLE_EQ(30, (*pos).z);
+      }
+      else
+      {
+         ASSERT_DOUBLE_EQ(1.0, 2.0);
+      }
+
    }
 
    TEST(Raster, Rasterize)
