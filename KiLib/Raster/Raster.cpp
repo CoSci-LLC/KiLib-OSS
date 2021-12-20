@@ -389,6 +389,7 @@ namespace KiLib
                value      = this->at(ri,ci);
                auto ind   = this->flattenIndex(ri,ci);
                pos        = this->getCellPos(ind);
+               pos.z      = 0.0; // Reset z to zero
                found      = true;
             }
          }
