@@ -163,6 +163,18 @@ namespace KiLib
       return pos;
    }
 
+   KiLib::Vec3 Raster::getCellCenter(size_t ind) const
+   {
+      size_t r = ind / this->nCols;
+      size_t c = ind % this->nCols;
+
+      KiLib::Vec3 pos = KiLib::Vec3(this->xllcorner + c * this->cellsize + this->cellsize / 2.0, 
+                                    this->yllcorner + r * this->cellsize + this->cellsize / 2.0, 0);
+      pos.z           = this->getInterpBilinear(pos);
+
+      return pos;
+   }
+
    double Raster::GetAverage(size_t ind, double radius) const
    {
       auto [r, c] = Raster::GetRowCol(ind);

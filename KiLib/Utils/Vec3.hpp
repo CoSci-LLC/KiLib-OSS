@@ -73,6 +73,7 @@ namespace KiLib
       static Vec3   cross(const Vec3 &a, const Vec3 &b);
       static Vec3   normalise(const Vec3 &a);
       static double norm(const Vec3 &a);
+      static double NormXY(const Vec3 &a);
       static double angle2D(const Vec3 &a);
       static double dot(const Vec3 &a, const Vec3 &b);
 
@@ -121,6 +122,17 @@ namespace KiLib
    inline double Vec3::norm(const Vec3 &a)
    {
       return std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+   }
+
+   /**
+    * @brief Returns XY-only 2-norm of a
+    *
+    * @param a
+    * @return double
+    */
+   inline double Vec3::NormXY(const Vec3 &a)
+   {
+      return std::sqrt(a.x * a.x + a.y * a.y);
    }
 
    /**

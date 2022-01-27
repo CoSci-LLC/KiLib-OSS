@@ -78,6 +78,7 @@ namespace KiLib
       size_t flattenIndex(size_t r, size_t c) const;
 
       KiLib::Vec3 getCellPos(size_t ind) const;
+      KiLib::Vec3 getCellCenter(size_t ind) const;
 
       /**
        * @brief Returns distance between pos and nearest boundary point
