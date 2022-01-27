@@ -23,6 +23,7 @@
 #include <KiLib/Utils/Vec3.hpp>
 #include <algorithm>
 #include <random>
+#include <optional>
 #include <string>
 #include <vector>
 
