@@ -146,8 +146,10 @@ namespace KiLib
       double rF = (pos.y - this->yllcorner) / this->cellsize;
       double cF = (pos.x - this->xllcorner) / this->cellsize;
 
-      size_t r = std::clamp<size_t>((size_t)std::round(rF), 0UL, this->nRows - 1);
-      size_t c = std::clamp<size_t>((size_t)std::round(cF), 0UL, this->nCols - 1);
+      //size_t r = std::clamp<size_t>((size_t)std::round(rF), 0UL, this->nRows - 1);  // WRONG
+      //size_t c = std::clamp<size_t>((size_t)std::round(cF), 0UL, this->nCols - 1);  // WRONG
+      size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->nRows - 1);
+      size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->nCols - 1);
 
       return r * this->nCols + c;
    }
