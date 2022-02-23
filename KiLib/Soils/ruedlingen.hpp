@@ -33,46 +33,46 @@ namespace KiLib::Soils
          this->longname              = "Ruedlingen soil";
          this->porosity              = 0.47;   // [m3/m3]
          this->saturatedWaterContent = 0.47;   // [m3/m3]
-         this->residualWaterContent  = 0.047;  // [m3/m3]
-         this->fieldCapacity         = 0.30;   // [m3/m3]
+         this->residualWaterContent  = 0.0454; // [m3/m3]
+         this->fieldCapacity         = 0.3632; // [m3/m3]
          this->initWaterContent      = 0.20;   // [m3/m3]
          this->waterExchangeTerm     = 3e-06;  // [1/s]
          this->vgWetAlpha1           = 1.3e-4; // [1/Pa]
-         this->vgWetN1               = 1.46;
-         this->maxTensileStrain      = 0; // [Pa]
+         this->vgWetN1               = 1.46;   // [-]
+         this->maxTensileStrain      = 0.00;   // [Pa]
 
-         this->frictionAngle = {
-            .constant = 29 * M_PI / 180.0,
+         this->frictionAngle = {               // [rad]
+            .constant = 30 * M_PI / 180.0,
             .uniformPrimula{
-               .min = 29 * M_PI / 180.0,
-               .max = 29 * M_PI / 180.0,
+               .min = 30 * M_PI / 180.0,
+               .max = 30 * M_PI / 180.0,
             },
             .uniform{
-               .min = 29 * M_PI / 180.0,
-               .max = 29 * M_PI / 180.0,
+               .min = 30 * M_PI / 180.0,
+               .max = 30 * M_PI / 180.0,
             },
             .normal{
-               .mean   = 29 * M_PI / 180.0,
+               .mean   = 30 * M_PI / 180.0,
                .stdDev = 1 * M_PI / 180.0,
             }};
 
-         this->densityDry = {
-            .constant = 1700,
+         this->densityDry = {                  // [kg/m^3]
+            .constant = 1633,
             .uniformPrimula{
-               .min = 1700,
-               .max = 1700,
+               .min = 1633,
+               .max = 1633,
             },
             .uniform{
-               .min = 1700,
-               .max = 1700,
+               .min = 1633,
+               .max = 1633,
             },
             .normal{
-               .mean   = 1700,
+               .mean   = 1633,
                .stdDev = 100,
             }};
 
-         this->cohesion = {
-            .constant = 0,
+         this->cohesion = {                    // [Pa]
+            .constant = 500,
             .uniformPrimula{
                .min = 0,
                .max = 500,
@@ -82,15 +82,15 @@ namespace KiLib::Soils
                .max = 500,
             },
             .normal{
-               .mean   = 250,
-               .stdDev = 100,
+               .mean   = 500,
+               .stdDev = 50,
             }};
 
-         this->conductivity = {
-            .constant = 5e-07,
+         this->conductivity = {                // [m/s]
+            .constant = 0.02,
             .uniformPrimula{
-               .min = 1e-08,
-               .max = 1e-06,
+               .min = 0.01,
+               .max = 0.03,
             }};
       }
    };
