@@ -2,6 +2,20 @@
 
 Notable changes to this project will be documented in this file.
 
+## v3.3.0
+---
+
+### Added
+
+- Add function Raster::GetCoordMinDistance with test and new dem for checking
+- Add function GetRowCol from index and use it elsewhere
+- Add getCellCenter and NormXY
+
+### Fixed
+
+- Fix z value of return coord for GetCoordMinDistance
+- Fix error in getNearestCell: use floor instead of round
+
 ## v3.2.0
 ---
 
