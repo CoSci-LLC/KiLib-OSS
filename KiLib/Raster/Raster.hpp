@@ -23,6 +23,7 @@
 #include <KiLib/Utils/Vec3.hpp>
 #include <algorithm>
 #include <random>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,7 @@ namespace KiLib
 {
 
    /**
-    * @brief Loads in Rasters (like DEMs) and provides nice helper funcitons such
+    * @brief Loads in Rasters (like DEMs) and provides nice helper functions such
     * as interpolation, matrix-like access, and so on.
     *
     */
@@ -78,6 +79,7 @@ namespace KiLib
       size_t flattenIndex(size_t r, size_t c) const;
 
       KiLib::Vec3 getCellPos(size_t ind) const;
+      KiLib::Vec3 getCellCenter(size_t ind) const;
 
       /**
        * @brief Returns distance between pos and nearest boundary point
@@ -86,6 +88,14 @@ namespace KiLib
        * @return double Distance
        */
       double distFromBoundary(const Vec3 &pos) const;
+     
+      /**
+       * @brief Returns row and col of raster flat index
+       *
+       * @param ind Flatten index
+       * @return pair row, col
+       */
+      std::pair<int, int> GetRowCol(const size_t ind) const;
 
       /**
        * @brief Interpolates raster value at pos (takes in 3D vector but ignores Z)
@@ -250,6 +260,7 @@ namespace KiLib
       double                     GetAverage(size_t ind, double radius) const;
       static std::vector<size_t> getValidIndices(const std::vector<const KiLib::Raster *> &rasts);
       static void                assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
+      std::optional<KiLib::Vec3> GetCoordMinDistance(size_t ind, double radius, double threshold) const;
 
    private:
       void fromDEM(const std::string &path);
