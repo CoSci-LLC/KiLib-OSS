@@ -146,8 +146,8 @@ namespace KiLib
       double rF = (pos.y - this->yllcorner) / this->cellsize;
       double cF = (pos.x - this->xllcorner) / this->cellsize;
 
-      //size_t r = std::clamp<size_t>((size_t)std::round(rF), 0UL, this->nRows - 1);  // WRONG
-      //size_t c = std::clamp<size_t>((size_t)std::round(cF), 0UL, this->nCols - 1);  // WRONG
+      // size_t r = std::clamp<size_t>((size_t)std::round(rF), 0UL, this->nRows - 1);  // WRONG
+      // size_t c = std::clamp<size_t>((size_t)std::round(cF), 0UL, this->nCols - 1);  // WRONG
       size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->nRows - 1);
       size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->nCols - 1);
 
@@ -170,9 +170,10 @@ namespace KiLib
       size_t r = ind / this->nCols;
       size_t c = ind % this->nCols;
 
-      KiLib::Vec3 pos = KiLib::Vec3(this->xllcorner + c * this->cellsize + this->cellsize / 2.0, 
-                                    this->yllcorner + r * this->cellsize + this->cellsize / 2.0, 0);
-      pos.z           = this->getInterpBilinear(pos);
+      KiLib::Vec3 pos = KiLib::Vec3(
+         this->xllcorner + c * this->cellsize + this->cellsize / 2.0,
+         this->yllcorner + r * this->cellsize + this->cellsize / 2.0, 0);
+      pos.z = this->getInterpBilinear(pos);
 
       return pos;
    }
@@ -180,13 +181,15 @@ namespace KiLib
 
    /**
     * Get number of data points in raster that are valid data points
-      */
+    */
    size_t Raster::getNDataPoints() const
    {
       size_t nDataPoints = 0;
 
-      for (size_t i = 0; i < this->nData; i++) {
-         if (this->data[i] != this->nodata_value) {
+      for (size_t i = 0; i < this->nData; i++)
+      {
+         if (this->data[i] != this->nodata_value)
+         {
             nDataPoints++;
          }
       }
@@ -197,13 +200,15 @@ namespace KiLib
 
    /**
     * Get number of data points in raster that are *not* valid data points (nodata)
-      */
+    */
    size_t Raster::getNNoDataPoints() const
    {
       size_t nNoDataPoints = 0;
 
-      for (size_t i = 0; i < this->nData; i++) {
-         if (this->data[i] == this->nodata_value) {
+      for (size_t i = 0; i < this->nData; i++)
+      {
+         if (this->data[i] == this->nodata_value)
+         {
             nNoDataPoints++;
          }
       }
@@ -267,9 +272,9 @@ namespace KiLib
          throw std::out_of_range(fmt::format("Index {} out of range for Raster with {} datapoints", ind, this->nData));
       }
 
-      const int r      = ind / this->nCols;
-      const int c      = ind % this->nCols;
-      return std::make_pair(r,c);
+      const int r = ind / this->nCols;
+      const int c = ind % this->nCols;
+      return std::make_pair(r, c);
    }
 
    double Raster::operator()(const Vec3 &pos) const
@@ -406,18 +411,18 @@ namespace KiLib
       const int upB    = std::clamp(r + extent, 0, (int)this->nRows - 1);
       const int lowB   = std::clamp(r - extent, 0, (int)this->nRows - 1);
 
-      auto dist2value  = std::numeric_limits<double>::max();
-      auto value       = std::numeric_limits<double>::max();
+      auto dist2value = std::numeric_limits<double>::max();
+      auto value      = std::numeric_limits<double>::max();
 
       KiLib::Vec3 pos; // Return value if position found
-      bool found = false;
+      bool        found = false;
 
       for (int ri = lowB; ri <= upB; ri++)
       {
          for (int ci = leftB; ci <= rightB; ci++)
          {
             // Skip nodata and values less than threshold
-            if (this->at(ri, ci) == this->nodata_value || this->at(ri,ci) < threshold)
+            if (this->at(ri, ci) == this->nodata_value || this->at(ri, ci) < threshold)
             {
                continue;
             }
@@ -431,11 +436,11 @@ namespace KiLib
                continue;
             }
             // Get position if
-            if (this->at(ri,ci) < value && dist <= dist2value) 
+            if (this->at(ri, ci) < value && dist <= dist2value)
             {
                dist2value = dist;
-               value      = this->at(ri,ci);
-               auto ind   = this->flattenIndex(ri,ci);
+               value      = this->at(ri, ci);
+               auto ind   = this->flattenIndex(ri, ci);
                pos        = this->getCellPos(ind);
                pos.z      = 0.0; // Reset z to zero
                found      = true;

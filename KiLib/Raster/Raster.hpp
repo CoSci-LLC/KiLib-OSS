@@ -22,8 +22,8 @@
 
 #include <KiLib/Utils/Vec3.hpp>
 #include <algorithm>
-#include <random>
 #include <optional>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -99,7 +99,7 @@ namespace KiLib
        * @return double Distance
        */
       double distFromBoundary(const Vec3 &pos) const;
-     
+
       /**
        * @brief Returns row and col of raster flat index
        *

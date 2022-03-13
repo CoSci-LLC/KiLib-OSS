@@ -94,9 +94,9 @@ std::vector<double> Random::pgamma(const std::vector<double> &x, double shape, d
 
 std::pair<double, double> Random::TransformNormalToLogNormal(double mean, double sd)
 {
-   const auto m2 = pow(mean,2);
-   const auto phi = std::sqrt(m2 + std::pow(sd,2));
-   return std::make_pair(std::log(m2/phi), std::sqrt(std::log(std::pow(phi,2)/m2)));
+   const auto m2  = pow(mean, 2);
+   const auto phi = std::sqrt(m2 + std::pow(sd, 2));
+   return std::make_pair(std::log(m2 / phi), std::sqrt(std::log(std::pow(phi, 2) / m2)));
 }
 
 /**
