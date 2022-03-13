@@ -145,7 +145,8 @@ namespace KiLib
       std::optional<KiLib::Vec3> pos       = dem.GetCoordMinDistance(ind, radius, threshold);
       if (pos)
       {
-         ASSERT_DOUBLE_EQ(30, (*pos).z);
+         ASSERT_DOUBLE_EQ(780098, (*pos).x);
+         ASSERT_DOUBLE_EQ(205430, (*pos).y);
       }
       else
       {

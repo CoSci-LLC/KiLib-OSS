@@ -432,7 +432,6 @@ namespace KiLib
             const double dist = sqrt(dr * dr + dc * dc);
             if (dist > radius)
             {
-               SPDLOG_DEBUG("SKIPPING\n");
                continue;
             }
             // Get position if
