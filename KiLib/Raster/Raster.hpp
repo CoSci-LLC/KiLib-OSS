@@ -82,6 +82,17 @@ namespace KiLib
       KiLib::Vec3 getCellCenter(size_t ind) const;
 
       /**
+       * Get number of data points in raster that are valid data points
+       */
+      size_t getNDataPoints() const;
+
+
+      /**
+       * Get number of data points in raster that are *not* valid data points (nodata)
+       */
+      size_t getNNoDataPoints() const;
+
+      /**
        * @brief Returns distance between pos and nearest boundary point
        *
        * @param pos Position to get distance from

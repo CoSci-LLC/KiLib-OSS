@@ -177,6 +177,40 @@ namespace KiLib
       return pos;
    }
 
+
+   /**
+    * Get number of data points in raster that are valid data points
+      */
+   size_t Raster::getNDataPoints() const
+   {
+      size_t nDataPoints = 0;
+
+      for (size_t i = 0; i < this->nData; i++) {
+         if (this->data[i] != this->nodata_value) {
+            nDataPoints++;
+         }
+      }
+
+      return nDataPoints;
+   }
+
+
+   /**
+    * Get number of data points in raster that are *not* valid data points (nodata)
+      */
+   size_t Raster::getNNoDataPoints() const
+   {
+      size_t nNoDataPoints = 0;
+
+      for (size_t i = 0; i < this->nData; i++) {
+         if (this->data[i] == this->nodata_value) {
+            nNoDataPoints++;
+         }
+      }
+
+      return nNoDataPoints;
+   }
+
    double Raster::GetAverage(size_t ind, double radius) const
    {
       auto [r, c] = Raster::GetRowCol(ind);
