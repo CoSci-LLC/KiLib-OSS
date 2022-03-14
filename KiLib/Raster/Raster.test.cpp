@@ -322,4 +322,18 @@ namespace KiLib
          ASSERT_TRUE(std::find(inds.begin(), inds.end(), i) != inds.end());
       }
    }
+
+   TEST(Raster, GetCellCenter)
+   {
+      auto   cwd  = fs::current_path();
+      auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+      Raster dem(path.string());
+
+      auto center = dem.getCellCenter(0);
+
+      ASSERT_DOUBLE_EQ(center.x, 0.5);
+      ASSERT_DOUBLE_EQ(center.y, 0.5);
+      ASSERT_DOUBLE_EQ(center.z, 2.0);
+   }
+
 } // namespace KiLib

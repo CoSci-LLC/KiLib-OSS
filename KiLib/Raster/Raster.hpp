@@ -100,6 +100,16 @@ namespace KiLib
       size_t getNNoDataPoints() const;
 
       /**
+       * Get minimum value in raster
+       */
+      double getMinValue() const;
+
+      /**
+       * Get max value in raster
+       */
+      double getMaxValue() const;
+
+      /**
        * @brief Returns distance between pos and nearest boundary point
        *
        * @param pos Position to get distance from
