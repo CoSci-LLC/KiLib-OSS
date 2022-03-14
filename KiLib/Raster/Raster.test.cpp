@@ -336,4 +336,24 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(center.z, 2.0);
    }
 
+   TEST(Raster, GetNDataPoints)
+   {
+      auto   cwd  = fs::current_path();
+      auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_slope.dem");
+      Raster dem(path.string());
+
+      auto points = dem.getNDataPoints();
+      ASSERT_EQ(points, 44);
+   }
+
+   TEST(Raster, GetNNoDataPoints)
+   {
+      auto   cwd  = fs::current_path();
+      auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_slope.dem");
+      Raster dem(path.string());
+
+      auto points = dem.getNNoDataPoints();
+      ASSERT_EQ(points, 5);
+   }
+
 } // namespace KiLib
