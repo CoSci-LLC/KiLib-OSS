@@ -78,7 +78,14 @@ namespace KiLib
        */
       size_t flattenIndex(size_t r, size_t c) const;
 
+      /**
+       * Get position of lower left corner of cell
+       */
       KiLib::Vec3 getCellPos(size_t ind) const;
+
+      /**
+       * Get position of center of cell
+       */
       KiLib::Vec3 getCellCenter(size_t ind) const;
 
       /**
