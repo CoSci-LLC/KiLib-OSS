@@ -348,7 +348,7 @@ namespace KiLib
       auto nopoints = dem.getNNoDataPoints();
       ASSERT_EQ(nopoints, 5);
    }
-   
+
    TEST(Raster, MinMax)
    {
       auto   cwd  = fs::current_path();
@@ -361,5 +361,4 @@ namespace KiLib
       auto max = dem.getMaxValue();
       ASSERT_DOUBLE_EQ(max, 0.84348380565643310547);
    }
-
 } // namespace KiLib
