@@ -12,7 +12,7 @@ FetchContent_Populate(
   spdlog_proj
   QUIET
   GIT_REPOSITORY  https://github.com/gabime/spdlog.git
-  GIT_TAG         v1.9.1
+  GIT_TAG         v1.9.2
   SOURCE_DIR      spdlog_proj
 )
 
