@@ -620,7 +620,7 @@ namespace better_enums
          return _size_constant;                                                                                        \
       }                                                                                                                \
                                                                                                                        \
-      BETTER_ENUMS_CONSTEXPR_ static const char *    _name();                                                          \
+      BETTER_ENUMS_CONSTEXPR_ static const char     *_name();                                                          \
       BETTER_ENUMS_CONSTEXPR_ static _value_iterable _values();                                                        \
       ToStringConstexpr static _name_iterable        _names();                                                         \
                                                                                                                        \

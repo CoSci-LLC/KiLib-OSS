@@ -105,7 +105,7 @@ namespace KiLib
       uint32  h         = 0;
       double *scaling   = nullptr;
       double *tiepoint  = nullptr;
-      char *  nodat     = nullptr;
+      char   *nodat     = nullptr;
 
       size_t num_dir = 1;
 
