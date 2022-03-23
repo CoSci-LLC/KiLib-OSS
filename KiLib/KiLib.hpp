@@ -41,8 +41,8 @@
 #pragma once
 
 // Exceptions
-#include <KiLib/Exceptions/InvalidArgument.hpp>
 #include <KiLib/Exceptions/NotImplemented.hpp>
+#include <KiLib/Exceptions/InvalidArgument.hpp>
 
 // Raster
 #include <KiLib/Raster/Raster.hpp>
@@ -65,5 +65,5 @@
 // Hydrology
 #include <KiLib/Hydrology/Hydrology.hpp>
 
-// Constants
+//Constants
 #include <KiLib/Constants.hpp>
