@@ -436,7 +436,7 @@ namespace KiLib
       }
    }
 
-   std::optional<KiLib::Vec3> Raster::GetCoordMinDistance(size_t ind, double zInd, double radius, double threshold) const
+   std::optional<KiLib::Vec3> Raster::GetCoordMinDistance(size_t ind, double zInd, const KiLib::Raster & elev, double radius, double threshold) const
    {
       auto [r, c] = Raster::GetRowCol(ind);
 
@@ -471,7 +471,7 @@ namespace KiLib
                continue;
             }
             // Get position if
-            if (this->at(ri, ci) < value && this->at(ri,ci) < zInd && dist <= dist2value)
+            if (this->at(ri, ci) < value && elev.at(ri,ci) < zInd && dist <= dist2value)
             {
                dist2value = dist;
                value      = this->at(ri, ci);
