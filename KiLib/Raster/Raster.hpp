@@ -294,7 +294,7 @@ namespace KiLib
       double                     GetAverage(size_t ind, double radius) const;
       static std::vector<size_t> getValidIndices(const std::vector<const KiLib::Raster *> &rasts);
       static void                assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
-      std::optional<KiLib::Vec3> GetCoordMinDistance(size_t ind, double radius, double threshold) const;
+      std::optional<KiLib::Vec3> GetCoordMinDistance(size_t ind, double zInd, double radius, double threshold) const;
 
    private:
       void fromDEM(const std::string &path);
