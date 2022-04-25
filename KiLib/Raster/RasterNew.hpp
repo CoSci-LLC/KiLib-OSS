@@ -78,5 +78,14 @@ namespace KiLib
        * @return double& element
        */
       double &at(Eigen::Index row, Eigen::Index col);
+
+      /**
+       * @brief Returns a flat index for a given row and column
+       *
+       * @param row row index
+       * @param col col index
+       * @return Eigen::Index flattened index of (row, col)
+       */
+      Eigen::Index flattenIndex(Eigen::Index row, Eigen::Index col);
    };
 } // namespace KiLib

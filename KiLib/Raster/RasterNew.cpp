@@ -42,4 +42,9 @@ namespace KiLib
       return this->data(row, col);
    }
 
+   Eigen::Index RasterNew::flattenIndex(Eigen::Index row, Eigen::Index col)
+   {
+      return row * this->nCols + col;
+   }
+
 } // namespace KiLib

@@ -38,4 +38,17 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(rast.at(3, 3), 1.0);
       ASSERT_DOUBLE_EQ(rast.data(3, 3), 1.0);
    }
+
+   TEST(RasterNew, flattenIndex)
+   {
+      RasterNew rast = RasterNew();
+
+      rast.data.resize(10, 7);
+      rast.nRows = 10;
+      rast.nCols = 7;
+
+      ASSERT_EQ(rast.flattenIndex(0, 3), 3);
+      ASSERT_EQ(rast.flattenIndex(1, 3), 10);
+      ASSERT_EQ(rast.flattenIndex(2, 9), 23);
+   }
 } // namespace KiLib
