@@ -3,6 +3,7 @@
 # Add sources to the main project
 target_sources(${projectName} PRIVATE
 	Raster.cpp
+	RasterNew.cpp
 	ComputeSlope.cpp
 )
 
@@ -12,6 +13,7 @@ target_sources(${projectName} PRIVATE
 # Add sources to the test application
 target_sources_test(${projectTestName} PRIVATE
 	Raster.test.cpp
+	RasterNew.test.cpp
 )
 
 add_subdirectory(IO)
