@@ -28,7 +28,9 @@
 #include <string>
 #include <vector>
 
-using Eigen::MatrixXd;
+// Eigen defaults to col-major, but we want row-major
+// Typedef for a dynamic matrix of doubles stored in row-major order
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RowMatrixXd;
 
 namespace KiLib
 {
@@ -44,7 +46,7 @@ namespace KiLib
       // Data memebers
       ////////////////////////////////////////////////////////////////////////////////
    public:
-      Eigen::MatrixXd data;
+      RowMatrixXd data;
 
       double xllcorner;    // Lower left corner x value in absolute coordinates
       double yllcorner;    // Lower left corner y value in absolute coordinates
@@ -67,6 +69,14 @@ namespace KiLib
        */
       RasterNew();
 
+      /**
+       * @brief Construct a new RasterNew object from a raster on disk. Format is determined by extension.
+       * Accepted formats are ASCII DEMs (.asc, .ddem), and GeoTIFF (.tif, .tiff).
+       *
+       * @param path
+       */
+      RasterNew(const std::string &path);
+
       ////////////////////////////////////////////////////////////////////////////////
       // Access
       ////////////////////////////////////////////////////////////////////////////////
@@ -87,5 +97,30 @@ namespace KiLib
        * @return Eigen::Index flattened index of (row, col)
        */
       Eigen::Index flattenIndex(Eigen::Index row, Eigen::Index col);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      // I/O
+      ////////////////////////////////////////////////////////////////////////////////
+      /**
+       * @brief Load a DEM from disk that is in ASCII DEM format.
+       *
+       * @param path path to DEM
+       */
+      void fromDEM(const std::string &path);
+
+      /**
+       * @brief Write the raster to disk as an ASCII DEM.
+       *
+       * @param path path to write to
+       */
+      void toDEM(const std::string &path) const;
+
+      /**
+       * @brief Write a raster to disk. Format is determined by extension.
+       * Accepted formats are ASCII DEMs (.asc, .dem), and GeoTIFF (.tif, .tiff).
+       *
+       * @param path path to write to
+       */
+      void writeToFile(const std::string &path) const;
    };
 } // namespace KiLib
