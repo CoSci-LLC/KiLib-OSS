@@ -68,9 +68,9 @@ namespace KiLib
 
       /**
        * @brief Returns a random point within the DEM
-       * 
+       *
        * @param gen Random number generator
-       * @return KiLib::Vec3 
+       * @return KiLib::Vec3
        */
       KiLib::Vec3 randPoint(std::mt19937_64 &gen) const;
 

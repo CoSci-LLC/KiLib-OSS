@@ -18,13 +18,13 @@
  */
 
 
+#include <Eigen/Eigen>
 #include <KiLib/Raster/RasterNew.hpp>
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <numeric>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
-#include <Eigen/Eigen>
 
 namespace KiLib
 {
@@ -35,7 +35,7 @@ namespace KiLib
       rast.data.resize(10, 10);
       rast.at(3, 3) = 1.0;
 
-      ASSERT_DOUBLE_EQ(rast.at(3, 3),   1.0);
+      ASSERT_DOUBLE_EQ(rast.at(3, 3), 1.0);
       ASSERT_DOUBLE_EQ(rast.data(3, 3), 1.0);
    }
 } // namespace KiLib

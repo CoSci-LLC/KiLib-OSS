@@ -20,9 +20,9 @@
 
 #pragma once
 
+#include <Eigen/Eigen>
 #include <KiLib/Utils/Vec3.hpp>
 #include <algorithm>
-#include <Eigen/Eigen>
 #include <optional>
 #include <random>
 #include <string>
@@ -63,21 +63,20 @@ namespace KiLib
       /**
        * @brief Construct a RasterNew object,
        * nRows and nCols are set to 0 with a nodata_value of -9999
-       * 
+       *
        */
       RasterNew();
-      
+
       ////////////////////////////////////////////////////////////////////////////////
       // Access
       ////////////////////////////////////////////////////////////////////////////////
       /**
        * @brief Return a reference to element at (row, col)
-       * 
+       *
        * @param row row index
        * @param col col index
        * @return double& element
        */
       double &at(Eigen::Index row, Eigen::Index col);
-
    };
 } // namespace KiLib
