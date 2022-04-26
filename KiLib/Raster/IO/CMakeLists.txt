@@ -4,9 +4,13 @@
 target_sources(${projectName} PRIVATE
 	Raster_DEM.cpp
 	Raster_TIFF.cpp
+	
+	RasterNew_DEM.cpp
+	RasterNew_TIFF.cpp
 )
 
 # Add sources to the test application
 target_sources_test(${projectTestName} PRIVATE
+	RasterNewIO.test.cpp
 	RasterIO.test.cpp
 )

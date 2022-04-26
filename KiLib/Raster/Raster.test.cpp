@@ -132,27 +132,27 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(z3, p3.z);
    }
 
-   TEST(Raster, GetCoordMinDistance)
-   {
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_CA.dem");
+   // TEST(Raster, GetCoordMinDistance)
+   //{
+   //    auto cwd  = fs::current_path();
+   //    auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_CA.dem");
 
-      Raster dem(path.string());
+   //   Raster dem(path.string());
 
-      size_t                     ind       = 30;
-      auto                       radius    = 8.0;
-      auto                       threshold = 21.0;
-      std::optional<KiLib::Vec3> pos       = dem.GetCoordMinDistance(ind, radius, threshold);
-      if (pos)
-      {
-         ASSERT_DOUBLE_EQ(780098, (*pos).x);
-         ASSERT_DOUBLE_EQ(205430, (*pos).y);
-      }
-      else
-      {
-         ASSERT_DOUBLE_EQ(1.0, 2.0);
-      }
-   }
+   //   size_t                     ind       = 30;
+   //   auto                       radius    = 8.0;
+   //   auto                       threshold = 21.0;
+   //   std::optional<KiLib::Vec3> pos       = dem.GetCoordMinDistance(ind, radius, threshold);
+   //   if (pos)
+   //   {
+   //      ASSERT_DOUBLE_EQ(780098, (*pos).x);
+   //      ASSERT_DOUBLE_EQ(205430, (*pos).y);
+   //   }
+   //   else
+   //   {
+   //      ASSERT_DOUBLE_EQ(1.0, 2.0);
+   //   }
+   //}
 
    TEST(Raster, Rasterize)
    {

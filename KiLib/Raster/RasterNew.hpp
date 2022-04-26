@@ -90,17 +90,44 @@ namespace KiLib
       double &at(Eigen::Index row, Eigen::Index col);
 
       /**
+       * @brief Return a reference to element at (row, col)
+       *
+       * @param row row index
+       * @param col col index
+       * @return double& element
+       */
+      double at(Eigen::Index row, Eigen::Index col) const;
+
+      /**
        * @brief Returns a flat index for a given row and column
        *
        * @param row row index
        * @param col col index
        * @return Eigen::Index flattened index of (row, col)
        */
-      Eigen::Index flattenIndex(Eigen::Index row, Eigen::Index col);
+      Eigen::Index flattenIndex(Eigen::Index row, Eigen::Index col) const;
+
+
+      /**
+       * @brief Resize the raster.
+       * Will set nRows, nCols, nData, width, and height to the proper values.
+       *
+       * @param nRows new number of rows
+       * @param nCols new number of columns
+       */
+      void Resize(Eigen::Index nRows, Eigen::Index nCols);
 
       ////////////////////////////////////////////////////////////////////////////////
       // I/O
       ////////////////////////////////////////////////////////////////////////////////
+      /**
+       * @brief Write a raster to disk. Format is determined by extension.
+       * Accepted formats are ASCII DEMs (.asc, .dem), and GeoTIFF (.tif, .tiff).
+       *
+       * @param path path to write to
+       */
+      void writeToFile(const std::string &path) const;
+
       /**
        * @brief Load a DEM from disk that is in ASCII DEM format.
        *
@@ -116,11 +143,17 @@ namespace KiLib
       void toDEM(const std::string &path) const;
 
       /**
-       * @brief Write a raster to disk. Format is determined by extension.
-       * Accepted formats are ASCII DEMs (.asc, .dem), and GeoTIFF (.tif, .tiff).
+       * @brief Load a DEM from disk that is in GeoTIFF format.
+       *
+       * @param path path to DEM
+       */
+      void fromTiff(const std::string &path);
+
+      /**
+       * @brief Write the raster to disk as a GeoTIFF.
        *
        * @param path path to write to
        */
-      void writeToFile(const std::string &path) const;
+      void toTiff(const std::string &path) const;
    };
 } // namespace KiLib
