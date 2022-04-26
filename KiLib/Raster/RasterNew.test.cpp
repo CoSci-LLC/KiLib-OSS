@@ -74,6 +74,17 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(rast.data(3, 3), 1.0);
    }
 
+   TEST(RasterNew, IndexOperator)
+   {
+      RasterNew rast = RasterNew();
+
+      rast.Resize(10, 10);
+      rast(3, 3) = 1.0;
+
+      ASSERT_DOUBLE_EQ(rast.at(3, 3), 1.0);
+      ASSERT_DOUBLE_EQ(rast.data(3, 3), 1.0);
+   }
+
    TEST(RasterNew, flattenIndex)
    {
       RasterNew rast = RasterNew();
@@ -85,5 +96,20 @@ namespace KiLib
       ASSERT_EQ(rast.flattenIndex(0, 3), 3);
       ASSERT_EQ(rast.flattenIndex(1, 3), 10);
       ASSERT_EQ(rast.flattenIndex(2, 9), 23);
+   }
+
+   TEST(RasterNew, OOBAccess)
+   {
+      RasterNew rast = RasterNew();
+
+      rast.Resize(10, 7);
+
+      ASSERT_DEATH(rast.at(10, 7), "");
+      ASSERT_DEATH(rast.at(0, 7), "");
+      ASSERT_DEATH(rast.at(10, 0), "");
+
+      ASSERT_DEATH(rast(10, 7), "");
+      ASSERT_DEATH(rast(0, 7), "");
+      ASSERT_DEATH(rast(10, 0), "");
    }
 } // namespace KiLib

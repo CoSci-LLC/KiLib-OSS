@@ -81,7 +81,7 @@ namespace KiLib
       // Access
       ////////////////////////////////////////////////////////////////////////////////
       /**
-       * @brief Return a reference to element at (row, col)
+       * @brief Return a reference to element at (row, col). Boundary checks are performed.
        *
        * @param row row index
        * @param col col index
@@ -90,13 +90,31 @@ namespace KiLib
       double &at(Eigen::Index row, Eigen::Index col);
 
       /**
-       * @brief Return a reference to element at (row, col)
+       * @brief Return the value at (row, col). Boundary checks are performed.
        *
        * @param row row index
        * @param col col index
        * @return double& element
        */
       double at(Eigen::Index row, Eigen::Index col) const;
+
+      /**
+       * @brief Return a reference to element at (row, col). Boundary checks are performed.
+       *
+       * @param row row index
+       * @param col col index
+       * @return double& element
+       */
+      double &operator()(Eigen::Index row, Eigen::Index col);
+
+      /**
+       * @brief Return the value at (row, col). Boundary checks are performed.
+       *
+       * @param row row index
+       * @param col col index
+       * @return double& element
+       */
+      double operator()(Eigen::Index row, Eigen::Index col) const;
 
       /**
        * @brief Returns a flat index for a given row and column

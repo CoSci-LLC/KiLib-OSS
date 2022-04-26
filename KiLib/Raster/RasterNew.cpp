@@ -80,6 +80,16 @@ namespace KiLib
       return this->data(row, col);
    }
 
+   double &RasterNew::operator()(Eigen::Index row, Eigen::Index col)
+   {
+      return this->data(row, col);
+   }
+
+   double RasterNew::operator()(Eigen::Index row, Eigen::Index col) const
+   {
+      return this->data(row, col);
+   }
+
    Eigen::Index RasterNew::flattenIndex(Eigen::Index row, Eigen::Index col) const
    {
       return row * this->nCols + col;
