@@ -112,4 +112,59 @@ namespace KiLib
       ASSERT_DEATH(rast(0, 7), "");
       ASSERT_DEATH(rast(10, 0), "");
    }
+
+   TEST(RasterNew, GetMinValue)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      ASSERT_DOUBLE_EQ(dem.GetMinValue(), 1906.551147);
+   }
+
+   TEST(RasterNew, GetMaxValue)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      ASSERT_DOUBLE_EQ(dem.GetMaxValue(), 1912.436157);
+   }
+
+   TEST(RasterNew, GetMeanValue)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      ASSERT_DOUBLE_EQ(dem.GetMeanValue(), 1909.7339340000005);
+   }
+
+   TEST(RasterNew, GetNDataPoints)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      ASSERT_EQ(dem.GetNDataPoints(), 44);
+   }
+
+   TEST(RasterNew, GetNNoDataPoints)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      ASSERT_EQ(dem.GetNNoDataPoints(), 5);
+   }
+
+   TEST(RasterNew, GetValidIndices)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      std::vector<size_t> expected{0,  1,  2,  3,  4,  5,  7,  8,  9,  11, 12, 13, 14, 15, 16,
+                                   17, 18, 19, 20, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+                                   34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47, 48};
+
+      auto out = dem.GetValidIndices();
+
+      ASSERT_EQ(expected, out);
+   }
+
 } // namespace KiLib

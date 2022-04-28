@@ -28,6 +28,8 @@
 #include <string>
 #include <vector>
 
+const double DOUBLE_INF = std::numeric_limits<double>::infinity();
+
 // Eigen defaults to col-major, but we want row-major
 // Typedef for a dynamic matrix of doubles stored in row-major order
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RowMatrixXd;
@@ -138,6 +140,7 @@ namespace KiLib
       ////////////////////////////////////////////////////////////////////////////////
       // I/O
       ////////////////////////////////////////////////////////////////////////////////
+
       /**
        * @brief Write a raster to disk. Format is determined by extension.
        * Accepted formats are ASCII DEMs (.asc, .dem), and GeoTIFF (.tif, .tiff).
@@ -173,5 +176,50 @@ namespace KiLib
        * @param path path to write to
        */
       void toTiff(const std::string &path) const;
+
+      ////////////////////////////////////////////////////////////////////////////////
+      // Stats
+      ////////////////////////////////////////////////////////////////////////////////
+      /**
+       * @brief Get the minimum value in the raster, excludes nodata points.
+       *
+       * @return double min
+       */
+      double GetMinValue() const;
+
+      /**
+       * @brief Get the maximum value in the raster, excludes nodata points.
+       *
+       * @return double max
+       */
+      double GetMaxValue() const;
+
+      /**
+       * @brief Get the mean value in the raster, excludes nodata points.
+       *
+       * @return double mean
+       */
+      double GetMeanValue() const;
+
+      /**
+       * @brief Return the number of points in the raster != nodata
+       *
+       * @return size_t Number of data points
+       */
+      size_t GetNDataPoints() const;
+
+      /**
+       * @brief Get the number of points in the raster == nodata
+       *
+       * @return size_t Number of nodata points
+       */
+      size_t GetNNoDataPoints() const;
+
+      /**
+       * @brief Get the indices of valid points in the raster.
+       *
+       * @return std::vector<size_t> vector of valid indices
+       */
+      std::vector<size_t> GetValidIndices() const;
    };
 } // namespace KiLib
