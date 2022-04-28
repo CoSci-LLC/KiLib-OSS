@@ -163,6 +163,18 @@ namespace KiLib
        */
       KiLib::Vec3 RandPoint(std::mt19937_64 &gen) const;
 
+
+      /**
+       * @brief Returns flat index to the nearest cell to pos.
+       *
+       * IMPORTANT NOTE: This *floors*, so it will return the nearest cell TOWARDS
+       * THE LOWER LEFT CORNER.
+       *
+       * @param pos Coordinate in raster
+       * @return Index flat index of nearest cell
+       */
+      Index GetNearestCell(KiLib::Vec3 pos) const;
+
       /**
        * @brief Resize the raster.
        * Will set nRows, nCols, nData, width, and height to the proper values.

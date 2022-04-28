@@ -79,6 +79,17 @@ namespace KiLib
       return point;
    }
 
+   Index RasterNew::GetNearestCell(KiLib::Vec3 pos) const
+   {
+      const double rF = (pos.y - this->yllcorner) / this->cellsize;
+      const double cF = (pos.x - this->xllcorner) / this->cellsize;
+
+      size_t r = std::clamp<Index>((Index)std::floor(rF), 0L, this->nRows - 1);
+      size_t c = std::clamp<Index>((Index)std::floor(cF), 0L, this->nCols - 1);
+
+      return this->FlattenIndex(r, c);
+   }
+
    double RasterNew::operator()(Vec3 pos) const
    {
       return this->GetInterpBilinear(pos);

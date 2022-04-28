@@ -200,14 +200,13 @@ namespace KiLib
 
    TEST(RasterNew, GetInterpBilinear)
    {
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/5x5.dem");
 
-      fs::current_path(path);
+      RasterNew dem(path.string());
 
-      RasterNew   dem("5x5.dem");
-      KiLib::Vec3 p1{780099.2947926898, 205426.59516664856, 1909.8001915739701};
-      KiLib::Vec3 p2{780099.3343145008, 205427.51547149016, 1910.3570077815384};
-      KiLib::Vec3 p3{780096.0843788842, 205427.65816391885, 1910.520074732899};
+      Vec3 p1{780099.2947926898, 205426.59516664856, 1909.8001915739701};
+      Vec3 p2{780099.3343145008, 205427.51547149016, 1910.3570077815384};
+      Vec3 p3{780096.0843788842, 205427.65816391885, 1910.520074732899};
 
       double z1 = dem(p1);
       ASSERT_DOUBLE_EQ(z1, p1.z);
@@ -217,6 +216,27 @@ namespace KiLib
 
       double z3 = dem(p3);
       ASSERT_DOUBLE_EQ(z3, p3.z);
+   }
+
+   TEST(RasterNew, GetNearestCell)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      Vec3 pos1{780096, 205422, 0};
+      Vec3 pos2{780096 + 1, 205422 + 1, 0};
+      Vec3 pos3{780096 + 2.0, 205422 + 2.0, 0};
+      Vec3 pos4{780096 + 2.1, 205422 + 2.1, 0};
+
+      Index idx1 = dem.GetNearestCell(pos1);
+      Index idx2 = dem.GetNearestCell(pos2);
+      Index idx3 = dem.GetNearestCell(pos3);
+      Index idx4 = dem.GetNearestCell(pos4);
+
+      ASSERT_EQ(idx1, 0);
+      ASSERT_EQ(idx2, 0);
+      ASSERT_EQ(idx3, 8);
+      ASSERT_EQ(idx4, 8);
    }
 
 } // namespace KiLib
