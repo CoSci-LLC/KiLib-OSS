@@ -85,7 +85,7 @@ namespace KiLib
 
       this->Resize(nRows, nCols);
       // Load elevations
-      for (Eigen::Index row = 0; row < this->nRows; row++)
+      for (Index row = 0; row < this->nRows; row++)
       {
          getline(rasterFile, line);
          stream.str(line);
@@ -93,7 +93,7 @@ namespace KiLib
 
          // Moving along a row (across columns) is movement through X
          // Moving down a column (across rows) is movement through Y
-         for (Eigen::Index col = 0; col < this->nCols; col++)
+         for (Index col = 0; col < this->nCols; col++)
          {
             double value;
             stream >> value;
@@ -132,9 +132,9 @@ namespace KiLib
 
       RowMatrixXd outdata = this->data.colwise().reverse();
 
-      for (Eigen::Index row = 0; row < this->nRows; row++)
+      for (Index row = 0; row < this->nRows; row++)
       {
-         for (Eigen::Index col = 0; col < this->nCols; col++)
+         for (Index col = 0; col < this->nCols; col++)
          {
             double val = outdata(row, col);
 

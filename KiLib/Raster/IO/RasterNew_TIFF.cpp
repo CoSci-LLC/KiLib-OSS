@@ -174,7 +174,7 @@ namespace KiLib
       TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
 
       tdata_t buf = _TIFFmalloc((signed int)sls);
-      for (Eigen::Index row = 0; row < this->nRows; row++)
+      for (Index row = 0; row < this->nRows; row++)
       {
 
          if (TIFFReadScanline(tiff, buf, row) == -1)
@@ -183,7 +183,7 @@ namespace KiLib
             exit(EXIT_FAILURE);
          }
 
-         for (Eigen::Index col = 0; col < this->nCols; col++)
+         for (Index col = 0; col < this->nCols; col++)
          {
             double val = 0;
 
@@ -300,9 +300,9 @@ namespace KiLib
       tdata_t buf = _TIFFmalloc((signed int)sls);
 
       // There is no use in parallelizing this as the file has to be written in order
-      for (Eigen::Index row = 0; row < this->nRows; row++)
+      for (Index row = 0; row < this->nRows; row++)
       {
-         for (Eigen::Index col = 0; col < this->nCols; col++)
+         for (Index col = 0; col < this->nCols; col++)
             ((double *)buf)[col] = this->at(this->nRows - row - 1, col);
 
          if (TIFFWriteScanline(tiff, buf, row) == -1)

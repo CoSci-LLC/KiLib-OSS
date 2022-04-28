@@ -33,6 +33,7 @@ const double DOUBLE_INF = std::numeric_limits<double>::infinity();
 // Eigen defaults to col-major, but we want row-major
 // Typedef for a dynamic matrix of doubles stored in row-major order
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RowMatrixXd;
+using Eigen::Index;
 
 namespace KiLib
 {
@@ -80,10 +81,13 @@ namespace KiLib
        */
       RasterNew(const std::string &path);
 
-      RasterNew(Eigen::Index nRows, Eigen::Index nCols) : RasterNew()
-      {
-         this->Resize(nRows, nCols);
-      }
+      /**
+       * @brief Construct a new Raster New object
+       *
+       * @param nRows
+       * @param nCols
+       */
+      RasterNew(Index nRows, Index nCols);
 
       ////////////////////////////////////////////////////////////////////////////////
       // Access
@@ -95,7 +99,7 @@ namespace KiLib
        * @param col col index
        * @return double& element
        */
-      double &at(Eigen::Index row, Eigen::Index col);
+      double &at(Index row, Index col);
 
       /**
        * @brief Return the value at (row, col). Boundary checks are performed.
@@ -104,7 +108,7 @@ namespace KiLib
        * @param col col index
        * @return double& element
        */
-      double at(Eigen::Index row, Eigen::Index col) const;
+      double at(Index row, Index col) const;
 
       /**
        * @brief Return a reference to element at (row, col). Boundary checks are performed.
@@ -113,7 +117,7 @@ namespace KiLib
        * @param col col index
        * @return double& element
        */
-      double &operator()(Eigen::Index row, Eigen::Index col);
+      double &operator()(Index row, Index col);
 
       /**
        * @brief Return the value at (row, col). Boundary checks are performed.
@@ -122,17 +126,24 @@ namespace KiLib
        * @param col col index
        * @return double& element
        */
-      double operator()(Eigen::Index row, Eigen::Index col) const;
+      double operator()(Index row, Index col) const;
 
       /**
        * @brief Returns a flat index for a given row and column
        *
        * @param row row index
        * @param col col index
-       * @return Eigen::Index flattened index of (row, col)
+       * @return Index flattened index of (row, col)
        */
-      Eigen::Index flattenIndex(Eigen::Index row, Eigen::Index col) const;
+      Index flattenIndex(Index row, Index col) const;
 
+      /**
+       * @brief Unflatten an index into a row and column
+       *
+       * @param ind flattened index
+       * @return std::pair<Index, Index>
+       */
+      std::pair<Index, Index> GetRowCol(const Index ind) const;
 
       /**
        * @brief Resize the raster.
@@ -141,7 +152,7 @@ namespace KiLib
        * @param nRows new number of rows
        * @param nCols new number of columns
        */
-      void Resize(Eigen::Index nRows, Eigen::Index nCols);
+      void Resize(Index nRows, Index nCols);
 
       ////////////////////////////////////////////////////////////////////////////////
       // I/O
@@ -224,8 +235,8 @@ namespace KiLib
       /**
        * @brief Get the indices of valid points in the raster.
        *
-       * @return std::vector<size_t> vector of valid indices
+       * @return std::vector<Index> vector of valid indices
        */
-      std::vector<size_t> GetValidIndices() const;
+      std::vector<Index> GetValidIndices() const;
    };
 } // namespace KiLib

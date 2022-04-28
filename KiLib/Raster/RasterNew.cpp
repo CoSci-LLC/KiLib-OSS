@@ -17,8 +17,6 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#undef NDEBUG // For bounds checking in eigen
-
 #include <KiLib/Raster/RasterNew.hpp>
 #include <filesystem>
 #include <fstream>
@@ -47,12 +45,6 @@ namespace KiLib
       this->Resize(0, 0);
    }
 
-   /**
-    * @brief Construct a new RasterNew object from a raster on disk. Format is determined by extension.
-    * Accepted formats are ASCII DEMs (.asc, .ddem), and GeoTIFF (.tif, .tiff).
-    *
-    * @param path
-    */
    RasterNew::RasterNew(const std::string &path)
    {
       auto ext = fs::path(path).extension();
@@ -72,45 +64,11 @@ namespace KiLib
       }
    }
 
-   ////////////////////////////////////////////////////////////////////////////////
-   // Access
-   ////////////////////////////////////////////////////////////////////////////////
-
-   double &RasterNew::at(Eigen::Index row, Eigen::Index col)
+   RasterNew::RasterNew(Index nRows, Index nCols) : RasterNew()
    {
-      return this->data(row, col);
+      this->Resize(nRows, nCols);
    }
 
-   double RasterNew::at(Eigen::Index row, Eigen::Index col) const
-   {
-      return this->data(row, col);
-   }
-
-   double &RasterNew::operator()(Eigen::Index row, Eigen::Index col)
-   {
-      return this->data(row, col);
-   }
-
-   double RasterNew::operator()(Eigen::Index row, Eigen::Index col) const
-   {
-      return this->data(row, col);
-   }
-
-   Eigen::Index RasterNew::flattenIndex(Eigen::Index row, Eigen::Index col) const
-   {
-      return row * this->nCols + col;
-   }
-
-   void RasterNew::Resize(Eigen::Index nRows, Eigen::Index nCols)
-   {
-      this->data.conservativeResize(nRows, nCols);
-
-      this->nRows  = nRows;
-      this->nCols  = nCols;
-      this->nData  = nRows * nCols;
-      this->width  = this->nCols * this->cellsize;
-      this->height = this->nRows * this->cellsize;
-   }
 
    ////////////////////////////////////////////////////////////////////////////////
    // I/O

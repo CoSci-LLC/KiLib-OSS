@@ -18,9 +18,6 @@
  */
 
 #include <KiLib/Raster/RasterNew.hpp>
-#include <filesystem>
-#include <fstream>
-#include <sstream>
 
 namespace KiLib
 {
@@ -52,12 +49,12 @@ namespace KiLib
       return (this->data.array() == this->nodata_value).cast<size_t>().sum();
    }
 
-   std::vector<size_t> RasterNew::GetValidIndices() const
+   std::vector<Index> RasterNew::GetValidIndices() const
    {
-      std::vector<size_t> indices;
-      for (Eigen::Index row = 0; row < this->nRows; row++)
+      std::vector<Index> indices;
+      for (Index row = 0; row < this->nRows; row++)
       {
-         for (Eigen::Index col = 0; col < this->nCols; col++)
+         for (Index col = 0; col < this->nCols; col++)
          {
             if (this->data(row, col) != this->nodata_value)
             {
