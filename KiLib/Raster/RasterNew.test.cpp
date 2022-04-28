@@ -38,12 +38,24 @@ namespace KiLib
    {
       RasterNew rast = RasterNew();
 
-      ASSERT_EQ(rast.nodata_value, -9999);
+      ASSERT_EQ(rast.nodata_value, RASTER_DEFAULT_NODATA_VALUE);
 
       ASSERT_EQ(rast.nRows, 0);
       ASSERT_EQ(rast.nCols, 0);
       ASSERT_EQ(rast.data.rows(), 0);
       ASSERT_EQ(rast.data.cols(), 0);
+   }
+
+   TEST(RasterNew, RasterNewSized)
+   {
+      RasterNew rast = RasterNew(10, 10);
+
+      ASSERT_EQ(rast.nodata_value, RASTER_DEFAULT_NODATA_VALUE);
+
+      ASSERT_EQ(rast.nRows, 10);
+      ASSERT_EQ(rast.nCols, 10);
+      ASSERT_EQ(rast.data.rows(), 10);
+      ASSERT_EQ(rast.data.cols(), 10);
    }
 
    TEST(RasterNew, Resize)
@@ -65,10 +77,8 @@ namespace KiLib
 
    TEST(RasterNew, at)
    {
-      RasterNew rast = RasterNew();
-
-      rast.Resize(10, 10);
-      rast.at(3, 3) = 1.0;
+      RasterNew rast = RasterNew(10, 10);
+      rast.at(3, 3)  = 1.0;
 
       ASSERT_DOUBLE_EQ(rast.at(3, 3), 1.0);
       ASSERT_DOUBLE_EQ(rast.data(3, 3), 1.0);
@@ -76,10 +86,8 @@ namespace KiLib
 
    TEST(RasterNew, IndexOperator)
    {
-      RasterNew rast = RasterNew();
-
-      rast.Resize(10, 10);
-      rast(3, 3) = 1.0;
+      RasterNew rast = RasterNew(10, 10);
+      rast(3, 3)     = 1.0;
 
       ASSERT_DOUBLE_EQ(rast.at(3, 3), 1.0);
       ASSERT_DOUBLE_EQ(rast.data(3, 3), 1.0);
@@ -87,11 +95,7 @@ namespace KiLib
 
    TEST(RasterNew, flattenIndex)
    {
-      RasterNew rast = RasterNew();
-
-      rast.data.resize(10, 7);
-      rast.nRows = 10;
-      rast.nCols = 7;
+      RasterNew rast = RasterNew(10, 7);
 
       ASSERT_EQ(rast.flattenIndex(0, 3), 3);
       ASSERT_EQ(rast.flattenIndex(1, 3), 10);
@@ -100,9 +104,7 @@ namespace KiLib
 
    TEST(RasterNew, OOBAccess)
    {
-      RasterNew rast = RasterNew();
-
-      rast.Resize(10, 7);
+      RasterNew rast = RasterNew(10, 7);
 
       ASSERT_DEATH(rast.at(10, 7), "");
       ASSERT_DEATH(rast.at(0, 7), "");

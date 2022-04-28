@@ -36,6 +36,7 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> R
 
 namespace KiLib
 {
+   const double RASTER_DEFAULT_NODATA_VALUE = -9999;
 
    /**
     * @brief Loads in RasterNews (like DEMs) and provides nice helper functions such
@@ -78,6 +79,11 @@ namespace KiLib
        * @param path
        */
       RasterNew(const std::string &path);
+
+      RasterNew(Eigen::Index nRows, Eigen::Index nCols) : RasterNew()
+      {
+         this->Resize(nRows, nCols);
+      }
 
       ////////////////////////////////////////////////////////////////////////////////
       // Access

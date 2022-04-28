@@ -40,7 +40,10 @@ namespace KiLib
 
    RasterNew::RasterNew()
    {
-      this->nodata_value = -9999;
+      this->xllcorner    = 0.0;
+      this->yllcorner    = 0.0;
+      this->nodata_value = RASTER_DEFAULT_NODATA_VALUE;
+      this->cellsize     = 1.0;
       this->Resize(0, 0);
    }
 
@@ -101,6 +104,7 @@ namespace KiLib
    void RasterNew::Resize(Eigen::Index nRows, Eigen::Index nCols)
    {
       this->data.conservativeResize(nRows, nCols);
+
       this->nRows  = nRows;
       this->nCols  = nCols;
       this->nData  = nRows * nCols;
@@ -130,54 +134,5 @@ namespace KiLib
          spdlog::error("Unsupported output file type: {}", ext);
          exit(EXIT_FAILURE);
       }
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////
-   // Stats
-   ////////////////////////////////////////////////////////////////////////////////
-
-   double RasterNew::GetMinValue() const
-   {
-      return (this->data.array() != this->nodata_value).select(this->data, DOUBLE_INF).minCoeff();
-   }
-
-   double RasterNew::GetMaxValue() const
-   {
-      return (this->data.array() != this->nodata_value).select(this->data, -DOUBLE_INF).maxCoeff();
-   }
-
-   double RasterNew::GetMeanValue() const
-   {
-      auto   mask  = this->data.array() != this->nodata_value;
-      double sum   = mask.select(this->data, 0.0).sum();
-      double denom = mask.cast<double>().sum();
-      return sum / denom;
-   }
-
-   size_t RasterNew::GetNDataPoints() const
-   {
-      return (this->data.array() != this->nodata_value).cast<size_t>().sum();
-   }
-
-   size_t RasterNew::GetNNoDataPoints() const
-   {
-      return (this->data.array() == this->nodata_value).cast<size_t>().sum();
-   }
-
-   std::vector<size_t> RasterNew::GetValidIndices() const
-   {
-      std::vector<size_t> indices;
-      for (Eigen::Index row = 0; row < this->nRows; row++)
-      {
-         for (Eigen::Index col = 0; col < this->nCols; col++)
-         {
-            if (this->data(row, col) != this->nodata_value)
-            {
-               indices.push_back(this->flattenIndex(row, col));
-            }
-         }
-      }
-
-      return indices;
    }
 } // namespace KiLib
