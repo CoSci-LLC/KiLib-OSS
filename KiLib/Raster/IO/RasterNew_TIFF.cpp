@@ -84,7 +84,7 @@ static void _XTIFFInitialize(void)
 namespace KiLib
 {
 
-   void RasterNew::fromTiff(const std::string &path)
+   void RasterNew::FromTiff(const std::string &path)
    {
       _XTIFFInitialize();
 
@@ -239,7 +239,7 @@ namespace KiLib
       TIFFClose(tiff);
    }
 
-   void RasterNew::toTiff(const std::string &path) const
+   void RasterNew::ToTiff(const std::string &path) const
    {
       // clang-format off
         // Key Directory

@@ -58,7 +58,7 @@ namespace KiLib
          {
             if (this->data(row, col) != this->nodata_value)
             {
-               indices.push_back(this->flattenIndex(row, col));
+               indices.push_back(this->FlattenIndex(row, col));
             }
          }
       }

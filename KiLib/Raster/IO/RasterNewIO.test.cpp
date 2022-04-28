@@ -81,7 +81,7 @@ namespace KiLib
          RasterNew orig_in = RasterNew(it.path().string());
 
          fs::path outpath = fs::temp_directory_path() / it.path().filename();
-         orig_in.writeToFile(outpath.string());
+         orig_in.WriteToFile(outpath.string());
 
          RasterNew new_in = RasterNew(outpath.string());
 
@@ -104,7 +104,7 @@ namespace KiLib
       RasterNew orig_in = RasterNew(path.string());
 
       fs::path outpath = fs::temp_directory_path() / path.filename();
-      orig_in.writeToFile(outpath.string());
+      orig_in.WriteToFile(outpath.string());
 
       RasterNew new_in = RasterNew(outpath.string());
 

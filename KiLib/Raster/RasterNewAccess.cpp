@@ -43,7 +43,7 @@ namespace KiLib
       return this->data(row, col);
    }
 
-   Index RasterNew::flattenIndex(Index row, Index col) const
+   Index RasterNew::FlattenIndex(Index row, Index col) const
    {
       if (row >= this->nRows || col >= this->nCols)
       {
@@ -54,7 +54,7 @@ namespace KiLib
       return row * this->nCols + col;
    }
 
-   std::pair<Index, Index> RasterNew::GetRowCol(const Index ind) const
+   std::pair<Index, Index> RasterNew::GetRowCol(Index ind) const
    {
       if (ind >= this->nData)
       {
@@ -64,6 +64,24 @@ namespace KiLib
       const Index r = ind / this->nCols;
       const Index c = ind % this->nCols;
       return std::make_pair(r, c);
+   }
+
+   KiLib::Vec3 RasterNew::RandPoint(std::mt19937_64 &gen) const
+   {
+      KiLib::Vec3                            point;
+      std::uniform_real_distribution<double> xDist(this->xllcorner, this->xllcorner + this->width);
+      std::uniform_real_distribution<double> yDist(this->yllcorner, this->yllcorner + this->height);
+
+      point.x = xDist(gen);
+      point.y = yDist(gen);
+      point.z = this->GetInterpBilinear(point);
+
+      return point;
+   }
+
+   double RasterNew::operator()(Vec3 pos) const
+   {
+      return this->GetInterpBilinear(pos);
    }
 
    void RasterNew::Resize(Index nRows, Index nCols)

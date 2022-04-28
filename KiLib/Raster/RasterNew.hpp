@@ -52,16 +52,17 @@ namespace KiLib
    public:
       RowMatrixXd data;
 
-      double xllcorner;    // Lower left corner x value in absolute coordinates
-      double yllcorner;    // Lower left corner y value in absolute coordinates
-      double cellsize;     // [m] Distance between values
-      double width;        // [m] Width in X
-      double height;       // [m] Height in Y
-      double nodata_value; // Value associated with no data from DEM
+      double xllcorner; // Lower left corner x value in absolute coordinates
+      double yllcorner; // Lower left corner y value in absolute coordinates
+      double cellsize;  // [m] Distance between values
+      double width;     // [m] Width in X
+      double height;    // [m] Height in Y
 
-      long int nCols = 0; // Number of columns (x)
-      long int nRows = 0; // Number of rows (y)
-      long int nData = 0; // Total number of datapoints
+      double nodata_value = RASTER_DEFAULT_NODATA_VALUE; // Value associated with no data from DEM
+
+      Index nCols = 0; // Number of columns (x)
+      Index nRows = 0; // Number of rows (y)
+      Index nData = 0; // Total number of datapoints
 
       ////////////////////////////////////////////////////////////////////////////////
       // Constructors
@@ -129,13 +130,22 @@ namespace KiLib
       double operator()(Index row, Index col) const;
 
       /**
+       * @brief Interpolate the value at a given point.
+       *
+       * @param row row index
+       * @param col col index
+       * @return double& element
+       */
+      double operator()(Vec3 pos) const;
+
+      /**
        * @brief Returns a flat index for a given row and column
        *
        * @param row row index
        * @param col col index
        * @return Index flattened index of (row, col)
        */
-      Index flattenIndex(Index row, Index col) const;
+      Index FlattenIndex(Index row, Index col) const;
 
       /**
        * @brief Unflatten an index into a row and column
@@ -143,7 +153,15 @@ namespace KiLib
        * @param ind flattened index
        * @return std::pair<Index, Index>
        */
-      std::pair<Index, Index> GetRowCol(const Index ind) const;
+      std::pair<Index, Index> GetRowCol(Index ind) const;
+
+      /**
+       * @brief Generates a random point within the raster
+       *
+       * @param gen random number generator
+       * @return KiLib::Vec3 random point in the raster
+       */
+      KiLib::Vec3 RandPoint(std::mt19937_64 &gen) const;
 
       /**
        * @brief Resize the raster.
@@ -157,42 +175,41 @@ namespace KiLib
       ////////////////////////////////////////////////////////////////////////////////
       // I/O
       ////////////////////////////////////////////////////////////////////////////////
-
       /**
        * @brief Write a raster to disk. Format is determined by extension.
        * Accepted formats are ASCII DEMs (.asc, .dem), and GeoTIFF (.tif, .tiff).
        *
        * @param path path to write to
        */
-      void writeToFile(const std::string &path) const;
+      void WriteToFile(const std::string &path) const;
 
       /**
        * @brief Load a DEM from disk that is in ASCII DEM format.
        *
        * @param path path to DEM
        */
-      void fromDEM(const std::string &path);
+      void FromDEM(const std::string &path);
 
       /**
        * @brief Write the raster to disk as an ASCII DEM.
        *
        * @param path path to write to
        */
-      void toDEM(const std::string &path) const;
+      void ToDEM(const std::string &path) const;
 
       /**
        * @brief Load a DEM from disk that is in GeoTIFF format.
        *
        * @param path path to DEM
        */
-      void fromTiff(const std::string &path);
+      void FromTiff(const std::string &path);
 
       /**
        * @brief Write the raster to disk as a GeoTIFF.
        *
        * @param path path to write to
        */
-      void toTiff(const std::string &path) const;
+      void ToTiff(const std::string &path) const;
 
       ////////////////////////////////////////////////////////////////////////////////
       // Stats
@@ -238,5 +255,16 @@ namespace KiLib
        * @return std::vector<Index> vector of valid indices
        */
       std::vector<Index> GetValidIndices() const;
+
+      ////////////////////////////////////////////////////////////////////////////////
+      // Science
+      ////////////////////////////////////////////////////////////////////////////////
+      /**
+       * @brief Bilinearly interpolate a z value from the raster.
+       *
+       * @param pos position to interpolate from
+       * @return double z
+       */
+      double GetInterpBilinear(Vec3 pos) const;
    };
 } // namespace KiLib

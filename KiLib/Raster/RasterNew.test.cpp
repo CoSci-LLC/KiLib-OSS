@@ -93,13 +93,13 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(rast.data(3, 3), 1.0);
    }
 
-   TEST(RasterNew, flattenIndex)
+   TEST(RasterNew, FlattenIndex)
    {
       RasterNew rast = RasterNew(10, 7);
 
-      ASSERT_EQ(rast.flattenIndex(0, 3), 3);
-      ASSERT_EQ(rast.flattenIndex(1, 3), 10);
-      ASSERT_EQ(rast.flattenIndex(3, 2), 23);
+      ASSERT_EQ(rast.FlattenIndex(0, 3), 3);
+      ASSERT_EQ(rast.FlattenIndex(1, 3), 10);
+      ASSERT_EQ(rast.FlattenIndex(3, 2), 23);
    }
 
 
@@ -177,6 +177,46 @@ namespace KiLib
       auto out = dem.GetValidIndices();
 
       ASSERT_EQ(expected, out);
+   }
+
+   TEST(RasterNew, RandPoint)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      auto gen = std::mt19937_64(std::random_device{}());
+
+      for (int i = 0; i < 10000; ++i)
+      {
+         Vec3 p = dem.RandPoint(gen);
+
+         // Check if its in bounds
+         ASSERT_GE(p.x, dem.xllcorner);
+         ASSERT_GE(p.y, dem.yllcorner);
+         ASSERT_LE(p.x, dem.xllcorner + dem.width);
+         ASSERT_LE(p.y, dem.yllcorner + dem.height);
+      }
+   }
+
+   TEST(RasterNew, GetInterpBilinear)
+   {
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
+
+      fs::current_path(path);
+
+      RasterNew   dem("5x5.dem");
+      KiLib::Vec3 p1{780099.2947926898, 205426.59516664856, 1909.8001915739701};
+      KiLib::Vec3 p2{780099.3343145008, 205427.51547149016, 1910.3570077815384};
+      KiLib::Vec3 p3{780096.0843788842, 205427.65816391885, 1910.520074732899};
+
+      double z1 = dem(p1);
+      ASSERT_DOUBLE_EQ(z1, p1.z);
+
+      double z2 = dem(p2);
+      ASSERT_DOUBLE_EQ(z2, p2.z);
+
+      double z3 = dem(p3);
+      ASSERT_DOUBLE_EQ(z3, p3.z);
    }
 
 } // namespace KiLib

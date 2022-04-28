@@ -26,7 +26,7 @@
 
 namespace KiLib
 {
-   void RasterNew::fromDEM(const std::string &path)
+   void RasterNew::FromDEM(const std::string &path)
    {
       std::ifstream      rasterFile;
       std::string        line, key;
@@ -111,7 +111,7 @@ namespace KiLib
       rasterFile.close();
    }
 
-   void RasterNew::toDEM(const std::string &path) const
+   void RasterNew::ToDEM(const std::string &path) const
    {
       std::ofstream outFile = std::ofstream(path);
       if (!outFile.is_open())
