@@ -18,11 +18,9 @@
  */
 
 
-#include <Eigen/Eigen>
 #include <KiLib/Raster/RasterNew.hpp>
 #include <filesystem>
 #include <gtest/gtest.h>
-#include <numeric>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 

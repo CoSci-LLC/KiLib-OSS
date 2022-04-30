@@ -22,11 +22,8 @@
 
 #include <Eigen/Eigen>
 #include <KiLib/Utils/Vec3.hpp>
-#include <algorithm>
-#include <optional>
 #include <random>
 #include <string>
-#include <vector>
 
 const double DOUBLE_INF = std::numeric_limits<double>::infinity();
 
