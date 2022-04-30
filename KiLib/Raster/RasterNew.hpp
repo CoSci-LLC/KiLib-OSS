@@ -163,7 +163,6 @@ namespace KiLib
        */
       KiLib::Vec3 RandPoint(std::mt19937_64 &gen) const;
 
-
       /**
        * @brief Returns flat index to the nearest cell to pos.
        *
@@ -174,6 +173,22 @@ namespace KiLib
        * @return Index flat index of nearest cell
        */
       Index GetNearestCell(KiLib::Vec3 pos) const;
+
+      /**
+       * @brief Get position of a cell in the raster in 3D space
+       *
+       * @param ind flat index of cell
+       * @return KiLib::Vec3 position of cell
+       */
+      KiLib::Vec3 GetCellPos(Index ind) const;
+
+      /**
+       * @brief Get center of a cell in the raster in 3D space
+       *
+       * @param ind flat index of cell
+       * @return KiLib::Vec3
+       */
+      KiLib::Vec3 GetCellCenter(Index ind) const;
 
       /**
        * @brief Resize the raster.

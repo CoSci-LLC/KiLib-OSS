@@ -239,4 +239,51 @@ namespace KiLib
       ASSERT_EQ(idx4, 8);
    }
 
+   TEST(RasterNew, GetCellPos)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      Vec3 p1 = dem.GetCellPos(0);
+      Vec3 p2 = dem.GetCellPos(6);
+      Vec3 p3 = dem.GetCellPos(7);
+      Vec3 p4 = dem.GetCellPos(9);
+
+      ASSERT_DOUBLE_EQ(p1.x, dem.xllcorner);
+      ASSERT_DOUBLE_EQ(p1.y, dem.yllcorner);
+
+      ASSERT_DOUBLE_EQ(p2.x, dem.xllcorner + dem.cellsize * 6);
+      ASSERT_DOUBLE_EQ(p2.y, dem.yllcorner);
+
+      ASSERT_DOUBLE_EQ(p3.x, dem.xllcorner);
+      ASSERT_DOUBLE_EQ(p3.y, dem.yllcorner + dem.cellsize);
+
+      ASSERT_DOUBLE_EQ(p4.x, dem.xllcorner + 2 * dem.cellsize);
+      ASSERT_DOUBLE_EQ(p4.y, dem.yllcorner + 1 * dem.cellsize);
+   }
+
+   TEST(RasterNew, GetCellCenter)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      Vec3 p1 = dem.GetCellCenter(0);
+      Vec3 p2 = dem.GetCellCenter(6);
+      Vec3 p3 = dem.GetCellCenter(7);
+      Vec3 p4 = dem.GetCellCenter(9);
+
+      double hs = dem.cellsize / 2.0;
+
+      ASSERT_DOUBLE_EQ(p1.x, dem.xllcorner + hs);
+      ASSERT_DOUBLE_EQ(p1.y, dem.yllcorner + hs);
+
+      ASSERT_DOUBLE_EQ(p2.x, dem.xllcorner + dem.cellsize * 6 + hs);
+      ASSERT_DOUBLE_EQ(p2.y, dem.yllcorner + hs);
+
+      ASSERT_DOUBLE_EQ(p3.x, dem.xllcorner + hs);
+      ASSERT_DOUBLE_EQ(p3.y, dem.yllcorner + dem.cellsize + hs);
+
+      ASSERT_DOUBLE_EQ(p4.x, dem.xllcorner + 2 * dem.cellsize + hs);
+      ASSERT_DOUBLE_EQ(p4.y, dem.yllcorner + 1 * dem.cellsize + hs);
+   }
 } // namespace KiLib

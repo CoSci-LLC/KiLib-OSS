@@ -90,6 +90,28 @@ namespace KiLib
       return this->FlattenIndex(r, c);
    }
 
+   KiLib::Vec3 RasterNew::GetCellPos(Index ind) const
+   {
+      const auto [r, c] = this->GetRowCol(ind);
+
+      KiLib::Vec3 pos = KiLib::Vec3(this->xllcorner + c * this->cellsize, this->yllcorner + r * this->cellsize, 0);
+      pos.z           = this->GetInterpBilinear(pos);
+
+      return pos;
+   }
+
+   KiLib::Vec3 RasterNew::GetCellCenter(Index ind) const
+   {
+      const auto [r, c] = this->GetRowCol(ind);
+
+      KiLib::Vec3 pos = KiLib::Vec3(
+         this->xllcorner + c * this->cellsize + this->cellsize / 2.0,
+         this->yllcorner + r * this->cellsize + this->cellsize / 2.0, 0);
+      pos.z = this->GetInterpBilinear(pos);
+
+      return pos;
+   }
+
    double RasterNew::operator()(Vec3 pos) const
    {
       return this->GetInterpBilinear(pos);
