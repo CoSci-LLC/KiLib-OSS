@@ -90,6 +90,17 @@ namespace KiLib
        */
       RasterNew(Index nRows, Index nCols);
 
+      /**
+       * @brief creates a RasterNew object with the same metadata and size as other, filled with fillValue.
+       * If keepNoData is true, returned raster will have nodata in same locations as other.
+       *
+       * @param other Other raster to get metadata from
+       * @param fillValue Value to fill with
+       * @param keepNoData Whether to keep nodata in the same locations as other
+       * @return RasterNew
+       */
+      static RasterNew FillLike(const RasterNew &other, double fillValue, bool keepNoData);
+
       ////////////////////////////////////////////////////////////////////////////////
       // Access
       ////////////////////////////////////////////////////////////////////////////////

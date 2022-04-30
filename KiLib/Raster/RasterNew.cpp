@@ -69,6 +69,19 @@ namespace KiLib
       this->Resize(nRows, nCols);
    }
 
+   RasterNew RasterNew::FillLike(const RasterNew &other, double fillValue, bool keepNoData)
+   {
+      KiLib::RasterNew new_(other);
+
+      new_.data.fill(fillValue);
+
+      if (keepNoData)
+      {
+         new_.data = (other.data.array() == other.nodata_value).select(other.nodata_value, new_.data);
+      }
+
+      return new_;
+   }
 
    ////////////////////////////////////////////////////////////////////////////////
    // I/O

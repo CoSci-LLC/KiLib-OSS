@@ -58,6 +58,35 @@ namespace KiLib
       ASSERT_EQ(rast.data.cols(), 10);
    }
 
+   TEST(RasterNew, FillLike)
+   {
+      auto cwd  = fs::current_path();
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+
+      RasterNew dem(path.string());
+
+      RasterNew filledNODATA = RasterNew::FillLike(dem, 1.0, true);
+      RasterNew fullFilled   = RasterNew::FillLike(dem, 0.0, false);
+
+      double sumNODATA = filledNODATA.data.sum();
+      ASSERT_EQ(filledNODATA.nRows, dem.nRows);
+      ASSERT_EQ(filledNODATA.nCols, dem.nCols);
+      ASSERT_EQ(filledNODATA.xllcorner, dem.xllcorner);
+      ASSERT_EQ(filledNODATA.yllcorner, dem.yllcorner);
+      ASSERT_EQ(filledNODATA.cellsize, dem.cellsize);
+      ASSERT_EQ(filledNODATA.nodata_value, dem.nodata_value);
+      ASSERT_EQ(sumNODATA, -99979.0);
+
+      double sumFull = fullFilled.data.sum();
+      ASSERT_EQ(fullFilled.nRows, dem.nRows);
+      ASSERT_EQ(fullFilled.nCols, dem.nCols);
+      ASSERT_EQ(fullFilled.xllcorner, dem.xllcorner);
+      ASSERT_EQ(fullFilled.yllcorner, dem.yllcorner);
+      ASSERT_EQ(fullFilled.cellsize, dem.cellsize);
+      ASSERT_EQ(fullFilled.nodata_value, dem.nodata_value);
+      ASSERT_EQ(sumFull, 0);
+   }
+
    TEST(RasterNew, Resize)
    {
       RasterNew rast = RasterNew();
