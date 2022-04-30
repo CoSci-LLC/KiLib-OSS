@@ -116,13 +116,13 @@ namespace KiLib
    {
       RasterNew rast = RasterNew(10, 7);
 
-      ASSERT_DEATH(rast.at(10, 7), "");
-      ASSERT_DEATH(rast.at(0, 7), "");
-      ASSERT_DEATH(rast.at(10, 0), "");
+      ASSERT_ANY_THROW(rast.at(10, 7));
+      ASSERT_ANY_THROW(rast.at(0, 7));
+      ASSERT_ANY_THROW(rast.at(10, 0));
 
-      ASSERT_DEATH(rast(10, 7), "");
-      ASSERT_DEATH(rast(0, 7), "");
-      ASSERT_DEATH(rast(10, 0), "");
+      ASSERT_NO_THROW(rast(10, 7));
+      ASSERT_NO_THROW(rast(0, 7));
+      ASSERT_NO_THROW(rast(10, 0));
    }
 
    TEST(RasterNew, GetMinValue)

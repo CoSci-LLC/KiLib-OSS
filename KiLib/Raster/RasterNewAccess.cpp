@@ -17,19 +17,31 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#undef NDEBUG // For bounds checking in eigen
-
 #include <KiLib/Raster/RasterNew.hpp>
 
 namespace KiLib
 {
    double &RasterNew::at(Index row, Index col)
    {
+      // Check bounds of row and column
+      if ((row < 0 || row >= this->nRows) || (col < 0 || col >= this->nCols))
+      {
+         throw std::out_of_range(fmt::format(
+            "RasterNew::at | row or column out of range ({}, {}) for raster of size ({}, {})", row, col, this->nRows,
+            this->nCols));
+      }
       return this->data(row, col);
    }
 
    double RasterNew::at(Index row, Index col) const
    {
+      // Check bounds of row and column
+      if ((row < 0 || row >= this->nRows) || (col < 0 || col >= this->nCols))
+      {
+         throw std::out_of_range(fmt::format(
+            "RasterNew::at | row or column out of range ({}, {}) for raster of size ({}, {})", row, col, this->nRows,
+            this->nCols));
+      }
       return this->data(row, col);
    }
 
