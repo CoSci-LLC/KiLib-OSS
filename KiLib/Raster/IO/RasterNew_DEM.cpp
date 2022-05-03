@@ -130,7 +130,7 @@ namespace KiLib
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
-      RowMatrixXd outdata = this->data.colwise().reverse();
+      Matrix outdata = this->data.colwise().reverse();
 
       for (Index row = 0; row < this->nRows; row++)
       {

@@ -147,9 +147,11 @@ namespace KiLib
       ASSERT_ANY_THROW(rast.at(0, 7));
       ASSERT_ANY_THROW(rast.at(10, 0));
 
+#ifdef NDEBUG
       ASSERT_NO_THROW(rast(10, 7));
       ASSERT_NO_THROW(rast(0, 7));
       ASSERT_NO_THROW(rast(10, 0));
+#endif
    }
 
    TEST(RasterNew, GetMinValue)

@@ -75,7 +75,7 @@ namespace KiLib
 
       if (keepNoData)
       {
-         new_.data = (other.data.array() == other.nodata_value).select(other.nodata_value, new_.data);
+         new_.data = (other.data == other.nodata_value).select(other.nodata_value, new_.data);
       }
 
       return new_;

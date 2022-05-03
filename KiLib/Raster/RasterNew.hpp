@@ -29,7 +29,7 @@ const double DOUBLE_INF = std::numeric_limits<double>::infinity();
 
 // Eigen defaults to col-major, but we want row-major
 // Typedef for a dynamic matrix of doubles stored in row-major order
-typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RowMatrixXd;
+typedef Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
 using Eigen::Index;
 
 namespace KiLib
@@ -47,7 +47,7 @@ namespace KiLib
       // Data memebers
       ////////////////////////////////////////////////////////////////////////////////
    public:
-      RowMatrixXd data;
+      Matrix data;
 
       double xllcorner; // Lower left corner x value in absolute coordinates
       double yllcorner; // Lower left corner y value in absolute coordinates
@@ -275,14 +275,14 @@ namespace KiLib
        *
        * @return size_t Number of data points
        */
-      size_t GetNDataPoints() const;
+      Index GetNDataPoints() const;
 
       /**
        * @brief Get the number of points in the raster == nodata
        *
        * @return size_t Number of nodata points
        */
-      size_t GetNNoDataPoints() const;
+      Index GetNNoDataPoints() const;
 
       /**
        * @brief Get the indices of valid points in the raster.

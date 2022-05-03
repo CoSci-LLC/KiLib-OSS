@@ -23,30 +23,30 @@ namespace KiLib
 {
    double RasterNew::GetMinValue() const
    {
-      return (this->data.array() != this->nodata_value).select(this->data, DOUBLE_INF).minCoeff();
+      return (this->data != this->nodata_value).select(this->data, DOUBLE_INF).minCoeff();
    }
 
    double RasterNew::GetMaxValue() const
    {
-      return (this->data.array() != this->nodata_value).select(this->data, -DOUBLE_INF).maxCoeff();
+      return (this->data != this->nodata_value).select(this->data, -DOUBLE_INF).maxCoeff();
    }
 
    double RasterNew::GetMeanValue() const
    {
-      auto   mask  = this->data.array() != this->nodata_value;
+      auto   mask  = this->data != this->nodata_value;
       double sum   = mask.select(this->data, 0.0).sum();
-      double denom = mask.cast<double>().sum();
+      double denom = mask.count();
       return sum / denom;
    }
 
-   size_t RasterNew::GetNDataPoints() const
+   Index RasterNew::GetNDataPoints() const
    {
-      return (this->data.array() != this->nodata_value).cast<size_t>().sum();
+      return (this->data != this->nodata_value).count();
    }
 
-   size_t RasterNew::GetNNoDataPoints() const
+   Index RasterNew::GetNNoDataPoints() const
    {
-      return (this->data.array() == this->nodata_value).cast<size_t>().sum();
+      return (this->data == this->nodata_value).count();
    }
 
    std::vector<Index> RasterNew::GetValidIndices() const
