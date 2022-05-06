@@ -6,6 +6,7 @@ target_sources(${projectName} PRIVATE
 	RasterNew.cpp
 	RasterNewStats.cpp
 	RasterNewAccess.cpp
+	RasterNewScience.cpp
 	ComputeSlope.cpp
 )
 

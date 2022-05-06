@@ -388,4 +388,36 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(rasterizedTrunc(0, 0), 1.0);
    }
 
+   TEST(RasterNew, DistFromBoundary)
+   {
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      RasterNew dem(path.string());
+
+      Vec3 p1{780096.0, 205422.0, -1.0};
+      Vec3 p2{780096.0 + 2.0, 205422.0 + 2.0, -1.0};
+      Vec3 p3{780096.0 + 0.1, 205422.0 + 3.0, -1.0};
+      Vec3 p4{780096.0 + dem.width - 0.1, 205422.0 + dem.height - 1.0, -1.0};
+
+      ASSERT_DOUBLE_EQ(dem.DistFromBoundary(p1), 0.0);
+      ASSERT_DOUBLE_EQ(dem.DistFromBoundary(p2), 2.0);
+      ASSERT_NEAR(dem.DistFromBoundary(p3), 0.1, 0.000001); // Float nonsense
+      ASSERT_NEAR(dem.DistFromBoundary(p4), 0.1, 0.000001); // Float nonsense
+   }
+
+   TEST(RasterNew, GetAverage)
+   {
+      auto      cwd  = fs::current_path();
+      auto      path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+      RasterNew dem(path.string());
+
+      double avg1 = dem.GetAverage(0, 4.0);
+      ASSERT_DOUBLE_EQ(avg1, 6.0);
+
+      double avg2 = dem.GetAverage(4, 1.0);
+      ASSERT_DOUBLE_EQ(avg2, 4.0);
+
+      double avg3 = dem.GetAverage(14, 2.0);
+      ASSERT_DOUBLE_EQ(avg3, 13.5);
+   }
+
 } // namespace KiLib

@@ -164,7 +164,8 @@ namespace KiLib
       double operator()(Vec3 pos) const;
 
       /**
-       * @brief Returns a flat index for a given row and column
+       * @brief Returns a flat index for a given row and column. This will bounds check row and col
+       * If they are OOB, throws std::out_of_range
        *
        * @param row row index
        * @param col col index
@@ -290,14 +291,14 @@ namespace KiLib
       /**
        * @brief Return the number of points in the raster != nodata
        *
-       * @return size_t Number of data points
+       * @return Index Number of data points
        */
       Index GetNDataPoints() const;
 
       /**
        * @brief Get the number of points in the raster == nodata
        *
-       * @return size_t Number of nodata points
+       * @return Index Number of nodata points
        */
       Index GetNNoDataPoints() const;
 
@@ -320,16 +321,32 @@ namespace KiLib
       double GetInterpBilinear(Vec3 pos) const;
 
       /**
+       * @brief Returns a points distance from the nearest boundary
+       *
+       * @param pos Position in raster
+       * @return double distance
+       */
+      double DistFromBoundary(const Vec3 pos) const;
+
+      /**
+       * @brief Get average around a flat index into a raster. Skips nodata values
+       *
+       * @param ind index to get average around
+       * @param radius circular radius
+       * @return double average
+       */
+      double GetAverage(Index ind, double radius) const;
+
+      /**
        * @brief Takes in a vector of objects, and takes the mean of a given attribute at each cell position in a raster.
        * The attributes and corresponding positions are mapped to the nearest cell in the raster, and the mean is taken
        * over cells.
        *
-       * @tparam T obj
+       * @tparam T Object that we are rasterizing
        * @param ref Reference raster to determine shape, size, nodata, etc
-       * @param objs vector of objects
-       * @param posP Pointer to position attribute (i.e. &Landslide::pos)
-       * @param attrP Pointer to attribute to rasterize (i.e. &Landslide::safetyFactor)
-       * @param doPopulate function that dictates whether or not that instace will be rasterized
+       * @param objs Vector of objects of type T
+       * @param getPos Function to return position of object
+       * @param getAttr Function that returns attribute to rasterize
        * @param width Number of cells to average over. 0 is just cell at i,j; 1 is 3x3 region around i,j; and so on.
        * @return KiLib::Raster
        *
@@ -376,10 +393,8 @@ namespace KiLib
                {
                   for (Index ci = cmin; ci <= cmax; ci++)
                   {
-                     // Dont sum out of bounds, cant sum where we have no points
-                     if (
-                        counts.count(sumRast.FlattenIndex(ri, ci)) == 0 or ri < 0 or ri >= sumRast.nRows or ci < 0 or
-                        ci >= sumRast.nCols)
+                     // Cant sum where we have no points
+                     if (counts.count(sumRast.FlattenIndex(ri, ci)) == 0)
                      {
                         continue;
                      }
@@ -398,4 +413,28 @@ namespace KiLib
          return outRast;
       }
    };
+
+   // struct RowColIter
+   //  {
+   //      using iterator_category = std::forward_iterator_tag;
+   //      using difference_type   = std::ptrdiff_t;
+   //      using value_type        = int;
+   //      using pointer           = int*;
+   //      using reference         = int&;
+
+   //     RowColIter(pointer ptr) : m_ptr(ptr) {}
+
+   //     reference operator*() const { return *m_ptr; }
+   //     pointer operator->() { return m_ptr; }
+   //     RowColIter& operator++() { m_ptr++; return *this; }
+   //     RowColIter operator++(int) { RowColIter tmp = *this; ++(*this); return tmp; }
+   //     friend bool operator== (const RowColIter& a, const RowColIter& b) { return a.m_ptr == b.m_ptr; };
+   //     friend bool operator!= (const RowColIter& a, const RowColIter& b) { return a.m_ptr != b.m_ptr; };
+
+   // private:
+   //     pointer m_ptr;
+   // };
+
+   // RowColIter begin() { return RowColIter(&m_data[0]); }
+   // RowColIter end()   { return RowColIter(&m_data[200]); }
 } // namespace KiLib

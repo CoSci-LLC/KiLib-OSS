@@ -108,8 +108,8 @@ namespace KiLib
       const double rF = (pos.y - this->yllcorner) / this->cellsize;
       const double cF = (pos.x - this->xllcorner) / this->cellsize;
 
-      size_t r = std::clamp<Index>((Index)std::floor(rF), 0L, this->nRows - 1);
-      size_t c = std::clamp<Index>((Index)std::floor(cF), 0L, this->nCols - 1);
+      Index r = std::clamp((Index)std::floor(rF), (Index)0, this->nRows - 1);
+      Index c = std::clamp((Index)std::floor(cF), (Index)0, this->nCols - 1);
 
       return this->FlattenIndex(r, c);
    }
