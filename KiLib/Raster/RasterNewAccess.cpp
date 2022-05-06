@@ -55,6 +55,18 @@ namespace KiLib
       return this->data(row, col);
    }
 
+   double &RasterNew::operator()(Index flatIndex)
+   {
+      const auto [row, col] = this->GetRowCol(flatIndex);
+      return this->data(row, col);
+   }
+
+   double RasterNew::operator()(Index flatIndex) const
+   {
+      const auto [row, col] = this->GetRowCol(flatIndex);
+      return this->data(row, col);
+   }
+
    Index RasterNew::FlattenIndex(Index row, Index col) const
    {
       if (row >= this->nRows || col >= this->nCols)

@@ -315,4 +315,77 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(p4.x, dem.xllcorner + 2 * dem.cellsize + hs);
       ASSERT_DOUBLE_EQ(p4.y, dem.yllcorner + 1 * dem.cellsize + hs);
    }
+
+   TEST(RasterNew, Rasterize)
+   {
+      class TestClass
+      {
+      public:
+         TestClass(KiLib::Vec3 pos, double safetyFactor)
+         {
+            this->pos          = pos;
+            this->safetyFactor = safetyFactor;
+         }
+
+         KiLib::Vec3 pos;
+         double      safetyFactor;
+      };
+
+      auto                   cwd  = fs::current_path();
+      auto                   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
+      RasterNew              dem(path.string());
+      std::vector<TestClass> objs{
+         {{0.40, 0.30, -1.00}, 0.03}, // 0, 0
+         {{0.10, 0.49, -1.00}, 0.12}, // 0, 0
+         {{1.00, 1.00, -1.00}, 0.30}, // 1, 1
+         {{1.20, 5.10, -1.00}, 0.70}, // 5, 1
+         {{1.90, 5.60, -1.00}, 0.30}, // 5, 1
+         {{1.40, 5.10, -1.00}, 1.10}, // 5, 1
+      };
+
+      //clang-format off
+      spdlog::info("Rasterizing No Trunc");
+      RasterNew rasterizedNoTrunc = RasterNew::Rasterize<TestClass>(
+         dem,                                             // Reference dem to construct sizes
+         objs,                                            // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },         // Our objects position
+         [](const auto &obj) { return obj.safetyFactor; } // Our objects attribute to rasterize
+      );
+      //clang-format on
+
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(5, 1), 0.70);
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(1, 1), 0.30);
+      ASSERT_DOUBLE_EQ(rasterizedNoTrunc(0, 0), 0.075);
+
+      //clang-format off
+      spdlog::info("Rasterizing No Trunc Width");
+      RasterNew rasterizedNoTruncWidth = RasterNew::Rasterize<TestClass>(
+         dem,                                              // Reference dem to construct sizes
+         objs,                                             // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },          // Our objects position
+         [](const auto &obj) { return obj.safetyFactor; }, // Our objects attribute to rasterize
+         1                                                 // Expand width by 1
+      );
+      //clang-format on
+
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(5, 1), 0.70);
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(1, 1), 0.15);
+      ASSERT_DOUBLE_EQ(rasterizedNoTruncWidth(0, 0), 0.15);
+
+
+      //clang-format off
+      spdlog::info("Rasterizing Trunk");
+      RasterNew rasterizedTrunc = RasterNew::Rasterize<TestClass>(
+         dem,                                                   // Reference dem to construct sizes
+         objs,                                                  // Our vector of objects to rasterize
+         [](const auto &obj) { return obj.pos; },               // Our objects position
+         [](const auto &obj) { return obj.safetyFactor < 1.0; } // Our objects attribute to rasterize
+      );
+      //clang-format on
+
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(5, 1), 2.0 / 3.0);
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(1, 1), 1.0);
+      ASSERT_DOUBLE_EQ(rasterizedTrunc(0, 0), 1.0);
+   }
+
 } // namespace KiLib

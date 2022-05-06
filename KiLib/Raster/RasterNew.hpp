@@ -137,6 +137,23 @@ namespace KiLib
        */
       double operator()(Index row, Index col) const;
 
+
+      /**
+       * @brief Returns a reference to the element at flatIndex
+       *
+       * @param flatIndex flat index of cell
+       * @return double& element
+       */
+      double &operator()(Index flatIndex);
+
+      /**
+       * @brief Returns the value at flatIndex
+       *
+       * @param flatIndex flat index of cell
+       * @return double element
+       */
+      double operator()(Index flatIndex) const;
+
       /**
        * @brief Interpolate the value at a given point.
        *
@@ -301,5 +318,84 @@ namespace KiLib
        * @return double z
        */
       double GetInterpBilinear(Vec3 pos) const;
+
+      /**
+       * @brief Takes in a vector of objects, and takes the mean of a given attribute at each cell position in a raster.
+       * The attributes and corresponding positions are mapped to the nearest cell in the raster, and the mean is taken
+       * over cells.
+       *
+       * @tparam T obj
+       * @param ref Reference raster to determine shape, size, nodata, etc
+       * @param objs vector of objects
+       * @param posP Pointer to position attribute (i.e. &Landslide::pos)
+       * @param attrP Pointer to attribute to rasterize (i.e. &Landslide::safetyFactor)
+       * @param doPopulate function that dictates whether or not that instace will be rasterized
+       * @param width Number of cells to average over. 0 is just cell at i,j; 1 is 3x3 region around i,j; and so on.
+       * @return KiLib::Raster
+       *
+       */
+      template <class T>
+      static RasterNew Rasterize(
+         const RasterNew &ref, const std::vector<T> &objs, std::function<KiLib::Vec3(T)> getPos,
+         std::function<double(T)> getAttr, int width = 0)
+      {
+         RasterNew sumRast = RasterNew::FillLike(ref, 0.0, true);
+         RasterNew outRast = RasterNew::FillLike(ref, 0.0, true);
+
+         std::unordered_map<Index, double> counts;
+
+         for (auto &obj : objs)
+         {
+            KiLib::Vec3 pos  = getPos(obj);
+            double      attr = getAttr(obj);
+
+            Index flatInd   = sumRast.GetNearestCell(pos);
+            counts[flatInd] = counts.count(flatInd) == 0 ? 1.0 : counts[flatInd] + 1;
+
+            sumRast(flatInd) += attr;
+         }
+
+         for (Index r = 0; r < sumRast.nRows; r++)
+         {
+            for (Index c = 0; c < sumRast.nCols; c++)
+            {
+               // Skip nodata points in the raster we're summing into
+               if (sumRast.at(r, c) == sumRast.nodata_value)
+               {
+                  continue;
+               }
+
+               double count = 0.0;
+               double sum   = 0.0;
+
+               Index rmin = std::max(r - width, (Index)0);
+               Index rmax = std::min(r + width, sumRast.nRows - 1);
+               Index cmin = std::max(c - width, (Index)0);
+               Index cmax = std::min(c + width, sumRast.nCols - 1);
+               for (Index ri = rmin; ri <= rmax; ri++)
+               {
+                  for (Index ci = cmin; ci <= cmax; ci++)
+                  {
+                     // Dont sum out of bounds, cant sum where we have no points
+                     if (
+                        counts.count(sumRast.FlattenIndex(ri, ci)) == 0 or ri < 0 or ri >= sumRast.nRows or ci < 0 or
+                        ci >= sumRast.nCols)
+                     {
+                        continue;
+                     }
+
+                     count += counts[sumRast.FlattenIndex(ri, ci)];
+                     sum += sumRast.at(ri, ci);
+                  }
+               }
+               if (count != 0)
+               {
+                  outRast.at(r, c) = sum / count;
+               }
+            }
+         }
+
+         return outRast;
+      }
    };
 } // namespace KiLib
