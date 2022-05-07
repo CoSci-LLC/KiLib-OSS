@@ -385,41 +385,38 @@ namespace KiLib
             sumRast(flatInd) += attr;
          }
 
-         for (Index r = 0; r < sumRast.nRows; r++)
+         for (auto [r, c] : sumRast.RowColIndexIter())
          {
-            for (Index c = 0; c < sumRast.nCols; c++)
+            // Skip nodata points in the raster we're summing into
+            if (sumRast.at(r, c) == sumRast.nodata_value)
             {
-               // Skip nodata points in the raster we're summing into
-               if (sumRast.at(r, c) == sumRast.nodata_value)
-               {
-                  continue;
-               }
+               continue;
+            }
 
-               double count = 0.0;
-               double sum   = 0.0;
+            double count = 0.0;
+            double sum   = 0.0;
 
-               Index rmin = std::max(r - width, (Index)0);
-               Index rmax = std::min(r + width, sumRast.nRows - 1);
-               Index cmin = std::max(c - width, (Index)0);
-               Index cmax = std::min(c + width, sumRast.nCols - 1);
-               for (Index ri = rmin; ri <= rmax; ri++)
+            Index rmin = std::max(r - width, (Index)0);
+            Index rmax = std::min(r + width, sumRast.nRows - 1);
+            Index cmin = std::max(c - width, (Index)0);
+            Index cmax = std::min(c + width, sumRast.nCols - 1);
+            for (Index ri = rmin; ri <= rmax; ri++)
+            {
+               for (Index ci = cmin; ci <= cmax; ci++)
                {
-                  for (Index ci = cmin; ci <= cmax; ci++)
+                  // Cant sum where we have no points
+                  if (counts.count(sumRast.FlattenIndex(ri, ci)) == 0)
                   {
-                     // Cant sum where we have no points
-                     if (counts.count(sumRast.FlattenIndex(ri, ci)) == 0)
-                     {
-                        continue;
-                     }
-
-                     count += counts[sumRast.FlattenIndex(ri, ci)];
-                     sum += sumRast.at(ri, ci);
+                     continue;
                   }
+
+                  count += counts[sumRast.FlattenIndex(ri, ci)];
+                  sum += sumRast.at(ri, ci);
                }
-               if (count != 0)
-               {
-                  outRast.at(r, c) = sum / count;
-               }
+            }
+            if (count != 0)
+            {
+               outRast.at(r, c) = sum / count;
             }
          }
 

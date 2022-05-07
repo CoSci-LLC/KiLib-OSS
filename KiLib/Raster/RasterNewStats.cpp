@@ -52,14 +52,11 @@ namespace KiLib
    std::vector<Index> RasterNew::GetValidIndices() const
    {
       std::vector<Index> indices;
-      for (Index row = 0; row < this->nRows; row++)
+      for (auto [row, col] : this->RowColIndexIter())
       {
-         for (Index col = 0; col < this->nCols; col++)
+         if (this->data(row, col) != this->nodata_value)
          {
-            if (this->data(row, col) != this->nodata_value)
-            {
-               indices.push_back(this->FlattenIndex(row, col));
-            }
+            indices.push_back(this->FlattenIndex(row, col));
          }
       }
 
