@@ -21,6 +21,7 @@
 #pragma once
 
 #include <Eigen/Eigen>
+#include <KiLib/Raster/RasterNewIterators.hpp>
 #include <KiLib/Utils/Vec3.hpp>
 #include <random>
 #include <string>
@@ -80,7 +81,7 @@ namespace KiLib
       RasterNew(const std::string &path);
 
       /**
-       * @brief Construct a new Raster New object
+       * @brief Construct a RasterNew with the provided number of rows and cols. Data initialized to 0
        *
        * @param nRows
        * @param nCols
@@ -101,6 +102,18 @@ namespace KiLib
       ////////////////////////////////////////////////////////////////////////////////
       // Access
       ////////////////////////////////////////////////////////////////////////////////
+
+      /**
+       * @brief Use as follows:
+       *
+       * for (auto [rowIndex, colIndex] : dem.RowColIndexIter()) {
+       *   ...
+       * }
+       *
+       * @return RowColIterProxy
+       */
+      RowColIterProxy RowColIndexIter() const;
+
       /**
        * @brief Return a reference to element at (row, col). Boundary checks are performed.
        *
@@ -413,28 +426,4 @@ namespace KiLib
          return outRast;
       }
    };
-
-   // struct RowColIter
-   //  {
-   //      using iterator_category = std::forward_iterator_tag;
-   //      using difference_type   = std::ptrdiff_t;
-   //      using value_type        = int;
-   //      using pointer           = int*;
-   //      using reference         = int&;
-
-   //     RowColIter(pointer ptr) : m_ptr(ptr) {}
-
-   //     reference operator*() const { return *m_ptr; }
-   //     pointer operator->() { return m_ptr; }
-   //     RowColIter& operator++() { m_ptr++; return *this; }
-   //     RowColIter operator++(int) { RowColIter tmp = *this; ++(*this); return tmp; }
-   //     friend bool operator== (const RowColIter& a, const RowColIter& b) { return a.m_ptr == b.m_ptr; };
-   //     friend bool operator!= (const RowColIter& a, const RowColIter& b) { return a.m_ptr != b.m_ptr; };
-
-   // private:
-   //     pointer m_ptr;
-   // };
-
-   // RowColIter begin() { return RowColIter(&m_data[0]); }
-   // RowColIter end()   { return RowColIter(&m_data[200]); }
 } // namespace KiLib

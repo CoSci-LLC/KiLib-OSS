@@ -45,8 +45,9 @@ target_compile_definitions(${projectTestName} PUBLIC
 		TEST_DIRECTORY="${PROJECT_SOURCE_DIR}/test"
 )
 
+find_package(OpenMP)
 # Link to the KiLib library
-target_link_libraries(${projectTestName} gtest_main KiLib)
+target_link_libraries(${projectTestName} gtest_main KiLib OpenMP::OpenMP_CXX)
 
 target_include_directories(${projectTestName}
 PUBLIC

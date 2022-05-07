@@ -420,4 +420,58 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(avg3, 13.5);
    }
 
+   TEST(RasterNew, RowColIter)
+   {
+      RasterNew dem(40, 50);
+
+      std::vector<std::pair<Index, Index>> out;
+      for (auto [row, col] : dem.RowColIndexIter())
+      {
+         out.push_back({row, col});
+      }
+
+      Index i = 0;
+      for (Index row = 0; row < dem.nRows; row++)
+      {
+         for (Index col = 0; col < dem.nCols; col++)
+         {
+            ASSERT_EQ(out[i].first, row);
+            ASSERT_EQ(out[i].second, col);
+            i += 1;
+         }
+      }
+   }
+
+   TEST(RasterNew, RowColParIter)
+   {
+      RasterNew dem(40, 50);
+
+      std::vector<std::pair<Index, Index>> out;
+
+      #pragma omp parallel for
+      for (auto [row, col] : dem.RowColIndexIter())
+      {
+         #pragma omp critical
+         {
+            out.push_back(std::make_pair(row, col));
+         }
+      }
+
+      // sort vector of pairs by first element (row) and then by second element (col)
+      std::sort(
+         out.begin(), out.end(),
+         [](const auto &a, const auto &b)
+         { return (a.first < b.first) || (a.first == b.first && a.second < b.second); });
+
+      std::vector<std::pair<Index, Index>> expected;
+      for (Index row = 0; row < dem.nRows; row++)
+      {
+         for (Index col = 0; col < dem.nCols; col++)
+         {
+            expected.push_back(std::make_pair(row, col));
+         }
+      }
+
+      ASSERT_EQ(out, expected);
+   }
 } // namespace KiLib

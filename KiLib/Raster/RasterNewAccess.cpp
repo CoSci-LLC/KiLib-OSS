@@ -21,6 +21,12 @@
 
 namespace KiLib
 {
+
+   RowColIterProxy RasterNew::RowColIndexIter() const
+   {
+      return RowColIterProxy(this->nRows, this->nCols);
+   }
+
    double &RasterNew::at(Index row, Index col)
    {
       // Check bounds of row and column

@@ -40,12 +40,12 @@ namespace KiLib
    {
       auto [r, c] = this->GetRowCol(ind);
 
-      Index extent = std::floor(radius / this->cellsize);
+      const Index extent = std::floor(radius / this->cellsize);
 
-      Index leftB  = std::clamp(c - extent, (Index)0, this->nCols - 1);
-      Index rightB = std::clamp(c + extent, (Index)0, this->nCols - 1);
-      Index upB    = std::clamp(r + extent, (Index)0, this->nRows - 1);
-      Index lowB   = std::clamp(r - extent, (Index)0, this->nRows - 1);
+      const Index leftB  = std::clamp(c - extent, (Index)0, this->nCols - 1);
+      const Index rightB = std::clamp(c + extent, (Index)0, this->nCols - 1);
+      const Index upB    = std::clamp(r + extent, (Index)0, this->nRows - 1);
+      const Index lowB   = std::clamp(r - extent, (Index)0, this->nRows - 1);
 
       double sum = 0.0;
       double num = 0.0;
