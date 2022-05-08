@@ -139,11 +139,11 @@ namespace KiLib
 
       Raster dem(path.string());
 
-      size_t ind = 30;
-      const auto zInd = 100.0;
-      const auto radius = 8.0;
-      const auto threshold = 21.0;
-      std::optional<KiLib::Vec3> pos = dem.GetCoordMinDistance(ind, zInd, dem, radius, threshold);
+      size_t                     ind       = 30;
+      const auto                 zInd      = 100.0;
+      const auto                 radius    = 8.0;
+      const auto                 threshold = 21.0;
+      std::optional<KiLib::Vec3> pos       = dem.GetCoordMinDistance(ind, zInd, dem, radius, threshold);
       if (pos)
       {
          ASSERT_DOUBLE_EQ(0, (*pos).z);
@@ -152,7 +152,6 @@ namespace KiLib
       {
          ASSERT_DOUBLE_EQ(1.0, 2.0);
       }
-
    }
 
    TEST(Raster, Rasterize)

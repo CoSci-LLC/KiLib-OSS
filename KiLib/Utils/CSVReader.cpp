@@ -75,12 +75,12 @@ std::vector<std::vector<std::string>> CSVReader::GetData()
    }
 
    // Read data
-   char *                                saveptr = nullptr;
+   char                                 *saveptr = nullptr;
    std::vector<std::vector<std::string>> data;
    while (getline(file, line))
    {
-      char *                   inputLine    = strdup(line.c_str());
-      char *                   refInputLine = inputLine;
+      char                    *inputLine    = strdup(line.c_str());
+      char                    *refInputLine = inputLine;
       std::vector<std::string> vec;
 
       // Create the vector of tokens
