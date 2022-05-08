@@ -119,7 +119,7 @@ namespace KiLib
       RowColIter RowColIndexIter() const;
 
       /**
-       * @brief Iterate over a subview of the raster. This will *not* return out of bounds indices
+       * @brief Iterate over a subview of the raster. This will *not* return out of bounds indices.
        *
        * @code
        *    for (auto [rowIndex, colIndex] : dem.RowColSubViewIndexIter(6, 6, 10, 10)) {
