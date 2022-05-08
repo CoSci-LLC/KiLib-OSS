@@ -22,8 +22,8 @@
 
 #include <KiLib/Utils/Vec3.hpp>
 #include <algorithm>
-#include <random>
 #include <optional>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -88,7 +88,7 @@ namespace KiLib
        * @return double Distance
        */
       double distFromBoundary(const Vec3 &pos) const;
-     
+
       /**
        * @brief Returns row and col of raster flat index
        *
@@ -260,7 +260,8 @@ namespace KiLib
       double                     GetAverage(size_t ind, double radius) const;
       static std::vector<size_t> getValidIndices(const std::vector<const KiLib::Raster *> &rasts);
       static void                assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
-      std::optional<KiLib::Vec3> GetCoordMinDistance(size_t ind, double radius, double threshold) const;
+      std::optional<KiLib::Vec3>
+      GetCoordMinDistance(size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const;
 
    private:
       void fromDEM(const std::string &path);

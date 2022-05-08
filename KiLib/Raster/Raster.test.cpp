@@ -139,19 +139,19 @@ namespace KiLib
 
       Raster dem(path.string());
 
-      size_t ind = 30;
-      auto radius = 8.0;
-      auto threshold = 21.0;
-      std::optional<KiLib::Vec3> pos = dem.GetCoordMinDistance(ind, radius, threshold);
+      size_t                     ind       = 30;
+      const auto                 zInd      = 100.0;
+      const auto                 radius    = 8.0;
+      const auto                 threshold = 21.0;
+      std::optional<KiLib::Vec3> pos       = dem.GetCoordMinDistance(ind, zInd, dem, radius, threshold);
       if (pos)
       {
-         ASSERT_DOUBLE_EQ(30, (*pos).z);
+         ASSERT_DOUBLE_EQ(0, (*pos).z);
       }
       else
       {
          ASSERT_DOUBLE_EQ(1.0, 2.0);
       }
-
    }
 
    TEST(Raster, Rasterize)
@@ -173,12 +173,12 @@ namespace KiLib
       auto                   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3_NODATA.dem");
       Raster                 dem(path.string());
       std::vector<TestClass> objs{
-         {{0.4, 0.3, -1.0}, 0.03},  // 0, 0
-         {{0.1, 0.49, -1.0}, 0.12}, // 0, 0
-         {{0.5, 0.5, -1.0}, 0.3},   // 1, 1
-         {{1.2, 5.1, -1.0}, 0.7},   // 5, 1
-         {{0.9, 4.6, -1.0}, 0.3},   // 5, 1
-         {{1.4, 4.6, -1.0}, 1.1},   // 5, 1
+         {{0.40, 0.30, -1.00}, 0.03}, // 0, 0
+         {{0.10, 0.49, -1.00}, 0.12}, // 0, 0
+         {{1.00, 1.00, -1.00}, 0.30}, // 1, 1
+         {{1.20, 5.10, -1.00}, 0.70}, // 5, 1
+         {{1.90, 5.60, -1.00}, 0.30}, // 5, 1
+         {{1.40, 5.10, -1.00}, 1.10}, // 5, 1
       };
 
       //clang-format off
