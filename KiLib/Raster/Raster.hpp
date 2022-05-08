@@ -22,8 +22,8 @@
 
 #include <KiLib/Utils/Vec3.hpp>
 #include <algorithm>
-#include <optional>
 #include <random>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -66,12 +66,6 @@ namespace KiLib
        */
       void print() const;
 
-      /**
-       * @brief Returns a random point within the DEM
-       * 
-       * @param gen Random number generator
-       * @return KiLib::Vec3 
-       */
       KiLib::Vec3 randPoint(std::mt19937_64 &gen) const;
 
       /**
@@ -84,36 +78,8 @@ namespace KiLib
        */
       size_t flattenIndex(size_t r, size_t c) const;
 
-      /**
-       * Get position of lower left corner of cell
-       */
       KiLib::Vec3 getCellPos(size_t ind) const;
-
-      /**
-       * Get position of center of cell
-       */
       KiLib::Vec3 getCellCenter(size_t ind) const;
-
-      /**
-       * Get number of data points in raster that are valid data points
-       */
-      size_t getNDataPoints() const;
-
-
-      /**
-       * Get number of data points in raster that are *not* valid data points (nodata)
-       */
-      size_t getNNoDataPoints() const;
-
-      /**
-       * Get minimum value in raster
-       */
-      double getMinValue() const;
-
-      /**
-       * Get max value in raster
-       */
-      double getMaxValue() const;
 
       /**
        * @brief Returns distance between pos and nearest boundary point
@@ -122,7 +88,7 @@ namespace KiLib
        * @return double Distance
        */
       double distFromBoundary(const Vec3 &pos) const;
-
+     
       /**
        * @brief Returns row and col of raster flat index
        *

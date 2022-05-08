@@ -15,5 +15,4 @@ target_sources_test(${projectTestName} PRIVATE
 	Random.test.cpp
 	Sequence.test.cpp
 	StatisticalOutput.test.cpp
-	Vec3.test.cpp
 )
