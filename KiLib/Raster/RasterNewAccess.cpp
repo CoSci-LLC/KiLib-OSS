@@ -24,7 +24,20 @@ namespace KiLib
 
    RowColIter RasterNew::RowColIndexIter() const
    {
-      return RowColIter(this->nRows, this->nCols);
+      return RowColIter(this->nRows, this->nCols, 0, 0);
+   }
+
+   RowColIter RasterNew::RowColSubViewIndexIter(Index centerRow, Index centerCol, Index nRow, Index nCol) const
+   {
+      Index topRow   = std::max(centerRow - nRow, (Index)0);        // Dont go OOB on top
+      Index leftCol  = std::max(centerCol - nCol, (Index)0);        // Dont go OOB on left
+      Index botRow   = std::min(centerRow + nRow, this->nRows - 1); // Dont go OOB on bottom
+      Index rightCol = std::min(centerCol + nCol, this->nCols - 1); // Dont go OOB on right
+
+      nRow = botRow - topRow + 1;
+      nCol = rightCol - leftCol + 1;
+
+      return RowColIter(nRow, nCol, topRow, leftCol);
    }
 
    double &RasterNew::at(Index row, Index col)

@@ -104,15 +104,36 @@ namespace KiLib
       ////////////////////////////////////////////////////////////////////////////////
 
       /**
-       * @brief Use as follows:
+       * @brief Iterates over row and column indices.
+       * Row major, so (0, 0)->(0, 1)->...->(1,0)->(1,1)->...
+       * Supports OpenMP
        *
-       * for (auto [rowIndex, colIndex] : dem.RowColIndexIter()) {
-       *   ...
-       * }
+       * @code
+       *    for (auto [rowIndex, colIndex] : dem.RowColIndexIter()) {
+       *      ...
+       *    }
+       * @endcode
        *
-       * @return RowColIterProxy
+       * @return RowColIter
        */
       RowColIter RowColIndexIter() const;
+
+      /**
+       * @brief Iterate over a subview of the raster. This will *not* return out of bounds indices
+       *
+       * @code
+       *    for (auto [rowIndex, colIndex] : dem.RowColSubViewIndexIter(6, 6, 10, 10)) {
+       *      ...
+       *    }
+       * @endcode
+       *
+       * @param centerRow Index of the center row in subview
+       * @param centerCol index of the center column in subview
+       * @param nRow Number of rows *around* center. ie 1 means 1 row above and below center
+       * @param nCol Number of columns *around* center. ie 1 means 1 column to the left and right of center
+       * @return RowColIter
+       */
+      RowColIter RowColSubViewIndexIter(Index centerRow, Index centerCol, Index nRow, Index nCol) const;
 
       /**
        * @brief Return a reference to element at (row, col). Boundary checks are performed.
@@ -395,25 +416,18 @@ namespace KiLib
 
             double count = 0.0;
             double sum   = 0.0;
-
-            Index rmin = std::max(r - width, (Index)0);
-            Index rmax = std::min(r + width, sumRast.nRows - 1);
-            Index cmin = std::max(c - width, (Index)0);
-            Index cmax = std::min(c + width, sumRast.nCols - 1);
-            for (Index ri = rmin; ri <= rmax; ri++)
+            for (auto [ri, ci] : sumRast.RowColSubViewIndexIter(r, c, width, width))
             {
-               for (Index ci = cmin; ci <= cmax; ci++)
+               // Cant sum where we have no points
+               if (counts.count(sumRast.FlattenIndex(ri, ci)) == 0)
                {
-                  // Cant sum where we have no points
-                  if (counts.count(sumRast.FlattenIndex(ri, ci)) == 0)
-                  {
-                     continue;
-                  }
-
-                  count += counts[sumRast.FlattenIndex(ri, ci)];
-                  sum += sumRast.at(ri, ci);
+                  continue;
                }
+
+               count += counts[sumRast.FlattenIndex(ri, ci)];
+               sum += sumRast.at(ri, ci);
             }
+
             if (count != 0)
             {
                outRast.at(r, c) = sum / count;

@@ -479,4 +479,70 @@ namespace KiLib
 
       ASSERT_EQ(out, expected);
    }
+
+   TEST(RasterNew, RowColSubViewIter)
+   {
+      RasterNew                            dem(40, 50);
+      std::vector<std::pair<Index, Index>> out;
+      std::vector<std::pair<Index, Index>> expected;
+
+      // No collisions with boundary
+      for (auto [row, col] : dem.RowColSubViewIndexIter(5, 5, 1, 1))
+      {
+         out.push_back({row, col});
+      }
+      // clang-format off
+      expected = {
+         {4, 4}, {4, 5}, {4, 6},
+         {5, 4}, {5, 5}, {5, 6},
+         {6, 4}, {6, 5}, {6, 6},
+      };
+      // clang-format on
+      ASSERT_EQ(out, expected);
+
+      // Collision with left boundary
+      out.clear();
+      for (auto [row, col] : dem.RowColSubViewIndexIter(0, 0, 1, 1))
+      {
+         out.push_back({row, col});
+      }
+      // clang-format off
+      expected = {
+         {0, 0}, {0, 1},
+         {1, 0}, {1, 1},
+      };
+      // clang-format on
+      ASSERT_EQ(out, expected);
+
+      // Collision with left boundary, 5x5 grid
+      out.clear();
+      for (auto [row, col] : dem.RowColSubViewIndexIter(0, 0, 2, 2))
+      {
+         out.push_back({row, col});
+      }
+      // clang-format off
+      expected = {
+         {0, 0}, {0, 1}, {0, 2},
+         {1, 0}, {1, 1}, {1, 2},
+         {2, 0}, {2, 1}, {2, 2},
+      };
+      // clang-format on
+      ASSERT_EQ(out, expected);
+
+      // Collision with bottom and right boundary, 5x5 grid
+      out.clear();
+      for (auto [row, col] : dem.RowColSubViewIndexIter(38, 49, 2, 2))
+      {
+         out.push_back({row, col});
+      }
+      // clang-format off
+      expected = {
+         {36, 47}, {36, 48}, {36, 49},
+         {37, 47}, {37, 48}, {37, 49},
+         {38, 47}, {38, 48}, {38, 49},
+         {39, 47}, {39, 48}, {39, 49},
+      };
+      // clang-format on
+      ASSERT_EQ(out, expected);
+   }
 } // namespace KiLib

@@ -42,33 +42,25 @@ namespace KiLib
 
       const Index extent = std::floor(radius / this->cellsize);
 
-      const Index leftB  = std::clamp(c - extent, (Index)0, this->nCols - 1);
-      const Index rightB = std::clamp(c + extent, (Index)0, this->nCols - 1);
-      const Index upB    = std::clamp(r + extent, (Index)0, this->nRows - 1);
-      const Index lowB   = std::clamp(r - extent, (Index)0, this->nRows - 1);
-
       double sum = 0.0;
       double num = 0.0;
-      for (Index ri = lowB; ri <= upB; ri++)
+      for (auto [ri, ci] : this->RowColSubViewIndexIter(r, c, extent, extent))
       {
-         for (Index ci = leftB; ci <= rightB; ci++)
+         // Skip nodata
+         if (this->at(ri, ci) == this->nodata_value)
          {
-            // Skip nodata
-            if (this->at(ri, ci) == this->nodata_value)
-            {
-               continue;
-            }
-            // This can probably be done faster, handles the corners being out of the radius
-            const double dr   = std::abs((double)(r - ri)) * cellsize;
-            const double dc   = std::abs((double)(c - ci)) * cellsize;
-            const double dist = sqrt(dr * dr + dc * dc);
-            if (dist > radius)
-            {
-               continue;
-            }
-            sum += this->at(ri, ci);
-            num += 1;
+            continue;
          }
+         // This can probably be done faster, handles the corners being out of the radius
+         const double dr   = std::abs((double)(r - ri)) * cellsize;
+         const double dc   = std::abs((double)(c - ci)) * cellsize;
+         const double dist = sqrt(dr * dr + dc * dc);
+         if (dist > radius)
+         {
+            continue;
+         }
+         sum += this->at(ri, ci);
+         num += 1;
       }
 
       return sum / num;

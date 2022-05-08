@@ -41,8 +41,11 @@ namespace KiLib
       using reference         = std::pair<Index, Index> &;
 
       // Defualt constructer, inits to current pos of 0
-      RowColIter(Index nRows, Index nCols) : nRows(nRows), nCols(nCols), cur_flat(0)
+      // topLeftX and topLeftY can be used for subview iteration
+      RowColIter(Index nRows, Index nCols, Index topLeftRow, Index topLeftCol)
+         : nRows(nRows), nCols(nCols), topLeftRow(topLeftRow), topLeftCol(topLeftCol), cur_flat(0)
       {
+         this->pos = std::make_pair(this->topLeftRow, this->topLeftCol);
       }
 
       reference operator*()
@@ -125,30 +128,36 @@ namespace KiLib
 
       RowColIter begin() const
       {
-         return RowColIter(this->nRows, this->nCols, 0);
+         return RowColIter(this->nRows, this->nCols, this->topLeftRow, this->topLeftCol, 0);
       }
+
       RowColIter end() const
       {
-         return RowColIter(this->nRows, this->nCols, this->nRows * this->nCols);
+         return RowColIter(this->nRows, this->nCols, this->topLeftRow, this->topLeftCol, this->nRows * this->nCols);
       }
 
-   private:
+   protected:
       value_type pos; // Row, col of current pos
 
-      Index nRows; // flat index of current pos
-      Index nCols;
-      Index cur_flat; // Current flat index
+      Index nRows;      // number of rows
+      Index nCols;      // number of cols
+      Index topLeftRow; // top let row
+      Index topLeftCol; // top left col
+      Index cur_flat;   // Current flat index
 
       // Constructor for begin / end
-      RowColIter(Index nRows, Index nCols, Index cur_flat) : nRows(nRows), nCols(nCols), cur_flat(cur_flat)
+      RowColIter(Index nRows, Index nCols, Index topLeftRow, Index topLeftCol, Index cur_flat)
+         : RowColIter(nRows, nCols, topLeftRow, topLeftCol)
       {
+         this->cur_flat = cur_flat;
       }
 
       void update(Index movement)
       {
          this->cur_flat += movement;
-         this->pos.first  = this->cur_flat / this->nCols;
-         this->pos.second = this->cur_flat % this->nCols;
+         this->pos.first  = (this->cur_flat / this->nCols) + this->topLeftRow;
+         this->pos.second = (this->cur_flat % this->nCols) + this->topLeftCol;
       }
    };
+
 } // namespace KiLib
