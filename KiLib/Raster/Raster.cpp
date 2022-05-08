@@ -178,80 +178,6 @@ namespace KiLib
       return pos;
    }
 
-
-   /**
-    * Get number of data points in raster that are valid data points
-    */
-   size_t Raster::getNDataPoints() const
-   {
-      size_t nDataPoints = 0;
-
-      for (size_t i = 0; i < this->nData; i++)
-      {
-         if (this->data[i] != this->nodata_value)
-         {
-            nDataPoints++;
-         }
-      }
-
-      return nDataPoints;
-   }
-
-
-   /**
-    * Get number of data points in raster that are *not* valid data points (nodata)
-    */
-   size_t Raster::getNNoDataPoints() const
-   {
-      size_t nNoDataPoints = 0;
-
-      for (size_t i = 0; i < this->nData; i++)
-      {
-         if (this->data[i] == this->nodata_value)
-         {
-            nNoDataPoints++;
-         }
-      }
-
-      return nNoDataPoints;
-   }
-
-   /**
-    * Get minimum value in raster
-    */
-   double Raster::getMinValue() const
-   {
-      double minValue = std::numeric_limits<double>::max();
-
-      for (size_t i = 0; i < this->nData; i++)
-      {
-         if (this->data[i] != this->nodata_value)
-         {
-            minValue = std::min(minValue, this->data[i]);
-         }
-      }
-
-      return minValue;
-   }
-
-   /**
-    * Get max value in raster
-    */
-   double Raster::getMaxValue() const
-   {
-      double maxValue = std::numeric_limits<double>::min();
-
-      for (size_t i = 0; i < this->nData; i++)
-      {
-         if (this->data[i] != this->nodata_value)
-         {
-            maxValue = std::max(maxValue, this->data[i]);
-         }
-      }
-
-      return maxValue;
-   }
-
    double Raster::GetAverage(size_t ind, double radius) const
    {
       auto [r, c] = Raster::GetRowCol(ind);
@@ -469,6 +395,7 @@ namespace KiLib
             const double dist = sqrt(dr * dr + dc * dc);
             if (dist > radius)
             {
+               SPDLOG_DEBUG("SKIPPING\n");
                continue;
             }
             // Get position if
