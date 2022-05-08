@@ -22,9 +22,9 @@
 namespace KiLib
 {
 
-   RowColIterProxy RasterNew::RowColIndexIter() const
+   RowColIter RasterNew::RowColIndexIter() const
    {
-      return RowColIterProxy(this->nRows, this->nCols);
+      return RowColIter(this->nRows, this->nCols);
    }
 
    double &RasterNew::at(Index row, Index col)

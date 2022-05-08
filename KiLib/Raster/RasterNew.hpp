@@ -112,7 +112,7 @@ namespace KiLib
        *
        * @return RowColIterProxy
        */
-      RowColIterProxy RowColIndexIter() const;
+      RowColIter RowColIndexIter() const;
 
       /**
        * @brief Return a reference to element at (row, col). Boundary checks are performed.

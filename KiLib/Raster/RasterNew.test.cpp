@@ -456,7 +456,6 @@ namespace KiLib
             out.push_back(std::make_pair(row, col));
          }
       }
-
       // sort vector of pairs by first element (row) and then by second element (col)
       std::sort(
          out.begin(), out.end(),
@@ -471,6 +470,12 @@ namespace KiLib
             expected.push_back(std::make_pair(row, col));
          }
       }
+
+      for (Index i = 0; i < expected.size(); i++)
+      {
+         spdlog::debug("({} {}) | ({}, {})", out[i].first, out[i].second, expected[i].first, expected[i].second);
+      }
+
 
       ASSERT_EQ(out, expected);
    }

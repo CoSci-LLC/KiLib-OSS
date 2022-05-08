@@ -30,7 +30,7 @@ namespace KiLib
    /**
     * @brief Iterates over row and column indices.
     * Row major, so (0, 0)->(0, 1)->...->(1,0)->(1,1)->...
-    *
+    * Supports OpenMP
     */
    struct RowColIter
    {
@@ -40,7 +40,8 @@ namespace KiLib
       using pointer           = std::pair<Index, Index> *;
       using reference         = std::pair<Index, Index> &;
 
-      RowColIter(Index nCols, Index cur_flat) : nCols(nCols), cur_flat(cur_flat)
+      // Defualt constructer, inits to current pos of 0
+      RowColIter(Index nRows, Index nCols) : nRows(nRows), nCols(nCols), cur_flat(0)
       {
       }
 
@@ -122,11 +123,26 @@ namespace KiLib
          return this->cur_flat - rawReverseIterator.cur_flat;
       }
 
+      RowColIter begin() const
+      {
+         return RowColIter(this->nRows, this->nCols, 0);
+      }
+      RowColIter end() const
+      {
+         return RowColIter(this->nRows, this->nCols, this->nRows * this->nCols);
+      }
+
    private:
       value_type pos; // Row, col of current pos
 
+      Index nRows; // flat index of current pos
       Index nCols;
-      Index cur_flat; // flat index of current pos
+      Index cur_flat; // Current flat index
+
+      // Constructor for begin / end
+      RowColIter(Index nRows, Index nCols, Index cur_flat) : nRows(nRows), nCols(nCols), cur_flat(cur_flat)
+      {
+      }
 
       void update(Index movement)
       {
@@ -135,28 +151,4 @@ namespace KiLib
          this->pos.second = this->cur_flat % this->nCols;
       }
    };
-
-   class RowColIterProxy
-   {
-   public:
-      RowColIterProxy(Index nRows, Index nCols)
-      {
-         this->nRows = nRows;
-         this->nCols = nCols;
-      }
-
-      RowColIter begin() const
-      {
-         return RowColIter(this->nCols, 0);
-      }
-      RowColIter end() const
-      {
-         return RowColIter(this->nCols, this->nRows * this->nCols);
-      }
-
-   private:
-      Index nRows;
-      Index nCols;
-   };
-
 } // namespace KiLib
