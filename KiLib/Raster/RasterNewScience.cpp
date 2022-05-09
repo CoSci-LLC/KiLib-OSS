@@ -134,4 +134,44 @@ namespace KiLib
 
       return slope;
    }
+
+   std::optional<KiLib::Vec3> RasterNew::GetCoordMinDistance(
+      Index ind, double zInd, const KiLib::RasterNew &elev, double radius, double threshold) const
+   {
+      auto [r, c] = this->GetRowCol(ind);
+
+      auto dist2value = std::numeric_limits<double>::max();
+      auto value      = std::numeric_limits<double>::max();
+
+      std::optional<KiLib::Vec3> pos = std::nullopt;
+
+      const Index extent = std::floor(radius / this->cellsize);
+      for (auto [ri, ci] : this->RowColSubViewIndexIter(r, c, extent, extent))
+      {
+         // Skip nodata and values less than threshold
+         if (this->at(ri, ci) == this->nodata_value || this->at(ri, ci) < threshold)
+         {
+            continue;
+         }
+
+         const double dr   = std::abs((double)(r - ri)) * cellsize;
+         const double dc   = std::abs((double)(c - ci)) * cellsize;
+         const double dist = sqrt(dr * dr + dc * dc);
+         if (dist > radius)
+         {
+            continue;
+         }
+         // Get position if
+         if (this->at(ri, ci) < value && elev.at(ri, ci) < zInd && dist <= dist2value)
+         {
+            dist2value = dist;
+            value      = this->at(ri, ci);
+            auto ind   = this->FlattenIndex(ri, ci);
+            pos        = this->GetCellPos(ind);
+            (*pos).z   = 0.0; // Reset z to zero
+         }
+      }
+
+      return pos;
+   }
 } // namespace KiLib

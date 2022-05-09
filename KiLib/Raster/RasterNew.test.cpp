@@ -589,4 +589,45 @@ namespace KiLib
          compareMSE(slope_ref, slope_cal, 1e-300, 1e-10);
       }
    }
+
+   TEST(RasterNew, GetCoordMinDistance)
+   {
+      auto cwd  = fs::current_path();
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_CA.dem");
+
+      RasterNew dem(path.string());
+
+      /////////////////////////////////////////////////////////////////////////////
+      Index ind       = 30;
+      auto  zInd      = 100.0;
+      auto  radius    = 4.0;
+      auto  threshold = 21.0;
+      auto  pos       = dem.GetCoordMinDistance(ind, zInd, dem, radius, threshold);
+
+      auto expected = dem.GetCellPos(29);
+      ASSERT_DOUBLE_EQ((*pos).x, expected.x);
+      ASSERT_DOUBLE_EQ((*pos).y, expected.y);
+      ASSERT_DOUBLE_EQ((*pos).z, 0);
+
+      /////////////////////////////////////////////////////////////////////////////
+      ind       = 36;
+      zInd      = 12.0;
+      radius    = 4.0;
+      threshold = 10.0;
+      pos       = dem.GetCoordMinDistance(ind, zInd, dem, radius, threshold);
+
+      expected = dem.GetCellPos(44);
+      ASSERT_DOUBLE_EQ((*pos).x, expected.x);
+      ASSERT_DOUBLE_EQ((*pos).y, expected.y);
+      ASSERT_DOUBLE_EQ((*pos).z, 0);
+
+
+      /////////////////////////////////////////////////////////////////////////////
+      ind       = 27;
+      zInd      = 12.0;
+      radius    = 4.0;
+      threshold = 10.0;
+      pos       = dem.GetCoordMinDistance(ind, zInd, dem, radius, threshold);
+      ASSERT_FALSE(pos.has_value());
+   }
 } // namespace KiLib

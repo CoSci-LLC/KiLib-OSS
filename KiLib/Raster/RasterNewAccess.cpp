@@ -64,6 +64,28 @@ namespace KiLib
       return this->data(row, col);
    }
 
+   double &RasterNew::at(Index flatIndex)
+   {
+      // Check bounds
+      if (flatIndex < 0 || flatIndex >= this->nData)
+      {
+         throw std::out_of_range(fmt::format(
+            "RasterNew::at | flat index ({}) out of range for raster with ({}) datapoints", flatIndex, this->nData));
+      }
+      return this->data(flatIndex);
+   }
+
+   double RasterNew::at(Index flatIndex) const
+   {
+      // Check bounds
+      if (flatIndex < 0 || flatIndex >= this->nData)
+      {
+         throw std::out_of_range(fmt::format(
+            "RasterNew::at | flat index ({}) out of range for raster with ({}) datapoints", flatIndex, this->nData));
+      }
+      return this->data(flatIndex);
+   }
+
    double &RasterNew::operator()(Index row, Index col)
    {
       return this->data(row, col);

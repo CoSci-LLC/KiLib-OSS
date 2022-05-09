@@ -23,6 +23,7 @@
 #include <Eigen/Eigen>
 #include <KiLib/Raster/RasterNewIterators.hpp>
 #include <KiLib/Utils/Vec3.hpp>
+#include <optional>
 #include <random>
 #include <string>
 
@@ -152,6 +153,23 @@ namespace KiLib
        * @return double& element
        */
       double at(Index row, Index col) const;
+
+      /**
+       * @brief Returns a reference to the element at flatIndex. Boundary checks are performed.
+       *
+       * @param flatIndex flat index of cell
+       * @return double& element
+       */
+      double &at(Index flatIndex);
+
+      /**
+       * @brief Returns the value at flatIndex. Boundary checks are performed.
+       *
+       * @param row row index
+       * @param col col index
+       * @return double& element
+       */
+      double at(Index flatIndex) const;
 
       /**
        * @brief Return a reference to element at (row, col). Boundary checks are performed.
@@ -355,6 +373,21 @@ namespace KiLib
       KiLib::RasterNew        ComputeSlope(KiLib::RasterNew::SlopeMethod method) const;
       static KiLib::RasterNew ComputeSlopeZevenbergenThorne(const KiLib::RasterNew &inp);
 
+      /**
+       * @brief Searches for the nearest cell, pos, to provided cell, ind, that satisfies the following constraints:
+       * pos is within radius meters from ind
+       * z value at pos is higher than threshold
+       * elevation at pos in elev is lower than the elevation at ind
+       *
+       * @param ind index to search around
+       * @param zInd Threshold (max) for elevation
+       * @param elev Elevation raster
+       * @param radius raidus to search around ind (meters)
+       * @param threshold z value returned must be higher than this value
+       * @return std::optional<KiLib::Vec3>
+       */
+      std::optional<KiLib::Vec3>
+      GetCoordMinDistance(Index ind, double zInd, const KiLib::RasterNew &elev, double radius, double threshold) const;
 
       /**
        * @brief Bilinearly interpolate a z value from the raster.
