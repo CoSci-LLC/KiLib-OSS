@@ -630,4 +630,22 @@ namespace KiLib
       pos       = dem.GetCoordMinDistance(ind, zInd, dem, radius, threshold);
       ASSERT_FALSE(pos.has_value());
    }
+
+   TEST(RasterNew, AssertAgreeDim)
+   {
+      auto cwd = fs::current_path();
+
+      auto path1 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
+      auto path2 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_slope.dem");
+      auto path3 = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x3.dem");
+
+      RasterNew dem1(path1.string());
+      RasterNew dem2(path2.string());
+      RasterNew dem3(path3.string());
+
+      ASSERT_NO_THROW(RasterNew::AssertAgreeDim({&dem1, &dem2, &dem1, &dem2}));
+
+      // this tests that the expected exception is thrown
+      ASSERT_ANY_THROW(RasterNew::AssertAgreeDim({&dem1, &dem3}));
+   }
 } // namespace KiLib
