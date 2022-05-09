@@ -134,8 +134,8 @@ namespace KiLib
 
    TEST(Raster, GetCoordMinDistance)
    {
-       auto cwd  = fs::current_path();
-       auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_CA.dem");
+      auto cwd  = fs::current_path();
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_CA.dem");
 
       Raster dem(path.string());
 

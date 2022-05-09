@@ -19,6 +19,7 @@
 
 
 #include <KiLib/Raster/RasterNew.hpp>
+#include <algorithm>
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <spdlog/fmt/ostr.h>
@@ -32,6 +33,27 @@ namespace fs = std::filesystem;
 
 namespace KiLib
 {
+   void compareMSE(const RasterNew &r1, const RasterNew &r2, double meta_dt, double data_dt)
+   {
+      // METADATA
+      ASSERT_EQ(r1.nCols, r2.nCols);
+      ASSERT_EQ(r1.nRows, r2.nRows);
+      ASSERT_EQ(r1.nData, r2.nData);
+
+      ASSERT_LT(std::abs(r1.xllcorner - r2.xllcorner), meta_dt);
+      ASSERT_LT(std::abs(r1.yllcorner - r2.yllcorner), meta_dt);
+      ASSERT_LT(std::abs(r1.cellsize - r2.cellsize), meta_dt);
+      ASSERT_LT(std::abs(r1.cellsize - r2.cellsize), meta_dt);
+      ASSERT_LT(std::abs(r1.width - r2.width), meta_dt);
+      ASSERT_LT(std::abs(r1.height - r2.height), meta_dt);
+      ASSERT_LT(std::abs(r1.nodata_value - r2.nodata_value), meta_dt);
+
+      // DATA
+      auto mse = (r1.data - r2.data).square().mean();
+
+      ASSERT_LE(mse, data_dt);
+   }
+
    TEST(RasterNew, RasterNew)
    {
       RasterNew rast = RasterNew();
@@ -544,5 +566,27 @@ namespace KiLib
       };
       // clang-format on
       ASSERT_EQ(out, expected);
+   }
+
+   TEST(RasterNew, ComputeSlopeZevenbergenThorne)
+   {
+      auto method = KiLib::RasterNew::SlopeMethod::ZevenbergenThorne;
+
+      auto                     cwd  = fs::current_path();
+      auto                     path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
+      std::vector<std::string> sizes{"5x5", "7x7"};
+
+      fs::current_path(path);
+
+      for (const std::string &size : sizes)
+      {
+         std::string base = (path / size).string();
+
+         RasterNew dem(base + ".dem");
+         RasterNew slope_ref(base + "_slope.dem");
+         RasterNew slope_cal = dem.ComputeSlope(method);
+
+         compareMSE(slope_ref, slope_cal, 1e-300, 1e-10);
+      }
    }
 } // namespace KiLib

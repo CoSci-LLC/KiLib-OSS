@@ -41,7 +41,8 @@ namespace KiLib
       using reference         = std::pair<Index, Index> &;
 
       // Defualt constructer, inits to current pos of 0
-      // topLeftX and topLeftY can be used for subview iteration
+      // topLeftRow and topLeftCol can be used for subview iteration
+      // Set to 0 if you want to iterate over whole raster
       RowColIter(Index nRows, Index nCols, Index topLeftRow, Index topLeftCol)
          : nRows(nRows), nCols(nCols), topLeftRow(topLeftRow), topLeftCol(topLeftCol), cur_flat(0)
       {
@@ -87,7 +88,6 @@ namespace KiLib
          return (*this);
       }
 
-      // Is this correct?
       RowColIter operator++(int)
       {
          auto temp(*this);
@@ -95,7 +95,6 @@ namespace KiLib
          return temp;
       }
 
-      // Is this correct?
       RowColIter operator--(int)
       {
          auto temp(*this);
@@ -121,9 +120,9 @@ namespace KiLib
          return temp;
       }
 
-      difference_type operator-(const RowColIter &rawReverseIterator) const
+      difference_type operator-(const RowColIter &rawIterator) const
       {
-         return this->cur_flat - rawReverseIterator.cur_flat;
+         return this->cur_flat - rawIterator.cur_flat;
       }
 
       RowColIter begin() const

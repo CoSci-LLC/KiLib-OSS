@@ -346,6 +346,16 @@ namespace KiLib
       ////////////////////////////////////////////////////////////////////////////////
       // Science
       ////////////////////////////////////////////////////////////////////////////////
+      // Slope methods
+      enum SlopeMethod
+      {
+         ZevenbergenThorne,
+      };
+
+      KiLib::RasterNew        ComputeSlope(KiLib::RasterNew::SlopeMethod method) const;
+      static KiLib::RasterNew ComputeSlopeZevenbergenThorne(const KiLib::RasterNew &inp);
+
+
       /**
        * @brief Bilinearly interpolate a z value from the raster.
        *
