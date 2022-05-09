@@ -17,21 +17,21 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <KiLib/Raster/RasterNew.hpp>
+#include <KiLib/Raster/Raster.hpp>
 
 namespace KiLib
 {
-   double RasterNew::GetMinValue() const
+   double Raster::GetMinValue() const
    {
       return (this->data != this->nodata_value).select(this->data, DOUBLE_INF).minCoeff();
    }
 
-   double RasterNew::GetMaxValue() const
+   double Raster::GetMaxValue() const
    {
       return (this->data != this->nodata_value).select(this->data, -DOUBLE_INF).maxCoeff();
    }
 
-   double RasterNew::GetMeanValue() const
+   double Raster::GetMeanValue() const
    {
       auto   mask  = this->data != this->nodata_value;
       double sum   = mask.select(this->data, 0.0).sum();
@@ -39,17 +39,17 @@ namespace KiLib
       return sum / denom;
    }
 
-   Index RasterNew::GetNDataPoints() const
+   Index Raster::GetNDataPoints() const
    {
       return (this->data != this->nodata_value).count();
    }
 
-   Index RasterNew::GetNNoDataPoints() const
+   Index Raster::GetNNoDataPoints() const
    {
       return (this->data == this->nodata_value).count();
    }
 
-   std::vector<Index> RasterNew::GetValidIndices() const
+   std::vector<Index> Raster::GetValidIndices() const
    {
       std::vector<Index> indices;
       for (auto [row, col] : this->RowColIndexIter())

@@ -17,11 +17,11 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <KiLib/Raster/RasterNew.hpp>
+#include <KiLib/Raster/Raster.hpp>
 
 namespace KiLib
 {
-   void RasterNew::AssertAgreeDim(const std::vector<const KiLib::RasterNew *> &rasts)
+   void Raster::AssertAgreeDim(const std::vector<const KiLib::Raster *> &rasts)
    {
       if (rasts.size() == 0)
       {

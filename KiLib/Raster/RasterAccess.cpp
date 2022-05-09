@@ -17,17 +17,17 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <KiLib/Raster/RasterNew.hpp>
+#include <KiLib/Raster/Raster.hpp>
 
 namespace KiLib
 {
 
-   RowColIter RasterNew::RowColIndexIter() const
+   RowColIter Raster::RowColIndexIter() const
    {
       return RowColIter(this->nRows, this->nCols, 0, 0);
    }
 
-   RowColIter RasterNew::RowColSubViewIndexIter(Index centerRow, Index centerCol, Index nRow, Index nCol) const
+   RowColIter Raster::RowColSubViewIndexIter(Index centerRow, Index centerCol, Index nRow, Index nCol) const
    {
       Index topRow   = std::max(centerRow - nRow, (Index)0);        // Dont go OOB on top
       Index leftCol  = std::max(centerCol - nCol, (Index)0);        // Dont go OOB on left
@@ -40,75 +40,75 @@ namespace KiLib
       return RowColIter(nRow, nCol, topRow, leftCol);
    }
 
-   double &RasterNew::at(Index row, Index col)
+   double &Raster::at(Index row, Index col)
    {
       // Check bounds of row and column
       if ((row < 0 || row >= this->nRows) || (col < 0 || col >= this->nCols))
       {
          throw std::out_of_range(fmt::format(
-            "RasterNew::at | row or column out of range ({}, {}) for raster of size ({}, {})", row, col, this->nRows,
+            "Raster::at | row or column out of range ({}, {}) for raster of size ({}, {})", row, col, this->nRows,
             this->nCols));
       }
       return this->data(row, col);
    }
 
-   double RasterNew::at(Index row, Index col) const
+   double Raster::at(Index row, Index col) const
    {
       // Check bounds of row and column
       if ((row < 0 || row >= this->nRows) || (col < 0 || col >= this->nCols))
       {
          throw std::out_of_range(fmt::format(
-            "RasterNew::at | row or column out of range ({}, {}) for raster of size ({}, {})", row, col, this->nRows,
+            "Raster::at | row or column out of range ({}, {}) for raster of size ({}, {})", row, col, this->nRows,
             this->nCols));
       }
       return this->data(row, col);
    }
 
-   double &RasterNew::at(Index flatIndex)
+   double &Raster::at(Index flatIndex)
    {
       // Check bounds
       if (flatIndex < 0 || flatIndex >= this->nData)
       {
          throw std::out_of_range(fmt::format(
-            "RasterNew::at | flat index ({}) out of range for raster with ({}) datapoints", flatIndex, this->nData));
+            "Raster::at | flat index ({}) out of range for raster with ({}) datapoints", flatIndex, this->nData));
       }
       return this->data(flatIndex);
    }
 
-   double RasterNew::at(Index flatIndex) const
+   double Raster::at(Index flatIndex) const
    {
       // Check bounds
       if (flatIndex < 0 || flatIndex >= this->nData)
       {
          throw std::out_of_range(fmt::format(
-            "RasterNew::at | flat index ({}) out of range for raster with ({}) datapoints", flatIndex, this->nData));
+            "Raster::at | flat index ({}) out of range for raster with ({}) datapoints", flatIndex, this->nData));
       }
       return this->data(flatIndex);
    }
 
-   double &RasterNew::operator()(Index row, Index col)
+   double &Raster::operator()(Index row, Index col)
    {
       return this->data(row, col);
    }
 
-   double RasterNew::operator()(Index row, Index col) const
+   double Raster::operator()(Index row, Index col) const
    {
       return this->data(row, col);
    }
 
-   double &RasterNew::operator()(Index flatIndex)
-   {
-      const auto [row, col] = this->GetRowCol(flatIndex);
-      return this->data(row, col);
-   }
-
-   double RasterNew::operator()(Index flatIndex) const
+   double &Raster::operator()(Index flatIndex)
    {
       const auto [row, col] = this->GetRowCol(flatIndex);
       return this->data(row, col);
    }
 
-   Index RasterNew::FlattenIndex(Index row, Index col) const
+   double Raster::operator()(Index flatIndex) const
+   {
+      const auto [row, col] = this->GetRowCol(flatIndex);
+      return this->data(row, col);
+   }
+
+   Index Raster::FlattenIndex(Index row, Index col) const
    {
       if (row >= this->nRows || col >= this->nCols)
       {
@@ -119,7 +119,7 @@ namespace KiLib
       return row * this->nCols + col;
    }
 
-   std::pair<Index, Index> RasterNew::GetRowCol(Index ind) const
+   std::pair<Index, Index> Raster::GetRowCol(Index ind) const
    {
       if (ind >= this->nData)
       {
@@ -131,7 +131,7 @@ namespace KiLib
       return std::make_pair(r, c);
    }
 
-   KiLib::Vec3 RasterNew::RandPoint(std::mt19937_64 &gen) const
+   KiLib::Vec3 Raster::RandPoint(std::mt19937_64 &gen) const
    {
       KiLib::Vec3                            point;
       std::uniform_real_distribution<double> xDist(this->xllcorner, this->xllcorner + this->width);
@@ -144,7 +144,7 @@ namespace KiLib
       return point;
    }
 
-   Index RasterNew::GetNearestCell(KiLib::Vec3 pos) const
+   Index Raster::GetNearestCell(KiLib::Vec3 pos) const
    {
       const double rF = (pos.y - this->yllcorner) / this->cellsize;
       const double cF = (pos.x - this->xllcorner) / this->cellsize;
@@ -155,7 +155,7 @@ namespace KiLib
       return this->FlattenIndex(r, c);
    }
 
-   KiLib::Vec3 RasterNew::GetCellPos(Index ind) const
+   KiLib::Vec3 Raster::GetCellPos(Index ind) const
    {
       const auto [r, c] = this->GetRowCol(ind);
 
@@ -165,7 +165,7 @@ namespace KiLib
       return pos;
    }
 
-   KiLib::Vec3 RasterNew::GetCellCenter(Index ind) const
+   KiLib::Vec3 Raster::GetCellCenter(Index ind) const
    {
       const auto [r, c] = this->GetRowCol(ind);
 
@@ -177,12 +177,12 @@ namespace KiLib
       return pos;
    }
 
-   double RasterNew::operator()(Vec3 pos) const
+   double Raster::operator()(Vec3 pos) const
    {
       return this->GetInterpBilinear(pos);
    }
 
-   void RasterNew::Resize(Index nRows, Index nCols)
+   void Raster::Resize(Index nRows, Index nCols)
    {
       this->data.conservativeResize(nRows, nCols);
 

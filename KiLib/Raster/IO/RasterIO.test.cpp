@@ -18,182 +18,123 @@
  */
 
 
+#include <Eigen/Eigen>
 #include <KiLib/Raster/Raster.hpp>
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <numeric>
+#include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
+#ifdef __APPLE__
+namespace fs = std::__fs::filesystem;
+#else
 namespace fs = std::filesystem;
+#endif
 
 namespace KiLib
 {
-   void compare_raster(const Raster &r1, const Raster &r2, double meta_dt, double data_dt)
+   TEST(Raster, fromDEM)
    {
-      // METADATA
-      ASSERT_EQ(r1.nCols, r2.nCols);
-      ASSERT_EQ(r1.nRows, r2.nRows);
-      ASSERT_EQ(r1.nData, r2.nData);
+      /*
+         ncols        5
+         nrows        5
+         xllcorner    780096.000000000000
+         yllcorner    205422.000000000000
+         cellsize     2.000000000000
+         NODATA_value  -99999
+         1912.436157 1912.276245 1912.256348 1912.411377 1912.221558
+         1910.791382 1910.591675 1910.676758 1910.956787 1911.081787
+         1909.241943 1909.312012 1909.512085 1909.781982 1909.876953
+         1907.911621 1908.201538 1908.396484 1908.451416 1908.31665
+         1906.551147 1906.841187 1907.021243 1907.016235 -99999
+      */
+      auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/5x5.dem");
+      Raster dem(path.string());
 
-      ASSERT_LT(std::abs(r1.xllcorner - r2.xllcorner), meta_dt);
-      ASSERT_LT(std::abs(r1.yllcorner - r2.yllcorner), meta_dt);
-      ASSERT_LT(std::abs(r1.cellsize - r2.cellsize), meta_dt);
-      ASSERT_LT(std::abs(r1.cellsize - r2.cellsize), meta_dt);
-      ASSERT_LT(std::abs(r1.width - r2.width), meta_dt);
-      ASSERT_LT(std::abs(r1.height - r2.height), meta_dt);
-      ASSERT_LT(std::abs(r1.nodata_value - r2.nodata_value), meta_dt);
+      ASSERT_EQ(dem.nRows, 5);
+      ASSERT_EQ(dem.nCols, 5);
+      ASSERT_EQ(dem.nData, 25);
+      ASSERT_EQ(dem.nodata_value, -99999);
+      ASSERT_DOUBLE_EQ(dem.xllcorner, 780096.0);
+      ASSERT_DOUBLE_EQ(dem.yllcorner, 205422.0);
+      ASSERT_DOUBLE_EQ(dem.cellsize, 2.0);
 
-      // DATA
-      auto mse = std::inner_product(
-                    r1.data.begin(), r1.data.end(), r2.data.begin(), 0, std::plus<double>(),
-                    [](double a, double b) { return std::pow(a - b, 2); }) /
-                 r1.data.size();
-
-      ASSERT_LE(mse, data_dt);
+      ASSERT_DOUBLE_EQ(dem.at(0, 0), 1906.551147);      // top left, but lower left in file
+      ASSERT_DOUBLE_EQ(dem.at(4, 0), 1912.436157);      // bottom left, but top left in file
+      ASSERT_DOUBLE_EQ(dem.at(0, 4), dem.nodata_value); // top right, but lower left in file
+      ASSERT_DOUBLE_EQ(dem.at(4, 4), 1912.221558);      // bottom right, but top left in file
    }
 
-   TEST(Raster, CompareTiff2DEM)
+   TEST(Raster, toDEM)
    {
-      std::set<std::pair<std::string, std::string>> files;
-
-      fs::path cwd  = fs::current_path();
-      fs::path path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
-
-      fs::current_path(path);
-
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         std::string base = (path / fs::path(it.path().stem().string())).string();
-         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + ".dem"));
-      }
-
-      for (const auto &[tif, dem] : files)
-         compare_raster(Raster(tif), Raster(dem), 1e-300, 1e-100);
-
-      fs::current_path(cwd);
-   }
-
-   TEST(Raster, Produce_CompareDEM2Tiff)
-   {
-      std::set<std::pair<std::string, std::string>> files;
-
       auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/");
 
       fs::current_path(path);
 
       for (const auto &it : fs::directory_iterator(path))
       {
-         if (!it.is_regular_file() && it.path().extension() != ".tif")
+         if (!it.is_regular_file() && it.path().extension() != ".dem")
             continue;
 
-         std::string base = (path / fs::path(it.path().stem().string())).string();
+         Raster orig_in = Raster(it.path().string());
 
-         files.insert(std::make_pair<std::string, std::string>(base + ".dem", base + "_comparison.tif"));
+         fs::path outpath = fs::temp_directory_path() / it.path().filename();
+         orig_in.WriteToFile(outpath.string());
 
-         Raster tmp(base + ".dem");
-         tmp.writeToFile(base + "_comparison.tif");
+         Raster new_in = Raster(outpath.string());
+
+         ASSERT_EQ(orig_in.nRows, new_in.nRows);
+         ASSERT_EQ(orig_in.nCols, new_in.nCols);
+         ASSERT_EQ(orig_in.nData, new_in.nData);
+         ASSERT_EQ(orig_in.nodata_value, new_in.nodata_value);
+         ASSERT_DOUBLE_EQ(orig_in.xllcorner, new_in.xllcorner);
+         ASSERT_DOUBLE_EQ(orig_in.yllcorner, new_in.yllcorner);
+         ASSERT_DOUBLE_EQ(orig_in.cellsize, new_in.cellsize);
+
+         ASSERT_EQ(orig_in.data.isApprox(new_in.data), true);
       }
-
-      for (const auto &[dem, tif] : files)
-      {
-         compare_raster(Raster(dem), Raster(tif), 1e-300, 1e-100);
-         fs::remove(fs::path(tif));
-      }
-
-      fs::current_path(cwd);
    }
 
-   TEST(Raster, Produce_CompareDEM2DEM)
+   TEST(Raster, toTiff)
    {
-      std::set<std::pair<std::string, std::string>> files;
+      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/5x5.tif");
 
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
+      Raster orig_in = Raster(path.string());
 
-      fs::current_path(path);
+      fs::path outpath = fs::temp_directory_path() / path.filename();
+      orig_in.WriteToFile(outpath.string());
 
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         if (!it.is_regular_file() && it.path().extension() != ".tif")
-            continue;
+      Raster new_in = Raster(outpath.string());
 
-         std::string base = (path / fs::path(it.path().stem().string())).string();
+      ASSERT_EQ(orig_in.nRows, new_in.nRows);
+      ASSERT_EQ(orig_in.nCols, new_in.nCols);
+      ASSERT_EQ(orig_in.nData, new_in.nData);
+      ASSERT_EQ(orig_in.nodata_value, new_in.nodata_value);
+      ASSERT_DOUBLE_EQ(orig_in.xllcorner, new_in.xllcorner);
+      ASSERT_DOUBLE_EQ(orig_in.yllcorner, new_in.yllcorner);
+      ASSERT_DOUBLE_EQ(orig_in.cellsize, new_in.cellsize);
 
-         files.insert(std::make_pair<std::string, std::string>(base + ".dem", base + "_comparison.dem"));
-
-         Raster tmp(base + ".dem");
-         tmp.writeToFile(base + "_comparison.dem");
-      }
-
-      for (const auto &[dem, cmp] : files)
-      {
-         compare_raster(Raster(dem), Raster(cmp), 1e-300, 1e-100);
-         fs::remove(fs::path(cmp));
-      }
-
-      fs::current_path(cwd);
+      ASSERT_EQ(orig_in.data.isApprox(new_in.data), true);
    }
 
-   TEST(Raster, Produce_CompareTiff2Tiff)
+   TEST(Raster, fromTiff)
    {
-      std::set<std::pair<std::string, std::string>> files;
+      auto   path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/5x5.tif");
+      Raster dem(path.string());
 
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
+      ASSERT_EQ(dem.nRows, 5);
+      ASSERT_EQ(dem.nCols, 5);
+      ASSERT_EQ(dem.nData, 25);
+      ASSERT_EQ(dem.nodata_value, -99999);
+      ASSERT_DOUBLE_EQ(dem.xllcorner, 780096.0);
+      ASSERT_DOUBLE_EQ(dem.yllcorner, 205422.0);
+      ASSERT_DOUBLE_EQ(dem.cellsize, 2.0);
 
-      fs::current_path(path);
-
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         if (!it.is_regular_file() && it.path().extension() != ".tif")
-            continue;
-
-         std::string base = (path / fs::path(it.path().stem().string())).string();
-
-         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + "_comparison.tif"));
-
-         Raster tmp(base + ".tif");
-         tmp.writeToFile(base + "_comparison.tif");
-      }
-
-      for (const auto &[tif, cmp] : files)
-      {
-         compare_raster(Raster(tif), Raster(cmp), 1e-300, 1e-100);
-         fs::remove(fs::path(cmp));
-      }
-
-      fs::current_path(cwd);
-   }
-
-   TEST(Raster, Produce_CompareTIFF2DEM)
-   {
-      std::set<std::pair<std::string, std::string>> files;
-
-      auto cwd  = fs::current_path();
-      auto path = fs::path(std::string(TEST_DIRECTORY) + "/TIFF/");
-
-      fs::current_path(path);
-
-      for (const auto &it : fs::directory_iterator(path))
-      {
-         if (!it.is_regular_file() && it.path().extension() != ".tif")
-            continue;
-
-         std::string base = (path / fs::path(it.path().stem().string())).string();
-
-         files.insert(std::make_pair<std::string, std::string>(base + ".tif", base + "_comparison.dem"));
-
-         Raster tmp(base + ".tif");
-         tmp.writeToFile(base + "_comparison.dem");
-      }
-
-      for (const auto &[tif, dem] : files)
-      {
-         compare_raster(Raster(tif), Raster(dem), 1e-300, 1e-100);
-         fs::remove(fs::path(dem));
-      }
-
-      fs::current_path(cwd);
+      ASSERT_DOUBLE_EQ(dem.at(0, 0), 1906.5511474609375); // top left, but lower left in file
+      ASSERT_DOUBLE_EQ(dem.at(4, 0), 1912.4361572265625); // bottom left, but top left in file
+      ASSERT_DOUBLE_EQ(dem.at(0, 4), dem.nodata_value);   // top right, but lower left in file
+      ASSERT_DOUBLE_EQ(dem.at(4, 4), 1912.2215576171875); // bottom right, but top left in file
    }
 } // namespace KiLib

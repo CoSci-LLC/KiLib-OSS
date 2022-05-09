@@ -20,9 +20,6 @@
 
 #include <KiLib/Raster/Raster.hpp>
 #include <libtiff/tiffio.hxx>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
@@ -87,7 +84,7 @@ static void _XTIFFInitialize(void)
 namespace KiLib
 {
 
-   void Raster::fromTiff(const std::string &path)
+   void Raster::FromTiff(const std::string &path)
    {
       _XTIFFInitialize();
 
@@ -158,77 +155,74 @@ namespace KiLib
       this->nodata_value = std::stod(nodat);
 
       this->nData = this->nRows * this->nCols;
-      this->data.resize(this->nData);
+      this->data.resize(this->nRows, this->nCols);
 
       if (TIFFIsTiled(tiff))
       {
          spdlog::error("There is no support for tiled images yet.");
          exit(EXIT_FAILURE);
       }
-      else
+      uint16 bps = 1;
+
+      // Format is currently undefined: https://www.awaresystems.be/imaging/tiff/tifftags/sampleformat.html
+      uint16 format = 4;
+
+      // The number of bytes a strip occupies
+      uint64 sls = TIFFScanlineSize64(tiff);
+
+      TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
+      TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
+
+      tdata_t buf = _TIFFmalloc((signed int)sls);
+      for (Index row = 0; row < this->nRows; row++)
       {
-         uint16 bps = 1;
 
-         // Format is currently undefined: https://www.awaresystems.be/imaging/tiff/tifftags/sampleformat.html
-         uint16 format = 4;
-
-         // The number of bytes a strip occupies
-         uint64 sls = TIFFScanlineSize64(tiff);
-
-         TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
-         TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
-
-         tdata_t buf = _TIFFmalloc((signed int)sls);
-         for (size_t row = 0; row < this->nRows; row++)
+         if (TIFFReadScanline(tiff, buf, row) == -1)
          {
+            spdlog::error("Error when reading scanline");
+            exit(EXIT_FAILURE);
+         }
 
-            if (TIFFReadScanline(tiff, buf, row) == -1)
+         for (Index col = 0; col < this->nCols; col++)
+         {
+            double val = 0;
+
+            switch (format)
             {
-               spdlog::error("Error when reading scanline");
+            case 1:
+               if (bps == 8)
+                  val = (double)((uint8 *)buf)[col];
+               else if (bps == 16)
+                  val = (double)((uint16 *)buf)[col];
+               else if (bps == 32)
+                  val = (double)((uint32 *)buf)[col];
+               else
+                  val = (double)((uint64 *)buf)[col];
+               break;
+            case 2:
+               if (bps == 8)
+                  val = (double)((int8 *)buf)[col];
+               else if (bps == 16)
+                  val = (double)((int16 *)buf)[col];
+               else if (bps == 32)
+                  val = (double)((int32 *)buf)[col];
+               else
+                  val = (double)((int64 *)buf)[col];
+               break;
+            case 3:
+               if (bps == 32)
+                  val = (double)((float *)buf)[col];
+               else
+                  val = ((double *)buf)[col];
+               break;
+            default:
+               spdlog::error("Unknown data format.");
                exit(EXIT_FAILURE);
             }
-
-            for (size_t col = 0; col < this->nCols; col++)
-            {
-               double val = 0;
-
-               switch (format)
-               {
-               case 1:
-                  if (bps == 8)
-                     val = (double)((uint8 *)buf)[col];
-                  else if (bps == 16)
-                     val = (double)((uint16 *)buf)[col];
-                  else if (bps == 32)
-                     val = (double)((uint32 *)buf)[col];
-                  else
-                     val = (double)((uint64 *)buf)[col];
-                  break;
-               case 2:
-                  if (bps == 8)
-                     val = (double)((int8 *)buf)[col];
-                  else if (bps == 16)
-                     val = (double)((int16 *)buf)[col];
-                  else if (bps == 32)
-                     val = (double)((int32 *)buf)[col];
-                  else
-                     val = (double)((int64 *)buf)[col];
-                  break;
-               case 3:
-                  if (bps == 32)
-                     val = (double)((float *)buf)[col];
-                  else
-                     val = ((double *)buf)[col];
-                  break;
-               default:
-                  spdlog::error("Unknown data format.");
-                  exit(EXIT_FAILURE);
-               }
-               this->at(this->nRows - row - 1, col) = val;
-            }
+            this->at(this->nRows - row - 1, col) = val;
          }
-         _TIFFfree(buf);
       }
+      _TIFFfree(buf);
 
       // Remember to free necessary variables
       if (free_flag & 1)
@@ -245,7 +239,7 @@ namespace KiLib
       TIFFClose(tiff);
    }
 
-   void Raster::toTiff(const std::string &path) const
+   void Raster::ToTiff(const std::string &path) const
    {
       // clang-format off
         // Key Directory
@@ -306,9 +300,9 @@ namespace KiLib
       tdata_t buf = _TIFFmalloc((signed int)sls);
 
       // There is no use in parallelizing this as the file has to be written in order
-      for (size_t row = 0; row < this->nRows; row++)
+      for (Index row = 0; row < this->nRows; row++)
       {
-         for (size_t col = 0; col < this->nCols; col++)
+         for (Index col = 0; col < this->nCols; col++)
             ((double *)buf)[col] = this->at(this->nRows - row - 1, col);
 
          if (TIFFWriteScanline(tiff, buf, row) == -1)

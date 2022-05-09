@@ -20,15 +20,23 @@
 
 #pragma once
 
+#include <Eigen/Eigen>
+#include <KiLib/Raster/RasterIterators.hpp>
 #include <KiLib/Utils/Vec3.hpp>
-#include <algorithm>
 #include <optional>
 #include <random>
 #include <string>
-#include <vector>
+
+const double DOUBLE_INF = std::numeric_limits<double>::infinity();
+
+// Eigen defaults to col-major, but we want row-major
+// Typedef for a dynamic matrix of doubles stored in row-major order
+typedef Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix;
+using Eigen::Index;
 
 namespace KiLib
 {
+   const double RASTER_DEFAULT_NODATA_VALUE = -9999;
 
    /**
     * @brief Loads in Rasters (like DEMs) and provides nice helper functions such
@@ -37,144 +45,325 @@ namespace KiLib
     */
    class Raster
    {
+      ////////////////////////////////////////////////////////////////////////////////
+      // Data memebers
+      ////////////////////////////////////////////////////////////////////////////////
    public:
-      std::vector<double> data;
+      Matrix data;
 
-      double xllcorner;    // Lower left corner x value in absolute coordinates
-      double yllcorner;    // Lower left corner y value in absolute coordinates
-      double cellsize;     // [m] Distance between values
-      double width;        // [m] Width in X
-      double height;       // [m] Height in Y
-      double nodata_value; // Value associated with no data from DEM
+      double xllcorner; // Lower left corner x value in absolute coordinates
+      double yllcorner; // Lower left corner y value in absolute coordinates
+      double cellsize;  // [m] Distance between values
+      double width;     // [m] Width in X
+      double height;    // [m] Height in Y
 
-      size_t nCols = 0; // Number of columns (x)
-      size_t nRows = 0; // Number of rows (y)
-      size_t nData = 0; // Total number of datapoints
+      double nodata_value = RASTER_DEFAULT_NODATA_VALUE; // Value associated with no data from DEM
 
-      Raster(const std::string &path);
+      Index nCols = 0; // Number of columns (x)
+      Index nRows = 0; // Number of rows (y)
+      Index nData = 0; // Total number of datapoints
+
+      ////////////////////////////////////////////////////////////////////////////////
+      // Constructors
+      ////////////////////////////////////////////////////////////////////////////////
+      /**
+       * @brief Construct a Raster object,
+       * nRows and nCols are set to 0 with a nodata_value of -9999
+       *
+       */
       Raster();
 
-      // Creates a raster with same metadata as other, filled with fillValue.
-      // If keepNoData is true, returned raster will have nodata in same locations as other.
-      // Otherwise every value will be fillValue
-      static KiLib::Raster fillLike(const KiLib::Raster &other, double fillValue, bool keepNoData);
-
-      void writeToFile(const std::string &path) const;
-
       /**
-       * @brief Prints basic information about this Raster
-       */
-      void print() const;
-
-      KiLib::Vec3 randPoint(std::mt19937_64 &gen) const;
-
-      /**
-       * Returns flat index to nearest cell in raster
-       */
-      size_t getNearestCell(const KiLib::Vec3 &pos) const;
-
-      /**
-       * Returns flat index to nearest cell in raster
-       */
-      size_t flattenIndex(size_t r, size_t c) const;
-
-      KiLib::Vec3 getCellPos(size_t ind) const;
-      KiLib::Vec3 getCellCenter(size_t ind) const;
-
-      /**
-       * @brief Returns distance between pos and nearest boundary point
+       * @brief Construct a new Raster object from a raster on disk. Format is determined by extension.
+       * Accepted formats are ASCII DEMs (.asc, .ddem), and GeoTIFF (.tif, .tiff).
        *
-       * @param pos Position to get distance from
-       * @return double Distance
+       * @param path
        */
-      double distFromBoundary(const Vec3 &pos) const;
+      Raster(const std::string &path);
 
       /**
-       * @brief Returns row and col of raster flat index
+       * @brief Construct a Raster with the provided number of rows and cols. Data initialized to 0
        *
-       * @param ind Flatten index
-       * @return pair row, col
+       * @param nRows
+       * @param nCols
        */
-      std::pair<int, int> GetRowCol(const size_t ind) const;
+      Raster(Index nRows, Index nCols);
 
       /**
-       * @brief Interpolates raster value at pos (takes in 3D vector but ignores Z)
+       * @brief creates a Raster object with the same metadata and size as other, filled with fillValue.
+       * If keepNoData is true, returned raster will have nodata in same locations as other.
        *
-       * @param pos Pos to interpolate
-       * @return double Raster value, using bilinear interpolation
+       * @param other Other raster to get metadata from
+       * @param fillValue Value to fill with
+       * @param keepNoData Whether to keep nodata in the same locations as other
+       * @return Raster
        */
-      double operator()(const Vec3 &pos) const;
+      static Raster FillLike(const Raster &other, double fillValue, bool keepNoData);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      // Access
+      ////////////////////////////////////////////////////////////////////////////////
 
       /**
-       * @brief Returns a REFERENCE to the (row, col) index into the Raster
-       *        Does bounds checking.
+       * @brief Iterates over row and column indices.
+       * Row major, so (0, 0)->(0, 1)->...->(1,0)->(1,1)->...
+       * Supports OpenMP
        *
-       * @param row Y value
-       * @param col X value
-       * @return double& Reference to raster value at position
+       * @code
+       *    for (auto [rowIndex, colIndex] : dem.RowColIndexIter()) {
+       *      ...
+       *    }
+       * @endcode
+       *
+       * @return RowColIter
        */
-      double &at(size_t row, size_t col);
+      RowColIter RowColIndexIter() const;
 
       /**
-       * @brief Returns the (row, col) index into the DEM. Does bounds checking
+       * @brief Iterate over a subview of the raster. This will *not* return out of bounds indices.
        *
-       * @param row Y value
-       * @param col X value
-       * @return double Value at position
+       * @code
+       *    for (auto [rowIndex, colIndex] : dem.RowColSubViewIndexIter(6, 6, 10, 10)) {
+       *      ...
+       *    }
+       * @endcode
+       *
+       * @param centerRow Index of the center row in subview
+       * @param centerCol index of the center column in subview
+       * @param nRow Number of rows *around* center. ie 1 means 1 row above and below center
+       * @param nCol Number of columns *around* center. ie 1 means 1 column to the left and right of center
+       * @return RowColIter
        */
-      double at(size_t row, size_t col) const;
+      RowColIter RowColSubViewIndexIter(Index centerRow, Index centerCol, Index nRow, Index nCol) const;
 
       /**
-       * @brief Returns a REFERENCE to the (row, col) index into the Raster
-       *        Doesn't do bounds checking.
+       * @brief Return a reference to element at (row, col). Boundary checks are performed.
        *
-       * @param row Y value
-       * @param col X value
-       * @return double& Reference to raster value at position
+       * @param row row index
+       * @param col col index
+       * @return double& element
        */
-      double &operator()(size_t row, size_t col);
+      double &at(Index row, Index col);
 
       /**
-       * @brief Returns the (row, col) index into the DEM. Doesn't do bounds checking.
+       * @brief Return the value at (row, col). Boundary checks are performed.
        *
-       * @param row Y value
-       * @param col X value
-       * @return double Value at position
+       * @param row row index
+       * @param col col index
+       * @return double& element
        */
-      double operator()(size_t row, size_t col) const;
+      double at(Index row, Index col) const;
 
       /**
-       * @brief Returns the flat index into the DEM. Doesn't do bounds checking.
+       * @brief Returns a reference to the element at flatIndex. Boundary checks are performed.
        *
-       * @param ind Flat index
-       * @return double Value at position
+       * @param flatIndex flat index of cell
+       * @return double& element
        */
-      double operator()(size_t ind) const;
+      double &at(Index flatIndex);
 
       /**
-       * @brief Returns a REFERENCE to the flat index into the DEM. Doesn't do bounds checking.
+       * @brief Returns the value at flatIndex. Boundary checks are performed.
        *
-       * @param ind Flat index
-       * @return double Value at position
+       * @param row row index
+       * @param col col index
+       * @return double& element
        */
-      double &operator()(size_t ind);
+      double at(Index flatIndex) const;
 
       /**
-       * @brief Returns a REFERENCE to the flat index into the DEM. Does bounds checking.
+       * @brief Return a reference to element at (row, col). Boundary checks are performed.
        *
-       * @param ind Flat index
-       * @return double Value at position
+       * @param row row index
+       * @param col col index
+       * @return double& element
        */
-      double &at(size_t ind);
+      double &operator()(Index row, Index col);
 
       /**
-       * @brief Returns the flat index into the DEM. Does bounds checking.
+       * @brief Return the value at (row, col). Boundary checks are performed.
        *
-       * @param ind Flat index
-       * @return double Value at position
+       * @param row row index
+       * @param col col index
+       * @return double& element
        */
-      double at(size_t ind) const;
+      double operator()(Index row, Index col) const;
 
+
+      /**
+       * @brief Returns a reference to the element at flatIndex
+       *
+       * @param flatIndex flat index of cell
+       * @return double& element
+       */
+      double &operator()(Index flatIndex);
+
+      /**
+       * @brief Returns the value at flatIndex
+       *
+       * @param flatIndex flat index of cell
+       * @return double element
+       */
+      double operator()(Index flatIndex) const;
+
+      /**
+       * @brief Interpolate the value at a given point.
+       *
+       * @param row row index
+       * @param col col index
+       * @return double& element
+       */
+      double operator()(Vec3 pos) const;
+
+      /**
+       * @brief Returns a flat index for a given row and column. This will bounds check row and col
+       * If they are OOB, throws std::out_of_range
+       *
+       * @param row row index
+       * @param col col index
+       * @return Index flattened index of (row, col)
+       */
+      Index FlattenIndex(Index row, Index col) const;
+
+      /**
+       * @brief Unflatten an index into a row and column
+       *
+       * @param ind flattened index
+       * @return std::pair<Index, Index>
+       */
+      std::pair<Index, Index> GetRowCol(Index ind) const;
+
+      /**
+       * @brief Generates a random point within the raster
+       *
+       * @param gen random number generator
+       * @return KiLib::Vec3 random point in the raster
+       */
+      KiLib::Vec3 RandPoint(std::mt19937_64 &gen) const;
+
+      /**
+       * @brief Returns flat index to the nearest cell to pos.
+       *
+       * IMPORTANT NOTE: This *floors*, so it will return the nearest cell TOWARDS
+       * THE LOWER LEFT CORNER.
+       *
+       * @param pos Coordinate in raster
+       * @return Index flat index of nearest cell
+       */
+      Index GetNearestCell(KiLib::Vec3 pos) const;
+
+      /**
+       * @brief Get position of a cell in the raster in 3D space
+       *
+       * @param ind flat index of cell
+       * @return KiLib::Vec3 position of cell
+       */
+      KiLib::Vec3 GetCellPos(Index ind) const;
+
+      /**
+       * @brief Get center of a cell in the raster in 3D space
+       *
+       * @param ind flat index of cell
+       * @return KiLib::Vec3
+       */
+      KiLib::Vec3 GetCellCenter(Index ind) const;
+
+      /**
+       * @brief Resize the raster.
+       * Will set nRows, nCols, nData, width, and height to the proper values.
+       *
+       * @param nRows new number of rows
+       * @param nCols new number of columns
+       */
+      void Resize(Index nRows, Index nCols);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      // I/O
+      ////////////////////////////////////////////////////////////////////////////////
+      /**
+       * @brief Write a raster to disk. Format is determined by extension.
+       * Accepted formats are ASCII DEMs (.asc, .dem), and GeoTIFF (.tif, .tiff).
+       *
+       * @param path path to write to
+       */
+      void WriteToFile(const std::string &path) const;
+
+      /**
+       * @brief Load a DEM from disk that is in ASCII DEM format.
+       *
+       * @param path path to DEM
+       */
+      void FromDEM(const std::string &path);
+
+      /**
+       * @brief Write the raster to disk as an ASCII DEM.
+       *
+       * @param path path to write to
+       */
+      void ToDEM(const std::string &path) const;
+
+      /**
+       * @brief Load a DEM from disk that is in GeoTIFF format.
+       *
+       * @param path path to DEM
+       */
+      void FromTiff(const std::string &path);
+
+      /**
+       * @brief Write the raster to disk as a GeoTIFF.
+       *
+       * @param path path to write to
+       */
+      void ToTiff(const std::string &path) const;
+
+      ////////////////////////////////////////////////////////////////////////////////
+      // Stats
+      ////////////////////////////////////////////////////////////////////////////////
+      /**
+       * @brief Get the minimum value in the raster, excludes nodata points.
+       *
+       * @return double min
+       */
+      double GetMinValue() const;
+
+      /**
+       * @brief Get the maximum value in the raster, excludes nodata points.
+       *
+       * @return double max
+       */
+      double GetMaxValue() const;
+
+      /**
+       * @brief Get the mean value in the raster, excludes nodata points.
+       *
+       * @return double mean
+       */
+      double GetMeanValue() const;
+
+      /**
+       * @brief Return the number of points in the raster != nodata
+       *
+       * @return Index Number of data points
+       */
+      Index GetNDataPoints() const;
+
+      /**
+       * @brief Get the number of points in the raster == nodata
+       *
+       * @return Index Number of nodata points
+       */
+      Index GetNNoDataPoints() const;
+
+      /**
+       * @brief Get the indices of valid points in the raster.
+       *
+       * @return std::vector<Index> vector of valid indices
+       */
+      std::vector<Index> GetValidIndices() const;
+
+      ////////////////////////////////////////////////////////////////////////////////
+      // Science
+      ////////////////////////////////////////////////////////////////////////////////
       // Slope methods
       enum SlopeMethod
       {
@@ -185,91 +374,115 @@ namespace KiLib
       static KiLib::Raster ComputeSlopeZevenbergenThorne(const KiLib::Raster &inp);
 
       /**
+       * @brief Searches for the nearest cell, pos, to provided cell, ind, that satisfies the following constraints:
+       * pos is within radius meters from ind
+       * z value at pos is higher than threshold
+       * elevation at pos in elev is lower than the elevation at ind
+       *
+       * @param ind index to search around
+       * @param zInd Threshold (max) for elevation
+       * @param elev Elevation raster
+       * @param radius raidus to search around ind (meters)
+       * @param threshold z value returned must be higher than this value
+       * @return std::optional<KiLib::Vec3>
+       */
+      std::optional<KiLib::Vec3>
+      GetCoordMinDistance(Index ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const;
+
+      /**
+       * @brief Bilinearly interpolate a z value from the raster.
+       *
+       * @param pos position to interpolate from
+       * @return double z
+       */
+      double GetInterpBilinear(Vec3 pos) const;
+
+      /**
+       * @brief Returns a points distance from the nearest boundary
+       *
+       * @param pos Position in raster
+       * @return double distance
+       */
+      double DistFromBoundary(const Vec3 pos) const;
+
+      /**
+       * @brief Get average around a flat index into a raster. Skips nodata values
+       *
+       * @param ind index to get average around
+       * @param radius circular radius
+       * @return double average
+       */
+      double GetAverage(Index ind, double radius) const;
+
+      /**
        * @brief Takes in a vector of objects, and takes the mean of a given attribute at each cell position in a raster.
        * The attributes and corresponding positions are mapped to the nearest cell in the raster, and the mean is taken
        * over cells.
        *
-       * @tparam T obj
+       * @tparam T Object that we are rasterizing
        * @param ref Reference raster to determine shape, size, nodata, etc
-       * @param objs vector of objects
-       * @param posP Pointer to position attribute (i.e. &Landslide::pos)
-       * @param attrP Pointer to attribute to rasterize (i.e. &Landslide::safetyFactor)
-       * @param doPopulate function that dictates whether or not that instace will be rasterized
-       * @param width Number of cells to average over. 0 is just cell at i,j; 1 is 9x9 region around i,j; and so on.
+       * @param objs Vector of objects of type T
+       * @param getPos Function to return position of object
+       * @param getAttr Function that returns attribute to rasterize
+       * @param width Number of cells to average over. 0 is just cell at i,j; 1 is 3x3 region around i,j; and so on.
        * @return KiLib::Raster
        *
        */
       template <class T>
-      static KiLib::Raster Rasterize(
-         const KiLib::Raster &ref, const std::vector<T> &objs, std::function<KiLib::Vec3(T)> getPos,
+      static Raster Rasterize(
+         const Raster &ref, const std::vector<T> &objs, std::function<KiLib::Vec3(T)> getPos,
          std::function<double(T)> getAttr, int width = 0)
       {
-         KiLib::Raster sumRast = KiLib::Raster::fillLike(ref, 0.0, true);
-         KiLib::Raster outRast = KiLib::Raster::fillLike(ref, 0.0, true);
+         Raster sumRast = Raster::FillLike(ref, 0.0, true);
+         Raster outRast = Raster::FillLike(ref, 0.0, true);
 
-         std::unordered_map<size_t, double> counts;
+         std::unordered_map<Index, double> counts;
 
          for (auto &obj : objs)
          {
             KiLib::Vec3 pos  = getPos(obj);
             double      attr = getAttr(obj);
 
-            size_t flatInd  = sumRast.getNearestCell(pos);
+            Index flatInd   = sumRast.GetNearestCell(pos);
             counts[flatInd] = counts.count(flatInd) == 0 ? 1.0 : counts[flatInd] + 1;
 
             sumRast(flatInd) += attr;
          }
 
-         for (int r = 0; r < (int)sumRast.nRows; r++)
+         for (auto [r, c] : sumRast.RowColIndexIter())
          {
-            for (int c = 0; c < (int)sumRast.nCols; c++)
+            // Skip nodata points in the raster we're summing into
+            if (sumRast.at(r, c) == sumRast.nodata_value)
             {
-               // Skip nodata
-               if (sumRast.at(r, c) == sumRast.nodata_value)
+               continue;
+            }
+
+            double count = 0.0;
+            double sum   = 0.0;
+            for (auto [ri, ci] : sumRast.RowColSubViewIndexIter(r, c, width, width))
+            {
+               // Cant sum where we have no points
+               if (counts.count(sumRast.FlattenIndex(ri, ci)) == 0)
                {
                   continue;
                }
-               double count = 0.0;
-               double sum   = 0.0;
-               for (int ri = r - width; ri <= (r + width); ri++)
-               {
-                  for (int ci = c - width; ci <= (c + width); ci++)
-                  {
-                     // Dont sum out of bounds, cant sum where we have no points
-                     if (
-                        counts.count(sumRast.flattenIndex(ri, ci)) == 0 or ri < 0 or ri >= (int)sumRast.nRows or
-                        ci < 0 or ci >= (int)sumRast.nCols)
-                     {
-                        continue;
-                     }
 
-                     count += counts[sumRast.flattenIndex(ri, ci)];
-                     sum += sumRast.at(ri, ci);
-                  }
-               }
-               if (count != 0)
-               {
-                  outRast.at(r, c) = sum / count;
-               }
+               count += counts[sumRast.FlattenIndex(ri, ci)];
+               sum += sumRast.at(ri, ci);
+            }
+
+            if (count != 0)
+            {
+               outRast.at(r, c) = sum / count;
             }
          }
 
          return outRast;
       }
-
-      double                     GetAverage(size_t ind, double radius) const;
-      static std::vector<size_t> getValidIndices(const std::vector<const KiLib::Raster *> &rasts);
-      static void                assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
-      std::optional<KiLib::Vec3>
-      GetCoordMinDistance(size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const;
-
-   private:
-      void fromDEM(const std::string &path);
-      void fromTiff(const std::string &path);
-      void toDEM(const std::string &path) const;
-      void toTiff(const std::string &path) const;
-
-      double getInterpBilinear(const Vec3 &pos) const;
+      ////////////////////////////////////////////////////////////////////////////////
+      // Utils
+      ////////////////////////////////////////////////////////////////////////////////
+      static void AssertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
    };
 
 } // namespace KiLib

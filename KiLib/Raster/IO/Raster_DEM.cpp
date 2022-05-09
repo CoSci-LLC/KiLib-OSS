@@ -26,7 +26,7 @@
 
 namespace KiLib
 {
-   void Raster::fromDEM(const std::string &path)
+   void Raster::FromDEM(const std::string &path)
    {
       std::ifstream      rasterFile;
       std::string        line, key;
@@ -83,9 +83,9 @@ namespace KiLib
          }
       }
 
-      this->data.resize(nRows * nCols);
+      this->Resize(nRows, nCols);
       // Load elevations
-      for (size_t row = 0; row < this->nRows; row++)
+      for (Index row = 0; row < this->nRows; row++)
       {
          getline(rasterFile, line);
          stream.str(line);
@@ -93,13 +93,16 @@ namespace KiLib
 
          // Moving along a row (across columns) is movement through X
          // Moving down a column (across rows) is movement through Y
-         for (size_t col = 0; col < this->nCols; col++)
+         for (Index col = 0; col < this->nCols; col++)
          {
             double value;
             stream >> value;
-            this->at(this->nRows - row - 1, col) = value;
+            this->at(row, col) = value;
          }
       }
+
+      // Flip the data to match the coordinate system of the DEM
+      this->data.colwise().reverseInPlace();
 
       this->width  = this->nCols * this->cellsize;
       this->height = this->nRows * this->cellsize;
@@ -108,8 +111,7 @@ namespace KiLib
       rasterFile.close();
    }
 
-
-   void Raster::toDEM(const std::string &path) const
+   void Raster::ToDEM(const std::string &path) const
    {
       std::ofstream outFile = std::ofstream(path);
       if (!outFile.is_open())
@@ -128,11 +130,13 @@ namespace KiLib
          "NODATA_value {}\n",
          this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
 
-      for (size_t row = 1; row <= this->nRows; row++)
+      Matrix outdata = this->data.colwise().reverse();
+
+      for (Index row = 0; row < this->nRows; row++)
       {
-         for (size_t col = 0; col < this->nCols; col++)
+         for (Index col = 0; col < this->nCols; col++)
          {
-            double val = this->operator()(this->nRows - row, col);
+            double val = outdata(row, col);
 
             if (val == this->nodata_value)
             {

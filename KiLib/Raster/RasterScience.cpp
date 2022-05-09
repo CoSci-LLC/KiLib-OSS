@@ -1,8 +1,8 @@
-#include <KiLib/Raster/RasterNew.hpp>
+#include <KiLib/Raster/Raster.hpp>
 
 namespace KiLib
 {
-   double RasterNew::GetInterpBilinear(Vec3 pos) const
+   double Raster::GetInterpBilinear(Vec3 pos) const
    {
       const double x = (pos.x - this->xllcorner) / this->cellsize;
       const double y = (pos.y - this->yllcorner) / this->cellsize;
@@ -26,7 +26,7 @@ namespace KiLib
       return val;
    }
 
-   double RasterNew::DistFromBoundary(const Vec3 pos) const
+   double Raster::DistFromBoundary(const Vec3 pos) const
    {
       const double left   = pos.x - this->xllcorner;
       const double right  = this->xllcorner + this->width - pos.x;
@@ -36,7 +36,7 @@ namespace KiLib
       return std::min(std::min(left, right), std::min(top, bottom));
    }
 
-   double RasterNew::GetAverage(Index ind, double radius) const
+   double Raster::GetAverage(Index ind, double radius) const
    {
       auto [r, c] = this->GetRowCol(ind);
 
@@ -67,20 +67,20 @@ namespace KiLib
    }
 
    static const auto EnumToSlope =
-      std::map<KiLib::RasterNew::SlopeMethod, std::function<KiLib::RasterNew(const KiLib::RasterNew &)>>{
-         {KiLib::RasterNew::SlopeMethod::ZevenbergenThorne, KiLib::RasterNew::ComputeSlopeZevenbergenThorne},
+      std::map<KiLib::Raster::SlopeMethod, std::function<KiLib::Raster(const KiLib::Raster &)>>{
+         {KiLib::Raster::SlopeMethod::ZevenbergenThorne, KiLib::Raster::ComputeSlopeZevenbergenThorne},
       };
 
-   KiLib::RasterNew KiLib::RasterNew::ComputeSlope(KiLib::RasterNew::SlopeMethod method) const
+   KiLib::Raster KiLib::Raster::ComputeSlope(KiLib::Raster::SlopeMethod method) const
    {
       return EnumToSlope.at(method)(*this);
    }
 
    // Based on Zevenbergen, L.W. and Thorne, C.R. (1987), Quantitative analysis of land surface topography. Earth Surf.
    // Process. Landforms, 12: 47-56. https://doi.org/10.1002/esp.3290120107
-   KiLib::RasterNew KiLib::RasterNew::ComputeSlopeZevenbergenThorne(const KiLib::RasterNew &inp)
+   KiLib::Raster KiLib::Raster::ComputeSlopeZevenbergenThorne(const KiLib::Raster &inp)
    {
-      KiLib::RasterNew slope = KiLib::RasterNew::FillLike(inp, 0.0, true);
+      KiLib::Raster slope = KiLib::Raster::FillLike(inp, 0.0, true);
 
       double ND = inp.nodata_value;
       int    NR = inp.nRows;
@@ -135,8 +135,8 @@ namespace KiLib
       return slope;
    }
 
-   std::optional<KiLib::Vec3> RasterNew::GetCoordMinDistance(
-      Index ind, double zInd, const KiLib::RasterNew &elev, double radius, double threshold) const
+   std::optional<KiLib::Vec3>
+   Raster::GetCoordMinDistance(Index ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const
    {
       auto [r, c] = this->GetRowCol(ind);
 
