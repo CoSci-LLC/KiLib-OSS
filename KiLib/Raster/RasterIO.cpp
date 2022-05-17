@@ -109,7 +109,7 @@ namespace KiLib
    {
       // if path ends in .dem then use AAIGrid, if .tif, .tiff, .gtiff then use GTiff
       std::string outDriverName;
-      if (fs::path(path).extension().string() == ".dem")
+      if (fs::path(path).extension().string() == ".dem" || fs::path(path).extension().string() == ".asc")
       {
          outDriverName = "AAIGrid";
       }
