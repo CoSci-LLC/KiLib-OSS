@@ -18,15 +18,7 @@
  */
 
 #include <KiLib/Raster/Raster.hpp>
-#include <filesystem>
-#include <spdlog/fmt/ostr.h>
-#include <spdlog/spdlog.h>
 
-#ifdef __APPLE__
-namespace fs = std::__fs::filesystem;
-#else
-namespace fs = std::filesystem;
-#endif
 
 namespace KiLib
 {
@@ -41,25 +33,6 @@ namespace KiLib
       this->nodata_value = RASTER_DEFAULT_NODATA_VALUE;
       this->cellsize     = 1.0;
       this->Resize(0, 0);
-   }
-
-   Raster::Raster(const std::string &path)
-   {
-      auto ext = fs::path(path).extension();
-
-      if (ext == ".asc" || ext == ".dem")
-      {
-         this->FromDEM(path);
-      }
-      else if (ext == ".tif" || ext == ".tiff")
-      {
-         this->FromTiff(path);
-      }
-      else
-      {
-         spdlog::error("Unsupported file type given to raster constructor: {}", ext);
-         exit(EXIT_FAILURE);
-      }
    }
 
    Raster::Raster(Index nRows, Index nCols) : Raster()
@@ -79,28 +52,5 @@ namespace KiLib
       }
 
       return new_;
-   }
-
-   ////////////////////////////////////////////////////////////////////////////////
-   // I/O
-   ////////////////////////////////////////////////////////////////////////////////
-
-   void Raster::WriteToFile(const std::string &path) const
-   {
-      auto ext = fs::path(path).extension();
-
-      if (ext == ".asc" || ext == ".dem")
-      {
-         this->ToDEM(path);
-      }
-      else if (ext == ".tif" || ext == ".tiff")
-      {
-         this->ToTiff(path);
-      }
-      else
-      {
-         spdlog::error("Unsupported output file type: {}", ext);
-         exit(EXIT_FAILURE);
-      }
    }
 } // namespace KiLib

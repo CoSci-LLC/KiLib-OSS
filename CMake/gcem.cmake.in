@@ -14,6 +14,7 @@ FetchContent_Populate(
   QUIET
   GIT_REPOSITORY  https://github.com/kthohr/gcem
   GIT_TAG         v1.13.1
+  GIT_SHALLOW     TRUE
   SOURCE_DIR      gcem_proj
 )
  

@@ -15,6 +15,7 @@ FetchContent_Populate(
   QUIET
   GIT_REPOSITORY  https://github.com/kthohr/stats
   GIT_TAG         v3.1.2
+  GIT_SHALLOW     TRUE
   SOURCE_DIR      stats_proj
 )
  

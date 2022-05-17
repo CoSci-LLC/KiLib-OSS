@@ -32,6 +32,24 @@ namespace fs = std::__fs::filesystem;
 namespace fs = std::filesystem;
 #endif
 
+void compareMSE(const KiLib::Raster &r1, const KiLib::Raster &r2, double meta_dt, double data_dt)
+{
+   // METADATA
+   ASSERT_EQ(r1.nCols, r2.nCols);
+   ASSERT_EQ(r1.nRows, r2.nRows);
+   ASSERT_EQ(r1.nData, r2.nData);
+
+   ASSERT_LT(std::abs(r1.xllcorner - r2.xllcorner), meta_dt);
+   ASSERT_LT(std::abs(r1.yllcorner - r2.yllcorner), meta_dt);
+   ASSERT_LT(std::abs(r1.cellsize - r2.cellsize), meta_dt);
+   ASSERT_LT(std::abs(r1.cellsize - r2.cellsize), meta_dt);
+   ASSERT_LT(std::abs(r1.width - r2.width), meta_dt);
+   ASSERT_LT(std::abs(r1.height - r2.height), meta_dt);
+   ASSERT_LT(std::abs(r1.nodata_value - r2.nodata_value), meta_dt);
+
+   ASSERT_EQ(r1.data.isApprox(r2.data, data_dt), true);
+}
+
 namespace KiLib
 {
    TEST(Raster, fromDEM)
@@ -60,10 +78,10 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(dem.yllcorner, 205422.0);
       ASSERT_DOUBLE_EQ(dem.cellsize, 2.0);
 
-      ASSERT_DOUBLE_EQ(dem.at(0, 0), 1906.551147);      // top left, but lower left in file
-      ASSERT_DOUBLE_EQ(dem.at(4, 0), 1912.436157);      // bottom left, but top left in file
-      ASSERT_DOUBLE_EQ(dem.at(0, 4), dem.nodata_value); // top right, but lower left in file
-      ASSERT_DOUBLE_EQ(dem.at(4, 4), 1912.221558);      // bottom right, but top left in file
+      ASSERT_DOUBLE_EQ(dem.at(0, 0), 1906.5511474609375); // top left, but lower left in file
+      ASSERT_DOUBLE_EQ(dem.at(4, 0), 1912.4361572265625); // bottom left, but top left in file
+      ASSERT_DOUBLE_EQ(dem.at(0, 4), dem.nodata_value);   // top right, but lower left in file
+      ASSERT_DOUBLE_EQ(dem.at(4, 4), 1912.2215576171875); // bottom right, but top left in file
    }
 
    TEST(Raster, toDEM)
@@ -75,25 +93,21 @@ namespace KiLib
 
       for (const auto &it : fs::directory_iterator(path))
       {
-         if (!it.is_regular_file() && it.path().extension() != ".dem")
+         if (!it.is_regular_file() || it.path().extension() != ".dem")
             continue;
 
+         spdlog::info("###############################################");
+         spdlog::info("Reading from: {}", it.path().string());
          Raster orig_in = Raster(it.path().string());
 
          fs::path outpath = fs::temp_directory_path() / it.path().filename();
+         spdlog::info("Writing to:   {}", outpath.string());
          orig_in.WriteToFile(outpath.string());
 
+         spdlog::info("Reading output from: {}", outpath.string());
          Raster new_in = Raster(outpath.string());
 
-         ASSERT_EQ(orig_in.nRows, new_in.nRows);
-         ASSERT_EQ(orig_in.nCols, new_in.nCols);
-         ASSERT_EQ(orig_in.nData, new_in.nData);
-         ASSERT_EQ(orig_in.nodata_value, new_in.nodata_value);
-         ASSERT_DOUBLE_EQ(orig_in.xllcorner, new_in.xllcorner);
-         ASSERT_DOUBLE_EQ(orig_in.yllcorner, new_in.yllcorner);
-         ASSERT_DOUBLE_EQ(orig_in.cellsize, new_in.cellsize);
-
-         ASSERT_EQ(orig_in.data.isApprox(new_in.data), true);
+         compareMSE(orig_in, new_in, 1e-5, 1e-10);
       }
    }
 
@@ -107,16 +121,7 @@ namespace KiLib
       orig_in.WriteToFile(outpath.string());
 
       Raster new_in = Raster(outpath.string());
-
-      ASSERT_EQ(orig_in.nRows, new_in.nRows);
-      ASSERT_EQ(orig_in.nCols, new_in.nCols);
-      ASSERT_EQ(orig_in.nData, new_in.nData);
-      ASSERT_EQ(orig_in.nodata_value, new_in.nodata_value);
-      ASSERT_DOUBLE_EQ(orig_in.xllcorner, new_in.xllcorner);
-      ASSERT_DOUBLE_EQ(orig_in.yllcorner, new_in.yllcorner);
-      ASSERT_DOUBLE_EQ(orig_in.cellsize, new_in.cellsize);
-
-      ASSERT_EQ(orig_in.data.isApprox(new_in.data), true);
+      compareMSE(orig_in, new_in, 1e-5, 1e-10);
    }
 
    TEST(Raster, fromTiff)

@@ -48,10 +48,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 # Include dependencies and helper functions
+include(CMake/gdal.cmake.in)
 include(CMake/target_sources_test.cmake)
 include(CMake/spdlog.cmake.in)
 include(CMake/stats.cmake.in)
-include(CMake/libtiff.cmake.in)
 include(CMake/eigen.cmake.in)
 
 # Include the test application
@@ -73,7 +73,7 @@ target_include_directories(${projectName}
         "$<INSTALL_INTERFACE:include>"
 )
 
-install(TARGETS ${projectName} tiff spdlog
+install(TARGETS ${projectName} spdlog
         EXPORT KiLibTargets
         INCLUDES DESTINATION include
 )

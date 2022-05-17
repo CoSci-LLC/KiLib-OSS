@@ -288,34 +288,6 @@ namespace KiLib
        */
       void WriteToFile(const std::string &path) const;
 
-      /**
-       * @brief Load a DEM from disk that is in ASCII DEM format.
-       *
-       * @param path path to DEM
-       */
-      void FromDEM(const std::string &path);
-
-      /**
-       * @brief Write the raster to disk as an ASCII DEM.
-       *
-       * @param path path to write to
-       */
-      void ToDEM(const std::string &path) const;
-
-      /**
-       * @brief Load a DEM from disk that is in GeoTIFF format.
-       *
-       * @param path path to DEM
-       */
-      void FromTiff(const std::string &path);
-
-      /**
-       * @brief Write the raster to disk as a GeoTIFF.
-       *
-       * @param path path to write to
-       */
-      void ToTiff(const std::string &path) const;
-
       ////////////////////////////////////////////////////////////////////////////////
       // Stats
       ////////////////////////////////////////////////////////////////////////////////
@@ -364,6 +336,7 @@ namespace KiLib
       ////////////////////////////////////////////////////////////////////////////////
       // Science
       ////////////////////////////////////////////////////////////////////////////////
+
       // Slope methods
       enum SlopeMethod
       {

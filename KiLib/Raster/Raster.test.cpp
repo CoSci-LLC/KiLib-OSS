@@ -181,7 +181,7 @@ namespace KiLib
       auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
       Raster dem(path.string());
 
-      ASSERT_DOUBLE_EQ(dem.GetMinValue(), 1906.551147);
+      ASSERT_DOUBLE_EQ(dem.GetMinValue(), 1906.5511474609375);
    }
 
    TEST(Raster, GetMaxValue)
@@ -189,7 +189,7 @@ namespace KiLib
       auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
       Raster dem(path.string());
 
-      ASSERT_DOUBLE_EQ(dem.GetMaxValue(), 1912.436157);
+      ASSERT_DOUBLE_EQ(dem.GetMaxValue(), 1912.4361572265625);
    }
 
    TEST(Raster, GetMeanValue)
@@ -197,7 +197,7 @@ namespace KiLib
       auto   path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7.dem");
       Raster dem(path.string());
 
-      ASSERT_DOUBLE_EQ(dem.GetMeanValue(), 1909.7339340000005);
+      ASSERT_DOUBLE_EQ(dem.GetMeanValue(), 1909.7339338822799);
    }
 
    TEST(Raster, GetNDataPoints)
@@ -255,9 +255,9 @@ namespace KiLib
 
       Raster dem(path.string());
 
-      Vec3 p1{780099.2947926898, 205426.59516664856, 1909.8001915739701};
-      Vec3 p2{780099.3343145008, 205427.51547149016, 1910.3570077815384};
-      Vec3 p3{780096.0843788842, 205427.65816391885, 1910.520074732899};
+      Vec3 p1{780099.2947926898, 205426.59516664856, 1909.8001914299316};
+      Vec3 p2{780099.3343145008, 205427.51547149016, 1910.3570076085};
+      Vec3 p3{780096.0843788842, 205427.65816391885, 1910.5200746525891};
 
       double z1 = dem(p1);
       ASSERT_DOUBLE_EQ(z1, p1.z);
@@ -493,7 +493,7 @@ namespace KiLib
          }
       }
 
-      for (Index i = 0; i < expected.size(); i++)
+      for (Index i = 0; i < (Index)expected.size(); i++)
       {
          spdlog::debug("({} {}) | ({}, {})", out[i].first, out[i].second, expected[i].first, expected[i].second);
       }

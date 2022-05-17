@@ -8,6 +8,7 @@ target_sources(${projectName} PRIVATE
 	RasterAccess.cpp
 	RasterScience.cpp
 	RasterUtils.cpp
+	RasterIO.cpp
 )
 
 # See other CMakeLists.txt files for examples on how to add test sources to this
@@ -16,6 +17,5 @@ target_sources(${projectName} PRIVATE
 # Add sources to the test application
 target_sources_test(${projectTestName} PRIVATE
 	Raster.test.cpp
+	RasterIO.test.cpp
 )
-
-add_subdirectory(IO)

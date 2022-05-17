@@ -22,7 +22,6 @@
 
 #include <Eigen/Eigen>
 #include <random>
-#include <string>
 using Eigen::Index;
 
 namespace KiLib
