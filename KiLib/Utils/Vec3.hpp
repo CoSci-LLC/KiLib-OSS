@@ -20,25 +20,12 @@
 
 #pragma once
 #define _USE_MATH_DEFINES
-#include <algorithm>
 #include <cmath>
 #include <spdlog/spdlog.h>
 #include <string>
 
 namespace KiLib
 {
-
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-   // NOTE: A lot of stuff is not implemented (*=, /=, etc). Feel free to implement
-
    /**
     * @brief Simple vector class with x, y, and z components. Implements various arithmetic and
     * linear algebra (dot/cross products, L2 norm, etc) operations.
@@ -53,12 +40,7 @@ namespace KiLib
 
       Vec3(){};
 
-      Vec3(double x, double y, double z)
-      {
-         this->x = x;
-         this->y = y;
-         this->z = z;
-      }
+      Vec3(double x, double y, double z) : x(x), y(y), z(z){};
 
       /**
        * @brief Return string representation of this vector
@@ -70,20 +52,54 @@ namespace KiLib
          return fmt::format("({}, {}, {})", this->x, this->y, this->z);
       }
 
-      static Vec3   cross(const Vec3 &a, const Vec3 &b);
-      static Vec3   normalise(const Vec3 &a);
-      static double norm(const Vec3 &a);
-      static double NormXY(const Vec3 &a);
-      static double angle2D(const Vec3 &a);
-      static double dot(const Vec3 &a, const Vec3 &b);
+      static Vec3   cross(const Vec3 a, const Vec3 b);
+      static Vec3   normalise(const Vec3 a);
+      static double norm(const Vec3 a);
+      static double NormXY(const Vec3 a);
+      static double angle2D(const Vec3 a);
+      static double dot(const Vec3 a, const Vec3 b);
 
-      friend Vec3  operator+(const Vec3 &lhs, const Vec3 &rhs);
-      friend Vec3  operator-(const Vec3 &lhs, const Vec3 &rhs);
-      friend Vec3  operator*(const Vec3 &lhs, const Vec3 &rhs);
-      friend Vec3  operator*(const Vec3 &lhs, const double rhs);
-      friend Vec3  operator*(const double lhs, const Vec3 &rhs);
-      friend Vec3  operator/(const Vec3 &lhs, const double rhs);
-      friend Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs);
+      ////////////////////////////////////////////////////////
+      // Addition
+      ////////////////////////////////////////////////////////
+      friend Vec3  operator+(const Vec3 lhs, const Vec3 rhs);
+      friend Vec3  operator+(const Vec3 lhs, const double rhs);
+      friend Vec3  operator+(const double lhs, const Vec3 rhs);
+      friend Vec3 &operator+=(Vec3 &lhs, const Vec3 rhs);
+      friend Vec3 &operator+=(Vec3 &lhs, double rhs);
+
+      ////////////////////////////////////////////////////////
+      // Subtraction
+      ////////////////////////////////////////////////////////
+      friend Vec3  operator-(const Vec3 lhs, const Vec3 rhs);
+      friend Vec3  operator-(const Vec3 lhs, const double rhs);
+      friend Vec3  operator-(const double lhs, const Vec3 rhs);
+      friend Vec3 &operator-=(Vec3 &lhs, const Vec3 rhs);
+      friend Vec3 &operator-=(Vec3 &lhs, double rhs);
+
+      ////////////////////////////////////////////////////////
+      // Multiplication
+      ////////////////////////////////////////////////////////
+      friend Vec3  operator*(const Vec3 lhs, const Vec3 rhs);
+      friend Vec3  operator*(const Vec3 lhs, const double rhs);
+      friend Vec3  operator*(const double lhs, const Vec3 rhs);
+      friend Vec3 &operator*=(Vec3 &lhs, const Vec3 rhs);
+      friend Vec3 &operator*=(Vec3 &lhs, double rhs);
+
+      ////////////////////////////////////////////////////////
+      // Division
+      ////////////////////////////////////////////////////////
+      friend Vec3  operator/(const Vec3 lhs, const Vec3 rhs);
+      friend Vec3  operator/(const Vec3 lhs, const double rhs);
+      friend Vec3  operator/(const double lhs, const Vec3 rhs);
+      friend Vec3 &operator/=(Vec3 &lhs, const Vec3 rhs);
+      friend Vec3 &operator/=(Vec3 &lhs, double rhs);
+
+      ////////////////////////////////////////////////////////
+      // Equality
+      ////////////////////////////////////////////////////////
+      friend bool operator==(const Vec3 lhs, const Vec3 rhs);
+      friend bool operator!=(const Vec3 lhs, const Vec3 rhs);
    };
 
    /**
@@ -93,7 +109,7 @@ namespace KiLib
     * @param b
     * @return Vec3
     */
-   inline Vec3 Vec3::cross(const Vec3 &a, const Vec3 &b)
+   inline Vec3 Vec3::cross(const Vec3 a, const Vec3 b)
    {
       return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
    }
@@ -104,7 +120,7 @@ namespace KiLib
     * @param a
     * @return Vec3
     */
-   inline Vec3 Vec3::normalise(const Vec3 &a)
+   inline Vec3 Vec3::normalise(const Vec3 a)
    {
       double norm = Vec3::norm(a);
       if (norm == 0)
@@ -119,7 +135,7 @@ namespace KiLib
     * @param a
     * @return double
     */
-   inline double Vec3::norm(const Vec3 &a)
+   inline double Vec3::norm(const Vec3 a)
    {
       return std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
    }
@@ -130,7 +146,7 @@ namespace KiLib
     * @param a
     * @return double
     */
-   inline double Vec3::NormXY(const Vec3 &a)
+   inline double Vec3::NormXY(const Vec3 a)
    {
       return std::sqrt(a.x * a.x + a.y * a.y);
    }
@@ -142,59 +158,10 @@ namespace KiLib
     * @param b
     * @return double
     */
-   inline double Vec3::dot(const Vec3 &a, const Vec3 &b)
+   inline double Vec3::dot(const Vec3 a, const Vec3 b)
    {
       return a.x * b.x + a.y * b.y + a.z * b.z;
    }
-
-   inline Vec3 operator+(const Vec3 &lhs, const Vec3 &rhs)
-   {
-      return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
-   }
-
-   inline Vec3 operator-(const Vec3 &lhs, const Vec3 &rhs)
-   {
-      return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
-   }
-
-   inline Vec3 operator*(const Vec3 &lhs, const Vec3 &rhs)
-   {
-      return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z};
-   }
-
-   inline Vec3 operator*(const Vec3 &lhs, const double rhs)
-   {
-      return {lhs.x * rhs, lhs.y * rhs, lhs.z * rhs};
-   }
-
-   inline Vec3 operator*(const double lhs, const Vec3 &rhs)
-   {
-      return {lhs * rhs.x, lhs * rhs.y, lhs * rhs.z};
-   }
-
-   inline Vec3 operator/(const Vec3 &lhs, const double rhs)
-   {
-      return {lhs.x / rhs, lhs.y / rhs, lhs.z / rhs};
-   }
-
-   inline Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs)
-   {
-      lhs.x += rhs.x;
-      lhs.y += rhs.y;
-      lhs.z += rhs.z;
-
-      return lhs;
-   }
-
-   inline Vec3 &operator-=(Vec3 &lhs, const Vec3 &rhs)
-   {
-      lhs.x -= rhs.x;
-      lhs.y -= rhs.y;
-      lhs.z -= rhs.z;
-
-      return lhs;
-   }
-
 
    /**
     * @brief Returns two-dimensional angle of this vector
@@ -202,7 +169,7 @@ namespace KiLib
     * @param vec
     * @return double
     */
-   inline double Vec3::angle2D(const Vec3 &vec)
+   inline double Vec3::angle2D(const Vec3 vec)
    {
       const double at = atan2(vec.x, vec.y);
       if (at < 0)
@@ -211,4 +178,152 @@ namespace KiLib
          return (M_PI * 2.0) - at;
    }
 
+   ////////////////////////////////////////////////////////
+   // Addition
+   ////////////////////////////////////////////////////////
+   inline Vec3 operator+(const Vec3 lhs, const Vec3 rhs)
+   {
+      return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+   }
+
+   inline Vec3 operator+(const Vec3 lhs, const double rhs)
+   {
+      return {lhs.x + rhs, lhs.y + rhs, lhs.z + rhs};
+   }
+
+   inline Vec3 operator+(const double lhs, const Vec3 rhs)
+   {
+      return rhs + lhs;
+   }
+
+   inline Vec3 &operator+=(Vec3 &lhs, const Vec3 rhs)
+   {
+      lhs.x += rhs.x;
+      lhs.y += rhs.y;
+      lhs.z += rhs.z;
+      return lhs;
+   }
+
+   inline Vec3 &operator+=(Vec3 &lhs, double rhs)
+   {
+      lhs.x += rhs;
+      lhs.y += rhs;
+      lhs.z += rhs;
+      return lhs;
+   }
+
+   ////////////////////////////////////////////////////////
+   // Subtraction
+   ////////////////////////////////////////////////////////
+   inline Vec3 operator-(const Vec3 lhs, const Vec3 rhs)
+   {
+      return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
+   }
+
+   inline Vec3 operator-(const Vec3 lhs, const double rhs)
+   {
+      return {lhs.x - rhs, lhs.y - rhs, lhs.z - rhs};
+   }
+
+   inline Vec3 operator-(const double lhs, const Vec3 rhs)
+   {
+      return {lhs - rhs.x, lhs - rhs.y, lhs - rhs.z};
+   }
+
+   inline Vec3 &operator-=(Vec3 &lhs, const Vec3 rhs)
+   {
+      lhs.x -= rhs.x;
+      lhs.y -= rhs.y;
+      lhs.z -= rhs.z;
+      return lhs;
+   }
+
+   inline Vec3 &operator-=(Vec3 &lhs, double rhs)
+   {
+      lhs.x -= rhs;
+      lhs.y -= rhs;
+      lhs.z -= rhs;
+      return lhs;
+   }
+
+   ////////////////////////////////////////////////////////
+   // Multiplication
+   ////////////////////////////////////////////////////////
+   inline Vec3 operator*(const Vec3 lhs, const Vec3 rhs)
+   {
+      return {lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z};
+   }
+
+   inline Vec3 operator*(const Vec3 lhs, const double rhs)
+   {
+      return {lhs.x * rhs, lhs.y * rhs, lhs.z * rhs};
+   }
+
+   inline Vec3 operator*(const double lhs, const Vec3 rhs)
+   {
+      return rhs * lhs;
+   }
+
+   inline Vec3 &operator*=(Vec3 &lhs, const Vec3 rhs)
+   {
+      lhs.x *= rhs.x;
+      lhs.y *= rhs.y;
+      lhs.z *= rhs.z;
+      return lhs;
+   }
+
+   inline Vec3 &operator*=(Vec3 &lhs, double rhs)
+   {
+      lhs.x *= rhs;
+      lhs.y *= rhs;
+      lhs.z *= rhs;
+      return lhs;
+   }
+
+   ////////////////////////////////////////////////////////
+   // Division
+   ////////////////////////////////////////////////////////
+   inline Vec3 operator/(const Vec3 lhs, const Vec3 rhs)
+   {
+      return {lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z};
+   }
+
+   inline Vec3 operator/(const Vec3 lhs, const double rhs)
+   {
+      return {lhs.x / rhs, lhs.y / rhs, lhs.z / rhs};
+   }
+
+   inline Vec3 operator/(const double lhs, const Vec3 rhs)
+   {
+      return {lhs / rhs.x, lhs / rhs.y, lhs / rhs.z};
+   }
+
+   inline Vec3 &operator/=(Vec3 &lhs, const Vec3 rhs)
+   {
+      lhs.x /= rhs.x;
+      lhs.y /= rhs.y;
+      lhs.z /= rhs.z;
+      return lhs;
+   }
+
+   inline Vec3 &operator/=(Vec3 &lhs, double rhs)
+   {
+      lhs.x /= rhs;
+      lhs.y /= rhs;
+      lhs.z /= rhs;
+      return lhs;
+   }
+
+   ////////////////////////////////////////////////////////
+   // Equality
+   ////////////////////////////////////////////////////////
+   inline bool  operator==(const Vec3 lhs, const Vec3 rhs)
+   {
+      return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z);
+   }
+
+   inline bool  operator!=(const Vec3 lhs, const Vec3 rhs)
+   {
+      return (lhs.x != rhs.x) || (lhs.y != rhs.y) || (lhs.z != rhs.z);
+   }
 } // namespace KiLib
