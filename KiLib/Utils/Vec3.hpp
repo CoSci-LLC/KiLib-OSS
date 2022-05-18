@@ -317,12 +317,12 @@ namespace KiLib
    ////////////////////////////////////////////////////////
    // Equality
    ////////////////////////////////////////////////////////
-   inline bool  operator==(const Vec3 lhs, const Vec3 rhs)
+   inline bool operator==(const Vec3 lhs, const Vec3 rhs)
    {
       return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z);
    }
 
-   inline bool  operator!=(const Vec3 lhs, const Vec3 rhs)
+   inline bool operator!=(const Vec3 lhs, const Vec3 rhs)
    {
       return (lhs.x != rhs.x) || (lhs.y != rhs.y) || (lhs.z != rhs.z);
    }

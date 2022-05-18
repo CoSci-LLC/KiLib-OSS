@@ -110,21 +110,21 @@ namespace KiLib
       auto d1 = 3.0;
 
       auto v3 = v1 / v2;
-      ASSERT_EQ(v3, Vec3(0.2, 2.0/6.5, 1.0/3.0));
+      ASSERT_EQ(v3, Vec3(0.2, 2.0 / 6.5, 1.0 / 3.0));
 
       auto v4 = v1 / d1;
-      ASSERT_EQ(v4, Vec3(1.0/3.0, 2.0/3.0, 1.0));
+      ASSERT_EQ(v4, Vec3(1.0 / 3.0, 2.0 / 3.0, 1.0));
 
       auto v5 = d1 / v1;
-      ASSERT_EQ(v5, Vec3(3.0, 3.0/2.0, 1.0));
+      ASSERT_EQ(v5, Vec3(3.0, 3.0 / 2.0, 1.0));
 
       auto v6 = v2;
       v6 /= v1;
-      ASSERT_EQ(v6, Vec3(5.0, 6.5/2.0, 3.0));
+      ASSERT_EQ(v6, Vec3(5.0, 6.5 / 2.0, 3.0));
 
       auto v7 = v2;
       v7 /= d1;
-      ASSERT_EQ(v7, Vec3(5.0/3.0, 6.5/3.0, 3.0));
+      ASSERT_EQ(v7, Vec3(5.0 / 3.0, 6.5 / 3.0, 3.0));
    }
 
    TEST(Vec3, EqOp)
