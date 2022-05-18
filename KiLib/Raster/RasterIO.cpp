@@ -163,7 +163,7 @@ namespace KiLib
 
       // Write raster. Flip it upside down
       Matrix          outData = this->data.colwise().reverse();
-      GDALRasterBand *poBand = poBand = poDstDS->GetRasterBand(1);
+      GDALRasterBand *poBand = poDstDS->GetRasterBand(1);
       poBand->SetNoDataValue(this->nodata_value);
       auto err = poBand->RasterIO(
          GF_Write, 0, 0, this->nCols, this->nRows, outData.data(), this->nCols, this->nRows, GDT_Float64, 0, 0);
