@@ -37,6 +37,15 @@ bool GDAL_REGISTERED = false;
 // GT[4] column rotation (typically zero).
 // GT[5] col pixel resolution / pixel height (negative value for a north-up image).
 
+void registerGdal()
+{
+   if (!GDAL_REGISTERED)
+   {
+      GDALAllRegister();
+      GDAL_REGISTERED = true;
+   }
+}
+
 namespace KiLib
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -44,11 +53,7 @@ namespace KiLib
    ////////////////////////////////////////////////////////////////////////////////
    Raster::Raster(const std::string &path)
    {
-      if (!GDAL_REGISTERED)
-      {
-         GDALAllRegister();
-         GDAL_REGISTERED = true;
-      }
+      registerGdal();
 
       GDALDataset *poDataset = (GDALDataset *)GDALOpen(path.c_str(), GA_ReadOnly);
       if (poDataset == nullptr)
@@ -57,9 +62,8 @@ namespace KiLib
          throw std::runtime_error(err);
       }
 
-      GDALRasterBand *poBand;
-      poBand = poDataset->GetRasterBand(1);
-      if (poBand == NULL)
+      GDALRasterBand *poBand = poDataset->GetRasterBand(1);
+      if (poBand == nullptr)
       {
          spdlog::error("Raster Reading failed | Could not get band 1 | {}", path, CPLGetLastErrorMsg());
       }
@@ -107,33 +111,36 @@ namespace KiLib
 
    void Raster::WriteToFile(const std::string &path) const
    {
-      // if path ends in .dem then use AAIGrid, if .tif, .tiff, .gtiff then use GTiff
+      registerGdal();
+
+      // if path ends in .dem/.asc then use AAIGrid, if .tif/.tiff/.gtiff then use GTiff
       std::string outDriverName;
-      if (fs::path(path).extension().string() == ".dem" || fs::path(path).extension().string() == ".asc")
+
+      auto ext = fs::path(path).extension().string();
+      if (ext == ".dem" || ext == ".asc")
       {
          outDriverName = "AAIGrid";
       }
-      else if (
-         fs::path(path).extension().string() == ".tif" || fs::path(path).extension().string() == ".tiff" ||
-         fs::path(path).extension().string() == ".gtiff")
+      else if (ext == ".tif" || ext == ".tiff" || ext == ".gtiff")
       {
          outDriverName = "GTiff";
       }
       else
       {
          spdlog::error("Raster Writing failed | Invalid file extension | {}", path);
-         spdlog::error("Please use .dem (AAIGrid) or .tif/.tiff/.gtiff (GTiff)");
+         spdlog::error("Please use .dem/.asc (AAIGrid) or .tif/.tiff/.gtiff (GTiff)");
          throw std::runtime_error("");
       }
 
       const char *pszFormat = "MEM";
-      GDALDriver *poDriver;
-      poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
-      if (poDriver == NULL)
-         exit(1);
+      GDALDriver *poDriver  = GetGDALDriverManager()->GetDriverByName(pszFormat);
+      if (poDriver == nullptr)
+      {
+         spdlog::error("Raster Writing failed | Could not get driver | {}", pszFormat);
+         throw std::runtime_error("");
+      }
 
-      GDALDataset *poDstDS;
-      poDstDS = poDriver->Create("unused_name", this->nCols, this->nRows, 1, GDT_Float64, nullptr);
+      GDALDataset *poDstDS = poDriver->Create("unused_name", this->nCols, this->nRows, 1, GDT_Float64, nullptr);
 
       // Set geotransform and projection
       double GT[6] = {
@@ -146,7 +153,7 @@ namespace KiLib
       };
 
       OGRSpatialReference oSRS;
-      char               *pszSRS_WKT = NULL;
+      char               *pszSRS_WKT = nullptr;
       poDstDS->SetGeoTransform(GT);
       oSRS.SetUTM(11, TRUE);
       oSRS.SetWellKnownGeogCS("NAD27");
@@ -156,8 +163,7 @@ namespace KiLib
 
       // Write raster. Flip it upside down
       Matrix          outData = this->data.colwise().reverse();
-      GDALRasterBand *poBand;
-      poBand = poDstDS->GetRasterBand(1);
+      GDALRasterBand *poBand = poBand = poDstDS->GetRasterBand(1);
       poBand->SetNoDataValue(this->nodata_value);
       auto err = poBand->RasterIO(
          GF_Write, 0, 0, this->nCols, this->nRows, outData.data(), this->nCols, this->nRows, GDT_Float64, 0, 0);
