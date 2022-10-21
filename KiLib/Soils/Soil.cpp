@@ -99,10 +99,10 @@ ValueDistribution Soil::GetConductivity() const
 
 void Soil::ComputePorosity(DistributionModel & distModel)
 {
-   auto porosity = this->porosity;
+   auto porosity = this->porosity; //checking that porotisy option variable exists
    if (porosity)
    {
-      // porosity already exists. Cannot compute. Abort
+      // porosity already exists. Cannot compute. Abort or throw an error
    }
    else
    {
@@ -115,7 +115,7 @@ void Soil::ComputePorosity(DistributionModel & distModel)
           // DistributionModel not implemented
              break;
           case (DistributionModel::Normal):
-             auto densityDry = this->densityDry.normal.mean;
+             auto densityDry = this->densityDry.normal.mean; // check that this param exist if not throw an error
              if (densityDry)
              {
                 porosity = (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
