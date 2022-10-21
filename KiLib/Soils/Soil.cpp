@@ -97,6 +97,42 @@ ValueDistribution Soil::GetConductivity() const
 }
 
 
+void Soil::ComputePorosity(DistributionModel & distModel)
+{
+   auto porosity = this->porosity;
+   if (porosity)
+   {
+      // porosity already exists. Cannot compute. Abort
+   }
+   else
+   {
+       switch (distModel)
+       {
+          case (DistributionModel::Constant):
+             // DistributionModel not implemented
+             break;
+          case (DistributionModel::Uniform):
+          // DistributionModel not implemented
+             break;
+          case (DistributionModel::Normal):
+             auto densityDry = this->densityDry.normal.mean;
+             if (densityDry)
+             {
+                porosity = (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
+             }
+             else
+             {
+                // Cannot compute porosity from dry density exit
+             }
+             break;
+         default:
+             // DistributionModel not found
+            break;
+      }
+   }
+   return;
+}
+
 double ValueUniform::GetMin() const
 {
    return this->min.value();

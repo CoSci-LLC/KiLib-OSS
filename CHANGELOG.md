@@ -2,6 +2,18 @@
 
 Notable changes to this project will be documented in this file.
 
+## v5.0.0
+---
+
+### Added
+
+- Elevation condition to Raster::GetCoordMinDistance
+
+### Fixed
+
+- Fixed raster tests
+
+
 ## v4.0.0
 ---
 
