@@ -85,10 +85,10 @@ namespace KiLib::Soils
       ValueDistribution GetCohesion() const;
       ValueDistribution GetConductivity() const;
 
-      enum class DistributionModel : int { Constant, Uniform, Normal };
-      void ComputePorosity(DistributionModel &distModel);
-      void ComputeDensityWet(const double &saturation, DistributionModel &distModel);
-      void ComputeFieldCapacity(DistributionModel &distModel);
+      
+      //void ComputePorosity(DistributionModel &distModel);
+      //void ComputeDensityWet(const double &saturation, DistributionModel &distModel);
+      //void ComputeFieldCapacity(DistributionModel &distModel);
 
    protected:
       std::string name;

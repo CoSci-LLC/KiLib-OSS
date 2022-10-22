@@ -9,4 +9,5 @@ target_sources(${projectName} PRIVATE
 target_sources_test(${projectTestName} PRIVATE
 	Soil.test.cpp
 	UserDefined.test.cpp
+	Decorators.test.cpp
 )
