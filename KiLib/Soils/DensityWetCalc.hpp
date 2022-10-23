@@ -26,17 +26,15 @@
 
 namespace KiLib::Soils
 {
-   template <typename T> 
-   class DensityWetCalc : public T
+   class DensityWetCalc : public DistributionModel
    {
    public:
-      template <typename... Args>
-      DensityWetCalc(Args... args) : T(std::forward<Args>(args)...)
+      DensityWetCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
       {
 
       }
 
-      double GetDensityWet()
+      double GetDensityWet() const 
       {
          return 42;
       }

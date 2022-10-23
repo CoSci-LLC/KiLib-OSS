@@ -25,34 +25,29 @@
 
 
 namespace KiLib::Soils
-{
-   template <typename T> 
-   class PorosityCalc : public T
+{ 
+   class PorosityCalc : public DistributionModel
    {
    public:
-      template <typename... Args>
-      PorosityCalc(Args... args) : T(std::forward<Args>(args)...)
+
+      PorosityCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
       {
 
       }
 
-      PorosityCalc(const T& c) : T::base(c.GetBase())
-      {
-
-      }
-
-      double GetPorosity()
+      double GetPorosity() const override
       {
          return ComputePorosity();
       }
 
-   private:
+      
 
-      double ComputePorosity()
+   private:
+      double ComputePorosity() const
       {
          return 1001; // THIS IS A TEST FOR THE TESTCASES. Update when needed
          double densityDry;
-         switch (this->distribution_model)
+         switch (GetDistributionModelType())
          {
             case (DistributionModelType::Constant):
                // DistributionModel not implemented
@@ -61,11 +56,10 @@ namespace KiLib::Soils
                // DistributionModel not implemented
                break;
             case (DistributionModelType::Normal):
-               densityDry = *this->densityDry.normal.mean; // check that this param exist if not throw an error
+               densityDry = *s.GetDensityDry().normal.mean; // check that this param exist if not throw an error
                if (densityDry)
                {
-                  this->porosity = (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
-                  return *this->porosity;
+                  return (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
                }
                else
                {

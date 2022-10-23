@@ -25,46 +25,110 @@
 namespace KiLib::Soils
 {
    enum class DistributionModelType : int { Constant, Uniform, Normal };
-   template <class T>
-   class DistributionModel : public T
-   {
-      static_assert(std::is_base_of<Soil, T>::value, "Invalid template argument"); // Compile time safety
-   public:
-      template <typename... Args>
-      DistributionModel(const DistributionModelType t, Args... args) : T(std::forward<Args>(args)...), base(*this), distribution_model{t}
-      {}
 
-      DistributionModel(const T& c, const DistributionModelType t) : base(c), distribution_model{t}
+   class IDistributionModelDecorator: public ISoil
+   {
+      public:
+      virtual DistributionModelType GetDistributionModelType() const = 0;
+      virtual const ISoil& GetBaseSoil() const = 0;
+   };
+
+   class DistributionModel : public IDistributionModelDecorator
+   {
+   public:
+
+      DistributionModel(ISoil& s, const DistributionModelType& t) : s(s), distribution_model{t}
       {
-         
+
+      }
+      
+      DistributionModel(const IDistributionModelDecorator& s): s(s), distribution_model(s.GetDistributionModelType()) 
+      {
+ 
       }
 
-      std::string GetName() const { return base.GetName(); }
-      std::string GetLongName() const;
+      DistributionModelType GetDistributionModelType() const override
+      {
+         return this->distribution_model;
+      }
 
-      double GetPorosity() const { return base.GetPorosity(); }
-      double GetSaturatedWaterContent() const { return base.GetSaturatedWaterContent(); }
-      double GetResidualWaterContent() const { return base.GetResidualWaterContent(); }
-      double GetFieldCapacity() const { return base.GetFieldCapacity(); }
-      double GetInitWaterContent() const { return base.GetInitWaterContent(); }
-      double GetWaterExchangeTerm() const { return base.GetWaterExchangeTerm(); }
-      double GetVgWetAlpha1() const { return base.GetVgWetAlpha1(); }
-      double GetVgWetN1() const { return base.GetVgWetN1(); }
-      double GetPoreFracMatrix() const { return base.GetPoreFracMatrix(); }
-      double GetPoreFracFractures() const { return base.GetPoreFracFractures(); }
-      double GetMaxTensileStrain() const { return base.GetMaxTensileStrain(); }
+      const ISoil& GetBaseSoil() const override
+      {
+         return s;
+      }
 
-      ValueDistribution GetFrictionAngle() const { return base.GetFrictionAngle(); }
-      ValueDistribution GetDensityDry() const { return base.GetDensityDry(); }
-      ValueDistribution GetCohesion() const { return base.GetCohesion(); }
-      ValueDistribution GetConductivity() const { return base.GetConductivity(); }
+      std::string GetName() const override
+      {
+         return s.GetName();
+      }
+      std::string GetLongName() const override
+      {
+         return s.GetLongName();
+      }
+      double GetPorosity() const override
+      {
+         return s.GetPorosity();
+      }
+      double GetSaturatedWaterContent() const override
+      {
+         return s.GetSaturatedWaterContent();
+      }
+      double GetResidualWaterContent() const override
+      {
+         return s.GetResidualWaterContent();
+      }
+      double GetFieldCapacity() const override
+      {
+         return s.GetFieldCapacity();
+      }
+      double GetInitWaterContent() const override
+      {
+         return s.GetInitWaterContent();
+      }
+      double GetWaterExchangeTerm() const override
+      {
+         return s.GetWaterExchangeTerm();
+      }
+      double GetVgWetAlpha1() const override
+      {
+         return s.GetVgWetAlpha1();
+      }
+      double GetVgWetN1() const override
+      {
+         return s.GetVgWetN1();
+      }
+      double GetPoreFracMatrix() const override
+      {
+         return s.GetPoreFracMatrix();
+      }
+      double GetPoreFracFractures() const override
+      {
+         return s.GetPoreFracFractures();
+      }
+      double GetMaxTensileStrain() const override
+      {
+         return s.GetMaxTensileStrain();
+      }
+      ValueDistribution GetFrictionAngle() const override
+      {
+         return s.GetFrictionAngle();
+      }
+      ValueDistribution GetDensityDry() const override
+      {
+         return s.GetDensityDry();
+      }
+      ValueDistribution GetCohesion() const override
+      {
+         return s.GetCohesion();
+      }
+      ValueDistribution GetConductivity() const override
+      {
+         return s.GetConductivity();
+      }
       
-      DistributionModelType GetDistributionModelType() const { return distribution_model; }
 
-
-      const T GetBase() const { return base; }
    protected:
-      const T& base;
+      const ISoil& s;
       DistributionModelType distribution_model;
    };
 }       

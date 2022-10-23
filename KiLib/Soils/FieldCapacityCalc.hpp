@@ -26,17 +26,15 @@
 
 namespace KiLib::Soils
 {
-   template <typename T> 
-   class FieldCapacityCalc : public T
+   class FieldCapacityCalc : public DistributionModel
    {
    public:
-      template <typename... Args>
-      FieldCapacityCalc(Args... args) : T(std::forward<Args>(args)...)
+      FieldCapacityCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
       {
-
+         
       }
 
-      double GetFieldCapacity()
+      double GetFieldCapacity() const override
       {
          return 52;
       }

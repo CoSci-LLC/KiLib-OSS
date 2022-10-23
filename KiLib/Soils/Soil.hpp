@@ -62,33 +62,52 @@ namespace KiLib::Soils
       ValueNormal           normal;
    };
 
-   class Soil
+   class ISoil 
    {
    public:
-      std::string GetName() const;
-      std::string GetLongName() const;
+      virtual std::string GetName() const = 0;
+      virtual std::string GetLongName() const = 0;
 
-      double GetPorosity() const;
-      double GetSaturatedWaterContent() const;
-      double GetResidualWaterContent() const;
-      double GetFieldCapacity() const;
-      double GetInitWaterContent() const;
-      double GetWaterExchangeTerm() const;
-      double GetVgWetAlpha1() const;
-      double GetVgWetN1() const;
-      double GetPoreFracMatrix() const;
-      double GetPoreFracFractures() const;
-      double GetMaxTensileStrain() const;
+      virtual double GetPorosity() const = 0;
+      virtual double GetSaturatedWaterContent() const = 0;
+      virtual double GetResidualWaterContent() const = 0;
+      virtual double GetFieldCapacity() const = 0;
+      virtual double GetInitWaterContent() const = 0;
+      virtual double GetWaterExchangeTerm() const = 0;
+      virtual double GetVgWetAlpha1() const = 0;
+      virtual double GetVgWetN1() const = 0;
+      virtual double GetPoreFracMatrix() const = 0;
+      virtual double GetPoreFracFractures() const = 0;
+      virtual double GetMaxTensileStrain() const = 0;
 
-      ValueDistribution GetFrictionAngle() const;
-      ValueDistribution GetDensityDry() const;
-      ValueDistribution GetCohesion() const;
-      ValueDistribution GetConductivity() const;
+      virtual ValueDistribution GetFrictionAngle() const = 0;
+      virtual ValueDistribution GetDensityDry() const = 0;
+      virtual ValueDistribution GetCohesion() const = 0;
+      virtual ValueDistribution GetConductivity() const = 0;
+   };
 
-      
-      //void ComputePorosity(DistributionModel &distModel);
-      //void ComputeDensityWet(const double &saturation, DistributionModel &distModel);
-      //void ComputeFieldCapacity(DistributionModel &distModel);
+   class Soil : public ISoil
+   {
+   public:
+      std::string GetName() const override;
+      std::string GetLongName() const override;
+
+      double GetPorosity() const override;
+      double GetSaturatedWaterContent() const override;
+      double GetResidualWaterContent() const override;
+      double GetFieldCapacity() const override;
+      double GetInitWaterContent() const override;
+      double GetWaterExchangeTerm() const override;
+      double GetVgWetAlpha1() const override;
+      double GetVgWetN1() const override;
+      double GetPoreFracMatrix() const override;
+      double GetPoreFracFractures() const override;
+      double GetMaxTensileStrain() const override;
+
+      ValueDistribution GetFrictionAngle() const override;
+      ValueDistribution GetDensityDry() const override;
+      ValueDistribution GetCohesion() const override;
+      ValueDistribution GetConductivity() const override;
 
    protected:
       std::string name;
