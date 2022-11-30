@@ -136,12 +136,12 @@ namespace KiLib::Soils
          throw NotImplementedException("DistributionModel does not implement GetDensityDry");
       }
 
-      virtual double GetCohesion()
+      virtual double GetCohesion() const
       {
          throw NotImplementedException("DistributionModel does not implement GetCohesion");
       }
 
-      virtual double GetConductivity()
+      virtual double GetConductivity() const
       {
          throw NotImplementedException("DistributionModel does not implement GetConductivity");
       }
