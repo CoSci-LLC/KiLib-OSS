@@ -19,33 +19,20 @@
 
 
 #pragma once
+#include <exception>
 
-#include <KiLib/Soils/UserDefined.hpp>
-#include <KiLib/Soils/DistributionModel.hpp>
+class NotGeneratedException : public std::exception
+{
+   const char *message;
 
-
-namespace KiLib::Soils
-{ 
-   class PorosityCalc : public DistributionModel
+public:
+   NotGeneratedException(const char *message)
    {
-   public:
+      this->message = message;
+   }
 
-      PorosityCalc(const DistributionModel& s) : DistributionModel(s), distribution_model(s)
-      {
-
-      }
-
-      double GetPorosity() const override
-      {
-         return ComputePorosity();
-      }
-
-   private:
-      const DistributionModel& distribution_model;
-      double ComputePorosity() const
-      {
-         double densityDry = distribution_model.GetDensityDry();
-         return (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
-      }
-   };
-}       
+   const char *what() const throw() override
+   {
+      return message;
+   }
+};

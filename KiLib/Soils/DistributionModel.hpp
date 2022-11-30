@@ -21,6 +21,7 @@
 #pragma once
 
 #include <KiLib/Soils/Soil.hpp>
+#include <KiLib/Exceptions/NotImplemented.hpp>
 
 namespace KiLib::Soils
 {
@@ -37,19 +38,19 @@ namespace KiLib::Soils
    {
    public:
 
-      DistributionModel(ISoil& s, const DistributionModelType& t) : s(s), distribution_model{t}
+      DistributionModel(ISoil& s, const DistributionModelType& t) : s(s), distribution_model_type{t}
       {
 
       }
       
-      DistributionModel(const IDistributionModelDecorator& s): s(s), distribution_model(s.GetDistributionModelType()) 
+      DistributionModel(const IDistributionModelDecorator& s): s(s), distribution_model_type(s.GetDistributionModelType()) 
       {
  
       }
 
       DistributionModelType GetDistributionModelType() const override
       {
-         return this->distribution_model;
+         return this->distribution_model_type;
       }
 
       const ISoil& GetBaseSoil() const override
@@ -109,26 +110,46 @@ namespace KiLib::Soils
       {
          return s.GetMaxTensileStrain();
       }
-      ValueDistribution GetFrictionAngle() const override
+      ValueDistribution GetFrictionAngleDistribution() const override
       {
-         return s.GetFrictionAngle();
+         return s.GetFrictionAngleDistribution();
       }
-      ValueDistribution GetDensityDry() const override
+      ValueDistribution GetDensityDryDistribution() const override
       {
-         return s.GetDensityDry();
+         return s.GetDensityDryDistribution();
       }
-      ValueDistribution GetCohesion() const override
+
+      ValueDistribution GetCohesionDistribution() const override
       {
-         return s.GetCohesion();
+         return s.GetCohesionDistribution();
       }
-      ValueDistribution GetConductivity() const override
+      ValueDistribution GetConductivityDistributon() const override
       {
-         return s.GetConductivity();
+         return s.GetConductivityDistributon();
       }
+      virtual double GetFrictionAngle() const
+      {
+         throw NotImplementedException("DistributionModel does not implement GetFrictionAngle");
+      }
+      virtual double GetDensityDry() const
+      {
+         throw NotImplementedException("DistributionModel does not implement GetDensityDry");
+      }
+
+      virtual double GetCohesion()
+      {
+         throw NotImplementedException("DistributionModel does not implement GetCohesion");
+      }
+
+      virtual double GetConductivity()
+      {
+         throw NotImplementedException("DistributionModel does not implement GetConductivity");
+      }
+
       
 
    protected:
       const ISoil& s;
-      DistributionModelType distribution_model;
+      DistributionModelType distribution_model_type;
    };
 }       

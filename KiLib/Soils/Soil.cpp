@@ -19,6 +19,7 @@
 
 
 #include <KiLib/Soils/Soils.hpp>
+#include <KiLib/Exceptions/NotImplemented.hpp>
 
 using namespace KiLib::Soils;
 
@@ -31,7 +32,12 @@ std::string Soil::GetLongName() const
    return this->longname;
 }
 
-double Soil::GetPorosity() const
+double Soil::GetDensityDry() const
+{
+   throw NotImplementedException("GetDensityDry not implemented in soil base class. Use the DensityDryGen Decorator class");
+}
+
+double Soil::GetPorosity() const 
 {
    return this->porosity.value();
 }
@@ -76,22 +82,22 @@ double Soil::GetMaxTensileStrain() const
    return this->maxTensileStrain.value();
 }
 
-ValueDistribution Soil::GetFrictionAngle() const
+ValueDistribution Soil::GetFrictionAngleDistribution() const
 {
    return this->frictionAngle;
 }
 
-ValueDistribution Soil::GetDensityDry() const
+ValueDistribution Soil::GetDensityDryDistribution() const
 {
    return this->densityDry;
 }
 
-ValueDistribution Soil::GetCohesion() const
+ValueDistribution Soil::GetCohesionDistribution() const
 {
    return this->cohesion;
 }
 
-ValueDistribution Soil::GetConductivity() const
+ValueDistribution Soil::GetConductivityDistributon() const
 {
    return this->conductivity;
 }

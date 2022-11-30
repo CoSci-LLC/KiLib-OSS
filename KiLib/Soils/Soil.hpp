@@ -69,6 +69,7 @@ namespace KiLib::Soils
       virtual std::string GetLongName() const = 0;
 
       virtual double GetPorosity() const = 0;
+      virtual double GetDensityDry() const = 0;
       virtual double GetSaturatedWaterContent() const = 0;
       virtual double GetResidualWaterContent() const = 0;
       virtual double GetFieldCapacity() const = 0;
@@ -80,10 +81,10 @@ namespace KiLib::Soils
       virtual double GetPoreFracFractures() const = 0;
       virtual double GetMaxTensileStrain() const = 0;
 
-      virtual ValueDistribution GetFrictionAngle() const = 0;
-      virtual ValueDistribution GetDensityDry() const = 0;
-      virtual ValueDistribution GetCohesion() const = 0;
-      virtual ValueDistribution GetConductivity() const = 0;
+      virtual ValueDistribution GetFrictionAngleDistribution() const = 0;
+      virtual ValueDistribution GetDensityDryDistribution() const = 0;
+      virtual ValueDistribution GetCohesionDistribution() const = 0;
+      virtual ValueDistribution GetConductivityDistributon() const = 0;
    };
 
    class Soil : public ISoil
@@ -91,8 +92,8 @@ namespace KiLib::Soils
    public:
       std::string GetName() const override;
       std::string GetLongName() const override;
-
       double GetPorosity() const override;
+      double GetDensityDry() const override;
       double GetSaturatedWaterContent() const override;
       double GetResidualWaterContent() const override;
       double GetFieldCapacity() const override;
@@ -104,10 +105,10 @@ namespace KiLib::Soils
       double GetPoreFracFractures() const override;
       double GetMaxTensileStrain() const override;
 
-      ValueDistribution GetFrictionAngle() const override;
-      ValueDistribution GetDensityDry() const override;
-      ValueDistribution GetCohesion() const override;
-      ValueDistribution GetConductivity() const override;
+      ValueDistribution GetFrictionAngleDistribution() const override;
+      ValueDistribution GetDensityDryDistribution() const override;
+      ValueDistribution GetCohesionDistribution() const override;
+      ValueDistribution GetConductivityDistributon() const override;
 
    protected:
       std::string name;
