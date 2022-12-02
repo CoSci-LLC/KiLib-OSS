@@ -68,9 +68,9 @@ namespace KiLib::Soils
       void SetVgWetN1(double value);
       void SetMaxTensileStrain(double value);
 
-      void SetFrictionAngle(ValueDistribution value);
-      void SetDensityDry(ValueDistribution value);
-      void SetCohesion(ValueDistribution value);
-      void SetConductivity(ValueDistribution value);
+      void SetFrictionAngleDistribution(ValueDistribution value);
+      void SetDensityDryDistribution(ValueDistribution value);
+      void SetCohesionDistribution(ValueDistribution value);
+      void SetConductivityDistribution(ValueDistribution value);
    };
 } // namespace KiLib::Soils

@@ -40,7 +40,7 @@ namespace KiLib::Soils
 
       DistributionModel(ISoil& s, const DistributionModelType& t) : s(s), distribution_model_type{t}
       {
-
+         //spdlog::debug("DistributionModel soil: {:X}", (long)&s);
       }
       
       DistributionModel(const IDistributionModelDecorator& s): s(s), distribution_model_type(s.GetDistributionModelType()) 
@@ -116,6 +116,7 @@ namespace KiLib::Soils
       }
       ValueDistribution GetDensityDryDistribution() const override
       {
+         //spdlog::debug("GetDensityDryDistribution soil: {:X}", (long)&s);
          return s.GetDensityDryDistribution();
       }
 

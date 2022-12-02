@@ -88,7 +88,7 @@ namespace KiLib
       ASSERT_EQ(udvd.GetUniformPrimula().GetMin(), min);
 
       // Test the distribution within the user defined soil
-      ud.SetFrictionAngle(udvd);
+      ud.SetFrictionAngleDistribution(udvd);
 
       // Check that all previous values are set properly
       // udvu1

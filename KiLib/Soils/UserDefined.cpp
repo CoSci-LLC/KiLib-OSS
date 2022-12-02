@@ -69,22 +69,22 @@ void UserDefined::SetMaxTensileStrain(double value)
    this->maxTensileStrain = value;
 }
 
-void UserDefined::SetFrictionAngle(ValueDistribution value)
+void UserDefined::SetFrictionAngleDistribution(ValueDistribution value)
 {
    this->frictionAngle = value;
 }
 
-void UserDefined::SetDensityDry(ValueDistribution value)
+void UserDefined::SetDensityDryDistribution(ValueDistribution value)
 {
    this->densityDry = value;
 }
 
-void UserDefined::SetCohesion(ValueDistribution value)
+void UserDefined::SetCohesionDistribution(ValueDistribution value)
 {
    this->cohesion = value;
 }
 
-void UserDefined::SetConductivity(ValueDistribution value)
+void UserDefined::SetConductivityDistribution(ValueDistribution value)
 {
    this->conductivity = value;
 }

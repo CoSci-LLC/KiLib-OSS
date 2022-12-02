@@ -21,6 +21,7 @@
 #pragma once
 
 #include <KiLib/Soils/UserDefined.hpp>
+#include <spdlog/spdlog.h>
 #include <KiLib/Soils/DistributionModel.hpp>
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Exceptions/NotGenerated.hpp>
@@ -33,11 +34,14 @@ namespace KiLib::Soils
 
       DensityDryGen(const IDistributionModelDecorator& s, std::mt19937_64 &gen) : DistributionModel(s), gen(gen)
       {
-
+         //spdlog::debug("Passing soil: {:X}", (long)&s);
+         //spdlog::debug("Normal Distribution: {}", s.GetDensityDryDistribution().GetNormal().GetMean());
       }
 
       double GenerateDensityDry()
       {
+         //spdlog::debug("Entering...");
+         //spdlog::debug("GenerateDensityDry soil: {:X}", (long)&s);
          double mean, sd;
          switch (GetDistributionModelType())
          {
@@ -46,8 +50,10 @@ namespace KiLib::Soils
             case (DistributionModelType::Uniform):
                throw NotImplementedException("Distribution Type not implemented for DensityDryGen");
             case (DistributionModelType::Normal):
-               mean                      = s.GetDensityDryDistribution().GetNormal().GetMean();
-               sd                        = s.GetDensityDryDistribution().GetNormal().GetStdDev();
+               
+               mean                      = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
+               sd                        = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetStdDev();
+               //spdlog::debug(mean);
                if (sd == 0.0)
                {
                   densityDry = mean;

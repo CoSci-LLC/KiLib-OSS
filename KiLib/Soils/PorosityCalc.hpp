@@ -22,6 +22,8 @@
 
 #include <KiLib/Soils/UserDefined.hpp>
 #include <KiLib/Soils/DistributionModel.hpp>
+#include <spdlog/spdlog.h>
+#include <KiLib/Soils/DensityDryGen.hpp>
 
 
 namespace KiLib::Soils
@@ -30,21 +32,22 @@ namespace KiLib::Soils
    {
    public:
 
-      PorosityCalc(const DistributionModel& s) : DistributionModel(s), distribution_model(s)
+      PorosityCalc(const KiLib::Soils::DensityDryGen& s) : DistributionModel(s), density_gen(s)
       {
 
       }
 
       double GetPorosity() const override
       {
+         spdlog::info("Getting Porosity");
          return ComputePorosity();
       }
 
    private:
-      const DistributionModel& distribution_model;
+      const KiLib::Soils::DensityDryGen& density_gen;
       double ComputePorosity() const
       {
-         double densityDry = distribution_model.GetDensityDry();
+         double densityDry = density_gen.GetDensityDry();
          return (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
       }
    };

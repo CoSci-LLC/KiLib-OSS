@@ -46,7 +46,7 @@ namespace KiLib
       Soils::UserDefined ud;
 
       // Add the required info for SlideforNET use case
-      ud.SetCohesion({
+      ud.SetCohesionDistribution({
             .constant = 10000,
             .uniformPrimula{
                .min = 20000,
@@ -61,7 +61,7 @@ namespace KiLib
                .stdDev = 5000,
             }});
 
-      ud.SetFrictionAngle({
+      ud.SetFrictionAngleDistribution({
             .constant = 22 * M_PI / 180.0,
             .uniformPrimula{
                .min = 14 * M_PI / 180.0,
@@ -76,7 +76,7 @@ namespace KiLib
                .stdDev = 5 * M_PI / 180.0,
             }});
 
-      ud.SetDensityDry({
+      ud.SetDensityDryDistribution({
             .constant = 890,
             .uniformPrimula{
                .min = 1040.84,
@@ -93,38 +93,40 @@ namespace KiLib
 
 
       // Test the above information
-      ASSERT_EQ(ud.GetDensityDryDistribution().GetConstant(), 890);
+      ASSERT_EQ(ud.GetDensityDryDistribution().GetNormal().GetMean(), 1100);
       const double porosity_standard_value = -0.41471698113207545;
 
       std::random_device rand_device;
       std::mt19937_64 gen(rand_device());
-      Soils::DensityDryGen ddg(Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal), gen);
+      //spdlog::debug("Starting soil: {:X}", (long)&ud);
+      auto dm = Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal);
+      Soils::DensityDryGen ddg(dm, gen);
       ddg.GenerateDensityDry();
 
       const Soils::IDistributionModelDecorator& pc = Soils::PorosityCalc(ddg);
 
       // We should be using the normal distribution porosity method now
-      spdlog::debug(" PC: Grabbing Porosity");
+      //spdlog::debug(" PC: Grabbing Porosity");
       ASSERT_EQ(pc.GetPorosity(), porosity_standard_value);
 
       Soils::FieldCapacityCalc fcc(pc);
       
-      spdlog::debug("FCC: Grabbing Field Cap");
+      //spdlog::debug("FCC: Grabbing Field Cap");
       ASSERT_EQ(fcc.GetFieldCapacity(), 52);
 
-      spdlog::debug("FCC: Grabbing Porosity");
+      //spdlog::debug("FCC: Grabbing Porosity");
       ASSERT_EQ(fcc.GetPorosity(), porosity_standard_value);
 
 
       Soils::DensityWetCalc dwc(fcc);
 
-      spdlog::debug("DWC: Grabbing GetFieldCapacity");
+      //spdlog::debug("DWC: Grabbing GetFieldCapacity");
       ASSERT_EQ(dwc.GetFieldCapacity(), 52);
 
-      spdlog::debug("DWC: Grabbing GetPorosity");
+      //spdlog::debug("DWC: Grabbing GetPorosity");
       ASSERT_EQ(dwc.GetPorosity(), porosity_standard_value);
 
-      spdlog::debug("DWC: Grabbing GetDensityWet");
+      //spdlog::debug("DWC: Grabbing GetDensityWet");
       ASSERT_EQ(dwc.GetDensityWet(), 42);
    }
 
@@ -135,7 +137,7 @@ namespace KiLib
       Soils::UserDefined ud;
 
       // Add the required info for SlideforNET use case
-      ud.SetCohesion({
+      ud.SetCohesionDistribution({
             .constant = 10000,
             .uniformPrimula{
                .min = 20000,
@@ -150,7 +152,7 @@ namespace KiLib
                .stdDev = 5000,
             }});
 
-      ud.SetFrictionAngle({
+      ud.SetFrictionAngleDistribution({
             .constant = 22 * M_PI / 180.0,
             .uniformPrimula{
                .min = 14 * M_PI / 180.0,
@@ -165,7 +167,7 @@ namespace KiLib
                .stdDev = 5 * M_PI / 180.0,
             }});
 
-      ud.SetDensityDry({
+      ud.SetDensityDryDistribution({
             .constant = 890,
             .uniformPrimula{
                .min = 1040.84,
@@ -210,7 +212,7 @@ namespace KiLib
       // Create a user defined soil
       Soils::UserDefined ud;
       // Add the required info for SlideforNET use case
-      ud.SetCohesion({
+      ud.SetCohesionDistribution({
             .constant = 10000,
             .uniformPrimula{
                .min = 20000,
@@ -225,7 +227,7 @@ namespace KiLib
                .stdDev = 5000,
             }});
 
-      ud.SetFrictionAngle({
+      ud.SetFrictionAngleDistribution({
             .constant = 22 * M_PI / 180.0,
             .uniformPrimula{
                .min = 14 * M_PI / 180.0,
@@ -240,7 +242,7 @@ namespace KiLib
                .stdDev = 5 * M_PI / 180.0,
             }});
 
-      ud.SetDensityDry({
+      ud.SetDensityDryDistribution({
             .constant = 890,
             .uniformPrimula{
                .min = 1040.84,
@@ -262,7 +264,8 @@ namespace KiLib
 
       std::random_device rand_device;
       std::mt19937_64 gen(rand_device());
-      Soils::DensityDryGen ddg(Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal), gen);
+      auto dm = Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal);
+      Soils::DensityDryGen ddg(dm, gen);
       ddg.GenerateDensityDry();
 
       Soils::PorosityCalc pc(ddg);
@@ -291,7 +294,7 @@ namespace KiLib
       Soils::UserDefined ud;
 
       // Add the required info for SlideforNET use case
-      ud.SetCohesion({
+      ud.SetCohesionDistribution({
             .constant = 10000,
             .uniformPrimula{
                .min = 20000,
@@ -306,7 +309,7 @@ namespace KiLib
                .stdDev = 5000,
             }});
 
-      ud.SetFrictionAngle({
+      ud.SetFrictionAngleDistribution({
             .constant = 22 * M_PI / 180.0,
             .uniformPrimula{
                .min = 14 * M_PI / 180.0,
@@ -321,7 +324,7 @@ namespace KiLib
                .stdDev = 5 * M_PI / 180.0,
             }});
 
-      ud.SetDensityDry({
+      ud.SetDensityDryDistribution({
             .constant = 890,
             .uniformPrimula{
                .min = 1040.84,
@@ -340,17 +343,18 @@ namespace KiLib
       std::random_device rand_device;
       std::mt19937_64 gen(rand_device());
 
-      Soils::DensityDryGen ddg(Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal), gen);
+      auto dm = Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal);
+      Soils::DensityDryGen ddg(dm, gen);
 
       ddg.GenerateDensityDry();
 
       // We should be using the normal distribution porosity method now
-      spdlog::debug("DensityDry: {}", ddg.GetDensityDry());
+      //spdlog::debug("DensityDry: {}", ddg.GetDensityDry());
 
       const Soils::IDistributionModelDecorator& pc = Soils::PorosityCalc(ddg);
 
       // ddg.GenerateDensityDry(); //return a value as well
-      spdlog::debug("PorosityCalc: {}", pc.GetPorosity());
+      //spdlog::debug("PorosityCalc: {}", pc.GetPorosity());
 
    }
 }
