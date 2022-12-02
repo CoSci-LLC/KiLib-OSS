@@ -261,7 +261,7 @@ namespace KiLib
             }});
 
       const double porosity_value = 50;
-      const double porosity_standard_value = -0.41471698113207545;
+      const double porosity_standard_value = 1-890/2650;
 
       ud.SetPorosity(porosity_value);
 
@@ -280,9 +280,6 @@ namespace KiLib
       // We should be using the normal distribution porosity method now
       ASSERT_EQ(pc.GetDensityDryDistribution().GetConstant(), 890);
       
-      ASSERT_EQ(pc.GetPorosity(), porosity_standard_value);
-
-
       KiLib::Soils::ISoil &soil_base = pc;    
 
       ASSERT_EQ(test_function_for_soil_passing(soil_base), porosity_standard_value);
