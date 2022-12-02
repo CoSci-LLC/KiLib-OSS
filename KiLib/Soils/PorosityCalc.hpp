@@ -37,18 +37,26 @@ namespace KiLib::Soils
 
       }
 
+
+      double GeneratePorosity()
+      {
+         double densityDry = density_gen.GetDensityDry();
+         porosity = (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
+         has_been_generated = true;
+         return porosity;
+      }
+
       double GetPorosity() const override
       {
-         spdlog::info("Getting Porosity");
-         return ComputePorosity();
+         if (!has_been_generated) {
+            throw NotGeneratedException("Please Generate Value before calling GetPorosity by using GeneratePorosity");
+         }
+         return porosity;
       }
 
    private:
       const KiLib::Soils::DensityDryGen& density_gen;
-      double ComputePorosity() const
-      {
-         double densityDry = density_gen.GetDensityDry();
-         return (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
-      }
+      double porosity;
+      bool has_been_generated = false;
    };
 }       

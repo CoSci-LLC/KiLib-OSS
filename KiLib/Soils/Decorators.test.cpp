@@ -103,7 +103,10 @@ namespace KiLib
       Soils::DensityDryGen ddg(dm, gen);
       ddg.GenerateDensityDry();
 
-      const Soils::IDistributionModelDecorator& pc = Soils::PorosityCalc(ddg);
+      Soils::PorosityCalc pc(ddg);
+      auto porosity = pc.GeneratePorosity();
+
+      ASSERT_EQ(porosity, pc.GetPorosity());
 
       // We should be using the normal distribution porosity method now
       //spdlog::debug(" PC: Grabbing Porosity");
@@ -270,6 +273,9 @@ namespace KiLib
 
       Soils::PorosityCalc pc(ddg);
 
+      auto porosity = pc.GeneratePorosity();
+      ASSERT_EQ(porosity, pc.GetPorosity());
+
       
       // We should be using the normal distribution porosity method now
       ASSERT_EQ(pc.GetDensityDryDistribution().GetConstant(), 890);
@@ -351,7 +357,11 @@ namespace KiLib
       // We should be using the normal distribution porosity method now
       //spdlog::debug("DensityDry: {}", ddg.GetDensityDry());
 
-      const Soils::IDistributionModelDecorator& pc = Soils::PorosityCalc(ddg);
+      Soils::PorosityCalc pc(ddg);
+
+      auto porosity = pc.GeneratePorosity();
+
+      ASSERT_EQ(porosity, pc.GetPorosity());
 
       // ddg.GenerateDensityDry(); //return a value as well
       spdlog::debug("PorosityCalc: {}", pc.GetPorosity());
