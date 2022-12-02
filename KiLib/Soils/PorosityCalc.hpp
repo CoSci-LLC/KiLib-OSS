@@ -39,7 +39,7 @@ namespace KiLib::Soils
 
       double GetPorosity() const override
       {
-         spdlog::info("Getting Porosity");
+         SPDLOG_DEBUG("Getting Porosity");
          return ComputePorosity();
       }
 
@@ -48,7 +48,7 @@ namespace KiLib::Soils
       double ComputePorosity() const
       {
          double densityDry = density_gen.GetDensityDry();
-         return (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
+         return 1 - densityDry / KiLib::Constants::GRAIN_DENSITY;
       }
    };
 }       

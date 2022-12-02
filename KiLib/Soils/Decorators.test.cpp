@@ -258,7 +258,7 @@ namespace KiLib
             }});
 
       const double porosity_value = 50;
-      const double porosity_standard_value = -0.41471698113207545;
+      const double porosity_standard_value = 1-890/2650;
 
       ud.SetPorosity(porosity_value);
 
