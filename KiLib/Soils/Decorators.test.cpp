@@ -354,7 +354,7 @@ namespace KiLib
       const Soils::IDistributionModelDecorator& pc = Soils::PorosityCalc(ddg);
 
       // ddg.GenerateDensityDry(); //return a value as well
-      //spdlog::debug("PorosityCalc: {}", pc.GetPorosity());
+      spdlog::debug("PorosityCalc: {}", pc.GetPorosity());
 
    }
 }
