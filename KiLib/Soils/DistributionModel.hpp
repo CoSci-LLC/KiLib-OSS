@@ -128,11 +128,11 @@ namespace KiLib::Soils
       {
          return s.GetConductivityDistributon();
       }
-      virtual double GetFrictionAngle() const
+      virtual double GetFrictionAngle() const 
       {
          throw NotImplementedException("DistributionModel does not implement GetFrictionAngle");
       }
-      virtual double GetDensityDry() const
+      virtual double GetDensityDry() const override
       {
          throw NotImplementedException("DistributionModel does not implement GetDensityDry");
       }
