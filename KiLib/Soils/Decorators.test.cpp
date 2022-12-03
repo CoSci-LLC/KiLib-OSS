@@ -116,12 +116,18 @@ namespace KiLib
       SPDLOG_DEBUG("porosity       = {}", porosity);
       SPDLOG_DEBUG("pc.GetPorosity = {}", pc.GetPorosity());
       ASSERT_EQ(pc.GetPorosity(), 0.47936203018236656);
+      
+      // Check that get method returns same value since last calculation
+      ASSERT_EQ(pc.GetPorosity(), porosity);
 
       Soils::ResidualWaterContentCalc rwcc(pc);
       const auto residualWaterContent = rwcc.CalculateResidualWaterContent();
       SPDLOG_DEBUG("residualWaterContent         = {}", residualWaterContent);
       SPDLOG_DEBUG("rwcc.GetResidualWaterContent = {}", rwcc.GetResidualWaterContent());
       ASSERT_EQ(rwcc.GetResidualWaterContent(), 0.047936203018236656);
+
+      // Check that get method returns same value since last calculation
+      ASSERT_EQ(rwcc.GetResidualWaterContent(), residualWaterContent);
 
       Soils::FieldCapacityCalc fcc(rwcc);
       SPDLOG_DEBUG("FCC: Grabbing Field Capacity");
@@ -130,22 +136,35 @@ namespace KiLib
       SPDLOG_DEBUG("fcc.GetFieldCapacity = {}", fcc.GetFieldCapacity());
       ASSERT_EQ(fcc.GetFieldCapacity(), 0.3364047213531462);
 
+      // Check that get method returns same value since last calculation
+      ASSERT_EQ(fcc.GetFieldCapacity(), fieldCapacity);
+
       Soils::DensityWetCalc dwc(fcc);
       SPDLOG_DEBUG("DWC: Grabbing Density Wet");
       auto densityWet = dwc.CalculateDensityWet(0.0);
       SPDLOG_DEBUG("densityWet S = 0   = {}", densityWet);
       SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
       ASSERT_EQ(dwc.GetDensityWet(), 1716.0953413698749);
+      
+      // Check that get method returns same value since last calculation
+      ASSERT_EQ(dwc.GetDensityWet(), densityWet);
 
       densityWet = dwc.CalculateDensityWet(0.8);
       SPDLOG_DEBUG("densityWet S = 0.8 = {}", densityWet);
       SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
       ASSERT_EQ(dwc.GetDensityWet(), 1830.4611884332512);
 
+      // Check that get method returns same value since last calculation
+      ASSERT_EQ(dwc.GetDensityWet(), densityWet);
+
       densityWet = dwc.CalculateDensityWet(1.0);
       SPDLOG_DEBUG("densityWet S = 1   = {}", densityWet);
       SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
       ASSERT_EQ(dwc.GetDensityWet(), 1859.0526501990953);
+
+      // Check that get method returns same value since last calculation
+      ASSERT_EQ(dwc.GetDensityWet(), densityWet);
+
    }
 
 
@@ -215,6 +234,9 @@ namespace KiLib
       auto porosity = pc.CalculatePorosity();
       SPDLOG_DEBUG("Porosity = {}", porosity);
       ASSERT_EQ(pc.GetPorosity(), 0.4958315900149658);
+
+      // Make sure we get the same value after multiple calls to get
+      ASSERT_EQ(pc.GetPorosity(), porosity);
 
 
       //KiLib::Soils::IDistributionModelDecorator &soil_base = dm;    
