@@ -22,40 +22,34 @@
 
 #include <KiLib/Soils/UserDefined.hpp>
 #include <KiLib/Soils/DistributionModel.hpp>
-#include <spdlog/spdlog.h>
-#include <KiLib/Soils/DensityDryGen.hpp>
 
 
 namespace KiLib::Soils
-{ 
-   class PorosityCalc : public DistributionModel
+{
+   class ResidualWaterContentCalc : public DistributionModel
    {
    public:
-
-      PorosityCalc(const KiLib::Soils::DensityDryGen& s) : DistributionModel(s), density_gen(s)
+      ResidualWaterContentCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
       {
-
+         
       }
 
-      double CalculatePorosity()
+      double CalculateResidualWaterContent()
       {
-         porosity = 1 - density_gen.GetDensityDry() / KiLib::Constants::GRAIN_DENSITY;
-         has_been_generated = true;
-         return porosity;
+         residualWaterContent = 0.1 * s.GetPorosity();
+         has_been_calculated = true;
+         return residualWaterContent;
       }
 
-      double GetPorosity() const override
+
+      double GetResidualWaterContent() const override
       {
-         if (!has_been_generated) 
-         {
-            throw NotGeneratedException("Please calculate Value before calling GetPorosity by using CalculatePorosity");
-         }
-         return porosity;
+         return residualWaterContent;
       }
 
    private:
-      const  KiLib::Soils::DensityDryGen& density_gen;
-      bool   has_been_generated{false};
-      double porosity{0};
+      bool   has_been_calculated{false};
+      double residualWaterContent{0};
+
    };
 }       

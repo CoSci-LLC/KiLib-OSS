@@ -78,6 +78,10 @@ namespace KiLib::Soils
       {
          return s.GetResidualWaterContent();
       }
+      double GetDensityWet() const override
+      {
+         return s.GetDensityWet();
+      }
       double GetFieldCapacity() const override
       {
          return s.GetFieldCapacity();

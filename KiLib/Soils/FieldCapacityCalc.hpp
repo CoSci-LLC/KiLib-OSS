@@ -34,9 +34,24 @@ namespace KiLib::Soils
          
       }
 
+      double CalculateFieldCapacity(const double & P)
+      {
+         const auto t_r = s.GetResidualWaterContent();
+         const auto t_s = s.GetPorosity();
+         const auto n   = s.GetVgWetN1();
+         const auto alpha = s.GetVgWetAlpha1();
+         fieldCapacity = t_r + (t_s - t_r) / pow(1 + pow(alpha * std::fabs(P),n), 1-1/n);
+         has_been_calculated = true;
+         return fieldCapacity;
+      }
+
       double GetFieldCapacity() const override
       {
-         return 52;
+         return fieldCapacity;
       }
+
+   private:
+      bool has_been_calculated{false};
+      double fieldCapacity{0};
    };
 }       

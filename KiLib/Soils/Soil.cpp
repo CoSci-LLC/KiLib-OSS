@@ -49,6 +49,10 @@ double Soil::GetResidualWaterContent() const
 {
    return this->residualWaterContent.value();
 }
+double Soil::GetDensityWet() const
+{
+   return this->densityWet.value();
+}
 double Soil::GetFieldCapacity() const
 {
    return this->fieldCapacity.value();

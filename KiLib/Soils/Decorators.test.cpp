@@ -23,11 +23,12 @@
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
 #include <KiLib/Soils/PorosityCalc.hpp>
+#include <KiLib/Soils/ResidualWaterContentCalc.hpp>
 #include <KiLib/Soils/FieldCapacityCalc.hpp>
 #include <KiLib/Soils/UserDefined.hpp>
 #include <KiLib/Soils/DistributionModel.hpp>
-#include <KiLib/Soils/DensityWetCalc.hpp>
 #include <KiLib/Soils/DensityDryGen.hpp>
+#include <KiLib/Soils/DensityWetCalc.hpp>
 
 namespace KiLib
 {
@@ -45,6 +46,9 @@ namespace KiLib
    {
       Soils::UserDefined ud;
 
+      ud.SetVgWetAlpha1(0.0001);
+      ud.SetVgWetN1(1.3);
+  
       // Add the required info for SlideforNET use case
       ud.SetCohesionDistribution({
             .constant = 10000,
@@ -87,50 +91,61 @@ namespace KiLib
                .max = 800,
             },
             .normal{
-               .mean   = 1100,
-               .stdDev = 0,
+               .mean   = 1450,
+               .stdDev = 100,
             }});
 
 
       // Test the above information
-      ASSERT_EQ(ud.GetDensityDryDistribution().GetNormal().GetMean(), 1100);
-      const double porosity_standard_value = -0.41471698113207545;
+      ASSERT_EQ(ud.GetDensityDryDistribution().GetNormal().GetMean(), 1450);
 
       std::random_device rand_device;
-      std::mt19937_64 gen(rand_device());
+      std::mt19937_64 gen( 5489U ); // To always get the same seed.
+      //std::mt19937_64 gen(rand_device());
+      //std::mt19937_64 gen(time(NULL));
+
       //spdlog::debug("Starting soil: {:X}", (long)&ud);
       auto dm = Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal);
       Soils::DensityDryGen ddg(dm, gen);
       ddg.GenerateDensityDry();
+      SPDLOG_DEBUG("densityDry = {}", ddg.GetDensityDry());
+      ASSERT_EQ(ddg.GetDensityDry(), 1379.6906200167286);
 
       Soils::PorosityCalc pc(ddg);
-      auto porosity = pc.GeneratePorosity();
+      auto porosity = pc.CalculatePorosity();
+      SPDLOG_DEBUG("porosity       = {}", porosity);
+      SPDLOG_DEBUG("pc.GetPorosity = {}", pc.GetPorosity());
+      ASSERT_EQ(pc.GetPorosity(), 0.47936203018236656);
 
-      ASSERT_EQ(porosity, pc.GetPorosity());
+      Soils::ResidualWaterContentCalc rwcc(pc);
+      const auto residualWaterContent = rwcc.CalculateResidualWaterContent();
+      SPDLOG_DEBUG("residualWaterContent         = {}", residualWaterContent);
+      SPDLOG_DEBUG("rwcc.GetResidualWaterContent = {}", rwcc.GetResidualWaterContent());
+      ASSERT_EQ(rwcc.GetResidualWaterContent(), 0.047936203018236656);
 
-      // We should be using the normal distribution porosity method now
-      //spdlog::debug(" PC: Grabbing Porosity");
-      ASSERT_EQ(pc.GetPorosity(), porosity_standard_value);
-
-      Soils::FieldCapacityCalc fcc(pc);
-      
-      //spdlog::debug("FCC: Grabbing Field Cap");
-      ASSERT_EQ(fcc.GetFieldCapacity(), 52);
-
-      //spdlog::debug("FCC: Grabbing Porosity");
-      ASSERT_EQ(fcc.GetPorosity(), porosity_standard_value);
-
+      Soils::FieldCapacityCalc fcc(rwcc);
+      SPDLOG_DEBUG("FCC: Grabbing Field Capacity");
+      const auto fieldCapacity = fcc.CalculateFieldCapacity(33000);
+      SPDLOG_DEBUG("fieldCapacity        = {}", fieldCapacity);
+      SPDLOG_DEBUG("fcc.GetFieldCapacity = {}", fcc.GetFieldCapacity());
+      ASSERT_EQ(fcc.GetFieldCapacity(), 0.3364047213531462);
 
       Soils::DensityWetCalc dwc(fcc);
+      SPDLOG_DEBUG("DWC: Grabbing Density Wet");
+      auto densityWet = dwc.CalculateDensityWet(0.0);
+      SPDLOG_DEBUG("densityWet S = 0   = {}", densityWet);
+      SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
+      ASSERT_EQ(dwc.GetDensityWet(), 1716.0953413698749);
 
-      //spdlog::debug("DWC: Grabbing GetFieldCapacity");
-      ASSERT_EQ(dwc.GetFieldCapacity(), 52);
+      densityWet = dwc.CalculateDensityWet(0.8);
+      SPDLOG_DEBUG("densityWet S = 0.8 = {}", densityWet);
+      SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
+      ASSERT_EQ(dwc.GetDensityWet(), 1830.4611884332512);
 
-      //spdlog::debug("DWC: Grabbing GetPorosity");
-      ASSERT_EQ(dwc.GetPorosity(), porosity_standard_value);
-
-      //spdlog::debug("DWC: Grabbing GetDensityWet");
-      ASSERT_EQ(dwc.GetDensityWet(), 42);
+      densityWet = dwc.CalculateDensityWet(1.0);
+      SPDLOG_DEBUG("densityWet S = 1   = {}", densityWet);
+      SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
+      ASSERT_EQ(dwc.GetDensityWet(), 1859.0526501990953);
    }
 
 
@@ -174,32 +189,37 @@ namespace KiLib
             .constant = 890,
             .uniformPrimula{
                .min = 1040.84,
-               .max = 1601.3,
+               .max = 1601.3
             },
             .uniform{
-               .min = 800,
-               .max = 800,
+               .min = 1100,
+               .max = 1400
             },
             .normal{
                .mean   = 900,
-               .stdDev = 200,
+               .stdDev = 200
             }});
 
-      const double porosity_value = 50;
+      std::random_device rand_device;
+      std::mt19937_64 gen( 5489U ); // To always get the same seed.
 
-      ud.SetPorosity(porosity_value);
-
-      auto dm = Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal);
-
-      // We should be using the normal distribution porosity method now
+      auto dm = Soils::DistributionModel(ud ,Soils::DistributionModelType::Uniform);
       ASSERT_EQ(dm.GetDensityDryDistribution().GetConstant(), 890);
+
+      Soils::DensityDryGen ddg(dm, gen);
+      ddg.GenerateDensityDry();
+      SPDLOG_DEBUG("densityDry = {}", ddg.GetDensityDry());
+      ASSERT_EQ(ddg.GetDensityDry(), 1336.0462864603405);
       
-      ASSERT_EQ(dm.GetPorosity(), porosity_value);
+      Soils::PorosityCalc pc(ddg);
+      auto porosity = pc.CalculatePorosity();
+      SPDLOG_DEBUG("Porosity = {}", porosity);
+      ASSERT_EQ(pc.GetPorosity(), 0.4958315900149658);
 
 
-      KiLib::Soils::IDistributionModelDecorator &soil_base = dm;    
+      //KiLib::Soils::IDistributionModelDecorator &soil_base = dm;    
 
-      ASSERT_EQ(test_function_for_soil_passing(soil_base), porosity_value);
+      //ASSERT_EQ(test_function_for_soil_passing(soil_base), porosity_value);
 
       // Test uninitialized Values
       //EXPECT_THROW(ud.GetPorosity(), std::bad_optional_access);
@@ -260,21 +280,24 @@ namespace KiLib
                .stdDev = 0,
             }});
 
-      const double porosity_value = 50;
-      const double porosity_standard_value = 1-890/2650;
+      const double porosity_value = 0.50;
 
       ud.SetPorosity(porosity_value);
+      SPDLOG_DEBUG("Original porosity = {}", ud.GetPorosity());
 
       std::random_device rand_device;
-      std::mt19937_64 gen(rand_device());
+      std::mt19937_64 gen( 5489U ); // To always get the same seed.
+
       auto dm = Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal);
       Soils::DensityDryGen ddg(dm, gen);
       ddg.GenerateDensityDry();
 
       Soils::PorosityCalc pc(ddg);
 
-      auto porosity = pc.GeneratePorosity();
-      ASSERT_EQ(porosity, pc.GetPorosity());
+      SPDLOG_DEBUG("Getting porosity");
+      auto porosity = pc.CalculatePorosity();
+      SPDLOG_DEBUG("Porosity = {}", porosity);
+      ASSERT_EQ(pc.GetPorosity(), 0.58490566037735847);
 
       
       // We should be using the normal distribution porosity method now
@@ -282,7 +305,7 @@ namespace KiLib
       
       KiLib::Soils::ISoil &soil_base = pc;    
 
-      ASSERT_EQ(test_function_for_soil_passing(soil_base), porosity_standard_value);
+      ASSERT_EQ(test_function_for_soil_passing(soil_base), porosity);
 
       // Test uninitialized Values
       //EXPECT_THROW(ud.GetPorosity(), std::bad_optional_access);
@@ -344,7 +367,7 @@ namespace KiLib
 
 
       std::random_device rand_device;
-      std::mt19937_64 gen(rand_device());
+      std::mt19937_64 gen( 5489U ); // To always get the same seed.
 
       auto dm = Soils::DistributionModel(ud ,Soils::DistributionModelType::Normal);
       Soils::DensityDryGen ddg(dm, gen);
@@ -356,12 +379,12 @@ namespace KiLib
 
       Soils::PorosityCalc pc(ddg);
 
-      auto porosity = pc.GeneratePorosity();
+      auto porosity = pc.CalculatePorosity();
 
       ASSERT_EQ(porosity, pc.GetPorosity());
 
       // ddg.GenerateDensityDry(); //return a value as well
-      spdlog::debug("PorosityCalc: {}", pc.GetPorosity());
+      SPDLOG_DEBUG("PorosityCalc: {}", pc.GetPorosity());
 
    }
 }

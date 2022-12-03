@@ -72,6 +72,7 @@ namespace KiLib::Soils
       virtual double GetDensityDry() const = 0;
       virtual double GetSaturatedWaterContent() const = 0;
       virtual double GetResidualWaterContent() const = 0;
+      virtual double GetDensityWet() const = 0;
       virtual double GetFieldCapacity() const = 0;
       virtual double GetInitWaterContent() const = 0;
       virtual double GetWaterExchangeTerm() const = 0;
@@ -94,6 +95,7 @@ namespace KiLib::Soils
       std::string GetLongName() const override;
       double GetPorosity() const override;
       double GetDensityDry() const override;
+      double GetDensityWet() const override;
       double GetSaturatedWaterContent() const override;
       double GetResidualWaterContent() const override;
       double GetFieldCapacity() const override;
@@ -119,6 +121,7 @@ namespace KiLib::Soils
       std::optional<double> porosity;
       std::optional<double> saturatedWaterContent;
       std::optional<double> residualWaterContent;
+      std::optional<double> densityWet;
       std::optional<double> fieldCapacity;
       std::optional<double> initWaterContent;
       std::optional<double> waterExchangeTerm;

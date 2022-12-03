@@ -34,9 +34,22 @@ namespace KiLib::Soils
 
       }
 
-      double GetDensityWet() const 
+      double CalculateDensityWet(const double & S)
       {
-         return 42;
+         const auto poro = s.GetPorosity();
+         const auto fc   = s.GetFieldCapacity();
+         densityWet = (1 - poro) * KiLib::Constants::GRAIN_DENSITY + (S * poro + (1-S) * fc) * KiLib::Constants::WATER_DENSITY;
+         has_been_calculated = true;
+         return densityWet;
       }
+
+      double GetDensityWet() const override
+      {
+         return densityWet;
+      }
+
+   private:
+      bool   has_been_calculated{false};
+      double densityWet{0};
    };
 }       

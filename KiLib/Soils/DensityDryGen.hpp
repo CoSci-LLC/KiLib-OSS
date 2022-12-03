@@ -42,29 +42,36 @@ namespace KiLib::Soils
       {
          //spdlog::debug("Entering...");
          //spdlog::debug("GenerateDensityDry soil: {:X}", (long)&s);
-         double mean, sd;
+         double min, max, mean, sd;
          switch (GetDistributionModelType())
          {
             case (DistributionModelType::Constant):
-               throw NotImplementedException("Distribution Type not implemented for DensityDryGen");
+               densityDry = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
+               has_been_generated = true;               
+               break;
+
             case (DistributionModelType::Uniform):
-               throw NotImplementedException("Distribution Type not implemented for DensityDryGen");
+               min        = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMin();
+               max        = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMax();
+               densityDry = KiLib::Random::runif(1, min, max, gen)[0];
+               has_been_generated = true;               
+               break;
+
             case (DistributionModelType::Normal):
-               
-               mean                      = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
-               sd                        = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetStdDev();
-               //spdlog::debug(mean);
+               mean = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
+               sd   = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetStdDev();
                if (sd == 0.0)
                {
                   densityDry = mean;
                }
                else
                {
-                  auto logValues                 = KiLib::Random::TransformNormalToLogNormal(mean, sd);
-                  densityDry = KiLib::Random::rlnorm(1, logValues.first, logValues.second, gen)[0];
+                  auto logValues = KiLib::Random::TransformNormalToLogNormal(mean, sd);
+                  densityDry     = KiLib::Random::rlnorm(1, logValues.first, logValues.second, gen)[0];
                }
                has_been_generated = true;               
                break;
+
             default:
                throw NotImplementedException("Unknown Distribution Type for DensityDryGen");
          }
@@ -73,7 +80,8 @@ namespace KiLib::Soils
 
       double GetDensityDry() const override
       {
-         if (!has_been_generated) {
+         if (!has_been_generated) 
+         {
             throw NotGeneratedException("Please Generate Value before calling GetDensityDry by using GenerateDensityDry");
          }
          return densityDry;
