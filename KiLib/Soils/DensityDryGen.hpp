@@ -34,42 +34,38 @@ namespace KiLib::Soils
 
       DensityDryGen(const IDistributionModelDecorator& s, std::mt19937_64 &gen) : DistributionModel(s), gen(gen)
       {
-         //spdlog::debug("Passing soil: {:X}", (long)&s);
-         //spdlog::debug("Normal Distribution: {}", s.GetDensityDryDistribution().GetNormal().GetMean());
       }
 
       double GenerateDensityDry()
       {
-         //spdlog::debug("Entering...");
-         //spdlog::debug("GenerateDensityDry soil: {:X}", (long)&s);
          double min, max, mean, sd;
          switch (GetDistributionModelType())
          {
             case (DistributionModelType::Constant):
-               densityDry = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
-               has_been_generated = true;               
+               this->densityDry         = GetBaseSoil().GetDensityDryDistribution().GetConstant();
+               this->has_been_generated = true;               
                break;
 
             case (DistributionModelType::Uniform):
-               min        = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMin();
-               max        = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMax();
-               densityDry = KiLib::Random::runif(1, min, max, gen)[0];
-               has_been_generated = true;               
+               min                      = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMin();
+               max                      = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMax();
+               this->densityDry         = KiLib::Random::runif(1, min, max, gen)[0];
+               this->has_been_generated = true;               
                break;
 
             case (DistributionModelType::Normal):
-               mean = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
-               sd   = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetStdDev();
+               mean            = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
+               sd              = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetStdDev();
                if (sd == 0.0)
                {
-                  densityDry = mean;
+                  this->densityDry = mean;
                }
                else
                {
-                  auto logValues = KiLib::Random::TransformNormalToLogNormal(mean, sd);
-                  densityDry     = KiLib::Random::rlnorm(1, logValues.first, logValues.second, gen)[0];
+                  auto logValues   = KiLib::Random::TransformNormalToLogNormal(mean, sd);
+                  this->densityDry = KiLib::Random::rlnorm(1, logValues.first, logValues.second, gen)[0];
                }
-               has_been_generated = true;               
+               this->has_been_generated = true;               
                break;
 
             default:
@@ -87,11 +83,9 @@ namespace KiLib::Soils
          return densityDry;
       }
 
-      
-
    private:
       std::mt19937_64 &gen;
-      bool has_been_generated = false;
-      double densityDry = 0.0;
+      bool             has_been_generated{false};
+      double           densityDry{0.0};
    };
 }       

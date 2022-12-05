@@ -34,14 +34,13 @@ namespace KiLib::Soils
 
       PorosityCalc(const KiLib::Soils::DensityDryGen& s) : DistributionModel(s), density_gen(s)
       {
-
       }
 
       double CalculatePorosity()
       {
-         porosity = 1 - density_gen.GetDensityDry() / KiLib::Constants::GRAIN_DENSITY;
-         has_been_generated = true;
-         return porosity;
+         this->porosity           = 1 - density_gen.GetDensityDry() / KiLib::Constants::GRAIN_DENSITY;
+         this->has_been_generated = true;
+         return this->porosity;
       }
 
       double GetPorosity() const override
@@ -50,7 +49,7 @@ namespace KiLib::Soils
          {
             throw NotGeneratedException("Please calculate Value before calling GetPorosity by using CalculatePorosity");
          }
-         return porosity;
+         return this->porosity;
       }
 
    private:

@@ -31,20 +31,19 @@ namespace KiLib::Soils
    public:
       ResidualWaterContentCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
       {
-         
       }
 
       double CalculateResidualWaterContent()
       {
-         residualWaterContent = 0.1 * s.GetPorosity();
-         has_been_calculated = true;
-         return residualWaterContent;
+         this->residualWaterContent = 0.1 * s.GetPorosity();
+         this->has_been_calculated  = true;
+         return this->residualWaterContent;
       }
 
 
       double GetResidualWaterContent() const override
       {
-         return residualWaterContent;
+         return this->residualWaterContent;
       }
 
    private:
