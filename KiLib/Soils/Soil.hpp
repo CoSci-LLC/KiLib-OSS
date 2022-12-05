@@ -76,8 +76,8 @@ namespace KiLib::Soils
       virtual double GetFieldCapacity() const = 0;
       virtual double GetInitWaterContent() const = 0;
       virtual double GetWaterExchangeTerm() const = 0;
-      virtual double GetVgWetAlpha1() const = 0;
-      virtual double GetVgWetN1() const = 0;
+      virtual double GetVGWetAlpha1() const = 0;
+      virtual double GetVGWetN1() const = 0;
       virtual double GetPoreFracMatrix() const = 0;
       virtual double GetPoreFracFractures() const = 0;
       virtual double GetMaxTensileStrain() const = 0;
@@ -101,8 +101,8 @@ namespace KiLib::Soils
       double GetFieldCapacity() const override;
       double GetInitWaterContent() const override;
       double GetWaterExchangeTerm() const override;
-      double GetVgWetAlpha1() const override;
-      double GetVgWetN1() const override;
+      double GetVGWetAlpha1() const override;
+      double GetVGWetN1() const override;
       double GetPoreFracMatrix() const override;
       double GetPoreFracFractures() const override;
       double GetMaxTensileStrain() const override;

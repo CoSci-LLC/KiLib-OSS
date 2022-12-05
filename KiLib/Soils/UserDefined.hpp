@@ -64,8 +64,8 @@ namespace KiLib::Soils
       void SetFieldCapacity(double value);
       void SetInitWaterContent(double value);
       void SetWaterExchangeTerm(double value);
-      void SetVgWetAlpha1(double value);
-      void SetVgWetN1(double value);
+      void SetVGWetAlpha1(double value);
+      void SetVGWetN1(double value);
       void SetMaxTensileStrain(double value);
 
       void SetFrictionAngleDistribution(ValueDistribution value);

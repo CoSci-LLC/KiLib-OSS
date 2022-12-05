@@ -46,8 +46,8 @@ namespace KiLib
    {
       Soils::UserDefined ud;
 
-      ud.SetVgWetAlpha1(0.0001);
-      ud.SetVgWetN1(1.3);
+      ud.SetVGWetAlpha1(0.0001);
+      ud.SetVGWetN1(1.3);
   
       // Add the required info for SlideforNET use case
       ud.SetCohesionDistribution({

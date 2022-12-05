@@ -94,13 +94,13 @@ namespace KiLib::Soils
       {
          return s.GetWaterExchangeTerm();
       }
-      double GetVgWetAlpha1() const override
+      double GetVGWetAlpha1() const override
       {
-         return s.GetVgWetAlpha1();
+         return s.GetVGWetAlpha1();
       }
-      double GetVgWetN1() const override
+      double GetVGWetN1() const override
       {
-         return s.GetVgWetN1();
+         return s.GetVGWetN1();
       }
       double GetPoreFracMatrix() const override
       {

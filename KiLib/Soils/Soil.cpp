@@ -65,11 +65,11 @@ double Soil::GetWaterExchangeTerm() const
 {
    return this->waterExchangeTerm.value();
 }
-double Soil::GetVgWetAlpha1() const
+double Soil::GetVGWetAlpha1() const
 {
    return this->vgWetAlpha1.value();
 }
-double Soil::GetVgWetN1() const
+double Soil::GetVGWetN1() const
 {
    return this->vgWetN1.value();
 }

@@ -55,11 +55,11 @@ void UserDefined::SetWaterExchangeTerm(double value)
 {
    this->waterExchangeTerm = value;
 }
-void UserDefined::SetVgWetAlpha1(double value)
+void UserDefined::SetVGWetAlpha1(double value)
 {
    this->vgWetAlpha1 = value;
 }
-void UserDefined::SetVgWetN1(double value)
+void UserDefined::SetVGWetN1(double value)
 {
    this->vgWetN1 = value;
 }
