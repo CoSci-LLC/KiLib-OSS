@@ -22,7 +22,6 @@
 
 #include <KiLib/Soils/UserDefined.hpp>
 #include <KiLib/Soils/DistributionModel.hpp>
-#include <spdlog/spdlog.h>
 #include <KiLib/Soils/DensityDryGen.hpp>
 
 
