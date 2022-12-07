@@ -38,7 +38,7 @@ namespace KiLib::Soils
    {
    public:
 
-      DistributionModel(ISoil& s, const DistributionModelType& t) : s(s), distribution_model_type{t}
+      DistributionModel(const ISoil& s, const DistributionModelType& t) : s(s), distribution_model_type{t}
       {
          //spdlog::debug("DistributionModel soil: {:X}", (long)&s);
       }
