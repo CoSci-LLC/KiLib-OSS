@@ -18,24 +18,37 @@
  */
 
 
-#include <KiLib/KiLib.hpp>
-#include <gtest/gtest.h>
-#include <spdlog/spdlog.h>
+#pragma once
+
+#include <KiLib/Soils/UserDefined.hpp>
+#include <KiLib/Soils/DistributionModel.hpp>
 
 
-namespace KiLib
+namespace KiLib::Soils
 {
-   TEST(Soil, getTest)
+   class ResidualWaterContentCalc : public DistributionModel
    {
-      KiLib::Soils::Soil a = KiLib::Soils::factory.get("ch");
-      KiLib::Soils::Soil b = KiLib::Soils::factory.get(KiLib::Soils::SoilID::ml);
+   public:
+      ResidualWaterContentCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
+      {
+      }
 
-      ASSERT_EQ(a.GetConductivityDistributon().GetUniformPrimula().GetMax(), 1e-06);
-      ASSERT_EQ(a.GetLongName(), "Clay of high plasticity, fat clay");
-      ASSERT_EQ(a.GetCohesionDistribution().GetConstant(), 25000.0);
+      double CalculateResidualWaterContent()
+      {
+         this->residualWaterContent = 0.1 * s.GetPorosity();
+         this->has_been_calculated  = true;
+         return this->residualWaterContent;
+      }
 
-      ASSERT_EQ(b.GetFrictionAngleDistribution().GetNormal().GetMean(), 33 * M_PI / 180.0);
-      ASSERT_EQ(b.GetLongName(), "Silt");
-      ASSERT_NE(b.GetLongName(), "SDJKFLJSdKLFJSDFKL");
-   }
-} // namespace KiLib
+
+      double GetResidualWaterContent() const override
+      {
+         return this->residualWaterContent;
+      }
+
+   private:
+      bool   has_been_calculated{false};
+      double residualWaterContent{0};
+
+   };
+}       

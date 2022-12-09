@@ -64,13 +64,13 @@ namespace KiLib::Soils
       void SetFieldCapacity(double value);
       void SetInitWaterContent(double value);
       void SetWaterExchangeTerm(double value);
-      void SetVgWetAlpha1(double value);
-      void SetVgWetN1(double value);
+      void SetVGWetAlpha1(double value);
+      void SetVGWetN1(double value);
       void SetMaxTensileStrain(double value);
 
-      void SetFrictionAngle(ValueDistribution value);
-      void SetDensityDry(ValueDistribution value);
-      void SetCohesion(ValueDistribution value);
-      void SetConductivity(ValueDistribution value);
+      void SetFrictionAngleDistribution(ValueDistribution value);
+      void SetDensityDryDistribution(ValueDistribution value);
+      void SetCohesionDistribution(ValueDistribution value);
+      void SetConductivityDistribution(ValueDistribution value);
    };
 } // namespace KiLib::Soils
