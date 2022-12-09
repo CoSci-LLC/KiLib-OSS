@@ -106,29 +106,29 @@ void Soil::ComputePorosity(DistributionModel & distModel)
    }
    else
    {
-       switch (distModel)
-       {
-          case (DistributionModel::Constant):
-             // DistributionModel not implemented
-             break;
-          case (DistributionModel::Uniform):
-          // DistributionModel not implemented
-             break;
-          case (DistributionModel::Normal):
-             auto densityDry = this->densityDry.normal.mean;
-             if (densityDry)
-             {
-                porosity = (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
-             }
-             else
-             {
-                // Cannot compute porosity from dry density exit
-             }
-             break;
-         default:
-             // DistributionModel not found
-            break;
-      }
+      // switch (distModel)
+      // {
+      //    case (DistributionModel::Constant):
+      //       // DistributionModel not implemented
+      //       break;
+      //    case (DistributionModel::Uniform):
+      //    // DistributionModel not implemented
+      //       break;
+      //    case (DistributionModel::Normal):
+      //       auto densityDry = this->densityDry.normal.mean;
+      //       if (densityDry)
+      //       {
+      //         //  porosity = (1 - densityDry) / KiLib::Constants::GRAIN_DENSITY;
+      //       }
+      //       else
+      //       {
+      //          // Cannot compute porosity from dry density exit
+      //       }
+      //       break;
+      //   default:
+      //       // DistributionModel not found
+      //      break;
+      //}
    }
    return;
 }

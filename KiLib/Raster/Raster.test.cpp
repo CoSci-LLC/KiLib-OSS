@@ -19,6 +19,8 @@
 
 
 #include <KiLib/Raster/Raster.hpp>
+#include <KiLib/Utils/Random.hpp>
+
 #include <algorithm>
 #include <filesystem>
 #include <gtest/gtest.h>

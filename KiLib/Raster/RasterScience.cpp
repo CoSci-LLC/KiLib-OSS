@@ -21,9 +21,7 @@ namespace KiLib
       const double sx = x - std::floor(x);
       const double sy = y - std::floor(y);
 
-      const double val = f00 * (1.0 - sx) * (1.0 - sy) + f10 * sx * (1.0 - sy) + f01 * (1.0 - sx) * sy + f11 * sx * sy;
-
-      return val;
+      return f00 * (1.0 - sx) * (1.0 - sy) + f10 * sx * (1.0 - sy) + f01 * (1.0 - sx) * sy + f11 * sx * sy;
    }
 
    double Raster::DistFromBoundary(const Vec3 pos) const
