@@ -2,6 +2,19 @@
 
 Notable changes to this project will be documented in this file.
 
+## v5.1.0
+---
+
+### Added
+
+- Added soil decorators for additional calculations
+- Constants for certain physical properties
+- New version of spdlog
+
+### Fixed
+
+- Fixed tests for rasters
+
 ## v5.0.0
 ---
 
