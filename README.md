@@ -1,5 +1,5 @@
 # KiLib-OSS 
-#### Version v5.0.0
+#### Version v5.1.0
 
 *A Scientific Library for "Earth" (Ki) surface processes*
 
@@ -21,9 +21,14 @@ $ cmake --install .
 If you wish to build using Ninja, change the generator that `cmake` uses by:
 
 ```bash
-cmake -G Ninja ...<continue your other settings>
+cmake .. -G Ninja -DCMAKE_INSTALL_PREFIX=<install location>
 ```
 
+If you wish to build using Google tests, add:
+
+```bash
+cmake .. -G Ninja -DKILIB_BUILD_TESTS=Yes 
+```
 
 ### Windows
 Visual Studio 2019 is the preferred method for building KiLib on Windows. CMake is also required.
@@ -59,7 +64,7 @@ FetchContent_Populate(
     kilib_proj
     QUIET
     GIT_REPOSITORY https://github.com/CoSci-LLC/KiLib-OSS.git
-    GIT_TAG v5.0.0
+    GIT_TAG v5.1.0
     SOURCE_DIR     kilib_proj              # (Relative) path within in the build directory.
 )
 

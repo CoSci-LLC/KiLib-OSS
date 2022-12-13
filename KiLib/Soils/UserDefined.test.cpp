@@ -54,7 +54,7 @@ namespace KiLib
       // Create user defined soil
       KiLib::Soils::UserDefined ud;
 
-      EXPECT_THROW(ud.GetFrictionAngle().GetConstant(), std::bad_optional_access);
+      EXPECT_THROW(ud.GetFrictionAngleDistribution().GetConstant(), std::bad_optional_access);
 
       // Create uniform values (1)
       KiLib::Soils::UserDefinedValueUniform udvu1;
@@ -88,22 +88,22 @@ namespace KiLib
       ASSERT_EQ(udvd.GetUniformPrimula().GetMin(), min);
 
       // Test the distribution within the user defined soil
-      ud.SetFrictionAngle(udvd);
+      ud.SetFrictionAngleDistribution(udvd);
 
       // Check that all previous values are set properly
       // udvu1
-      ASSERT_EQ(ud.GetFrictionAngle().GetUniformPrimula().GetMin(), min);
-      ASSERT_EQ(ud.GetFrictionAngle().GetUniformPrimula().GetMax(), 5.7);
+      ASSERT_EQ(ud.GetFrictionAngleDistribution().GetUniformPrimula().GetMin(), min);
+      ASSERT_EQ(ud.GetFrictionAngleDistribution().GetUniformPrimula().GetMax(), 5.7);
 
       // udvu2
-      ASSERT_EQ(ud.GetFrictionAngle().GetUniform().GetMin(), 7.9);
-      ASSERT_EQ(ud.GetFrictionAngle().GetUniform().GetMax(), 10.3);
+      ASSERT_EQ(ud.GetFrictionAngleDistribution().GetUniform().GetMin(), 7.9);
+      ASSERT_EQ(ud.GetFrictionAngleDistribution().GetUniform().GetMax(), 10.3);
 
       // udvn
-      ASSERT_EQ(ud.GetFrictionAngle().GetNormal().GetMean(), 5.3);
-      ASSERT_EQ(ud.GetFrictionAngle().GetNormal().GetStdDev(), 1.1);
+      ASSERT_EQ(ud.GetFrictionAngleDistribution().GetNormal().GetMean(), 5.3);
+      ASSERT_EQ(ud.GetFrictionAngleDistribution().GetNormal().GetStdDev(), 1.1);
 
       // udvd
-      ASSERT_EQ(ud.GetFrictionAngle().GetConstant(), 4.3);
+      ASSERT_EQ(ud.GetFrictionAngleDistribution().GetConstant(), 4.3);
    }
 } // namespace KiLib

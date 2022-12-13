@@ -19,6 +19,7 @@
 
 
 #include <KiLib/Soils/Soils.hpp>
+#include <KiLib/Exceptions/NotImplemented.hpp>
 
 using namespace KiLib::Soils;
 
@@ -31,7 +32,12 @@ std::string Soil::GetLongName() const
    return this->longname;
 }
 
-double Soil::GetPorosity() const
+double Soil::GetDensityDry() const
+{
+   throw NotImplementedException("GetDensityDry not implemented in soil base class. Use the DensityDryGen Decorator class");
+}
+
+double Soil::GetPorosity() const 
 {
    return this->porosity.value();
 }
@@ -42,6 +48,10 @@ double Soil::GetSaturatedWaterContent() const
 double Soil::GetResidualWaterContent() const
 {
    return this->residualWaterContent.value();
+}
+double Soil::GetDensityWet() const
+{
+   return this->densityWet.value();
 }
 double Soil::GetFieldCapacity() const
 {
@@ -55,11 +65,11 @@ double Soil::GetWaterExchangeTerm() const
 {
    return this->waterExchangeTerm.value();
 }
-double Soil::GetVgWetAlpha1() const
+double Soil::GetVGWetAlpha1() const
 {
    return this->vgWetAlpha1.value();
 }
-double Soil::GetVgWetN1() const
+double Soil::GetVGWetN1() const
 {
    return this->vgWetN1.value();
 }
@@ -76,25 +86,27 @@ double Soil::GetMaxTensileStrain() const
    return this->maxTensileStrain.value();
 }
 
-ValueDistribution Soil::GetFrictionAngle() const
+ValueDistribution Soil::GetFrictionAngleDistribution() const
 {
    return this->frictionAngle;
 }
 
-ValueDistribution Soil::GetDensityDry() const
+ValueDistribution Soil::GetDensityDryDistribution() const
 {
    return this->densityDry;
 }
 
-ValueDistribution Soil::GetCohesion() const
+ValueDistribution Soil::GetCohesionDistribution() const
 {
    return this->cohesion;
 }
 
-ValueDistribution Soil::GetConductivity() const
+ValueDistribution Soil::GetConductivityDistributon() const
 {
    return this->conductivity;
 }
+
+
 
 
 double ValueUniform::GetMin() const
