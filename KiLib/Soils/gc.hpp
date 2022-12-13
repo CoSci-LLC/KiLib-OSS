@@ -40,8 +40,8 @@ namespace KiLib::Soils
          this->initWaterContent      = 0.05;    // [m3/m3]
          this->waterExchangeTerm     = 3e-06;   // [1/s]
          this->vgWetAlpha1           = 0.00023; // [1/Pa]
-         this->vgWetN1               = 2;
-         this->maxTensileStrain      = 0; // [Pa]
+         this->vgWetN1               = 2;       // [-]
+         this->maxTensileStrain      = 0;       // [Pa]
 
          this->frictionAngle = {
             .constant = 34 * M_PI / 180.0,
@@ -73,7 +73,7 @@ namespace KiLib::Soils
                .stdDev = 100,
             }};
 
-         this->cohesion = {
+         this->cohesion = { // [Pa]
             .constant = 500,
             .uniformPrimula{
                .min = 0,
@@ -88,7 +88,7 @@ namespace KiLib::Soils
                .stdDev = 50,
             }};
 
-         this->conductivity = {
+         this->conductivity = { // [m/s]
             .constant = 5.05e-07,
             .uniformPrimula{
                .min = 1e-08,

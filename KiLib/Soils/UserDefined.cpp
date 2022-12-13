@@ -55,11 +55,11 @@ void UserDefined::SetWaterExchangeTerm(double value)
 {
    this->waterExchangeTerm = value;
 }
-void UserDefined::SetVgWetAlpha1(double value)
+void UserDefined::SetVGWetAlpha1(double value)
 {
    this->vgWetAlpha1 = value;
 }
-void UserDefined::SetVgWetN1(double value)
+void UserDefined::SetVGWetN1(double value)
 {
    this->vgWetN1 = value;
 }
@@ -69,22 +69,22 @@ void UserDefined::SetMaxTensileStrain(double value)
    this->maxTensileStrain = value;
 }
 
-void UserDefined::SetFrictionAngle(ValueDistribution value)
+void UserDefined::SetFrictionAngleDistribution(ValueDistribution value)
 {
    this->frictionAngle = value;
 }
 
-void UserDefined::SetDensityDry(ValueDistribution value)
+void UserDefined::SetDensityDryDistribution(ValueDistribution value)
 {
    this->densityDry = value;
 }
 
-void UserDefined::SetCohesion(ValueDistribution value)
+void UserDefined::SetCohesionDistribution(ValueDistribution value)
 {
    this->cohesion = value;
 }
 
-void UserDefined::SetConductivity(ValueDistribution value)
+void UserDefined::SetConductivityDistribution(ValueDistribution value)
 {
    this->conductivity = value;
 }

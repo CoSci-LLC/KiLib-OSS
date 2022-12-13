@@ -21,9 +21,14 @@ $ cmake --install .
 If you wish to build using Ninja, change the generator that `cmake` uses by:
 
 ```bash
-cmake -G Ninja ...<continue your other settings>
+cmake .. -G Ninja -DCMAKE_INSTALL_PREFIX=<install location>
 ```
 
+If you wish to build using Google tests, add:
+
+```bash
+cmake .. -G Ninja -DKILIB_BUILD_TESTS=Yes 
+```
 
 ### Windows
 Visual Studio 2019 is the preferred method for building KiLib on Windows. CMake is also required.
