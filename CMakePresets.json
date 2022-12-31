@@ -1,0 +1,109 @@
+{
+  "version": 2,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/",
+      "cacheVariables": {
+        "KILIB_BUILD_TESTS": "OFF",
+        "KILIB_BUILD_IPO": "OFF",
+        "KILIB_LOG_LEVEL": "0",
+        "KILIB_STRICT_BUILD": "OFF"
+      },
+      "environment": {}
+    },
+    {
+      "name": "Debug",
+      "inherits": "default",
+      "displayName": "Debug",
+      "description": "Debug build with tests",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "KILIB_BUILD_TESTS": "ON",
+        "KILIB_LOG_LEVEL": "1"
+      }
+    },
+    {
+      "name": "Release",
+      "inherits": "default",
+      "displayName": "Release",
+      "description": "Release build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "KILIB_BUILD_TESTS": "OFF",
+        "KILIB_BUILD_IPO": "ON"
+      }
+    },
+    {
+      "name": "Debug-shm",
+      "inherits": "Debug",
+      "binaryDir": "/tmp/build"
+    },
+    {
+      "name": "Release-shm",
+      "inherits": "Release",
+      "binaryDir": "/tmp/build"
+    },
+    {
+      "name": "Debug-clang-shm",
+      "inherits": "Debug-shm",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "Release-clang-shm",
+      "inherits": "Release-shm",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "wasm",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/",
+      "cacheVariables": {
+        "CMAKE_PROJECT_NAME": "wasmGen",
+        "BUILD_LIBRARY_ONLY": "YES",
+        "STATS_OPENMP_ENABLE": "NO",
+        "CMAKE_INSTALL_PREFIX": "../install" ,
+        "KILIB_BUILD_TESTS": "NO"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Debug",
+      "configurePreset": "Debug"
+    },
+    {
+      "name": "Release",
+      "configurePreset": "Release"
+    },
+    {
+      "name": "Debug-shm",
+      "configurePreset": "Debug-shm"
+    },
+    {
+      "name": "Release-shm",
+      "configurePreset": "Release-shm"
+    },
+    {
+      "name": "Debug-clang-shm",
+      "configurePreset": "Debug-clang-shm"
+    },
+    {
+      "name": "Release-clang-shm",
+      "configurePreset": "Release-clang-shm"
+    }
+  ]
+}
