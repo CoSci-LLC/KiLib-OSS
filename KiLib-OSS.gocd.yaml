@@ -1,0 +1,385 @@
+format_version: 10
+pipelines:
+  ubuntu-22.04-build-debug: &pipeline
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      KiLib-OSS
+    parameters:
+      ea-profile: ubuntu-22.04
+      build-type: "Debug-shm"
+
+  centos-9-build-debug: 
+    <<: *pipeline
+    materials:
+      KiLib-OSS: *kilib-repo
+    parameters:
+      ea-profile: centos-9
+      build-type: "Debug-shm"
+
+
+#          build_linux_debug_ubuntu_20.04:
+#            elastic_profile_id: ubuntu-20.04
+#            timeout: 0
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Debug-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Debug-shm
+#          build_linux_debug_ubuntu_22.04:
+#            elastic_profile_id: ubuntu-22.04
+#            timeout: 0
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Debug-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Debug-shm
+#          build-linux-debug-clang-centos-8:
+#            timeout: 0
+#            elastic_profile_id: centos-8
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --preset
+#                  - Debug-clang-shm
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Debug-clang-shm
+#          build-linux-debug-clang-centos-9:
+#            timeout: 0
+#            elastic_profile_id: centos-9
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Debug-clang-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Debug-clang-shm
+#          build-linux-debug-clang-ubuntu-20.04:
+#            timeout: 0
+#            elastic_profile_id: ubuntu-20.04
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Debug-clang-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Debug-clang-shm
+#          build-linux-debug-clang-ubuntu-22.04:
+#            timeout: 0
+#            elastic_profile_id: ubuntu-22.04
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Debug-clang-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Debug-clang-shm
+#    - build-release:
+#        fetch_materials: true
+#        keep_artifacts: false
+#        clean_workspace: false
+#        approval:
+#          type: success
+#          allow_only_on_success: false
+#        jobs:
+#          build_linux_release_centos_8:
+#            elastic_profile_id: centos-8
+#            timeout: 0
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Release-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Release-shm
+#                run_if: passed
+#          build_linux_release_centos_9:
+#            elastic_profile_id: centos-9
+#            timeout: 0
+#            tasks: 
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Release-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Release-shm
+#          build_linux_release_ubuntu_20.04:
+#            elastic_profile_id: ubuntu-20.04
+#            timeout: 0
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Release-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Release-shm
+#          build_linux_release_ubuntu_22.04:
+#            elastic_profile_id: ubuntu-22.04
+#            timeout: 0
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Release-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Release-shm
+#          build-linux-release-clang-centos-8:
+#            timeout: 0
+#            elastic_profile_id: centos-8
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --preset
+#                  - Release-clang-shm
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Release-clang-shm
+#          build-linux-release-clang-centos-9:
+#            timeout: 0
+#            elastic_profile_id: centos-9
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Release-clang-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Release-clang-shm
+#          build-linux-release-clang-ubuntu-20.04:
+#            timeout: 0
+#            elastic_profile_id: ubuntu-20.04
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Release-clang-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Release-clang-shm
+#          build-linux-release-clang-ubuntu-22.04:
+#            timeout: 0
+#            elastic_profile_id: ubuntu-22.04
+#            tasks:
+#            - exec:
+#                command: ls
+#                arguments:
+#                - -la
+#            - exec:
+#                command: cmake
+#                arguments:
+#                - --version
+#            - exec:
+#                arguments:
+#                  - --preset
+#                  - Release-clang-shm
+#                command: cmake
+#                run_if: passed
+#            - exec:
+#                command: cmake
+#                arguments:
+#                  - --build
+#                  - --preset
+#                  - Release-clang-shm
+#          build-wasm:
+#            timeout: 0
+#            elastic_profile_id: emscripten
+#            tasks:
+#            - exec:
+#                command: emcmake 
+#                arguments:
+#                  - cmake
+#                  - --preset
+#                  - wasm
+#            - exec:
+#                command: emcmake 
+#                arguments:
+#                  - cmake
+#                  - --build
+#                  - --preset
+#                  - wasm
+#
+#
