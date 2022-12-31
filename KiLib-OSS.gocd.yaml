@@ -15,8 +15,6 @@ pipelines:
 
   centos-9-build-debug: 
     <<: *pipeline
-    materials:
-      KiLib-OSS: *kilib-repo
     parameters:
       ea-profile: centos-9
       build-type: "Debug-shm"
