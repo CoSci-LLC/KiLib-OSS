@@ -1,6 +1,8 @@
+# Merge syntax not supported yet. Can't use anchors:
+# https://github.com/tomzo/gocd-yaml-config-plugin/issues/63
 format_version: 10
 pipelines:
-  ubuntu-22.04-build-debug: &pipeline
+  ubuntu-22.04-build-debug:
     group: CoSci-LLC
     template: KiLib-OSS
     label_template: ${COUNT}-${git[:7]}
@@ -14,155 +16,126 @@ pipelines:
       build-type: "Debug-shm"
 
   centos-9-build-debug: 
-    <<: *pipeline
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        type: KiLib-OSS
     parameters:
       ea-profile: centos-9
       build-type: "Debug-shm"
 
+  ubuntu-20.04-build-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        type: KiLib-OSS
+    parameters:
+      ea-profile: ubuntu-20.04
+      build-type: "Debug-shm"
 
-#          build_linux_debug_ubuntu_20.04:
-#            elastic_profile_id: ubuntu-20.04
-#            timeout: 0
-#            tasks:
-#            - exec:
-#                command: ls
-#                arguments:
-#                - -la
-#            - exec:
-#                command: cmake
-#                arguments:
-#                - --version
-#            - exec:
-#                arguments:
-#                  - --preset
-#                  - Debug-shm
-#                command: cmake
-#                run_if: passed
-#            - exec:
-#                command: cmake
-#                arguments:
-#                  - --build
-#                  - --preset
-#                  - Debug-shm
-#          build_linux_debug_ubuntu_22.04:
-#            elastic_profile_id: ubuntu-22.04
-#            timeout: 0
-#            tasks:
-#            - exec:
-#                command: ls
-#                arguments:
-#                - -la
-#            - exec:
-#                command: cmake
-#                arguments:
-#                - --version
-#            - exec:
-#                arguments:
-#                  - --preset
-#                  - Debug-shm
-#                command: cmake
-#                run_if: passed
-#            - exec:
-#                command: cmake
-#                arguments:
-#                  - --build
-#                  - --preset
-#                  - Debug-shm
-#          build-linux-debug-clang-centos-8:
-#            timeout: 0
-#            elastic_profile_id: centos-8
-#            tasks:
-#            - exec:
-#                command: ls
-#                arguments:
-#                - -la
-#            - exec:
-#                command: cmake
-#                arguments:
-#                - --version
-#            - exec:
-#                command: cmake
-#                arguments:
-#                  - --preset
-#                  - Debug-clang-shm
-#            - exec:
-#                command: cmake
-#                arguments:
-#                  - --build
-#                  - --preset
-#                  - Debug-clang-shm
-#          build-linux-debug-clang-centos-9:
-#            timeout: 0
-#            elastic_profile_id: centos-9
-#            tasks:
-#            - exec:
-#                command: ls
-#                arguments:
-#                - -la
-#            - exec:
-#                command: cmake
-#                arguments:
-#                - --version
-#            - exec:
-#                arguments:
-#                  - --preset
-#                  - Debug-clang-shm
-#                command: cmake
-#                run_if: passed
-#            - exec:
-#                command: cmake
-#                arguments:
-#                  - --build
-#                  - --preset
-#                  - Debug-clang-shm
-#          build-linux-debug-clang-ubuntu-20.04:
-#            timeout: 0
-#            elastic_profile_id: ubuntu-20.04
-#            tasks:
-#            - exec:
-#                command: ls
-#                arguments:
-#                - -la
-#            - exec:
-#                command: cmake
-#                arguments:
-#                - --version
-#            - exec:
-#                arguments:
-#                  - --preset
-#                  - Debug-clang-shm
-#                command: cmake
-#                run_if: passed
-#            - exec:
-#                command: cmake
-#                arguments:
-#                  - --build
-#                  - --preset
-#                  - Debug-clang-shm
-#          build-linux-debug-clang-ubuntu-22.04:
-#            timeout: 0
-#            elastic_profile_id: ubuntu-22.04
-#            tasks:
-#            - exec:
-#                command: ls
-#                arguments:
-#                - -la
-#            - exec:
-#                command: cmake
-#                arguments:
-#                - --version
-#            - exec:
-#                arguments:
-#                  - --preset
-#                  - Debug-clang-shm
-#                command: cmake
-#                run_if: passed
-#            - exec:
-#                command: cmake
-#                arguments:
-#                  - --build
-#                  - --preset
-#                  - Debug-clang-shm
+  centos-8-build-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        type: KiLib-OSS
+    parameters:
+      ea-profile: centos-8
+      build-type: "Debug-shm"
+
+
+#################################
+### CLANG BUILDS
+#################################
+
+
+  ubuntu-22.04-build-clang-debug:
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        type: KiLib-OSS
+    parameters:
+      ea-profile: ubuntu-22.04
+      build-type: "Debug-clang-shm"
+
+  centos-9-build-clang-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        type: KiLib-OSS
+    parameters:
+      ea-profile: centos-9
+      build-type: "Debug-clang-shm"
+
+  ubuntu-20.04-build-clang-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        type: KiLib-OSS
+    parameters:
+      ea-profile: ubuntu-20.04
+      build-type: "Debug-clang-shm"
+
+  centos-8-build-clang-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        type: KiLib-OSS
+    parameters:
+      ea-profile: centos-8
+      build-type: "Debug-clang-shm"
+
+
+#################################
+### Release BUILDS
+#################################
+
+  ubuntu-22.04-build-release:
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        type: KiLib-OSS
+      debug:
+        pipeline: ubuntu-22.04-build-debug
+        stage: build
+    parameters:
+      ea-profile: ubuntu-22.04
+      build-type: "Release-shm"
+
+
+
+
 #    - build-release:
 #        fetch_materials: true
 #        keep_artifacts: false
