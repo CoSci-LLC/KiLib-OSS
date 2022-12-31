@@ -9,7 +9,7 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      kilib-oss:
+      git:
         git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
         username: gocd
         shallow_clone: false
