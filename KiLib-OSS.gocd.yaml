@@ -9,8 +9,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        materialName: KiLib-OSS
     parameters:
       ea-profile: ubuntu-22.04
       build-type: "Debug-shm"
@@ -22,8 +22,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        materialName: KiLib-OSS
     parameters:
       ea-profile: centos-9
       build-type: "Debug-shm"
@@ -35,8 +35,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        materialName: KiLib-OSS
     parameters:
       ea-profile: ubuntu-20.04
       build-type: "Debug-shm"
@@ -48,8 +48,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        materialName: KiLib-OSS
     parameters:
       ea-profile: centos-8
       build-type: "Debug-shm"
@@ -67,8 +67,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        materialName: KiLib-OSS
     parameters:
       ea-profile: ubuntu-22.04
       build-type: "Debug-clang-shm"
@@ -80,8 +80,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        materialName: KiLib-OSS
     parameters:
       ea-profile: centos-9
       build-type: "Debug-clang-shm"
@@ -93,8 +93,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        materialName: KiLib-OSS
     parameters:
       ea-profile: ubuntu-20.04
       build-type: "Debug-clang-shm"
@@ -106,8 +106,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        materialName: KiLib-OSS
     parameters:
       ea-profile: centos-8
       build-type: "Debug-clang-shm"
