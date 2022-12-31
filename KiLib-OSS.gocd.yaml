@@ -125,8 +125,7 @@ pipelines:
     display_order: -1
     materials: 
       kilib-oss:
-        git: 
-          materialName: KiLib-OSS
+        materialName: KiLib-OSS
       debug:
         pipeline: ubuntu-22.04-build-debug
         stage: build
