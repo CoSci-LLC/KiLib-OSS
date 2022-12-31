@@ -2,7 +2,7 @@
 # https://github.com/tomzo/gocd-yaml-config-plugin/issues/63
 format_version: 10
 pipelines:
-  ubuntu-22.04-build-debug:
+  ubuntu-22.04-build-debug: 
     group: CoSci-LLC
     template: KiLib-OSS
     label_template: ${COUNT}-${git[:7]}
@@ -10,147 +10,152 @@ pipelines:
     display_order: -1
     materials: 
       kilib-oss:
-        materialName: KiLib-OSS
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-credentials][password]}}"
     parameters:
       ea-profile: ubuntu-22.04
       build-type: "Debug-shm"
 
-  centos-9-build-debug: 
-    group: CoSci-LLC
-    template: KiLib-OSS
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      kilib-oss:
-        materialName: KiLib-OSS
-    parameters:
-      ea-profile: centos-9
-      build-type: "Debug-shm"
-
-  ubuntu-20.04-build-debug: 
-    group: CoSci-LLC
-    template: KiLib-OSS
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      kilib-oss:
-        materialName: KiLib-OSS
-    parameters:
-      ea-profile: ubuntu-20.04
-      build-type: "Debug-shm"
-
-  centos-8-build-debug: 
-    group: CoSci-LLC
-    template: KiLib-OSS
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      kilib-oss:
-        materialName: KiLib-OSS
-    parameters:
-      ea-profile: centos-8
-      build-type: "Debug-shm"
-
-
-#################################
-### CLANG BUILDS
-#################################
-
-
-  ubuntu-22.04-build-clang-debug:
-    group: CoSci-LLC
-    template: KiLib-OSS
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      kilib-oss:
-        materialName: KiLib-OSS
-    parameters:
-      ea-profile: ubuntu-22.04
-      build-type: "Debug-clang-shm"
-
-  centos-9-build-clang-debug: 
-    group: CoSci-LLC
-    template: KiLib-OSS
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      kilib-oss:
-        materialName: KiLib-OSS
-    parameters:
-      ea-profile: centos-9
-      build-type: "Debug-clang-shm"
-
-  ubuntu-20.04-build-clang-debug: 
-    group: CoSci-LLC
-    template: KiLib-OSS
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      kilib-oss:
-        materialName: KiLib-OSS
-    parameters:
-      ea-profile: ubuntu-20.04
-      build-type: "Debug-clang-shm"
-
-  centos-8-build-clang-debug: 
-    group: CoSci-LLC
-    template: KiLib-OSS
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      kilib-oss:
-        materialName: KiLib-OSS
-    parameters:
-      ea-profile: centos-8
-      build-type: "Debug-clang-shm"
-
-
-#################################
-### Release BUILDS
-#################################
-
-  ubuntu-22.04-build-release:
-    group: CoSci-LLC
-    template: KiLib-OSS
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      kilib-oss:
-        materialName: KiLib-OSS
-      debug:
-        pipeline: ubuntu-22.04-build-debug
-        stage: build
-    parameters:
-      ea-profile: ubuntu-22.04
-      build-type: "Release-shm"
-
-
-
-
-#    - build-release:
-#        fetch_materials: true
-#        keep_artifacts: false
-#        clean_workspace: false
-#        approval:
-#          type: success
-#          allow_only_on_success: false
-#        jobs:
-#          build_linux_release_centos_8:
-#            elastic_profile_id: centos-8
-#            timeout: 0
-#            tasks:
-#            - exec:
-#                command: ls
-#                arguments:
+#  centos-9-build-debug: 
+#    group: CoSci-LLC
+#    template: KiLib-OSS
+#    label_template: ${COUNT}-${git[:7]}
+#    lock_behavior: none
+#    display_order: -1
+#    materials: 
+#      kilib-oss:
+#        materialName: KiLib-OSS
+#    parameters:
+#      ea-profile: centos-9
+#      build-type: "Debug-shm"
+#
+#  ubuntu-20.04-build-debug: 
+#    group: CoSci-LLC
+#    template: KiLib-OSS
+#    label_template: ${COUNT}-${git[:7]}
+#    lock_behavior: none
+#    display_order: -1
+#    materials: 
+#      kilib-oss:
+#        materialName: KiLib-OSS
+#    parameters:
+#      ea-profile: ubuntu-20.04
+#      build-type: "Debug-shm"
+#
+#  centos-8-build-debug: 
+#    group: CoSci-LLC
+#    template: KiLib-OSS
+#    label_template: ${COUNT}-${git[:7]}
+#    lock_behavior: none
+#    display_order: -1
+#    materials: 
+#      kilib-oss:
+#        materialName: KiLib-OSS
+#    parameters:
+#      ea-profile: centos-8
+#      build-type: "Debug-shm"
+#
+#
+##################################
+#### CLANG BUILDS
+##################################
+#
+#
+#  ubuntu-22.04-build-clang-debug:
+#    group: CoSci-LLC
+#    template: KiLib-OSS
+#    label_template: ${COUNT}-${git[:7]}
+#    lock_behavior: none
+#    display_order: -1
+#    materials: 
+#      kilib-oss:
+#        materialName: KiLib-OSS
+#    parameters:
+#      ea-profile: ubuntu-22.04
+#      build-type: "Debug-clang-shm"
+#
+#  centos-9-build-clang-debug: 
+#    group: CoSci-LLC
+#    template: KiLib-OSS
+#    label_template: ${COUNT}-${git[:7]}
+#    lock_behavior: none
+#    display_order: -1
+#    materials: 
+#      kilib-oss:
+#        materialName: KiLib-OSS
+#    parameters:
+#      ea-profile: centos-9
+#      build-type: "Debug-clang-shm"
+#
+#  ubuntu-20.04-build-clang-debug: 
+#    group: CoSci-LLC
+#    template: KiLib-OSS
+#    label_template: ${COUNT}-${git[:7]}
+#    lock_behavior: none
+#    display_order: -1
+#    materials: 
+#      kilib-oss:
+#        materialName: KiLib-OSS
+#    parameters:
+#      ea-profile: ubuntu-20.04
+#      build-type: "Debug-clang-shm"
+#
+#  centos-8-build-clang-debug: 
+#    group: CoSci-LLC
+#    template: KiLib-OSS
+#    label_template: ${COUNT}-${git[:7]}
+#    lock_behavior: none
+#    display_order: -1
+#    materials: 
+#      kilib-oss:
+#        materialName: KiLib-OSS
+#    parameters:
+#      ea-profile: centos-8
+#      build-type: "Debug-clang-shm"
+#
+#
+##################################
+#### Release BUILDS
+##################################
+#
+#  ubuntu-22.04-build-release:
+#    group: CoSci-LLC
+#    template: KiLib-OSS
+#    label_template: ${COUNT}-${git[:7]}
+#    lock_behavior: none
+#    display_order: -1
+#    materials: 
+#      kilib-oss:
+#        materialName: KiLib-OSS
+#      debug:
+#        pipeline: ubuntu-22.04-build-debug
+#        stage: build
+#    parameters:
+#      ea-profile: ubuntu-22.04
+#      build-type: "Release-shm"
+#
+#
+#
+#
+##    - build-release:
+##        fetch_materials: true
+##        keep_artifacts: false
+##        clean_workspace: false
+##        approval:
+##          type: success
+##          allow_only_on_success: false
+##        jobs:
+##          build_linux_release_centos_8:
+##            elastic_profile_id: centos-8
+##            timeout: 0
+##            tasks:
+##            - exec:
+##                command: ls
+##                arguments:
 #                - -la
 #            - exec:
 #                command: cmake
