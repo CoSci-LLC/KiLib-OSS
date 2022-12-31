@@ -124,8 +124,9 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      git:
-        type: KiLib-OSS
+      kilib-oss:
+        git: 
+          materialName: KiLib-OSS
       debug:
         pipeline: ubuntu-22.04-build-debug
         stage: build
