@@ -7,7 +7,8 @@ pipelines:
     lock_behavior: none
     display_order: -1
     materials: 
-      KiLib-OSS
+      git:
+        type: KiLib-OSS
     parameters:
       ea-profile: ubuntu-22.04
       build-type: "Debug-shm"
