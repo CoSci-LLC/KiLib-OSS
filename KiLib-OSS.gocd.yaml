@@ -18,7 +18,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: ubuntu-22.04
-      build-type: "Debug-shm"
+      build-type: "Debug"
 
   centos-9-build-debug: 
     group: CoSci-LLC
@@ -36,7 +36,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: centos-9
-      build-type: "Debug-shm"
+      build-type: "Debug"
 
   ubuntu-20.04-build-debug: 
     group: CoSci-LLC
@@ -54,7 +54,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: ubuntu-20.04
-      build-type: "Debug-shm"
+      build-type: "Debug"
 
   centos-8-build-debug: 
     group: CoSci-LLC
@@ -72,7 +72,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: centos-8
-      build-type: "Debug-shm"
+      build-type: "Debug"
 
 
 #################################
@@ -96,7 +96,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: ubuntu-22.04
-      build-type: "Debug-clang-shm"
+      build-type: "Debug-clang"
 
   centos-9-build-clang-debug: 
     group: CoSci-LLC
@@ -114,7 +114,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: centos-9
-      build-type: "Debug-clang-shm"
+      build-type: "Debug-clang"
 
   ubuntu-20.04-build-clang-debug: 
     group: CoSci-LLC
@@ -132,7 +132,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: ubuntu-20.04
-      build-type: "Debug-clang-shm"
+      build-type: "Debug-clang"
 
   centos-8-build-clang-debug: 
     group: CoSci-LLC
@@ -150,7 +150,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: centos-8
-      build-type: "Debug-clang-shm"
+      build-type: "Debug-clang"
 
 
 #################################
@@ -159,7 +159,7 @@ pipelines:
 
   ubuntu-22.04-build-release:
     group: CoSci-LLC
-    template: KiLib-OSS
+    template: CoSci-LLC_Release
     label_template: ${COUNT}-${git[:7]}
     lock_behavior: none
     display_order: -1
@@ -173,7 +173,7 @@ pipelines:
         password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: ubuntu-22.04
-      build-type: "Release-shm"
+      build-type: "Release"
 
 
 
