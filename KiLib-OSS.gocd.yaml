@@ -20,127 +20,164 @@ pipelines:
       ea-profile: ubuntu-22.04
       build-type: "Debug-shm"
 
-#  centos-9-build-debug: 
-#    group: CoSci-LLC
-#    template: KiLib-OSS
-#    label_template: ${COUNT}-${git[:7]}
-#    lock_behavior: none
-#    display_order: -1
-#    materials: 
-#      kilib-oss:
-#        materialName: KiLib-OSS
-#    parameters:
-#      ea-profile: centos-9
-#      build-type: "Debug-shm"
-#
-#  ubuntu-20.04-build-debug: 
-#    group: CoSci-LLC
-#    template: KiLib-OSS
-#    label_template: ${COUNT}-${git[:7]}
-#    lock_behavior: none
-#    display_order: -1
-#    materials: 
-#      kilib-oss:
-#        materialName: KiLib-OSS
-#    parameters:
-#      ea-profile: ubuntu-20.04
-#      build-type: "Debug-shm"
-#
-#  centos-8-build-debug: 
-#    group: CoSci-LLC
-#    template: KiLib-OSS
-#    label_template: ${COUNT}-${git[:7]}
-#    lock_behavior: none
-#    display_order: -1
-#    materials: 
-#      kilib-oss:
-#        materialName: KiLib-OSS
-#    parameters:
-#      ea-profile: centos-8
-#      build-type: "Debug-shm"
-#
-#
-##################################
-#### CLANG BUILDS
-##################################
-#
-#
-#  ubuntu-22.04-build-clang-debug:
-#    group: CoSci-LLC
-#    template: KiLib-OSS
-#    label_template: ${COUNT}-${git[:7]}
-#    lock_behavior: none
-#    display_order: -1
-#    materials: 
-#      kilib-oss:
-#        materialName: KiLib-OSS
-#    parameters:
-#      ea-profile: ubuntu-22.04
-#      build-type: "Debug-clang-shm"
-#
-#  centos-9-build-clang-debug: 
-#    group: CoSci-LLC
-#    template: KiLib-OSS
-#    label_template: ${COUNT}-${git[:7]}
-#    lock_behavior: none
-#    display_order: -1
-#    materials: 
-#      kilib-oss:
-#        materialName: KiLib-OSS
-#    parameters:
-#      ea-profile: centos-9
-#      build-type: "Debug-clang-shm"
-#
-#  ubuntu-20.04-build-clang-debug: 
-#    group: CoSci-LLC
-#    template: KiLib-OSS
-#    label_template: ${COUNT}-${git[:7]}
-#    lock_behavior: none
-#    display_order: -1
-#    materials: 
-#      kilib-oss:
-#        materialName: KiLib-OSS
-#    parameters:
-#      ea-profile: ubuntu-20.04
-#      build-type: "Debug-clang-shm"
-#
-#  centos-8-build-clang-debug: 
-#    group: CoSci-LLC
-#    template: KiLib-OSS
-#    label_template: ${COUNT}-${git[:7]}
-#    lock_behavior: none
-#    display_order: -1
-#    materials: 
-#      kilib-oss:
-#        materialName: KiLib-OSS
-#    parameters:
-#      ea-profile: centos-8
-#      build-type: "Debug-clang-shm"
-#
-#
-##################################
-#### Release BUILDS
-##################################
-#
-#  ubuntu-22.04-build-release:
-#    group: CoSci-LLC
-#    template: KiLib-OSS
-#    label_template: ${COUNT}-${git[:7]}
-#    lock_behavior: none
-#    display_order: -1
-#    materials: 
-#      kilib-oss:
-#        materialName: KiLib-OSS
-#      debug:
-#        pipeline: ubuntu-22.04-build-debug
-#        stage: build
-#    parameters:
-#      ea-profile: ubuntu-22.04
-#      build-type: "Release-shm"
-#
-#
-#
-#
+  centos-9-build-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      ea-profile: centos-9
+      build-type: "Debug-shm"
+
+  ubuntu-20.04-build-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      ea-profile: ubuntu-20.04
+      build-type: "Debug-shm"
+
+  centos-8-build-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      ea-profile: centos-8
+      build-type: "Debug-shm"
+
+
+#################################
+### CLANG BUILDS
+#################################
+
+
+  ubuntu-22.04-build-clang-debug:
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      ea-profile: ubuntu-22.04
+      build-type: "Debug-clang-shm"
+
+  centos-9-build-clang-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      ea-profile: centos-9
+      build-type: "Debug-clang-shm"
+
+  ubuntu-20.04-build-clang-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      ea-profile: ubuntu-20.04
+      build-type: "Debug-clang-shm"
+
+  centos-8-build-clang-debug: 
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      ea-profile: centos-8
+      build-type: "Debug-clang-shm"
+
+
+#################################
+### Release BUILDS
+#################################
+
+  ubuntu-22.04-build-release:
+    group: CoSci-LLC
+    template: KiLib-OSS
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      ea-profile: ubuntu-22.04
+      build-type: "Release-shm"
+
+
+
+
 ##    - build-release:
 ##        fetch_materials: true
 ##        keep_artifacts: false
