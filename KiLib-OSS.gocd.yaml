@@ -15,7 +15,7 @@ pipelines:
         shallow_clone: false
         auto_update: true
         branch: CMakeWork
-        password: "{{SECRET:[gitea-creds][gocd/gitea/password]}}"
+        password: "{{SECRET:[gitea-creds][password]}}"
     parameters:
       ea-profile: ubuntu-22.04
       build-type: "Debug-shm"
