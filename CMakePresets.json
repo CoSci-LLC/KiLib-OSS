@@ -68,6 +68,22 @@
       }
     },
     {
+      "name": "Debug-clang",
+      "inherits": "Debug",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "Release-clang",
+      "inherits": "Release",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
       "name": "wasm",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/",
@@ -104,6 +120,14 @@
     {
       "name": "Release-clang-shm",
       "configurePreset": "Release-clang-shm"
+    },
+    {
+      "name": "Debug-clang",
+      "configurePreset": "Debug-clang"
+    },
+    {
+      "name": "Release-clang",
+      "configurePreset": "Release-clang"
     }
   ]
 }
