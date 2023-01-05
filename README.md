@@ -135,3 +135,21 @@ The `make install` or equivalent is important because KiLib tests require the so
 (`KiLib/Utils/NewtonRaphson.hpp`) Implements a Newton-Raphson scheme to find roots of non-linear equations.
 
 
+
+
+## Useful Commands
+
+To build:
+```
+cmake --preset Debug-shm
+cmake --build --preset Debug-shm
+```
+
+To Test:
+```
+cmake --build --target test  --preset Debug-shm
+```
+For coverage:
+```
+cmake --build --target KiLibObjLib_coverage  --preset Debug-shm
+```

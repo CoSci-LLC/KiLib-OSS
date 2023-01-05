@@ -7,7 +7,7 @@ set(projectName KiLibObjLib)
 set(projectTestName KiLib.test)
 
 # Create the project name and version
-project(KiLib VERSION 5.1.0 LANGUAGES CXX)
+project(KiLib VERSION 5.1.0 LANGUAGES C CXX)
 
 
 # Add KiLib Object Library
@@ -18,7 +18,7 @@ set_property(TARGET ${projectName} PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 # shared and static libraries built from the same object files
 add_library(KiLib STATIC $<TARGET_OBJECTS:${projectName}>)
-target_link_libraries(KiLib PUBLIC ${projectName})
+target_link_libraries(KiLib PUBLIC ${projectName} -lgcov --coverage)
 
 # Ensure that the install directory is all setup properly
 message("Install Directory: ${CMAKE_INSTALL_INCLUDEDIR}")
@@ -100,7 +100,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Ap
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
     message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE -Wall)
+    target_compile_options(${projectName} PRIVATE -Wall -fprofile-arcs -ftest-coverage)
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -108,3 +108,10 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(STATUS "msvc detected, adding compile flags")
     target_compile_options(${projectName} PRIVATE  /std:c++latest /EHsc)
 endif()
+
+if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
+    # We are building as stand-alone project so build the code coverage project
+    include(CMake/CodeCoverage.cmake)
+    setup_target_for_coverage_gcovr_xml(NAME code_coverage EXECUTABLE ${projectTestName})
+endif()
+

@@ -22,7 +22,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Ap
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
     message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${projectTestName} PRIVATE -Wall)
+    target_compile_options(${projectTestName} PRIVATE -Wall -fprofile-arcs -ftest-coverage --coverage)
     # Enforce C++17 features
     target_compile_features(${projectTestName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
