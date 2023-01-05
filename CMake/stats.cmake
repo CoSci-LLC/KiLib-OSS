@@ -4,8 +4,8 @@
 #
 # Written Owen T. Parkins
 
-
-include(CMake/gcem.cmake.in)
+CPMAddPackage("gh:kthohr/gcem@1.16.0")
+target_link_libraries(${projectName} PUBLIC gcem)
 
 # Download stats into a lib/ folder to reduce the amount of time it takes to
 # compile

@@ -19,7 +19,7 @@
 
 
 #include <KiLib/Raster/Raster.hpp>
-#include <libtiff/tiffio.hxx>
+#include <tiffio.hxx>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -99,10 +99,10 @@ namespace KiLib
          exit(EXIT_FAILURE);
       }
 
-      size_t  free_flag = 0;
-      uint16  count     = 0;
-      uint32  w         = 0;
-      uint32  h         = 0;
+      size_t   free_flag = 0;
+      uint16_t count     = 0;
+      uint32_t w         = 0;
+      uint32_t h         = 0;
       double *scaling   = nullptr;
       double *tiepoint  = nullptr;
       char   *nodat     = nullptr;
@@ -167,13 +167,13 @@ namespace KiLib
       }
       else
       {
-         uint16 bps = 1;
+         uint16_t bps = 1;
 
          // Format is currently undefined: https://www.awaresystems.be/imaging/tiff/tifftags/sampleformat.html
-         uint16 format = 4;
+         uint16_t format = 4;
 
          // The number of bytes a strip occupies
-         uint64 sls = TIFFScanlineSize64(tiff);
+         uint64_t sls = TIFFScanlineSize64(tiff);
 
          TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
          TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
@@ -196,23 +196,23 @@ namespace KiLib
                {
                case 1:
                   if (bps == 8)
-                     val = (double)((uint8 *)buf)[col];
+                     val = (double)((uint8_t *)buf)[col];
                   else if (bps == 16)
-                     val = (double)((uint16 *)buf)[col];
+                     val = (double)((uint16_t *)buf)[col];
                   else if (bps == 32)
-                     val = (double)((uint32 *)buf)[col];
+                     val = (double)((uint32_t *)buf)[col];
                   else
-                     val = (double)((uint64 *)buf)[col];
+                     val = (double)((uint64_t *)buf)[col];
                   break;
                case 2:
                   if (bps == 8)
-                     val = (double)((int8 *)buf)[col];
+                     val = (double)((int8_t *)buf)[col];
                   else if (bps == 16)
-                     val = (double)((int16 *)buf)[col];
+                     val = (double)((int16_t *)buf)[col];
                   else if (bps == 32)
-                     val = (double)((int32 *)buf)[col];
+                     val = (double)((int32_t *)buf)[col];
                   else
-                     val = (double)((int64 *)buf)[col];
+                     val = (double)((int64_t *)buf)[col];
                   break;
                case 3:
                   if (bps == 32)
@@ -250,7 +250,7 @@ namespace KiLib
       // clang-format off
         // Key Directory
         // Is a vector in case it needs to expand programatically with new keys
-      std::vector<uint16> kd = {
+      std::vector<uint16_t> kd = {
          // The first 4 entries specify the following:
          // GeoTIFF Version Major, Key Revision, Minor Revision, Number of Keys
          1, 1, 0, 2,
@@ -302,7 +302,7 @@ namespace KiLib
       TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, fmt::format("{} ", this->nodata_value).c_str());
 
       // Writing data to file
-      uint64  sls = TIFFScanlineSize64(tiff);
+      uint64_t  sls = TIFFScanlineSize64(tiff);
       tdata_t buf = _TIFFmalloc((signed int)sls);
 
       // There is no use in parallelizing this as the file has to be written in order

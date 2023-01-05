@@ -13,7 +13,7 @@
       "binaryDir": "${sourceDir}/build/",
       "cacheVariables": {
         "KILIB_BUILD_TESTS": "OFF",
-        "KILIB_BUILD_IPO": "OFF",
+        "KILIB_BUILD_IPO": "ON",
         "KILIB_LOG_LEVEL": "0",
         "KILIB_STRICT_BUILD": "OFF"
       },

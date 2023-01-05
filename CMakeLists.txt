@@ -48,10 +48,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 # Include dependencies and helper functions
+include(CMake/CPM.cmake)
 include(CMake/target_sources_test.cmake)
-include(CMake/spdlog.cmake.in)
-include(CMake/stats.cmake.in)
-include(CMake/libtiff.cmake.in)
+include(CMake/spdlog.cmake)
+include(CMake/stats.cmake)
+include(CMake/libtiff.cmake)
 
 # Include the test application
 if(KILIB_BUILD_TESTS)
