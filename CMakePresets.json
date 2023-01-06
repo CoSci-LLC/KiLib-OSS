@@ -15,7 +15,9 @@
         "KILIB_BUILD_TESTS": "OFF",
         "KILIB_BUILD_IPO": "ON",
         "KILIB_LOG_LEVEL": "0",
-        "KILIB_STRICT_BUILD": "OFF"
+        "KILIB_STRICT_BUILD": "OFF",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
       },
       "environment": {}
     },

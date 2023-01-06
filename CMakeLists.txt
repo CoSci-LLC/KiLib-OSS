@@ -95,7 +95,7 @@ install(TARGETS KiLib
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     # using Clang
     message(STATUS "Clang detected, adding compile flags")
-    target_compile_options(${projectName} PRIVATE -Wall)
+    target_compile_options(${projectName} PRIVATE -Wall --coverage)
     # Enforce C++17 features
     target_compile_features(${projectName} PRIVATE cxx_std_17)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -113,6 +113,6 @@ endif()
 if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
     # We are building as stand-alone project so build the code coverage project
     include(CMake/CodeCoverage.cmake)
-    setup_target_for_coverage_gcovr_xml(NAME code_coverage EXECUTABLE ${projectTestName})
+    setup_target_for_coverage_gcovr_html(NAME code_coverage EXECUTABLE ${projectTestName})
 endif()
 
