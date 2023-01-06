@@ -9,21 +9,21 @@ common:
     timeout: 0
     tasks:
       - exec:
-        command: cmake
-        arguments:
-        - --version
+          command: cmake
+          arguments:
+          - --version
       - exec:
-        arguments:
-          - --preset
-          - Debug
-        command: cmake
-        run_if: passed
+          arguments:
+            - --preset
+            - Debug
+          command: cmake
+          run_if: passed
       - exec:
-        command: cmake
-        arguments:
-          - --build
-          - --preset
-          - Debug
+          command: cmake
+          arguments:
+            - --build
+            - --preset
+            - Debug
   release_build_job: &release_build_job
     timeout: 0
     artifacts:
@@ -32,21 +32,21 @@ common:
           destination: build
     tasks:
       - exec:
-        command: cmake
-        arguments:
-        - --version
+          command: cmake
+          arguments:
+          - --version
       - exec:
-        arguments:
-          - --preset
-          - Release
-        command: cmake
-        run_if: passed
+          arguments:
+            - --preset
+            - Release
+          command: cmake
+          run_if: passed
       - exec:
-        command: cmake
-        arguments:
-          - --build
-          - --preset
-          - Release
+          command: cmake
+          arguments:
+            - --build
+            - --preset
+            - Release
   test_job: &test_job
     timeout: 0
     artifacts:
@@ -57,23 +57,23 @@ common:
       report: codecoverage/index.html
     tasks:
       - exec:
-        command: cmake
-        arguments:
-        - --version
+          command: cmake
+          arguments:
+          - --version
       - exec:
-        arguments:
-          - --preset
-          - Debug
-        command: cmake
-        run_if: passed
+          arguments:
+            - --preset
+            - Debug
+          command: cmake
+          run_if: passed
       - exec:
-        command: cmake
-        arguments:
-          - --build
-          - --target
-          - code_coverage
-          - --preset
-          - Debug
+          command: cmake
+          arguments:
+            - --build
+            - --target
+            - code_coverage
+            - --preset
+            - Debug
 pipelines:
   KiLib-OSS:
     group: CoSci-LLC
