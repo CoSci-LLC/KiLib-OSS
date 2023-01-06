@@ -77,7 +77,6 @@ common:
 pipelines:
   KiLib-OSS:
     group: CoSci-LLC
-    template: CoSci-LLC-Debug
     label_template: ${COUNT}-${git[:7]}
     lock_behavior: none
     display_order: -1
