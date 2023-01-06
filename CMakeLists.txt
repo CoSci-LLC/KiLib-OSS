@@ -36,11 +36,6 @@ if ("${CMAKE_INSTALL_INCLUDEDIR}" STREQUAL "")
     message("Header File install location: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
 endif()
 
-# Default build is release
-if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
-endif()
-
 # Include dependencies and helper functions
 include(CMake/KiLibOptions.cmake)
 include(CMake/CPM.cmake)
