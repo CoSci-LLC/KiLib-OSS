@@ -87,6 +87,9 @@ if (KILIB_COMPILER_IS_GNU_LIKE)
     target_compile_options(${projectName} PRIVATE --coverage)
 endif()
 
+# Perhaps make a KILIB_BUILD_COVERAGE flag?
+# Maybe we just want to build coverage if we are building the tests?
+# Merge the top two into a function in SetKiLibOptions.cmake
 if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
     # We are building as stand-alone project so build the code coverage project
     include(CMake/CodeCoverage.cmake)
