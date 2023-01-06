@@ -113,6 +113,6 @@ endif()
 if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
     # We are building as stand-alone project so build the code coverage project
     include(CMake/CodeCoverage.cmake)
-    setup_target_for_coverage_gcovr_html(NAME code_coverage EXECUTABLE ${projectTestName})
+    setup_target_for_coverage_gcovr_xml(NAME code_coverage EXECUTABLE ${projectTestName})
 endif()
 
