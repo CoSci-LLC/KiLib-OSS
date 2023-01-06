@@ -18,7 +18,7 @@ set_property(TARGET ${projectName} PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 # shared and static libraries built from the same object files
 add_library(KiLib STATIC $<TARGET_OBJECTS:${projectName}>)
-target_link_libraries(KiLib PUBLIC ${projectName} -lgcov --coverage)
+target_link_libraries(KiLib PUBLIC ${projectName} -lgcov --coverage -lstdc++fs)
 
 # Ensure that the install directory is all setup properly
 message("Install Directory: ${CMAKE_INSTALL_INCLUDEDIR}")
