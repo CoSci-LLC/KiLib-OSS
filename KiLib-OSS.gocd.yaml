@@ -1,14 +1,87 @@
 # Merge syntax not supported yet. Can't use anchors:
 # https://github.com/tomzo/gocd-yaml-config-plugin/issues/63
 format_version: 10
+
+common:
+  arguments:
+    - &project_name KiLib-OSS
+  debug_build_job: &debug_build_job
+    timeout: 0
+    tasks:
+      - exec:
+        command: cmake
+        arguments:
+        - --version
+      - exec:
+        arguments:
+          - --preset
+          - Debug
+        command: cmake
+        run_if: passed
+      - exec:
+        command: cmake
+        arguments:
+          - --build
+          - --preset
+          - Debug
+  release_build_job: &release_build_job
+    timeout: 0
+    artifacts:
+      - build:
+          source: "**/*.lib"
+          destination: build
+    tasks:
+      - exec:
+        command: cmake
+        arguments:
+        - --version
+      - exec:
+        arguments:
+          - --preset
+          - Release
+        command: cmake
+        run_if: passed
+      - exec:
+        command: cmake
+        arguments:
+          - --build
+          - --preset
+          - Release
+  test_job: &test_job
+    timeout: 0
+    artifacts:
+      - build:
+          source: build/code_coverage/*.html
+          destination: codecoverage
+    tabs:
+      report: codecoverage/index.html
+    tasks:
+      - exec:
+        command: cmake
+        arguments:
+        - --version
+      - exec:
+        arguments:
+          - --preset
+          - Debug
+        command: cmake
+        run_if: passed
+      - exec:
+        command: cmake
+        arguments:
+          - --build
+          - --target
+          - code_coverage
+          - --preset
+          - Debug
 pipelines:
-  KiLib-OSS_Debug: 
+  KiLib-OSS:
     group: CoSci-LLC
     template: CoSci-LLC-Debug
     label_template: ${COUNT}-${git[:7]}
     lock_behavior: none
     display_order: -1
-    materials: 
+    materials:
       git:
         git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
         username: gocd
@@ -16,40 +89,59 @@ pipelines:
         auto_update: true
         branch: CMakeWork
         password: "{{SECRET:[gitea-creds][password]}}"
-    parameters:
-      build-type: "Debug"
-      project: KiLib-OSS
-      
-  KiLib-OSS_Release: 
-    group: CoSci-LLC
-    template: CoSci-LLC-Debug
-    label_template: ${COUNT}-${git[:7]}
-    lock_behavior: none
-    display_order: -1
-    materials: 
-      git:
-        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
-        username: gocd
-        shallow_clone: false
-        auto_update: true
-        branch: CMakeWork
-        password: "{{SECRET:[gitea-creds][password]}}"
-      KiLib-OSS_Debug:
-        ignore_for_scheduling: false
-        pipeline: KiLib-OSS_Debug
-        stage: build
-    parameters:
-      build-type: "Release"
-      project: KiLib-OSS
+    stages:
+      - debug_build:
+          jobs:
+            ubuntu-20.04:
+              <<: *debug_build_job
+              elastic_profile_id: ubuntu-20.04
+            ubuntu-22.04:
+              <<: *debug_build_job
+              elastic_profile_id: ubuntu-22.04
+            centos-8:
+              <<: *debug_build_job
+              elastic_profile_id: centos-8
+            centos-9:
+              <<: *debug_build_job
+              elastic_profile_id: centos-9
+      - test:
+          jobs:
+            ubuntu-20.04:
+              <<: *test_job
+              elastic_profile_id: ubuntu-20.04
+            ubuntu-22.04:
+              <<: *test_job
+              elastic_profile_id: ubuntu-22.04
+            centos-8:
+              <<: *test_job
+              elastic_profile_id: centos-8
+            centos-9:
+              <<: *test_job
+              elastic_profile_id: centos-9
+      - release_build:
+          jobs:
+            ubuntu-20.04:
+              <<: *release_build_job
+              elastic_profile_id: ubuntu-20.04
+            ubuntu-22.04:
+              <<: *release_build_job
+              elastic_profile_id: ubuntu-22.04
+            centos-8:
+              <<: *release_build_job
+              elastic_profile_id: centos-8
+            centos-9:
+              <<: *release_build_job
+              elastic_profile_id: centos-9
 
 
-#  centos-9-build-debug: 
+
+#  centos-9-build-debug:
 #    group: CoSci-LLC
 #    template: KiLib-OSS
 #    label_template: ${COUNT}-${git[:7]}
 #    lock_behavior: none
 #    display_order: -1
-#    materials: 
+#    materials:
 #      git:
 #        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
 #        username: gocd
@@ -61,13 +153,13 @@ pipelines:
 #      ea-profile: centos-9
 #      build-type: "Debug"
 #
-#  ubuntu-20.04-build-debug: 
+#  ubuntu-20.04-build-debug:
 #    group: CoSci-LLC
 #    template: KiLib-OSS
 #    label_template: ${COUNT}-${git[:7]}
 #    lock_behavior: none
 #    display_order: -1
-#    materials: 
+#    materials:
 #      git:
 #        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
 #        username: gocd
@@ -79,13 +171,13 @@ pipelines:
 #      ea-profile: ubuntu-20.04
 #      build-type: "Debug"
 #
-#  centos-8-build-debug: 
+#  centos-8-build-debug:
 #    group: CoSci-LLC
 #    template: KiLib-OSS
 #    label_template: ${COUNT}-${git[:7]}
 #    lock_behavior: none
 #    display_order: -1
-#    materials: 
+#    materials:
 #      git:
 #        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
 #        username: gocd
@@ -109,7 +201,7 @@ pipelines:
 #    label_template: ${COUNT}-${git[:7]}
 #    lock_behavior: none
 #    display_order: -1
-#    materials: 
+#    materials:
 #      git:
 #        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
 #        username: gocd
@@ -121,13 +213,13 @@ pipelines:
 #      ea-profile: ubuntu-22.04
 #      build-type: "Debug-clang"
 #
-#  centos-9-build-clang-debug: 
+#  centos-9-build-clang-debug:
 #    group: CoSci-LLC
 #    template: KiLib-OSS
 #    label_template: ${COUNT}-${git[:7]}
 #    lock_behavior: none
 #    display_order: -1
-#    materials: 
+#    materials:
 #      git:
 #        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
 #        username: gocd
@@ -139,13 +231,13 @@ pipelines:
 #      ea-profile: centos-9
 #      build-type: "Debug-clang"
 #
-#  ubuntu-20.04-build-clang-debug: 
+#  ubuntu-20.04-build-clang-debug:
 #    group: CoSci-LLC
 #    template: KiLib-OSS
 #    label_template: ${COUNT}-${git[:7]}
 #    lock_behavior: none
 #    display_order: -1
-#    materials: 
+#    materials:
 #      git:
 #        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
 #        username: gocd
@@ -157,13 +249,13 @@ pipelines:
 #      ea-profile: ubuntu-20.04
 #      build-type: "Debug-clang"
 #
-#  centos-8-build-clang-debug: 
+#  centos-8-build-clang-debug:
 #    group: CoSci-LLC
 #    template: KiLib-OSS
 #    label_template: ${COUNT}-${git[:7]}
 #    lock_behavior: none
 #    display_order: -1
-#    materials: 
+#    materials:
 #      git:
 #        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
 #        username: gocd
@@ -186,7 +278,7 @@ pipelines:
 #    label_template: ${COUNT}-${git[:7]}
 #    lock_behavior: none
 #    display_order: -1
-#    materials: 
+#    materials:
 #      git:
 #        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
 #        username: gocd
@@ -237,7 +329,7 @@ pipelines:
 ##          build_linux_release_centos_9:
 #            elastic_profile_id: centos-9
 #            timeout: 0
-#            tasks: 
+#            tasks:
 #            - exec:
 #                command: ls
 #                arguments:
@@ -406,13 +498,13 @@ pipelines:
 #            elastic_profile_id: emscripten
 #            tasks:
 #            - exec:
-#                command: emcmake 
+#                command: emcmake
 #                arguments:
 #                  - cmake
 #                  - --preset
 #                  - wasm
 #            - exec:
-#                command: emcmake 
+#                command: emcmake
 #                arguments:
 #                  - cmake
 #                  - --build
