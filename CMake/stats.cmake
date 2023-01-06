@@ -31,7 +31,7 @@ target_compile_definitions(stats INTERFACE STATS_ENABLE_STDVEC_WRAPPERS)
 
 # Default build is with OpenMP
 if (NOT DEFINED STATS_OPENMP_ENABLE OR STATS_OPENMP_ENABLE STREQUAL "YES")
-  if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  if(KILIB_COMPILER_IS_GNU_LIKE)
     message("Enabling OpenMP For Stats Lib")
     find_package(OpenMP REQUIRED)
     target_link_libraries(stats INTERFACE OpenMP::OpenMP_CXX)
