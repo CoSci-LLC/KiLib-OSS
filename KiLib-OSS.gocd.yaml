@@ -34,6 +34,10 @@ pipelines:
         auto_update: true
         branch: CMakeWork
         password: "{{SECRET:[gitea-creds][password]}}"
+      KiLib-OSS_Debug:
+        ignore_for_scheduling: false
+        pipeline: KiLib-OSS_Debug
+        stage: build
     parameters:
       build-type: "Release"
       project: KiLib-OSS
