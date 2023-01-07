@@ -74,7 +74,8 @@ common:
             - code_coverage
             - --preset
             - Debug
-  publish_job:
+  
+  publish_job: &publish_job
     timeout: 0
     tasks:
       - fetch:
@@ -82,14 +83,24 @@ common:
         stage: release_build
         job: test # This is the variation here
         source: build/
-        destination: bin/
+        destination: ./
       - exec:
-          command: oras 
+          command: oras
           arguments:
-            - push
-            - harbor.nibious.com/test/kilib-oss:267af9c
-            - --config config.json 
-            - libKiLib.a
+            - login
+            - harbor.nibious.com
+            - -u
+            - "{{SECRET:[gitea-creds][harbor_username]}}" 
+            - -p
+            - "{{SECRET:[gitea-creds][harbor_password]}}" 
+      - exec:
+          command: cmake 
+          arguments:
+            - --build
+            - --target
+            - push_to_repo
+            - --preset
+            - Debug
 
 pipelines:
   KiLib-OSS:
