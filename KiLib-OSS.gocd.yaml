@@ -77,19 +77,19 @@ common:
   publish_job:
     timeout: 0
     tasks:
-     - fetch:
+      - fetch:
         pipeline: KiLib-OSS
         stage: release_build
         job: test # This is the variation here
         source: build/
         destination: bin/
       - exec:
-        command: oras 
-        arguments:
-          - push
-          - harbor.nibious.com/test/kilib-oss:267af9c
-          - --config config.json 
-          - libKiLib.a
+          command: oras 
+          arguments:
+            - push
+            - harbor.nibious.com/test/kilib-oss:267af9c
+            - --config config.json 
+            - libKiLib.a
 
 pipelines:
   KiLib-OSS:
