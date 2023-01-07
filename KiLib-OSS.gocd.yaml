@@ -159,3 +159,113 @@ pipelines:
             centos-9:
               <<: *release_build_job
               elastic_profile_id: centos-9
+      - store_artifacts:
+          jobs:
+            ubuntu-20.04:
+              elastic_profile_id: ubuntu-20.04
+              timeout: 0
+              tasks:
+                - fetch:
+                  pipeline: KiLib-OSS
+                  stage: release_build
+                  job: ubuntu-20.04 # This is the variation here
+                  source: build/
+                  destination: ./
+                - exec:
+                    command: oras
+                    arguments:
+                      - login
+                      - harbor.nibious.com
+                      - -u
+                      - "{{SECRET:[gitea-creds][harbor_username]}}" 
+                      - -p
+                      - "{{SECRET:[gitea-creds][harbor_password]}}" 
+                - exec:
+                    command: cmake 
+                    arguments:
+                      - --build
+                      - --target
+                      - push_to_repo
+                      - --preset
+                      - Debug
+            ubuntu-22.04:
+              elastic_profile_id: ubuntu-22.04
+              timeout: 0
+              tasks:
+                - fetch:
+                  pipeline: KiLib-OSS
+                  stage: release_build
+                  job: ubuntu-22.04 # This is the variation here
+                  source: build/
+                  destination: ./
+                - exec:
+                    command: oras
+                    arguments:
+                      - login
+                      - harbor.nibious.com
+                      - -u
+                      - "{{SECRET:[gitea-creds][harbor_username]}}" 
+                      - -p
+                      - "{{SECRET:[gitea-creds][harbor_password]}}" 
+                - exec:
+                    command: cmake 
+                    arguments:
+                      - --build
+                      - --target
+                      - push_to_repo
+                      - --preset
+                      - Debug
+            centos-8:
+              elastic_profile_id: centos-8
+              timeout: 0
+              tasks:
+                - fetch:
+                  pipeline: KiLib-OSS
+                  stage: release_build
+                  job: centos-8 # This is the variation here
+                  source: build/
+                  destination: ./
+                - exec:
+                    command: oras
+                    arguments:
+                      - login
+                      - harbor.nibious.com
+                      - -u
+                      - "{{SECRET:[gitea-creds][harbor_username]}}" 
+                      - -p
+                      - "{{SECRET:[gitea-creds][harbor_password]}}" 
+                - exec:
+                    command: cmake 
+                    arguments:
+                      - --build
+                      - --target
+                      - push_to_repo
+                      - --preset
+                      - Debug
+            centos-9:
+              elastic_profile_id: centos-9
+              timeout: 0
+              tasks:
+                - fetch:
+                  pipeline: KiLib-OSS
+                  stage: release_build
+                  job: centos-9 # This is the variation here
+                  source: build/
+                  destination: ./
+                - exec:
+                    command: oras
+                    arguments:
+                      - login
+                      - harbor.nibious.com
+                      - -u
+                      - "{{SECRET:[gitea-creds][harbor_username]}}" 
+                      - -p
+                      - "{{SECRET:[gitea-creds][harbor_password]}}" 
+                - exec:
+                    command: cmake 
+                    arguments:
+                      - --build
+                      - --target
+                      - push_to_repo
+                      - --preset
+                      - Debug
