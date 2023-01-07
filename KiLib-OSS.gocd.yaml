@@ -90,7 +90,7 @@ common:
             - login
             - harbor.nibious.com
             - -u
-            - "\'{{SECRET:[gitea-creds][harbor_username]}}\'"
+            - "'{{SECRET:[gitea-creds][harbor_username]}}'"
             - -p
             - "{{SECRET:[gitea-creds][harbor_password]}}" 
       - exec:
