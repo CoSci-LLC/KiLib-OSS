@@ -166,11 +166,11 @@ pipelines:
               timeout: 0
               tasks:
                 - fetch:
-                  pipeline: KiLib-OSS
-                  stage: release_build
-                  job: ubuntu-20.04 # This is the variation here
-                  source: build/
-                  destination: ./
+                    pipeline: KiLib-OSS
+                    stage: release_build
+                    job: ubuntu-20.04 # This is the variation here
+                    source: build/
+                    destination: ./
                 - exec:
                     command: oras
                     arguments:
@@ -193,11 +193,11 @@ pipelines:
               timeout: 0
               tasks:
                 - fetch:
-                  pipeline: KiLib-OSS
-                  stage: release_build
-                  job: ubuntu-22.04 # This is the variation here
-                  source: build/
-                  destination: ./
+                      pipeline: KiLib-OSS
+                      stage: release_build
+                      job: ubuntu-22.04 # This is the variation here
+                      source: build/
+                      destination: ./
                 - exec:
                     command: oras
                     arguments:
@@ -220,11 +220,11 @@ pipelines:
               timeout: 0
               tasks:
                 - fetch:
-                  pipeline: KiLib-OSS
-                  stage: release_build
-                  job: centos-8 # This is the variation here
-                  source: build/
-                  destination: ./
+                    pipeline: KiLib-OSS
+                    stage: release_build
+                    job: centos-8 # This is the variation here
+                    source: build/
+                    destination: ./
                 - exec:
                     command: oras
                     arguments:
@@ -247,11 +247,11 @@ pipelines:
               timeout: 0
               tasks:
                 - fetch:
-                  pipeline: KiLib-OSS
-                  stage: release_build
-                  job: centos-9 # This is the variation here
-                  source: build/
-                  destination: ./
+                    pipeline: KiLib-OSS
+                    stage: release_build
+                    job: centos-9 # This is the variation here
+                    source: build/
+                    destination: ./
                 - exec:
                     command: oras
                     arguments:
