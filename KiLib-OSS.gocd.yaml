@@ -75,32 +75,6 @@ common:
             - --preset
             - Debug
   
-  publish_job: &publish_job
-    timeout: 0
-    environment_variables:
-      HARBOR_USERNAME: "{{SECRET:[gitea-creds][harbor_username]}}"
-      HARBOR_PASSWORD: "{{SECRET:[gitea-creds][harbor_password]}}" 
-    tasks:
-      - fetch:
-        pipeline: KiLib-OSS
-        stage: release_build
-        job: test # This is the variation here
-        source: build/
-        destination: ./
-      - exec:
-          command: sh 
-          arguments:
-            - c
-            - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
-      - exec:
-          command: cmake 
-          arguments:
-            - --build
-            - --target
-            - push_to_repo
-            - --preset
-            - Debug
-
 pipelines:
   KiLib-OSS:
     group: CoSci-LLC
@@ -159,6 +133,9 @@ pipelines:
               <<: *release_build_job
               elastic_profile_id: centos-9
       - store_artifacts:
+          environment_variables:
+            HARBOR_USERNAME: "{{SECRET:[gitea-creds][harbor_username]}}"
+            HARBOR_PASSWORD: "{{SECRET:[gitea-creds][harbor_password]}}" 
           jobs:
             ubuntu-20.04:
               elastic_profile_id: ubuntu-20.04
@@ -171,14 +148,10 @@ pipelines:
                     source: build/
                     destination: ./
                 - exec:
-                    command: oras
-                    arguments:
-                      - login
-                      - harbor.nibious.com
-                      - -u
-                      - "{{SECRET:[gitea-creds][harbor_username]}}" 
-                      - -p
-                      - "{{SECRET:[gitea-creds][harbor_password]}}" 
+                  command: sh 
+                  arguments:
+                    - c
+                    - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
                 - exec:
                     command: cmake 
                     arguments:
@@ -198,14 +171,10 @@ pipelines:
                       source: build/
                       destination: ./
                 - exec:
-                    command: oras
-                    arguments:
-                      - login
-                      - harbor.nibious.com
-                      - -u
-                      - "{{SECRET:[gitea-creds][harbor_username]}}" 
-                      - -p
-                      - "{{SECRET:[gitea-creds][harbor_password]}}" 
+                  command: sh 
+                  arguments:
+                    - c
+                    - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
                 - exec:
                     command: cmake 
                     arguments:
@@ -225,14 +194,10 @@ pipelines:
                     source: build/
                     destination: ./
                 - exec:
-                    command: oras
-                    arguments:
-                      - login
-                      - harbor.nibious.com
-                      - -u
-                      - "{{SECRET:[gitea-creds][harbor_username]}}" 
-                      - -p
-                      - "{{SECRET:[gitea-creds][harbor_password]}}" 
+                  command: sh 
+                  arguments:
+                    - c
+                    - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
                 - exec:
                     command: cmake 
                     arguments:
@@ -252,14 +217,10 @@ pipelines:
                     source: build/
                     destination: ./
                 - exec:
-                    command: oras
-                    arguments:
-                      - login
-                      - harbor.nibious.com
-                      - -u
-                      - "{{SECRET:[gitea-creds][harbor_username]}}" 
-                      - -p
-                      - "{{SECRET:[gitea-creds][harbor_password]}}" 
+                  command: sh 
+                  arguments:
+                    - c
+                    - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
                 - exec:
                     command: cmake 
                     arguments:
