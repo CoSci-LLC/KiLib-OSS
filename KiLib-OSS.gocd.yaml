@@ -88,15 +88,10 @@ common:
         source: build/
         destination: ./
       - exec:
-          command: echo 
+          command: sh 
           arguments:
-            - oras
-            - login
-            - harbor.nibious.com
-            - -u
-            - ${HARBOR_USERNAME}
-            - -p
-            - ${HARBOR_PASSWORD}
+            - c
+            - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
       - exec:
           command: cmake 
           arguments:
