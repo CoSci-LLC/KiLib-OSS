@@ -151,7 +151,7 @@ pipelines:
                     command: sh 
                     arguments:
                       - -c
-                      - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
+                      - oras login harbor.nibious.com -u '$HARBOR_USERNAME' -p $HARBOR_PASSWORD
                 - exec:
                     command: cmake 
                     arguments:
@@ -174,7 +174,7 @@ pipelines:
                     command: sh 
                     arguments:
                       - -c
-                      - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
+                      - oras login harbor.nibious.com -u '$HARBOR_USERNAME' -p $HARBOR_PASSWORD
                 - exec:
                     command: cmake 
                     arguments:
@@ -197,7 +197,7 @@ pipelines:
                     command: sh 
                     arguments:
                       - -c
-                      - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
+                      - oras login harbor.nibious.com -u '$HARBOR_USERNAME' -p $HARBOR_PASSWORD
                 - exec:
                     command: cmake 
                     arguments:
@@ -220,7 +220,7 @@ pipelines:
                     command: sh 
                     arguments:
                       - -c
-                      - oras login harbor.nibious.com -u $HARBOR_USERNAME -p $HARBOR_PASSWORD
+                      - oras login harbor.nibious.com -u '$HARBOR_USERNAME' -p $HARBOR_PASSWORD
                 - exec:
                     command: cmake 
                     arguments:
