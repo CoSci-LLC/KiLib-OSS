@@ -77,6 +77,9 @@ common:
   
   publish_job: &publish_job
     timeout: 0
+    environment_variables:
+      HARBOR_USERNAME: "{{SECRET:[gitea-creds][harbor_username]}}"
+      HARBOR_PASSWORD: "{{SECRET:[gitea-creds][harbor_password]}}" 
     tasks:
       - fetch:
         pipeline: KiLib-OSS
@@ -85,14 +88,15 @@ common:
         source: build/
         destination: ./
       - exec:
-          command: oras
+          command: echo 
           arguments:
+            - oras
             - login
             - harbor.nibious.com
             - -u
-            - "'{{SECRET:[gitea-creds][harbor_username]}}'"
+            - ${HARBOR_USERNAME}
             - -p
-            - "{{SECRET:[gitea-creds][harbor_password]}}" 
+            - ${HARBOR_PASSWORD}
       - exec:
           command: cmake 
           arguments:
