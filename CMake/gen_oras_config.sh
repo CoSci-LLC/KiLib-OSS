@@ -15,7 +15,7 @@ GIT_HASH=$(git log -1 --format='%h')
 cat << EOF 
 {
     "os": ${OS},
-    "release": "${RELEASE}",
+    "release": ${RELEASE},
     "mediaType": "appication/octet-stream",
     "architecture": "${ARCH}",
     "library": "${LIBRARY}",
