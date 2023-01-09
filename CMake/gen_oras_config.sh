@@ -20,9 +20,7 @@ cat << EOF
     "architecture": "${ARCH}",
     "library": "${LIBRARY}",
     "maintainer": "dev@cosci-llc.com",
+    "git-hash": "${GIT_HASH:-UNKNOWN}"
 }
 EOF
 
-
-
-#    "git-hash": "${GIT_HASH:-UNKNOWN}"
