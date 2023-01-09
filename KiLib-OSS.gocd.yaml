@@ -1,231 +1,72 @@
 # Merge syntax not supported yet. Can't use anchors:
 # https://github.com/tomzo/gocd-yaml-config-plugin/issues/63
 format_version: 10
-
 common:
-  arguments:
-    - &project_name KiLib-OSS
-  debug_build_job: &debug_build_job
-    timeout: 0
-    tasks:
-      - exec:
-          command: cmake
-          arguments:
-          - --version
-      - exec:
-          arguments:
-            - --preset
-            - Debug
-          command: cmake
-          run_if: passed
-      - exec:
-          command: cmake
-          arguments:
-            - --build
-            - --preset
-            - Debug
-  release_build_job: &release_build_job
-    timeout: 0
-    artifacts:
-      - build:
-          source: "**/*.a"
-          destination: build
-    tasks:
-      - exec:
-          command: cmake
-          arguments:
-          - --version
-      - exec:
-          arguments:
-            - --preset
-            - Release
-          command: cmake
-          run_if: passed
-      - exec:
-          command: cmake
-          arguments:
-            - --build
-            - --preset
-            - Release
-  test_job: &test_job
-    timeout: 0
-    artifacts:
-      - build:
-          source: build/code_coverage/*.html
-          destination: codecoverage
-    tabs:
-      report: codecoverage/index.html
-    tasks:
-      - exec:
-          command: cmake
-          arguments:
-          - --version
-      - exec:
-          arguments:
-            - --preset
-            - Debug
-          command: cmake
-          run_if: passed
-      - exec:
-          command: cmake
-          arguments:
-            - --build
-            - --target
-            - code_coverage
-            - --preset
-            - Debug
-  
-pipelines:
-  KiLib-OSS:
-    group: CoSci-LLC
+  pipeline_template: &pipeline_template
+    group: KiLib-OSS
+    template: software-cmake-build
     label_template: ${COUNT}-${git[:7]}
     lock_behavior: none
     display_order: -1
-    materials:
+    materials: 
       git:
         git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
         username: gocd
         shallow_clone: false
         auto_update: true
         branch: CMakeWork
-        password: "{{SECRET:[gitea-creds][gitea_password]}}"
-    stages:
-      - debug_build:
-          jobs:
-            ubuntu-20.04:
-              <<: *debug_build_job
-              elastic_profile_id: ubuntu-20.04
-            ubuntu-22.04:
-              <<: *debug_build_job
-              elastic_profile_id: ubuntu-22.04
-            centos-8:
-              <<: *debug_build_job
-              elastic_profile_id: centos-8
-            centos-9:
-              <<: *debug_build_job
-              elastic_profile_id: centos-9
-      - test:
-          jobs:
-            ubuntu-20.04:
-              <<: *test_job
-              elastic_profile_id: ubuntu-20.04
-            ubuntu-22.04:
-              <<: *test_job
-              elastic_profile_id: ubuntu-22.04
-            centos-8:
-              <<: *test_job
-              elastic_profile_id: centos-8
-            centos-9:
-              <<: *test_job
-              elastic_profile_id: centos-9
-      - release_build:
-          jobs:
-            ubuntu-20.04:
-              <<: *release_build_job
-              elastic_profile_id: ubuntu-20.04
-            ubuntu-22.04:
-              <<: *release_build_job
-              elastic_profile_id: ubuntu-22.04
-            centos-8:
-              <<: *release_build_job
-              elastic_profile_id: centos-8
-            centos-9:
-              <<: *release_build_job
-              elastic_profile_id: centos-9
-      - store_artifacts:
-          environment_variables:
-            HARBOR_USERNAME: "{{SECRET:[gitea-creds][harbor_username]}}"
-            HARBOR_PASSWORD: "{{SECRET:[gitea-creds][harbor_password]}}" 
-          jobs:
-            ubuntu-20.04:
-              elastic_profile_id: ubuntu-20.04
-              timeout: 0
-              tasks:
-                - fetch:
-                    pipeline: KiLib-OSS
-                    stage: release_build
-                    job: ubuntu-20.04 # This is the variation here
-                    source: build/
-                    destination: ./
-                - exec:
-                    command: sh 
-                    arguments:
-                      - -c
-                      - oras login harbor.nibious.com -u '$HARBOR_USERNAME' -p $HARBOR_PASSWORD
-                - exec:
-                    command: cmake 
-                    arguments:
-                      - --build
-                      - --target
-                      - push_to_repo
-                      - --preset
-                      - Debug
-            ubuntu-22.04:
-              elastic_profile_id: ubuntu-22.04
-              timeout: 0
-              tasks:
-                - fetch:
-                      pipeline: KiLib-OSS
-                      stage: release_build
-                      job: ubuntu-22.04 # This is the variation here
-                      source: build/
-                      destination: ./
-                - exec:
-                    command: sh 
-                    arguments:
-                      - -c
-                      - oras login harbor.nibious.com -u '$HARBOR_USERNAME' -p $HARBOR_PASSWORD
-                - exec:
-                    command: cmake 
-                    arguments:
-                      - --build
-                      - --target
-                      - push_to_repo
-                      - --preset
-                      - Debug
-            centos-8:
-              elastic_profile_id: centos-8
-              timeout: 0
-              tasks:
-                - fetch:
-                    pipeline: KiLib-OSS
-                    stage: release_build
-                    job: centos-8 # This is the variation here
-                    source: build/
-                    destination: ./
-                - exec:
-                    command: sh 
-                    arguments:
-                      - -c
-                      - oras login harbor.nibious.com -u '$HARBOR_USERNAME' -p $HARBOR_PASSWORD
-                - exec:
-                    command: cmake 
-                    arguments:
-                      - --build
-                      - --target
-                      - push_to_repo
-                      - --preset
-                      - Debug
-            centos-9:
-              elastic_profile_id: centos-9
-              timeout: 0
-              tasks:
-                - fetch:
-                    pipeline: KiLib-OSS
-                    stage: release_build
-                    job: centos-9 # This is the variation here
-                    source: build/
-                    destination: ./
-                - exec:
-                    command: sh 
-                    arguments:
-                      - -c
-                      - oras login harbor.nibious.com -u '$HARBOR_USERNAME' -p $HARBOR_PASSWORD
-                - exec:
-                    command: cmake 
-                    arguments:
-                      - --build
-                      - --target
-                      - push_to_repo
-                      - --preset
-                      - Debug
+        password: "{{SECRET:[gitea-creds][password]}}"
+    parameters:
+      project: "kilib-oss"
+pipelines:
+  ubuntu-22.04-build-debug: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: ubuntu-22.04
+      build-type: "Debug"
+
+  centos-9-build-debug: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: centos-9
+      build-type: "Debug"
+
+  ubuntu-20.04-build-debug: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: ubuntu-20.04
+      build-type: "Debug"
+
+  centos-8-build-debug: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: centos-8
+      build-type: "Debug"
+
+
+#################################
+### CLANG BUILDS
+#################################
+  ubuntu-22.04-build-clang-debug:
+    <<: *pipeline_template
+    parameters:
+      ea-profile: ubuntu-22.04
+      build-type: "Debug-clang"
+
+  centos-9-build-clang-debug: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: centos-9
+      build-type: "Debug-clang"
+
+  ubuntu-20.04-build-clang-debug: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: ubuntu-20.04
+      build-type: "Debug-clang"
+
+  centos-8-build-clang-debug: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: centos-8
+      build-type: "Debug-clang"
