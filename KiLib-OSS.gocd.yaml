@@ -17,62 +17,26 @@ common:
         branch: CMakeWork
         password: "{{SECRET:[gitea-creds][gitea_password]}}"
 pipelines:
-  ubuntu-22.04-build-debug: 
+  ubuntu-22.04: 
     <<: *pipeline_template
     parameters:
       ea-profile: ubuntu-22.04
-      build-type: "Debug"
       project: "kilib-oss"
 
-  centos-9-build-debug: 
+  centos-9: 
     <<: *pipeline_template
     parameters:
       ea-profile: centos-9
-      build-type: "Debug"
       project: "kilib-oss"
 
-  ubuntu-20.04-build-debug: 
+  ubuntu-20.04: 
     <<: *pipeline_template
     parameters:
       ea-profile: ubuntu-20.04
-      build-type: "Debug"
       project: "kilib-oss"
 
-  centos-8-build-debug: 
+  centos-8: 
     <<: *pipeline_template
     parameters:
       ea-profile: centos-8
-      build-type: "Debug"
-      project: "kilib-oss"
-
-
-#################################
-### CLANG BUILDS
-#################################
-  ubuntu-22.04-build-clang-debug:
-    <<: *pipeline_template
-    parameters:
-      ea-profile: ubuntu-22.04
-      build-type: "Debug-clang"
-      project: "kilib-oss"
-
-  centos-9-build-clang-debug: 
-    <<: *pipeline_template
-    parameters:
-      ea-profile: centos-9
-      build-type: "Debug-clang"
-      project: "kilib-oss"
-
-  ubuntu-20.04-build-clang-debug: 
-    <<: *pipeline_template
-    parameters:
-      ea-profile: ubuntu-20.04
-      build-type: "Debug-clang"
-      project: "kilib-oss"
-
-  centos-8-build-clang-debug: 
-    <<: *pipeline_template
-    parameters:
-      ea-profile: centos-8
-      build-type: "Debug-clang"
       project: "kilib-oss"
