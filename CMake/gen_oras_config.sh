@@ -8,7 +8,7 @@ else
 	RELEASE="UNKNOWN"
 fi
 
-ARCH="$(uname -m)"
+ARCH=$(uname -m)
 LIBRARY="KiLib-OSS"
 GIT_HASH=$(git log -1 --format='%h')
 
