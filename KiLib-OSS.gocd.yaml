@@ -15,7 +15,7 @@ common:
         shallow_clone: false
         auto_update: true
         branch: CMakeWork
-        password: "{{SECRET:[gitea-creds][password]}}"
+        password: "{{SECRET:[gitea-creds][gitea_password]}}"
 pipelines:
   ubuntu-22.04-build-debug: 
     <<: *pipeline_template
