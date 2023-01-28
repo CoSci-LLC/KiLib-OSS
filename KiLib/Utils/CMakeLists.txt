@@ -15,4 +15,5 @@ target_sources_test(${projectTestName} PRIVATE
 	Random.test.cpp
 	Sequence.test.cpp
 	StatisticalOutput.test.cpp
+	Container2d.test.cpp
 )

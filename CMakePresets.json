@@ -29,7 +29,8 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "KILIB_BUILD_TESTS": "ON",
-        "KILIB_LOG_LEVEL": "1"
+        "KILIB_LOG_LEVEL": "1",
+        "KILIB_BUILD_IPO": "OFF"
       }
     },
     {

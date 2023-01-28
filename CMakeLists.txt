@@ -54,7 +54,6 @@ endif()
 
 # Include the KiLib source files
 add_subdirectory(KiLib)
-SetKiLibOptions(KiLib)
 SetKiLibOptions(${projectName})
 
 # Interface for library -- This is what directories are included when building
