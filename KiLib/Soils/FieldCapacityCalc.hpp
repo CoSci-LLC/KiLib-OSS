@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include <KiLib/Soils/UserDefined.hpp>
 #include <KiLib/Soils/DistributionModel.hpp>
+#include <KiLib/Soils/UserDefined.hpp>
 
 
 namespace KiLib::Soils
@@ -29,17 +29,17 @@ namespace KiLib::Soils
    class FieldCapacityCalc : public DistributionModel
    {
    public:
-      FieldCapacityCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
+      FieldCapacityCalc(const IDistributionModelDecorator &s) : DistributionModel(s)
       {
       }
 
-      double CalculateFieldCapacity(const double & P)
+      double CalculateFieldCapacity(const double &P)
       {
          const auto t_r            = s.GetResidualWaterContent();
          const auto t_s            = s.GetPorosity();
          const auto n              = s.GetVGWetN1();
          const auto alpha          = s.GetVGWetAlpha1();
-         this->fieldCapacity       = t_r + (t_s - t_r) / pow(1 + pow(alpha * std::fabs(P),n), 1-1/n);
+         this->fieldCapacity       = t_r + (t_s - t_r) / pow(1 + pow(alpha * std::fabs(P), n), 1 - 1 / n);
          this->has_been_calculated = true;
          return this->fieldCapacity;
       }
@@ -53,4 +53,4 @@ namespace KiLib::Soils
       bool   has_been_calculated{false};
       double fieldCapacity{0};
    };
-}       
+} // namespace KiLib::Soils

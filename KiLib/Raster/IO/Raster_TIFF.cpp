@@ -103,9 +103,9 @@ namespace KiLib
       uint16_t count     = 0;
       uint32_t w         = 0;
       uint32_t h         = 0;
-      double *scaling   = nullptr;
-      double *tiepoint  = nullptr;
-      char   *nodat     = nullptr;
+      double  *scaling   = nullptr;
+      double  *tiepoint  = nullptr;
+      char    *nodat     = nullptr;
 
       size_t num_dir = 1;
 
@@ -302,8 +302,8 @@ namespace KiLib
       TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, fmt::format("{} ", this->nodata_value).c_str());
 
       // Writing data to file
-      uint64_t  sls = TIFFScanlineSize64(tiff);
-      tdata_t buf = _TIFFmalloc((signed int)sls);
+      uint64_t sls = TIFFScanlineSize64(tiff);
+      tdata_t  buf = _TIFFmalloc((signed int)sls);
 
       // There is no use in parallelizing this as the file has to be written in order
       for (size_t row = 0; row < this->nRows; row++)

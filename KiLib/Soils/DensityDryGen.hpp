@@ -20,19 +20,18 @@
 
 #pragma once
 
+#include <KiLib/Exceptions/NotGenerated.hpp>
+#include <KiLib/Exceptions/NotImplemented.hpp>
+#include <KiLib/Soils/DistributionModel.hpp>
 #include <KiLib/Soils/UserDefined.hpp>
 #include <spdlog/spdlog.h>
-#include <KiLib/Soils/DistributionModel.hpp>
-#include <KiLib/Exceptions/NotImplemented.hpp>
-#include <KiLib/Exceptions/NotGenerated.hpp>
 
 namespace KiLib::Soils
-{ 
+{
    class DensityDryGen : public DistributionModel
    {
    public:
-
-      DensityDryGen(const IDistributionModelDecorator& s, std::mt19937_64 &gen) : DistributionModel(s), gen(gen)
+      DensityDryGen(const IDistributionModelDecorator &s, std::mt19937_64 &gen) : DistributionModel(s), gen(gen)
       {
       }
 
@@ -41,44 +40,45 @@ namespace KiLib::Soils
          double min, max, mean, sd;
          switch (GetDistributionModelType())
          {
-            case (DistributionModelType::Constant):
-               this->densityDry         = GetBaseSoil().GetDensityDryDistribution().GetConstant();
-               this->has_been_generated = true;               
-               break;
+         case (DistributionModelType::Constant):
+            this->densityDry         = GetBaseSoil().GetDensityDryDistribution().GetConstant();
+            this->has_been_generated = true;
+            break;
 
-            case (DistributionModelType::Uniform):
-               min                      = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMin();
-               max                      = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMax();
-               this->densityDry         = KiLib::Random::runif(1, min, max, gen)[0];
-               this->has_been_generated = true;               
-               break;
+         case (DistributionModelType::Uniform):
+            min                      = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMin();
+            max                      = GetBaseSoil().GetDensityDryDistribution().GetUniform().GetMax();
+            this->densityDry         = KiLib::Random::runif(1, min, max, gen)[0];
+            this->has_been_generated = true;
+            break;
 
-            case (DistributionModelType::Normal):
-               mean            = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
-               sd              = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetStdDev();
-               if (sd == 0.0)
-               {
-                  this->densityDry = mean;
-               }
-               else
-               {
-                  auto logValues   = KiLib::Random::TransformNormalToLogNormal(mean, sd);
-                  this->densityDry = KiLib::Random::rlnorm(1, logValues.first, logValues.second, gen)[0];
-               }
-               this->has_been_generated = true;               
-               break;
+         case (DistributionModelType::Normal):
+            mean = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetMean();
+            sd   = GetBaseSoil().GetDensityDryDistribution().GetNormal().GetStdDev();
+            if (sd == 0.0)
+            {
+               this->densityDry = mean;
+            }
+            else
+            {
+               auto logValues   = KiLib::Random::TransformNormalToLogNormal(mean, sd);
+               this->densityDry = KiLib::Random::rlnorm(1, logValues.first, logValues.second, gen)[0];
+            }
+            this->has_been_generated = true;
+            break;
 
-            default:
-               throw NotImplementedException("Unknown Distribution Type for DensityDryGen");
+         default:
+            throw NotImplementedException("Unknown Distribution Type for DensityDryGen");
          }
-         return densityDry;        
+         return densityDry;
       }
 
       double GetDensityDry() const override
       {
-         if (!has_been_generated) 
+         if (!has_been_generated)
          {
-            throw NotGeneratedException("Please Generate Value before calling GetDensityDry by using GenerateDensityDry");
+            throw NotGeneratedException(
+               "Please Generate Value before calling GetDensityDry by using GenerateDensityDry");
          }
          return densityDry;
       }
@@ -88,4 +88,4 @@ namespace KiLib::Soils
       bool             has_been_generated{false};
       double           densityDry{0.0};
    };
-}       
+} // namespace KiLib::Soils

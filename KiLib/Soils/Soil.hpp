@@ -62,30 +62,30 @@ namespace KiLib::Soils
       ValueNormal           normal;
    };
 
-   class ISoil 
+   class ISoil
    {
    public:
-      virtual std::string GetName() const = 0;
+      virtual std::string GetName() const     = 0;
       virtual std::string GetLongName() const = 0;
 
-      virtual double GetPorosity() const = 0;
-      virtual double GetDensityDry() const = 0;
+      virtual double GetPorosity() const              = 0;
+      virtual double GetDensityDry() const            = 0;
       virtual double GetSaturatedWaterContent() const = 0;
-      virtual double GetResidualWaterContent() const = 0;
-      virtual double GetDensityWet() const = 0;
-      virtual double GetFieldCapacity() const = 0;
-      virtual double GetInitWaterContent() const = 0;
-      virtual double GetWaterExchangeTerm() const = 0;
-      virtual double GetVGWetAlpha1() const = 0;
-      virtual double GetVGWetN1() const = 0;
-      virtual double GetPoreFracMatrix() const = 0;
-      virtual double GetPoreFracFractures() const = 0;
-      virtual double GetMaxTensileStrain() const = 0;
+      virtual double GetResidualWaterContent() const  = 0;
+      virtual double GetDensityWet() const            = 0;
+      virtual double GetFieldCapacity() const         = 0;
+      virtual double GetInitWaterContent() const      = 0;
+      virtual double GetWaterExchangeTerm() const     = 0;
+      virtual double GetVGWetAlpha1() const           = 0;
+      virtual double GetVGWetN1() const               = 0;
+      virtual double GetPoreFracMatrix() const        = 0;
+      virtual double GetPoreFracFractures() const     = 0;
+      virtual double GetMaxTensileStrain() const      = 0;
 
       virtual ValueDistribution GetFrictionAngleDistribution() const = 0;
-      virtual ValueDistribution GetDensityDryDistribution() const = 0;
-      virtual ValueDistribution GetCohesionDistribution() const = 0;
-      virtual ValueDistribution GetConductivityDistributon() const = 0;
+      virtual ValueDistribution GetDensityDryDistribution() const    = 0;
+      virtual ValueDistribution GetCohesionDistribution() const      = 0;
+      virtual ValueDistribution GetConductivityDistributon() const   = 0;
    };
 
    class Soil : public ISoil
@@ -93,19 +93,19 @@ namespace KiLib::Soils
    public:
       std::string GetName() const override;
       std::string GetLongName() const override;
-      double GetPorosity() const override;
-      double GetDensityDry() const override;
-      double GetDensityWet() const override;
-      double GetSaturatedWaterContent() const override;
-      double GetResidualWaterContent() const override;
-      double GetFieldCapacity() const override;
-      double GetInitWaterContent() const override;
-      double GetWaterExchangeTerm() const override;
-      double GetVGWetAlpha1() const override;
-      double GetVGWetN1() const override;
-      double GetPoreFracMatrix() const override;
-      double GetPoreFracFractures() const override;
-      double GetMaxTensileStrain() const override;
+      double      GetPorosity() const override;
+      double      GetDensityDry() const override;
+      double      GetDensityWet() const override;
+      double      GetSaturatedWaterContent() const override;
+      double      GetResidualWaterContent() const override;
+      double      GetFieldCapacity() const override;
+      double      GetInitWaterContent() const override;
+      double      GetWaterExchangeTerm() const override;
+      double      GetVGWetAlpha1() const override;
+      double      GetVGWetN1() const override;
+      double      GetPoreFracMatrix() const override;
+      double      GetPoreFracFractures() const override;
+      double      GetMaxTensileStrain() const override;
 
       ValueDistribution GetFrictionAngleDistribution() const override;
       ValueDistribution GetDensityDryDistribution() const override;
