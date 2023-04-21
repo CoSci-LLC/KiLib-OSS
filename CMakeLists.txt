@@ -96,13 +96,13 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Ap
     message(STATUS "Clang detected, adding compile flags")
     target_compile_options(${projectName} PRIVATE -Wall)
     # Enforce C++17 features
-    target_compile_features(${projectName} PRIVATE cxx_std_17)
+    target_compile_features(${projectName} PRIVATE cxx_std_20)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
     message(STATUS "GCC detected, adding compile flags")
     target_compile_options(${projectName} PRIVATE -Wall)
     # Enforce C++17 features
-    target_compile_features(${projectName} PRIVATE cxx_std_17)
+    target_compile_features(${projectName} PRIVATE cxx_std_20)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # using Visual Studio C++
     message(STATUS "msvc detected, adding compile flags")
