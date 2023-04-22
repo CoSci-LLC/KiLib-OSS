@@ -19,7 +19,7 @@
 
 
 #include <KiLib/Raster/Raster.hpp>
-#include <libtiff/tiffio.hxx>
+#include <tiffio.hxx>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
