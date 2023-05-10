@@ -42,20 +42,19 @@ pipelines:
       project: "kilib-oss"
 
   macos: 
-    pipeline_template:
-      group: KiLib-OSS
-      template: macos-build
-      label_template: ${COUNT}-${git[:7]}
-      lock_behavior: none
-      display_order: -1
-      materials: 
-        git:
-          git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
-          username: gocd
-          shallow_clone: false
-          auto_update: true
-          branch: CMakeWork
-          password: "{{SECRET:[gitea-creds][gitea_password]}}"
+    group: KiLib-OSS
+    template: macos-build
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][gitea_password]}}"
     parameters:
       ea-profile: macos
       project: "kilib-oss"
