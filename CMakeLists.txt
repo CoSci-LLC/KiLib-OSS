@@ -27,7 +27,7 @@ set_property(TARGET ${projectName} PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 # shared and static libraries built from the same object files
 add_library(KiLib STATIC $<TARGET_OBJECTS:${projectName}>)
-target_link_libraries(KiLib PUBLIC ${projectName} -lgcov --coverage -lstdc++fs)
+target_link_libraries(KiLib PUBLIC ${projectName} -lstdc++fs)
 
 # Ensure that the install directory is all setup properly
 message("Install Directory: ${CMAKE_INSTALL_INCLUDEDIR}")
@@ -83,13 +83,13 @@ install(TARGETS KiLib
 
 # Code Coverage flags
 if (KILIB_COMPILER_IS_GNU_LIKE)
-    target_compile_options(${projectName} PRIVATE --coverage)
+    target_compile_options(${projectName} PRIVATE -lgcov --coverage)
 endif()
 
 # Perhaps make a KILIB_BUILD_COVERAGE flag?
 # Maybe we just want to build coverage if we are building the tests?
 # Merge the top two into a function in SetKiLibOptions.cmake
-if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
+if(KILIB_BUILD_TESTS)
     # We are building as stand-alone project so build the code coverage project
     include(CMake/CodeCoverage.cmake)
     setup_target_for_coverage_gcovr_html(NAME code_coverage EXECUTABLE ${projectTestName})

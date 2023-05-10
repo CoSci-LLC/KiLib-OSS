@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 20,
@@ -16,8 +16,8 @@
         "KILIB_BUILD_IPO": "ON",
         "KILIB_LOG_LEVEL": "0",
         "KILIB_STRICT_BUILD": "OFF",
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++"
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
       },
       "environment": {}
     },
@@ -45,45 +45,21 @@
       }
     },
     {
-      "name": "Debug-shm",
-      "inherits": "Debug",
-      "binaryDir": "/tmp/build"
-    },
-    {
-      "name": "Release-shm",
+      "name": "macOS",
       "inherits": "Release",
-      "binaryDir": "/tmp/build"
-    },
-    {
-      "name": "Debug-clang-shm",
-      "inherits": "Debug-shm",
+      "displayName": "macOS Release Build",
+      "description": "Build macOS Release Version",
+      "toolchainFile": "/srv/osxcross/target/toolchain.cmake",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      }
-    },
-    {
-      "name": "Release-clang-shm",
-      "inherits": "Release-shm",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      }
-    },
-    {
-      "name": "Debug-clang",
-      "inherits": "Debug",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      }
-    },
-    {
-      "name": "Release-clang",
-      "inherits": "Release",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
+        "KILIB_BUILD_IPO": "OFF",
+	"STATS_OPENMP_ENABLE": "OFF"
+      },
+      "environment": {
+	"OSXCROSS_SDK" :"12.3",
+	"OSXCROSS_TARGET_DIR":"/srv/osxcross/target",
+	"OSXCROSS_TARGET":"/srv/osxcross/target",
+	"PATH": "/srv/osxcross/target/bin/:$penv{PATH}",
+	"OSXCROSS_HOST":"x86_64-apple-darwin21.4"
       }
     },
     {
@@ -109,28 +85,15 @@
       "configurePreset": "Release"
     },
     {
-      "name": "Debug-shm",
-      "configurePreset": "Debug-shm"
-    },
-    {
-      "name": "Release-shm",
-      "configurePreset": "Release-shm"
-    },
-    {
-      "name": "Debug-clang-shm",
-      "configurePreset": "Debug-clang-shm"
-    },
-    {
-      "name": "Release-clang-shm",
-      "configurePreset": "Release-clang-shm"
-    },
-    {
-      "name": "Debug-clang",
-      "configurePreset": "Debug-clang"
-    },
-    {
-      "name": "Release-clang",
-      "configurePreset": "Release-clang"
+      "name": "macOS",
+      "configurePreset": "macOS",
+      "environment": {
+	"OSXCROSS_SDK" :"12.3",
+	"OSXCROSS_TARGET_DIR":"/srv/osxcross/target",
+	"OSXCROSS_TARGET":"/srv/osxcross/target",
+	"PATH": "/srv/osxcross/target/bin/:$penv{PATH}",
+	"OSXCROSS_HOST":"x86_64-apple-darwin21.4"
+      }
     }
   ]
 }
