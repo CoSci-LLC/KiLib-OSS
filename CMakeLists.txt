@@ -46,7 +46,7 @@ include(CMake/libtiff.cmake)
 
 # Include the test application
 if(KILIB_BUILD_TESTS)
-    message("Adding KiLib Tests")
+    message("-- KILIB: Adding KiLib Tests")
     # Enable testing for the project
     enable_testing()
     add_subdirectory(test)
@@ -80,21 +80,6 @@ install(TARGETS KiLib
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib  
 )
-
-# Code Coverage flags
-if (KILIB_COMPILER_IS_GNU_LIKE)
-    target_compile_options(${projectName} PRIVATE -lgcov --coverage)
-endif()
-
-# Perhaps make a KILIB_BUILD_COVERAGE flag?
-# Maybe we just want to build coverage if we are building the tests?
-# Merge the top two into a function in SetKiLibOptions.cmake
-if(KILIB_BUILD_TESTS)
-    # We are building as stand-alone project so build the code coverage project
-    include(CMake/CodeCoverage.cmake)
-    setup_target_for_coverage_gcovr_html(NAME code_coverage EXECUTABLE ${projectTestName})
-endif()
-
 
 add_custom_target(push_to_repo
 	COMMAND bash ${CMAKE_SOURCE_DIR}/CMake/gen_oras_config.sh > oras_config.json
