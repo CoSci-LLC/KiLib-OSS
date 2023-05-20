@@ -17,31 +17,25 @@ common:
         branch: CMakeWork
         password: "{{SECRET:[gitea-creds][gitea_password]}}"
 pipelines:
-  ubuntu-22.04: 
+  kilib-oss-ubuntu-22.04: 
     <<: *pipeline_template
     parameters:
       ea-profile: ubuntu-22.04
       project: "kilib-oss"
 
-  centos-9: 
+  kilib-oss-centos-9: 
     <<: *pipeline_template
     parameters:
       ea-profile: centos-9
       project: "kilib-oss"
 
-  ubuntu-20.04: 
-    <<: *pipeline_template
-    parameters:
-      ea-profile: ubuntu-20.04
-      project: "kilib-oss"
-
-  centos-8: 
+  kilib-oss-centos-8: 
     <<: *pipeline_template
     parameters:
       ea-profile: centos-8
       project: "kilib-oss"
 
-  macos: 
+  kilib-oss-macos: 
     group: KiLib-OSS
     template: macos-build
     label_template: ${COUNT}-${git[:7]}
@@ -57,6 +51,24 @@ pipelines:
         password: "{{SECRET:[gitea-creds][gitea_password]}}"
     parameters:
       ea-profile: macos
+      project: "kilib-oss"
+
+  kilib-oss-windows: 
+    group: KiLib-OSS
+    template: windows-build
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][gitea_password]}}"
+    parameters:
+      ea-profile: windows
       project: "kilib-oss"
 
 

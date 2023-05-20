@@ -10,7 +10,7 @@
       "name": "default",
       "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/",
+      "binaryDir": "/dev/shm/kilib-oss/build/",
       "cacheVariables": {
         "KILIB_BUILD_TESTS": "OFF",
         "KILIB_BUILD_IPO": "ON",
@@ -73,6 +73,11 @@
         "CMAKE_INSTALL_PREFIX": "../install" ,
         "KILIB_BUILD_TESTS": "NO"
       }
+    },
+    {
+      "name": "msvc",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/"
     }
   ],
   "buildPresets": [
@@ -94,6 +99,10 @@
 	"PATH": "/srv/osxcross/target/bin/:$penv{PATH}",
 	"OSXCROSS_HOST":"x86_64-apple-darwin21.4"
       }
+    },
+    {
+      "name": "msvc",
+      "configurePreset": "msvc"
     }
   ]
 }

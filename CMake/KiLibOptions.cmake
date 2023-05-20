@@ -1,7 +1,7 @@
 # Function that sets the appropriate flags / options above for the given target
 function(SetKiLibOptions target)
     # Turn on C++17
-    set_property(TARGET ${target} PROPERTY CXX_STANDARD 17)
+    set_property(TARGET ${target} PROPERTY CXX_STANDARD 20)
     set_property(TARGET ${target} PROPERTY CXX_EXTENSIONS OFF)
     set_property(TARGET ${target} PROPERTY CXX_STANDARD_REQUIRED ON)
 

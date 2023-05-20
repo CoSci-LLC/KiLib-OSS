@@ -18,8 +18,8 @@
  */
 
 
-#include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Soils/Soils.hpp>
+#include <KiLib/Exceptions/NotImplemented.hpp>
 
 using namespace KiLib::Soils;
 
