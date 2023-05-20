@@ -10,7 +10,7 @@
       "name": "default",
       "hidden": true,
       "generator": "Ninja",
-      "binaryDir": "/dev/shm/kilib-oss/build/",
+      "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
         "KILIB_BUILD_TESTS": "OFF",
         "KILIB_BUILD_IPO": "ON",
