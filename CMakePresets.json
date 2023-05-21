@@ -77,7 +77,10 @@
     {
       "name": "msvc",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/"
+      "binaryDir": "${sourceDir}/build/",
+      "cacheVariables": {
+	"CMAKE_MAKE_PROGRAM": "c:/Tools/Ninja/ninja.exe"
+      }
     }
   ],
   "buildPresets": [
