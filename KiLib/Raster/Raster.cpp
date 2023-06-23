@@ -57,8 +57,9 @@ namespace KiLib
       double x = (pos.x - this->xllcorner) / this->cellsize;
       double y = (pos.y - this->yllcorner) / this->cellsize;
 
-      const size_t r = std::floor(y);
-      const size_t c = std::floor(x);
+      const size_t r = std::min(static_cast<unsigned long> (std::floor(y)), this->nRows - 1ul);
+      const size_t c = std::min(static_cast<unsigned long> (std::floor(x)), this->nCols - 1ul);
+      
 
       const size_t ru = std::min(r + 1ul, this->nRows - 1ul);
       const size_t cr = std::min(c + 1ul, this->nCols - 1ul);

@@ -24,3 +24,5 @@ include_directories(${spdlog_proj_SOURCE_DIR} ${CMAKE_INSTALL_PREFIX}/include)
 
 # Link spdlog to the current project
 target_link_libraries(${projectName} PUBLIC spdlog::spdlog)
+target_compile_features(spdlog PRIVATE cxx_std_17)
+
