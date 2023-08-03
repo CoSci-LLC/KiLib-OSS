@@ -1,0 +1,74 @@
+# Merge syntax not supported yet. Can't use anchors:
+# https://github.com/tomzo/gocd-yaml-config-plugin/issues/63
+format_version: 10
+common:
+  pipeline_template: &pipeline_template
+    group: KiLib-OSS
+    template: software-cmake-build
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][gitea_password]}}"
+pipelines:
+  kilib-oss-ubuntu-22.04: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: ubuntu-22.04
+      project: "kilib-oss"
+
+  kilib-oss-centos-9: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: centos-9
+      project: "kilib-oss"
+
+  kilib-oss-centos-8: 
+    <<: *pipeline_template
+    parameters:
+      ea-profile: centos-8
+      project: "kilib-oss"
+
+  kilib-oss-macos: 
+    group: KiLib-OSS
+    template: macos-build
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][gitea_password]}}"
+    parameters:
+      ea-profile: macos
+      project: "kilib-oss"
+
+  kilib-oss-windows: 
+    group: KiLib-OSS
+    template: windows-build
+    label_template: ${COUNT}-${git[:7]}
+    lock_behavior: none
+    display_order: -1
+    materials: 
+      git:
+        git: https://git.nibious.com/CoSci-LLC/KiLib-OSS.git
+        username: gocd
+        shallow_clone: false
+        auto_update: true
+        branch: CMakeWork
+        password: "{{SECRET:[gitea-creds][gitea_password]}}"
+    parameters:
+      ea-profile: windows
+      project: "kilib-oss"
+
+

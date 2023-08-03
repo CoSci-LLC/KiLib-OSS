@@ -4,8 +4,8 @@
 #
 # Written Owen T. Parkins
 
-
-include(CMake/gcem.cmake.in)
+CPMAddPackage("gh:kthohr/gcem@1.16.0")
+target_link_libraries(${projectName} PUBLIC gcem)
 
 # Download stats into a lib/ folder to reduce the amount of time it takes to
 # compile
@@ -15,7 +15,9 @@ FetchContent_Populate(
   QUIET
   GIT_REPOSITORY  https://github.com/kthohr/stats
   GIT_TAG         v3.2.0
-  SOURCE_DIR      stats_proj
+  SOURCE_DIR      _deps/stats-src
+  BINARY_DIR      _deps/stats-build
+  SUBBUILD_DIR    _deps/stats-subbuild
 )
  
 # Stats is special because it doesn't include a cmake project.
@@ -29,7 +31,7 @@ target_compile_definitions(stats INTERFACE STATS_ENABLE_STDVEC_WRAPPERS)
 
 # Default build is with OpenMP
 if (NOT DEFINED STATS_OPENMP_ENABLE OR STATS_OPENMP_ENABLE STREQUAL "YES")
-  if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  if(KILIB_COMPILER_IS_GNU_LIKE)
     message("Enabling OpenMP For Stats Lib")
     find_package(OpenMP REQUIRED)
     target_link_libraries(stats INTERFACE OpenMP::OpenMP_CXX)

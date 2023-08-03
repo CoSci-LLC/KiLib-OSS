@@ -34,10 +34,11 @@ std::string Soil::GetLongName() const
 
 double Soil::GetDensityDry() const
 {
-   throw NotImplementedException("GetDensityDry not implemented in soil base class. Use the DensityDryGen Decorator class");
+   throw NotImplementedException(
+      "GetDensityDry not implemented in soil base class. Use the DensityDryGen Decorator class");
 }
 
-double Soil::GetPorosity() const 
+double Soil::GetPorosity() const
 {
    return this->porosity.value();
 }
@@ -105,8 +106,6 @@ ValueDistribution Soil::GetConductivityDistributon() const
 {
    return this->conductivity;
 }
-
-
 
 
 double ValueUniform::GetMin() const

@@ -20,32 +20,36 @@
 
 #pragma once
 
-#include <KiLib/Soils/Soil.hpp>
 #include <KiLib/Exceptions/NotImplemented.hpp>
+#include <KiLib/Soils/Soil.hpp>
 
 namespace KiLib::Soils
 {
-   enum class DistributionModelType : int { Constant, Uniform, Normal };
-
-   class IDistributionModelDecorator: public ISoil
+   enum class DistributionModelType : int
    {
-      public:
+      Constant,
+      Uniform,
+      Normal
+   };
+
+   class IDistributionModelDecorator : public ISoil
+   {
+   public:
       virtual DistributionModelType GetDistributionModelType() const = 0;
-      virtual const ISoil& GetBaseSoil() const = 0;
+      virtual const ISoil          &GetBaseSoil() const              = 0;
    };
 
    class DistributionModel : public IDistributionModelDecorator
    {
    public:
-
-      DistributionModel(const ISoil& s, const DistributionModelType& t) : s(s), distribution_model_type{t}
+      DistributionModel(const ISoil &s, const DistributionModelType &t) : s(s), distribution_model_type{t}
       {
-         //spdlog::debug("DistributionModel soil: {:X}", (long)&s);
+         // spdlog::debug("DistributionModel soil: {:X}", (long)&s);
       }
-      
-      DistributionModel(const IDistributionModelDecorator& s): s(s), distribution_model_type(s.GetDistributionModelType()) 
+
+      DistributionModel(const IDistributionModelDecorator &s)
+         : s(s), distribution_model_type(s.GetDistributionModelType())
       {
- 
       }
 
       DistributionModelType GetDistributionModelType() const override
@@ -53,7 +57,7 @@ namespace KiLib::Soils
          return this->distribution_model_type;
       }
 
-      const ISoil& GetBaseSoil() const override
+      const ISoil &GetBaseSoil() const override
       {
          return s;
       }
@@ -120,7 +124,7 @@ namespace KiLib::Soils
       }
       ValueDistribution GetDensityDryDistribution() const override
       {
-         //spdlog::debug("GetDensityDryDistribution soil: {:X}", (long)&s);
+         // spdlog::debug("GetDensityDryDistribution soil: {:X}", (long)&s);
          return s.GetDensityDryDistribution();
       }
 
@@ -132,7 +136,7 @@ namespace KiLib::Soils
       {
          return s.GetConductivityDistributon();
       }
-      virtual double GetFrictionAngle() const 
+      virtual double GetFrictionAngle() const
       {
          throw NotImplementedException("DistributionModel does not implement GetFrictionAngle");
       }
@@ -151,10 +155,9 @@ namespace KiLib::Soils
          throw NotImplementedException("DistributionModel does not implement GetConductivity");
       }
 
-      
 
    protected:
-      const ISoil& s;
+      const ISoil          &s;
       DistributionModelType distribution_model_type;
    };
-}       
+} // namespace KiLib::Soils

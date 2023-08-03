@@ -5,40 +5,29 @@
 include(CTest)
 include(GoogleTest)
 
-# Setup the test framework
-include(./CMake/GoogleTestSetup.cmake.in)
+include(../CMake/Gtest.cmake)
 
 # Add the test exe
 add_executable(${projectTestName}
 	main.cpp
 )
+SetKiLibOptions(${projectTestName})
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    # using Clang
-    message(STATUS "Clang detected, adding compile flags")
-    target_compile_options(${projectTestName} PRIVATE -Wall)
-    # Enforce C++17 features
-    target_compile_features(${projectTestName} PRIVATE cxx_std_17)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    # using GCC
-    message(STATUS "GCC detected, adding compile flags")
-    target_compile_options(${projectTestName} PRIVATE -Wall)
-    # Enforce C++17 features
-    target_compile_features(${projectTestName} PRIVATE cxx_std_17)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # using Visual Studio C++
-    message(STATUS "msvc detected, adding compile flags")
-    target_compile_options(${projectTestName} PRIVATE  /std:c++latest /EHsc)
-endif()
-
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        # only add the Werror flag for debug builds. Production builds won't have this.
-        target_compile_options(${projectTestName} PRIVATE -Werror)
-    endif()
+# Codecov
+if (KILIB_COMPILER_IS_GNU_LIKE)
+    message("-- KILIB: Adding coverage flag")
+    target_compile_options(${projectTestName} PUBLIC --coverage)
 endif()
 
 
+# Perhaps make a KILIB_BUILD_COVERAGE flag?
+# Maybe we just want to build coverage if we are building the tests?
+# Merge the top two into a function in SetKiLibOptions.cmake
+# We are building as stand-alone project so build the code coverage project
+include(../CMake/CodeCoverage.cmake)
+append_coverage_compiler_flags()
+setup_target_for_coverage_gcovr_html(NAME code_coverage EXECUTABLE ${projectTestName})
+ 
 
 # Need this to help find test files
 target_compile_definitions(${projectTestName} PUBLIC
