@@ -41,7 +41,7 @@ target_include_directories(${projectTestName}
 PUBLIC
 		${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}
 PRIVATE
-		./
+		../
 )
 
 # Discover tests
