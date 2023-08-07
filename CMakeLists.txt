@@ -86,7 +86,10 @@ if (NOT COSCI_PROJECT_NAME OR COSCI_PROJECT_NAME STREQUAL "")
     set(COSCI_PROJECT_NAME "kilib-oss" CACHE STRING "" FORCE)
 endif()
 
-add_custom_target(push_to_repo
-	COMMAND bash ${CMAKE_SOURCE_DIR}/CMake/gen_oras_config.sh > oras_config.json
-	COMMAND oras push harbor.nibious.com/cosci-llc/${COSCI_PROJECT_NAME}:$ENV{GO_REVISION_GIT}-${CMAKE_BUILD_TYPE}-$ENV{OS_RELEASE} --config oras_config.json libKiLib.a
-)
+# Only add this target if we're not being included as a subproject
+if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
+    add_custom_target(push_to_repo
+        COMMAND bash ${CMAKE_SOURCE_DIR}/CMake/gen_oras_config.sh > oras_config.json
+        COMMAND oras push harbor.nibious.com/cosci-llc/${COSCI_PROJECT_NAME}:$ENV{GO_REVISION_GIT}-${CMAKE_BUILD_TYPE}-$ENV{OS_RELEASE} --config oras_config.json libKiLib.a
+    )
+endif()
