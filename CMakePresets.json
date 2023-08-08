@@ -79,7 +79,8 @@
 			"generator": "Ninja",
 			"binaryDir": "${sourceDir}/build/",
 			"cacheVariables": {
-				"CMAKE_MAKE_PROGRAM": "c:/Tools/Ninja/ninja.exe"
+				"CMAKE_MAKE_PROGRAM": "c:/Tools/Ninja/ninja.exe",
+				"CMAKE_BUILD_TYPE": "Release"
 			}
 		}
 	],
