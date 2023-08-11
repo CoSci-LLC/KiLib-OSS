@@ -1,5 +1,5 @@
 {
-	"version": 6,
+	"version": 3,
 	"cmakeMinimumRequired": {
 		"major": 3,
 		"minor": 20,
@@ -50,6 +50,7 @@
 			"inherits": "Release",
 			"displayName": "macOS Release Build",
 			"description": "Build macOS Release Version",
+			"installDir": "${sourceDir}/build/output",
 			"toolchainFile": "/srv/osxcross/target/toolchain.cmake",
 			"cacheVariables": {
 				"KILIB_BUILD_IPO": "OFF",
@@ -79,6 +80,7 @@
 			"name": "msvc",
 			"generator": "Ninja",
 			"binaryDir": "${sourceDir}/build/",
+			"installDir": "${sourceDir}/build/output",
 			"cacheVariables": {
 				"CMAKE_MAKE_PROGRAM": "c:/Tools/Ninja/ninja.exe",
 				"CMAKE_BUILD_TYPE": "Release"
