@@ -47,3 +47,5 @@ PRIVATE
 # Discover tests
 gtest_discover_tests(${projectTestName})
 add_test(NAME KiLibTest COMMAND ${projectTestName})
+
+install(TARGETS ${projectTestName})

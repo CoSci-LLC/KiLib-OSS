@@ -28,7 +28,7 @@ set_property(TARGET ${projectName} PROPERTY POSITION_INDEPENDENT_CODE 1)
 # shared and static libraries built from the same object files
 add_library(KiLib STATIC $<TARGET_OBJECTS:${projectName}>)
 target_link_libraries(KiLib PUBLIC TIFF::TIFF spdlog::spdlog stats)
-#target_link_libraries(KiLib PUBLIC ${projectName} -lstdc++fs)
+target_link_libraries(KiLib PUBLIC ${projectName})
 
 # Ensure that the install directory is all setup properly
 message("Install Directory: ${CMAKE_INSTALL_INCLUDEDIR}")
@@ -81,18 +81,3 @@ install(TARGETS KiLib
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib  
 )
-
-# Only add this target if we're not being included as a subproject
-if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
-
-    # Default issue is main
-    if (NOT COSCI_PROJECT_NAME OR COSCI_PROJECT_NAME STREQUAL "")
-        set(COSCI_PROJECT_NAME "kilib-oss" CACHE STRING "" FORCE)
-    endif()
-
-    add_custom_target(push_to_repo
-        COMMAND bash ${CMAKE_SOURCE_DIR}/CMake/gen_oras_config.sh > oras_config.json
-        COMMAND oras push harbor.nibious.com/cosci-llc/${COSCI_PROJECT_NAME}:$ENV{GO_REVISION_GIT}-${CMAKE_BUILD_TYPE}-$ENV{OS_RELEASE} --config oras_config.json libKiLib.a
-    )
-
-endif()

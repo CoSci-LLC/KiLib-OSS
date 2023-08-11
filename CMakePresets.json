@@ -1,5 +1,5 @@
 {
-	"version": 3,
+	"version": 6,
 	"cmakeMinimumRequired": {
 		"major": 3,
 		"minor": 20,
@@ -11,6 +11,7 @@
 			"hidden": true,
 			"generator": "Ninja",
 			"binaryDir": "${sourceDir}/build",
+			"installDir": "${sourceDir}/build/output",
 			"cacheVariables": {
 				"KILIB_BUILD_TESTS": "OFF",
 				"KILIB_BUILD_IPO": "ON",
