@@ -65,7 +65,7 @@ target_include_directories(${projectName}
         "$<INSTALL_INTERFACE:include>"
 )
 
-install(TARGETS ${projectName} tiff spdlog
+install(TARGETS ${projectName} tiff spdlog stats
         EXPORT KiLibTargets
         INCLUDES DESTINATION include
 )
