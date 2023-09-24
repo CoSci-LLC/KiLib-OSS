@@ -1,0 +1,115 @@
+{
+	"version": 3,
+	"cmakeMinimumRequired": {
+		"major": 3,
+		"minor": 20,
+		"patch": 0
+	},
+	"configurePresets": [
+		{
+			"name": "default",
+			"hidden": true,
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build",
+			"installDir": "${sourceDir}/build/output",
+			"cacheVariables": {
+				"KILIB_BUILD_TESTS": "OFF",
+				"KILIB_BUILD_IPO": "ON",
+				"KILIB_LOG_LEVEL": "0",
+				"KILIB_STRICT_BUILD": "OFF",
+				"CMAKE_C_COMPILER": "clang",
+				"CMAKE_CXX_COMPILER": "clang++"
+			},
+			"environment": {}
+		},
+		{
+			"name": "Debug",
+			"inherits": "default",
+			"displayName": "Debug",
+			"description": "Debug build with tests",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"KILIB_BUILD_TESTS": "ON",
+				"KILIB_LOG_LEVEL": "1",
+				"KILIB_BUILD_IPO": "OFF"
+			}
+		},
+		{
+			"name": "Release",
+			"inherits": "default",
+			"displayName": "Release",
+			"description": "Release build",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release",
+				"KILIB_BUILD_TESTS": "OFF",
+				"KILIB_BUILD_IPO": "ON"
+			}
+		},
+		{
+			"name": "macOS",
+			"inherits": "Release",
+			"displayName": "macOS Release Build",
+			"description": "Build macOS Release Version",
+			"installDir": "${sourceDir}/build/output",
+			"toolchainFile": "/srv/osxcross/target/toolchain.cmake",
+			"cacheVariables": {
+				"KILIB_BUILD_IPO": "OFF",
+				"STATS_OPENMP_ENABLE": "OFF"
+			},
+			"environment": {
+				"OSXCROSS_SDK" :"12.3",
+				"OSXCROSS_TARGET_DIR":"/srv/osxcross/target",
+				"OSXCROSS_TARGET":"/srv/osxcross/target",
+				"PATH": "/srv/osxcross/target/bin/:$penv{PATH}",
+				"OSXCROSS_HOST":"x86_64-apple-darwin21.4"
+			}
+		},
+		{
+			"name": "wasm",
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build/",
+			"cacheVariables": {
+				"CMAKE_PROJECT_NAME": "wasmGen",
+				"BUILD_LIBRARY_ONLY": "YES",
+				"STATS_OPENMP_ENABLE": "NO",
+				"CMAKE_INSTALL_PREFIX": "../install" ,
+				"KILIB_BUILD_TESTS": "NO"
+			}
+		},
+		{
+			"name": "msvc",
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build/",
+			"installDir": "${sourceDir}/build/output",
+			"cacheVariables": {
+				"CMAKE_MAKE_PROGRAM": "c:/Tools/Ninja/ninja.exe",
+				"CMAKE_BUILD_TYPE": "Release"
+			}
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "Debug",
+			"configurePreset": "Debug"
+		},
+		{
+			"name": "Release",
+			"configurePreset": "Release"
+		},
+		{
+			"name": "macOS",
+			"configurePreset": "macOS",
+			"environment": {
+				"OSXCROSS_SDK" :"12.3",
+				"OSXCROSS_TARGET_DIR":"/srv/osxcross/target",
+				"OSXCROSS_TARGET":"/srv/osxcross/target",
+				"PATH": "/srv/osxcross/target/bin/:$penv{PATH}",
+				"OSXCROSS_HOST":"x86_64-apple-darwin21.4"
+			}
+		},
+		{
+			"name": "msvc",
+			"configurePreset": "msvc"
+		}
+	]
+}

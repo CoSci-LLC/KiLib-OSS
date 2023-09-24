@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include <KiLib/Soils/UserDefined.hpp>
 #include <KiLib/Soils/DistributionModel.hpp>
+#include <KiLib/Soils/UserDefined.hpp>
 
 
 namespace KiLib::Soils
@@ -29,7 +29,7 @@ namespace KiLib::Soils
    class ResidualWaterContentCalc : public DistributionModel
    {
    public:
-      ResidualWaterContentCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
+      ResidualWaterContentCalc(const IDistributionModelDecorator &s) : DistributionModel(s)
       {
       }
 
@@ -49,6 +49,5 @@ namespace KiLib::Soils
    private:
       bool   has_been_calculated{false};
       double residualWaterContent{0};
-
    };
-}       
+} // namespace KiLib::Soils

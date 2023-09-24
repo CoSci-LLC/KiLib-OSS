@@ -17,11 +17,11 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define TESTING_DELTA 0.0000000001
 
 #include <KiLib/Utils/StatisticalOutput.hpp>
 #include <gtest/gtest.h>
 #include <memory>
-#include <test/goldValues.hpp>
 
 namespace KiLib
 {
