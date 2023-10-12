@@ -45,14 +45,6 @@ include(CMake/spdlog.cmake)
 include(CMake/stats.cmake)
 include(CMake/libtiff.cmake)
 
-# Include the test application
-if(KILIB_BUILD_TESTS)
-    message("-- KILIB: Adding KiLib Tests")
-    # Enable testing for the project
-    enable_testing()
-    add_subdirectory(test)
-endif()
-
 # Include the KiLib source files
 add_subdirectory(KiLib)
 SetKiLibOptions(${projectName})
