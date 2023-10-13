@@ -2,9 +2,8 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-# Set the project and test app name
+# Set the project name 
 set(projectName KiLibObjLib)
-set(projectTestName KiLib.test)
 
 # Create the project name and version
 project(KiLib VERSION 5.1.0 LANGUAGES C CXX)
