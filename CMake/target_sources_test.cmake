@@ -3,7 +3,7 @@
 # will be built
 
 function(target_sources_test target)
-	if(KILIB_BUILD_TESTS)
-		target_sources(${target} ${ARGN})
-	endif()
+	#	if(KILIB_BUILD_TESTS)
+	#		target_sources(${target} ${ARGN})
+	#	endif()
 endfunction()

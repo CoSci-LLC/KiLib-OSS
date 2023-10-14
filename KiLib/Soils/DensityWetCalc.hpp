@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include <KiLib/Soils/UserDefined.hpp>
 #include <KiLib/Soils/DistributionModel.hpp>
+#include <KiLib/Soils/UserDefined.hpp>
 
 
 namespace KiLib::Soils
@@ -29,16 +29,16 @@ namespace KiLib::Soils
    class DensityWetCalc : public DistributionModel
    {
    public:
-      DensityWetCalc(const IDistributionModelDecorator& s) : DistributionModel(s)
+      DensityWetCalc(const IDistributionModelDecorator &s) : DistributionModel(s)
       {
-
       }
 
-      double CalculateDensityWet(const double & S)
+      double CalculateDensityWet(const double &S)
       {
-         const auto poro           = s.GetPorosity();
-         const auto fc             = s.GetFieldCapacity();
-         this->densityWet          = (1 - poro) * KiLib::Constants::GRAIN_DENSITY + (S * poro + (1-S) * fc) * KiLib::Constants::WATER_DENSITY;
+         const auto poro = s.GetPorosity();
+         const auto fc   = s.GetFieldCapacity();
+         this->densityWet =
+            (1 - poro) * KiLib::Constants::GRAIN_DENSITY + (S * poro + (1 - S) * fc) * KiLib::Constants::WATER_DENSITY;
          this->has_been_calculated = true;
          return this->densityWet;
       }
@@ -52,4 +52,4 @@ namespace KiLib::Soils
       bool   has_been_calculated{false};
       double densityWet{0};
    };
-}       
+} // namespace KiLib::Soils

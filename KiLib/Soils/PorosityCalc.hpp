@@ -20,18 +20,17 @@
 
 #pragma once
 
-#include <KiLib/Soils/UserDefined.hpp>
-#include <KiLib/Soils/DistributionModel.hpp>
 #include <KiLib/Soils/DensityDryGen.hpp>
+#include <KiLib/Soils/DistributionModel.hpp>
+#include <KiLib/Soils/UserDefined.hpp>
 
 
 namespace KiLib::Soils
-{ 
+{
    class PorosityCalc : public DistributionModel
    {
    public:
-
-      PorosityCalc(const KiLib::Soils::DensityDryGen& s) : DistributionModel(s), density_gen(s)
+      PorosityCalc(const KiLib::Soils::DensityDryGen &s) : DistributionModel(s), density_gen(s)
       {
       }
 
@@ -44,7 +43,7 @@ namespace KiLib::Soils
 
       double GetPorosity() const override
       {
-         if (!has_been_generated) 
+         if (!has_been_generated)
          {
             throw NotGeneratedException("Please calculate Value before calling GetPorosity by using CalculatePorosity");
          }
@@ -52,8 +51,8 @@ namespace KiLib::Soils
       }
 
    private:
-      const  KiLib::Soils::DensityDryGen& density_gen;
-      bool   has_been_generated{false};
-      double porosity{0};
+      const KiLib::Soils::DensityDryGen &density_gen;
+      bool                               has_been_generated{false};
+      double                             porosity{0};
    };
-}       
+} // namespace KiLib::Soils

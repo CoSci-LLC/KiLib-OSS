@@ -73,27 +73,27 @@ namespace KiLib::Soils
                .stdDev = 100,
             }};
 
-         this->cohesion = { // [Pa]
-            .constant = 500,
-            .uniformPrimula{
-               .min = 0,
-               .max = 0,
-            },
-            .uniform{
-               .min = 400,
-               .max = 400,
-            },
-            .normal{
-               .mean   = 500,
-               .stdDev = 50,
-            }};
+         this->cohesion = {// [Pa]
+                           .constant = 500,
+                           .uniformPrimula{
+                              .min = 0,
+                              .max = 0,
+                           },
+                           .uniform{
+                              .min = 400,
+                              .max = 400,
+                           },
+                           .normal{
+                              .mean   = 500,
+                              .stdDev = 50,
+                           }};
 
-         this->conductivity = { // [m/s]
-            .constant = 5.05e-07,
-            .uniformPrimula{
-               .min = 1e-08,
-               .max = 1e-06,
-            }};
+         this->conductivity = {// [m/s]
+                               .constant = 5.05e-07,
+                               .uniformPrimula{
+                                  .min = 1e-08,
+                                  .max = 1e-06,
+                               }};
       }
    };
 } // namespace KiLib::Soils

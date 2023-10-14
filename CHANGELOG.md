@@ -2,6 +2,27 @@
 
 Notable changes to this project will be documented in this file.
 
+## v6.0.0
+---
+
+### Added
+
+- Using CMakePresets to make builds uniform among developers
+- Container2D
+
+### Fixed
+
+- Checks added to ensure GetAverage of a raster is not divided by 0
+- Builds on macOS, Windows, and Linux
+
+### Removed
+
+- Tests have been removed to simplify build process within the CI. 
+  We are going to reimplement the tests and ensure they provide 
+  accurate coverage and test features properly. This was missing
+  in the previous tests and why they were removed.
+
+
 ## v5.1.0
 ---
 

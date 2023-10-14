@@ -57,8 +57,9 @@ namespace KiLib
       double x = (pos.x - this->xllcorner) / this->cellsize;
       double y = (pos.y - this->yllcorner) / this->cellsize;
 
-      const size_t r = std::floor(y);
-      const size_t c = std::floor(x);
+      const size_t r = std::min(static_cast<size_t> (std::floor(y)), this->nRows - 1ul);
+      const size_t c = std::min(static_cast<size_t> (std::floor(x)), this->nCols - 1ul);
+      
 
       const size_t ru = std::min(r + 1ul, this->nRows - 1ul);
       const size_t cr = std::min(c + 1ul, this->nCols - 1ul);
@@ -182,7 +183,7 @@ namespace KiLib
    {
       auto [r, c] = Raster::GetRowCol(ind);
 
-      int extent = std::floor(radius / this->cellsize);
+      int extent = static_cast<int>(std::floor(radius / this->cellsize));
 
       int leftB  = std::clamp(c - extent, 0, (int)this->nCols - 1);
       int rightB = std::clamp(c + extent, 0, (int)this->nCols - 1);
@@ -213,6 +214,11 @@ namespace KiLib
             num += 1;
          }
       }
+     
+      if (num == 0)
+      {
+         num += 1;
+      }
 
       return sum / num;
    }
@@ -234,8 +240,8 @@ namespace KiLib
          throw std::out_of_range(fmt::format("Index {} out of range for Raster with {} datapoints", ind, this->nData));
       }
 
-      const int r = ind / this->nCols;
-      const int c = ind % this->nCols;
+      const int r = static_cast<int>(ind / this->nCols);
+      const int c = static_cast<int>(ind % this->nCols);
       return std::make_pair(r, c);
    }
 
@@ -352,13 +358,13 @@ namespace KiLib
       // nRows
       for (const KiLib::Raster *rast : rasts)
       {
-         cmp(rast->nRows, rasts.at(0)->nRows, 0.0, "Num Rows");
+         cmp(static_cast<double>(rast->nRows), static_cast<double>(rasts.at(0)->nRows), 0.0, "Num Rows");
       }
 
       // nCols
       for (const KiLib::Raster *rast : rasts)
       {
-         cmp(rast->nCols, rasts.at(0)->nCols, 0.0, "Num Cols");
+         cmp(static_cast<double>(rast->nCols), static_cast<double>(rasts.at(0)->nCols), 0.0, "Num Cols");
       }
    }
 
@@ -367,7 +373,7 @@ namespace KiLib
    {
       auto [r, c] = Raster::GetRowCol(ind);
 
-      const int extent = std::floor(radius / this->cellsize);
+      const int extent = static_cast<int>(std::floor(radius / this->cellsize));
 
       const int leftB  = std::clamp(c - extent, 0, (int)this->nCols - 1);
       const int rightB = std::clamp(c + extent, 0, (int)this->nCols - 1);
