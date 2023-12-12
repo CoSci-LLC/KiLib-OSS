@@ -6,9 +6,9 @@
 
 CPMAddPackage(
   NAME spdlog
-  VERSION 1.11.0
+  VERSION 1.12.0
   GITHUB_REPOSITORY "gabime/spdlog"
-  GIT_TAG "v1.11.0"
+  GIT_TAG "v1.12.0"
   OPTIONS
     "SPDLOG_BUILD_SHARED OFF"
 )
