@@ -1,5 +1,5 @@
 # KiLib-OSS 
-#### Version v5.1.0
+#### Version v6.0.0
 
 *A Scientific Library for "Earth" (Ki) surface processes*
 
@@ -11,48 +11,35 @@ All dependencies required for this library will be download via the CMake build 
 ### Linux
 
 ```bash
-$ mkdir build
-$ cd build 
-$ cmake .. -DCMAKE_INSTALL_PREFIX=<install location>
-$ cmake --build .
-$ cmake --install .
-```
-
-If you wish to build using Ninja, change the generator that `cmake` uses by:
-
-```bash
-cmake .. -G Ninja -DCMAKE_INSTALL_PREFIX=<install location>
-```
-
-If you wish to build using Google tests, add:
-
-```bash
-cmake .. -G Ninja -DKILIB_BUILD_TESTS=Yes 
+$ git clone https://github.com/CoSci-LLC/KiLib-OSS.git
+$ cmake --preset <Debug|Release>
+$ cmake --build . --preset <Debug|Release>
+$ cmake --build . --target install --preset <Debug|Release>
 ```
 
 ### Windows
-Visual Studio 2019 is the preferred method for building KiLib on Windows. CMake is also required.
+Visual Studio 2019 is the preferred method for building KiLib on Windows. CMake and Ninja is also required.
 
 Clone or download the KiLib Library and open a VS 2019 Developer Console in that directory. Then:
 
 ```bash
-$ mkdir build
-$ cd build
-$ cmake ..
-$ cmake --build .
+$ git clone https://github.com/CoSci-LLC/KiLib-OSS.git
+$ cmake --preset msvc
+$ cmake --build . --preset msvc
+$ cmake --build . --target install --preset msvc
 ```
 
 ### MacOS
 
-To install on MacOS, you first need to install [HomeBrew](https://brew.sh/).
-
-Then, run:
+After installing XCode, run the following:
 
 ```bash
-brew install libomp cmake
+$ git clone https://github.com/CoSci-LLC/KiLib-OSS.git
+$ cmake --preset macOS
+$ cmake --build . --preset macOS
+$ cmake --build . --target install --preset macOS
 ```
 
-Then you can build normally
 
 ## Usage
 To automatically download KiLib, add the following to your CMakeLists.txt:
@@ -64,7 +51,7 @@ FetchContent_Populate(
     kilib_proj
     QUIET
     GIT_REPOSITORY https://github.com/CoSci-LLC/KiLib-OSS.git
-    GIT_TAG v5.1.0
+    GIT_TAG v6.0.0
     SOURCE_DIR     kilib_proj              # (Relative) path within in the build directory.
 )
 
@@ -82,33 +69,6 @@ Then to use in your project, use:
 ```
 target_link_libraries(${projectName} PUBLIC KiLib)
 ```
-
-## Debug Builds
-
-KiLib has the option to be built with debugging features. This will enable debug prints (as long as `spdlog` active level is set to debug as well) and it will add stack traces and other useful debugging features. To build KiLib in debug mode, add the `-DCMAKE_BUILD_TYPE=Debug` flag to your CMake command like:
-
-```bash
-...
-$ cmake .. -DCMAKE_INSTALL_PREFIX=<install location> -DCMAKE_BUILD_TYPE=Debug
-...
-```
-
-Building in Debug mode will also build the tests for KiLib.
-
-## Running Tests
-
-To run KiLib tests, follow these commands:
-
-```bash
-$ mkdir build
-$ cd build 
-$ cmake .. -DCMAKE_INSTALL_PREFIX=<install location> -DCMAKE_BUILD_TYPE=Debug
-$ cmake --build .
-$ cmake --install .
-$ ctest
-```
-
-The `make install` or equivalent is important because KiLib tests require the soils to be installed in the proper location for a few of the tests to pass.
 
 ## Classes
 
@@ -133,23 +93,3 @@ The `make install` or equivalent is important because KiLib tests require the so
 (`KiLib/Utils/Vec3.hpp`) General-purpose 3-dimensional vector class. It supports many different operations.
 
 (`KiLib/Utils/NewtonRaphson.hpp`) Implements a Newton-Raphson scheme to find roots of non-linear equations.
-
-
-
-
-## Useful Commands
-
-To build:
-```
-cmake --preset Debug-shm
-cmake --build --preset Debug-shm
-```
-
-To Test:
-```
-cmake --build --target test  --preset Debug-shm
-```
-For coverage:
-```
-cmake --build --target KiLibObjLib_coverage  --preset Debug-shm
-```
