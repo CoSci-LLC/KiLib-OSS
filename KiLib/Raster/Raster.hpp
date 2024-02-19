@@ -225,7 +225,7 @@ namespace KiLib
             for (int c = 0; c < (int)sumRast.nCols; c++)
             {
                // Skip nodata
-               if (sumRast.at(r, c) == sumRast.nodata_value)
+               if (sumRast.at((size_t)r,(size_t) c) == sumRast.nodata_value)
                {
                   continue;
                }
@@ -237,19 +237,19 @@ namespace KiLib
                   {
                      // Dont sum out of bounds, cant sum where we have no points
                      if (
-                        counts.count(sumRast.flattenIndex(ri, ci)) == 0 or ri < 0 or ri >= (int)sumRast.nRows or
+                        counts.count(sumRast.flattenIndex((size_t)ri, (size_t)ci)) == 0 or ri < 0 or ri >= (int)sumRast.nRows or
                         ci < 0 or ci >= (int)sumRast.nCols)
                      {
                         continue;
                      }
 
-                     count += counts[sumRast.flattenIndex(ri, ci)];
-                     sum += sumRast.at(ri, ci);
+                     count += counts[sumRast.flattenIndex((size_t)ri, (size_t) ci)];
+                     sum += sumRast.at((size_t)ri, (size_t)ci);
                   }
                }
                if (count != 0)
                {
-                  outRast.at(r, c) = sum / count;
+                  outRast.at((size_t)r,(size_t) c) = sum / count;
                }
             }
          }
