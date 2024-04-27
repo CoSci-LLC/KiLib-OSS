@@ -369,8 +369,10 @@ namespace KiLib
    }
 
    std::optional<KiLib::Vec3> Raster::GetCoordMinDistance(
-      size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const
+      //size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const
+      size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold) const
    {
+      const auto zInd = inPos.z;
       auto [r, c] = Raster::GetRowCol(ind);
 
       const int extent = static_cast<int>(std::floor(radius / this->cellsize));
@@ -398,8 +400,10 @@ namespace KiLib
                continue;
             }
             // This can probably be done faster, handles the corners being out of the radius
-            const double dr   = std::abs((double)(r - ri)) * cellsize;
-            const double dc   = std::abs((double)(c - ci)) * cellsize;
+            //const double dr   = std::abs((double)(r - ri)) * cellsize;
+            //const double dc   = std::abs((double)(c - ci)) * cellsize;
+            const double dr   = inPos.y - (double)(ri) * cellsize + cellsize / 2.0;
+            const double dc   = inPos.x - (double)(ci) * cellsize + cellsize / 2.0;
             const double dist = sqrt(dr * dr + dc * dc);
             if (dist > radius)
             {
