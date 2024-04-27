@@ -417,7 +417,11 @@ namespace KiLib
             // compute slope
             slope1 = (zInd - elev.at(ri, ci)) / dist;
             // Get position if
-            if (this->at(ri, ci) < value && elev0 < elev.at(ri, ci) && elev.at(ri, ci) < zInd && dist <= dist2value && slope1 > slope0)
+            if (//this->at(ri, ci) < value && 
+                elev0 < elev.at(ri, ci) && 
+                elev.at(ri, ci) < zInd && 
+                dist <= dist2value && 
+                slope1 > slope0)
             {
                dist2value = dist;
                value      = this->at(ri, ci);
