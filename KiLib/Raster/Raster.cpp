@@ -382,6 +382,8 @@ namespace KiLib
 
       auto dist2value = std::numeric_limits<double>::max();
       auto value      = std::numeric_limits<double>::max();
+      auto slope0     = std::numeric_limits<double>::min();
+      auto slope1     = std::numeric_limits<double>::min();
 
       KiLib::Vec3 pos; // Return value if position found
       bool        found = false;
@@ -404,14 +406,17 @@ namespace KiLib
                SPDLOG_DEBUG("SKIPPING\n");
                continue;
             }
+            // compute slope
+            slope1 = (zInd - elev.at(ri, ci)) / dist;
             // Get position if
-            if (this->at(ri, ci) < value && elev.at(ri, ci) < zInd && dist <= dist2value)
+            if (this->at(ri, ci) < value && elev.at(ri, ci) < zInd && dist <= dist2value && slope1 > slope0)
             {
                dist2value = dist;
                value      = this->at(ri, ci);
                auto ind   = this->flattenIndex(ri, ci);
                pos        = this->getCellPos(ind);
                pos.z      = 0.0; // Reset z to zero
+               slope0     = slope1;
                found      = true;
             }
          }
