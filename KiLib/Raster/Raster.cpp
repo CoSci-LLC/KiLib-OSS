@@ -420,7 +420,8 @@ namespace KiLib
             if (//this->at(ri, ci) < value && 
                 //elev0 < elev.at(ri, ci) && 
                 elev.at(ri, ci) < zInd && 
-                dist <= dist2value && 
+                dist <= dist2value 
+                // && 
                 //slope1 > slope0)
                 )
             {
