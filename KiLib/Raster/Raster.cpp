@@ -399,12 +399,13 @@ namespace KiLib
             {
                continue;
             }
-            spdlog::info("  GetCoordMinDist ri = {}, ci = {}", ri, ci);
+            spdlog::info("  GetCoordMinDist inPos.x = {}, ci = {}", inPos.x, static_cast<double>(ci));
+            spdlog::info("  GetCoordMinDist inPos.y = {}, ri = {}", inPos.y, static_cast<double>(ri));
             // This can probably be done faster, handles the corners being out of the radius
             //const double dr   = std::abs((double)(r - ri)) * cellsize;
             //const double dc   = std::abs((double)(c - ci)) * cellsize;
-            const double dr   = inPos.y - (double)(ri) * cellsize + cellsize / 2.0;
-            const double dc   = inPos.x - (double)(ci) * cellsize + cellsize / 2.0;
+            const double dr   = inPos.y - static_cast<double>(ri) * cellsize + cellsize / 2.0;
+            const double dc   = inPos.x - static_cast<double>(ci) * cellsize + cellsize / 2.0;
             const double dist = sqrt(dr * dr + dc * dc);
             spdlog::info("  GetCoordMinDist dr = {}; dc = {}; dist = {}", dr, dc, dist);
             if (dist > radius)
