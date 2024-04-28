@@ -447,9 +447,10 @@ namespace KiLib
       }
    }
 
-   std::optional<KiLib::Vec3> Raster::FindClosestStreamCell(
-      size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const
+   std::optional<KiLib::Vec3> Raster::FindClosestStreamCell(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold) const
    {
+      const auto zInd = inPos.z;
+
       auto [r, c] = Raster::GetRowCol(ind);
 
       const int extent = static_cast<int>(std::floor(radius / this->cellsize));
