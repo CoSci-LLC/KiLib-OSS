@@ -14,7 +14,7 @@ FetchContent_Populate(
   stats_proj
   QUIET
   GIT_REPOSITORY  https://github.com/kthohr/stats
-  GIT_TAG         v3.2.0
+  GIT_TAG         v3.4.0
   SOURCE_DIR      _deps/stats-src
   BINARY_DIR      _deps/stats-build
   SUBBUILD_DIR    _deps/stats-subbuild
