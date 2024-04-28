@@ -447,4 +447,60 @@ namespace KiLib
       }
    }
 
+   std::optional<KiLib::Vec3> Raster::FindClosestStreamCell(
+      size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const
+   {
+      auto [r, c] = Raster::GetRowCol(ind);
+
+      const int extent = static_cast<int>(std::floor(radius / this->cellsize));
+
+      const int leftB  = std::clamp(c - extent, 0, (int)this->nCols - 1);
+      const int rightB = std::clamp(c + extent, 0, (int)this->nCols - 1);
+      const int upB    = std::clamp(r + extent, 0, (int)this->nRows - 1);
+      const int lowB   = std::clamp(r - extent, 0, (int)this->nRows - 1);
+
+      auto dist2value = std::numeric_limits<double>::max();
+
+      KiLib::Vec3 pos; // Return value if position found
+      bool        found = false;
+
+      for (int ri = lowB; ri <= upB; ri++)
+      {
+         for (int ci = leftB; ci <= rightB; ci++)
+         {
+            // Skip nodata and values less than threshold
+            if (this->at(ri, ci) == this->nodata_value || this->at(ri, ci) < threshold)
+            {
+               continue;
+            }
+            const double dr   = inPos.y - (yllcorner + static_cast<double>(ri) * cellsize + cellsize / 2.0);
+            const double dc   = inPos.x - (xllcorner + static_cast<double>(ci) * cellsize + cellsize / 2.0);
+            const double dist = sqrt(dr * dr + dc * dc);
+            if (dist > radius)
+            {
+               SPDLOG_DEBUG("SKIPPING\n");
+               continue;
+            }
+            // Get position if
+            if (elev.at(ri, ci) < zInd && dist <= dist2value)
+            {
+               dist2value = dist;
+               auto ind   = this->flattenIndex(ri, ci);
+               pos        = this->getCellPos(ind);
+               pos.z      = 0.0; // Reset z to zero
+               found      = true;
+            }
+         }
+      }
+      // Check that pos was found
+      if (found)
+      {
+         return pos;
+      }
+      else
+      {
+         return std::nullopt;
+      }
+   }
+
 } // namespace KiLib
