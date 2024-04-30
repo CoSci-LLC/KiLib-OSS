@@ -19,6 +19,7 @@
 
 
 #include <KiLib/Raster/Raster.hpp>
+#include <KiLib/Utils/Distributions.hpp>
 #include <filesystem>
 #include <spdlog/fmt/ostr.h>
 
@@ -447,7 +448,7 @@ namespace KiLib
       }
    }
 
-   std::optional<KiLib::Vec3> Raster::FindClosestStreamCell(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold) const
+   std::optional<KiLib::Vec3> Raster::FindClosestStreamCell(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold, double runoutAngle) const
    {
       const auto zInd = inPos.z;
 
@@ -461,6 +462,7 @@ namespace KiLib
       const int lowB   = std::clamp(r - extent, 0, (int)this->nRows - 1);
 
       auto dist2value = std::numeric_limits<double>::max();
+      auto maxRunout  = std::numeric_limits<double>::min();
 
       KiLib::Vec3 pos; // Return value if position found
       bool        found = false;
@@ -477,15 +479,20 @@ namespace KiLib
             const double dr   = inPos.y - (yllcorner + static_cast<double>(ri) * cellsize + cellsize / 2.0);
             const double dc   = inPos.x - (xllcorner + static_cast<double>(ci) * cellsize + cellsize / 2.0);
             const double dist = sqrt(dr * dr + dc * dc);
-            if (dist > radius)
+            if (dist > radius || elev.at(ri, ci) >= zInd)
             {
                SPDLOG_DEBUG("SKIPPING\n");
                continue;
             }
+            // compute slope
+            const auto slope = (zInd - elev.at(ri, ci)) / dist;
+            const auto runout = KiLib::weibullCDF(slope, 10.0, std::tan(runoutAngle)); // x, shape, scale
             // Get position if
-            if (elev.at(ri, ci) < zInd && dist <= dist2value)
+            //if (elev.at(ri, ci) < zInd && dist <= dist2value)
+            //if (elev.at(ri, ci) < zInd && runout > maxRunout)
+            if (runout > maxRunout)
             {
-               dist2value = dist;
+               maxRunout  = runout;
                auto ind   = this->flattenIndex(ri, ci);
                pos        = this->getCellPos(ind);
                pos.z      = 0.0; // Reset z to zero
