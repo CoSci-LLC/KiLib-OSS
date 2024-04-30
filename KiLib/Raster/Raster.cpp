@@ -486,7 +486,8 @@ namespace KiLib
             }
             // compute slope
             const auto slope = (zInd - elev.at(ri, ci)) / dist;
-            const auto runout = KiLib::weibullCDF(slope, 10.0, std::tan(runoutAngle)); // x, shape, scale
+            //const auto runout = KiLib::weibullCDF(slope, 10.0, std::tan(runoutAngle)); // x, shape, scale
+            const auto runout = KiLib::weibullCDF(slope, 3.0, std::tan(runoutAngle)); // x, shape, scale
             // Get position if
             //if (elev.at(ri, ci) < zInd && dist <= dist2value)
             //if (elev.at(ri, ci) < zInd && runout > maxRunout)
