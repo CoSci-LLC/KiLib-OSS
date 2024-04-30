@@ -262,7 +262,7 @@ namespace KiLib
       static void                assertAgreeDim(const std::vector<const KiLib::Raster *> &rasts);
       std::optional<KiLib::Vec3> GetCoordMinDistance(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold) const;
       //GetCoordMinDistance(size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const;
-      std::optional<KiLib::Vec3> FindClosestStreamCell(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold, double runoutAngle, double &runoutProb) const;
+      std::optional<KiLib::Vec3> FindClosestStreamCell(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold, double shape, double runoutAngle, double &runoutProb) const;
 
    private:
       void fromDEM(const std::string &path);
