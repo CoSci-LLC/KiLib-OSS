@@ -448,7 +448,7 @@ namespace KiLib
       }
    }
 
-   std::optional<KiLib::Vec3> Raster::FindClosestStreamCell(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold, double runoutAngle) const
+   std::optional<KiLib::Vec3> Raster::FindClosestStreamCell(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold, double runoutAngle, double &runoutProb) const
    {
       const auto zInd = inPos.z;
 
@@ -504,6 +504,7 @@ namespace KiLib
       // Check that pos was found
       if (found)
       {
+         runoutProb = maxRunout;
          return pos;
       }
       else
