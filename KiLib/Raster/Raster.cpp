@@ -19,6 +19,7 @@
 
 
 #include <KiLib/Raster/Raster.hpp>
+#include <KiLib/Utils/Distributions.hpp>
 #include <filesystem>
 #include <spdlog/fmt/ostr.h>
 
@@ -369,8 +370,10 @@ namespace KiLib
    }
 
    std::optional<KiLib::Vec3> Raster::GetCoordMinDistance(
-      size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const
+      //size_t ind, double zInd, const KiLib::Raster &elev, double radius, double threshold) const
+      size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold) const
    {
+      const auto zInd = inPos.z;
       auto [r, c] = Raster::GetRowCol(ind);
 
       const int extent = static_cast<int>(std::floor(radius / this->cellsize));
@@ -382,6 +385,9 @@ namespace KiLib
 
       auto dist2value = std::numeric_limits<double>::max();
       auto value      = std::numeric_limits<double>::max();
+      auto slope0     = std::numeric_limits<double>::min();
+      auto slope1     = std::numeric_limits<double>::min();
+      auto elev0      = std::numeric_limits<double>::min();
 
       KiLib::Vec3 pos; // Return value if position found
       bool        found = false;
@@ -395,20 +401,98 @@ namespace KiLib
             {
                continue;
             }
+            //spdlog::info("  GetCoordMinDist inPos.x = {}, ci = {}", inPos.x, static_cast<double>(ci));
+            //spdlog::info("  GetCoordMinDist inPos.y = {}, ri = {}", inPos.y, static_cast<double>(ri));
             // This can probably be done faster, handles the corners being out of the radius
-            const double dr   = std::abs((double)(r - ri)) * cellsize;
-            const double dc   = std::abs((double)(c - ci)) * cellsize;
+            //const double dr   = std::abs((double)(r - ri)) * cellsize;
+            //const double dc   = std::abs((double)(c - ci)) * cellsize;
+            const double dr   = inPos.y - (yllcorner + static_cast<double>(ri) * cellsize + cellsize / 2.0);
+            const double dc   = inPos.x - (xllcorner + static_cast<double>(ci) * cellsize + cellsize / 2.0);
             const double dist = sqrt(dr * dr + dc * dc);
+            //spdlog::info("  GetCoordMinDist dr = {}; dc = {}; dist = {}", dr, dc, dist);
             if (dist > radius)
             {
                SPDLOG_DEBUG("SKIPPING\n");
                continue;
             }
+            // compute slope
+            slope1 = (zInd - elev.at(ri, ci)) / dist;
             // Get position if
-            if (this->at(ri, ci) < value && elev.at(ri, ci) < zInd && dist <= dist2value)
+            if (//this->at(ri, ci) < value && 
+                //elev0 < elev.at(ri, ci) && 
+                elev.at(ri, ci) < zInd && 
+                dist <= dist2value 
+                // && 
+                //slope1 > slope0)
+                )
             {
                dist2value = dist;
                value      = this->at(ri, ci);
+               auto ind   = this->flattenIndex(ri, ci);
+               pos        = this->getCellPos(ind);
+               pos.z      = 0.0; // Reset z to zero
+               slope0     = slope1;
+               elev0      = elev.at(ri, ci);
+               found      = true;
+            }
+         }
+      }
+      // Check that pos was found
+      if (found)
+      {
+         return pos;
+      }
+      else
+      {
+         return std::nullopt;
+      }
+   }
+
+   std::optional<KiLib::Vec3> Raster::FindClosestStreamCell(size_t ind, const KiLib::Vec3 &inPos, const KiLib::Raster &elev, double radius, double threshold, double shape, double runoutAngle, double &runoutProb) const
+   {
+      const auto zInd = inPos.z;
+
+      auto [r, c] = Raster::GetRowCol(ind);
+
+      const int extent = static_cast<int>(std::floor(radius / this->cellsize));
+
+      const int leftB  = std::clamp(c - extent, 0, (int)this->nCols - 1);
+      const int rightB = std::clamp(c + extent, 0, (int)this->nCols - 1);
+      const int upB    = std::clamp(r + extent, 0, (int)this->nRows - 1);
+      const int lowB   = std::clamp(r - extent, 0, (int)this->nRows - 1);
+
+      auto dist2value = std::numeric_limits<double>::max();
+      auto maxRunout  = std::numeric_limits<double>::min();
+
+      KiLib::Vec3 pos; // Return value if position found
+      bool        found = false;
+
+      for (int ri = lowB; ri <= upB; ri++)
+      {
+         for (int ci = leftB; ci <= rightB; ci++)
+         {
+            // Skip nodata and values less than threshold
+            if (this->at(ri, ci) == this->nodata_value || this->at(ri, ci) < threshold)
+            {
+               continue;
+            }
+            const double dr   = inPos.y - (yllcorner + static_cast<double>(ri) * cellsize + cellsize / 2.0);
+            const double dc   = inPos.x - (xllcorner + static_cast<double>(ci) * cellsize + cellsize / 2.0);
+            const double dist = sqrt(dr * dr + dc * dc);
+            if (dist > radius || elev.at(ri, ci) >= zInd)
+            {
+               SPDLOG_DEBUG("SKIPPING\n");
+               continue;
+            }
+            // compute slope
+            const auto slope = (zInd - elev.at(ri, ci)) / dist;
+            const auto runout = KiLib::weibullCDF(slope, shape, std::tan(runoutAngle)); // x, shape, scale
+            // Get position if
+            //if (elev.at(ri, ci) < zInd && dist <= dist2value)
+            //if (elev.at(ri, ci) < zInd && runout > maxRunout)
+            if (runout > maxRunout)
+            {
+               maxRunout  = runout;
                auto ind   = this->flattenIndex(ri, ci);
                pos        = this->getCellPos(ind);
                pos.z      = 0.0; // Reset z to zero
@@ -419,6 +503,7 @@ namespace KiLib
       // Check that pos was found
       if (found)
       {
+         runoutProb = maxRunout;
          return pos;
       }
       else
