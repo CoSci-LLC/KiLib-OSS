@@ -129,21 +129,21 @@ namespace KiLib
 
       if (!TIFFGetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, &count, &scaling))
       {
-         spdlog::critical("Failed to find pixel scaling. Assuming 1:1");
+         spdlog::warn("Failed to find pixel scaling. Assuming 1:1");
          scaling = new double[2]{1, 1};
          free_flag |= 1;
       }
 
       if (!TIFFGetField(tiff, GEOTIFFTAG_MODELTIEPOINT, &count, &tiepoint))
       {
-         spdlog::critical("Failed to find model tiepoint. Assuming 0, 0");
+         spdlog::warn("Failed to find model tiepoint. Assuming 0, 0");
          tiepoint = new double[6]{0};
          free_flag |= 2;
       }
 
       if (!TIFFGetField(tiff, GEOTIFFTAG_NODATAVALUE, &nodat))
       {
-         spdlog::critical("Failed to find nodata value. Assuming -9999");
+         spdlog::warn("Failed to find nodata value. Assuming -9999");
          nodat = new char[7]{'-', '9', '9', '9', '9', '\n'};
          free_flag |= 4;
       }
