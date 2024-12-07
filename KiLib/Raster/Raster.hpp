@@ -21,13 +21,14 @@
 #pragma once
 
 #include <KiLib/Utils/Vec3.hpp>
+#include <KiLib/Rasters/IRaster.hpp>
 #include <algorithm>
 #include <optional>
 #include <random>
 #include <string>
 #include <vector>
 
-namespace KiLib
+namespace KiLib::Rasters
 {
 
    /**
@@ -35,10 +36,12 @@ namespace KiLib
     * as interpolation, matrix-like access, and so on.
     *
     */
-   class Raster
+
+   template<typename T>
+   class Raster : public IRaster<T>
    {
    public:
-      std::vector<double> data;
+      std::vector<T> data;
 
       double xllcorner;    // Lower left corner x value in absolute coordinates
       double yllcorner;    // Lower left corner y value in absolute coordinates
@@ -57,7 +60,7 @@ namespace KiLib
       // Creates a raster with same metadata as other, filled with fillValue.
       // If keepNoData is true, returned raster will have nodata in same locations as other.
       // Otherwise every value will be fillValue
-      static KiLib::Raster fillLike(const KiLib::Raster &other, double fillValue, bool keepNoData);
+      static KiLib::Rasters::IRaster fillLike(const KiLib::Raster &other, double fillValue, bool keepNoData);
 
       void writeToFile(const std::string &path) const;
 
