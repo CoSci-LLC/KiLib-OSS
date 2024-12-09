@@ -18,7 +18,7 @@
  */
 
 
-#include <KiLib/Raster/Raster.hpp>
+#include <KiLib/Rasters/Raster.hpp>
 #include <tiffio.hxx>
 #ifdef _OPENMP
 #include <omp.h>
@@ -84,10 +84,10 @@ static void _XTIFFInitialize(void)
    _ParentExtender = TIFFSetTagExtender(_XTIFFDefaultDirectory);
 }
 
-namespace KiLib
+namespace KiLib::Rasters
 {
 
-   void Raster::fromTiff(const std::string &path)
+   KiLib::Rasters::Raster<Default> fromTiff(const std::string &path)
    {
       _XTIFFInitialize();
 
@@ -148,17 +148,16 @@ namespace KiLib
          free_flag |= 4;
       }
 
-      this->nCols        = w;
-      this->nRows        = h;
-      this->width        = this->nCols * scaling[0];
-      this->height       = this->nRows * scaling[1];
-      this->xllcorner    = tiepoint[3];
-      this->yllcorner    = tiepoint[4] - (this->nRows * scaling[1]);
-      this->cellsize     = scaling[0];
-      this->nodata_value = std::stod(nodat);
+      const size_t nRows = h;
+      const size_t nCols = w;
 
-      this->nData = this->nRows * this->nCols;
-      this->data.resize(this->nData);
+      KiLib::Rasters::Raster<Default> raster( nRows, nCols );
+      raster.set_width( nCols * scaling[0] );
+      raster.set_height( nRows * scaling[1] );
+      raster.set_xllcorner( tiepoint[3] );
+      raster.set_yllcorner( tiepoint[4] - (nRows * scaling[1]) );
+      raster.set_cellsize( scaling[0] );
+      raster.set_nodatavalue ( std::stod(nodat) );
 
       if (TIFFIsTiled(tiff))
       {
@@ -179,7 +178,7 @@ namespace KiLib
          TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
 
          tdata_t buf = _TIFFmalloc((signed int)sls);
-         for (size_t row = 0; row < this->nRows; row++)
+         for (size_t row = 0; row < nRows; row++)
          {
 
             if (TIFFReadScanline(tiff, buf, row) == -1)
@@ -188,7 +187,7 @@ namespace KiLib
                exit(EXIT_FAILURE);
             }
 
-            for (size_t col = 0; col < this->nCols; col++)
+            for (size_t col = 0; col < nCols; col++)
             {
                double val = 0;
 
@@ -224,7 +223,8 @@ namespace KiLib
                   spdlog::error("Unknown data format.");
                   exit(EXIT_FAILURE);
                }
-               this->at(this->nRows - row - 1, col) = val;
+               Default v { .value = val, .is_nodata = val == raster.get_nodatavalue() };
+               raster.set(nRows - row - 1, col, v);
             }
          }
          _TIFFfree(buf);
@@ -243,82 +243,7 @@ namespace KiLib
          delete nodat;
 
       TIFFClose(tiff);
-   }
 
-   void Raster::toTiff(const std::string &path) const
-   {
-      // clang-format off
-        // Key Directory
-        // Is a vector in case it needs to expand programatically with new keys
-      std::vector<uint16_t> kd = {
-         // The first 4 entries specify the following:
-         // GeoTIFF Version Major, Key Revision, Minor Revision, Number of Keys
-         1, 1, 0, 2,
-         // The following entries are a set of sorted keys organized in the following manner:
-         // KeyID, Tag Location, Count, Value Offset
-         // The meaning of the values are specified in the GeoTIFF specification, Annex B, section 1, paragraph 4
-         // (GeoTIFF File and "Key" Structure) as of GeoTIFF version 1.1
-         1024, 0, 1, 1,
-         1025, 0, 1, 1,
-      };
-      // clang-format on
-
-      // model pixel scale values
-      double mps[3] = {this->cellsize, this->cellsize, 0.0};
-
-      // model tiepoint values
-      double mtp[6] = {0.0, 0.0, 0.0, this->xllcorner, this->yllcorner + (this->nRows * this->cellsize), 0.0};
-
-      _XTIFFInitialize();
-
-      TIFF *tiff = TIFFOpen(path.c_str(), "w");
-
-      if (tiff == NULL)
-      {
-         spdlog::error("Failed to open {} for writing", path);
-         exit(EXIT_FAILURE);
-      }
-
-      // TIFF tags
-      TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, this->nCols);
-      TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, this->nRows);
-      TIFFSetField(tiff, TIFFTAG_SOFTWARE, "KiLib");
-      TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 64);
-      TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
-      TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, 3);
-      TIFFSetField(tiff, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-      TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
-
-      // GeoTIFF tags
-      if (kd.size() != (size_t)(4 + kd[3] * 4))
-      {
-         spdlog::error("Invalid number of entries in the GeoTIFF Key Dictionary");
-         exit(EXIT_FAILURE);
-      }
-
-      TIFFSetField(tiff, GEOTIFFTAG_KEYDIRECTORY, kd.size(), kd.data());
-      TIFFSetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, 3, mps);
-      TIFFSetField(tiff, GEOTIFFTAG_MODELTIEPOINT, 6, mtp);
-      TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, fmt::format("{} ", this->nodata_value).c_str());
-
-      // Writing data to file
-      uint64_t sls = TIFFScanlineSize64(tiff);
-      tdata_t  buf = _TIFFmalloc((signed int)sls);
-
-      // There is no use in parallelizing this as the file has to be written in order
-      for (size_t row = 0; row < this->nRows; row++)
-      {
-         for (size_t col = 0; col < this->nCols; col++)
-            ((double *)buf)[col] = this->at(this->nRows - row - 1, col);
-
-         if (TIFFWriteScanline(tiff, buf, row) == -1)
-         {
-            spdlog::error("Failed to write data to {}", path);
-            exit(EXIT_FAILURE);
-         }
-      }
-
-      _TIFFfree(buf);
-      TIFFClose(tiff);
+      return raster;
    }
 } // namespace KiLib

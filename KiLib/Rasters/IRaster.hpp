@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <KiLib/Exceptions/NotImplemented.hpp>
-#include <KiLib/Raster/Cell.hpp>
+#include <KiLib/Rasters/Cell.hpp>
 #include <functional>
 #include <iterator>
 
@@ -44,6 +44,11 @@ namespace KiLib::Rasters
         }
 
         virtual KiLib::Rasters::Cell<T> at(size_t row, size_t col)
+        {
+            return get(row, col);
+        }
+
+        virtual KiLib::Rasters::Cell<T> at(size_t row, size_t col) const
         {
             return get(row, col);
         }

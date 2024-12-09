@@ -3,7 +3,7 @@
 # Exceptions doesn't have a CMakeLists.txt file since it only has header files
 
 # Include Raster Module
-add_subdirectory(Raster)
+add_subdirectory(Rasters)
 
 # Include Soils Module
 add_subdirectory(Soils)

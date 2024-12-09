@@ -30,7 +30,7 @@ namespace KiLib::Rasters
       SafeDouble _x, _y;       // The real position on the map cooresponding to the i,j
       Attribute<size_t> _i, _j;       // the row/col position
       const KiLib::Rasters::IRaster<T>& parent_raster;
-      T* data;         // The data at the cell
+      const T* data;         // The data at the cell
       bool is_nodata = false;
       
       
@@ -49,6 +49,13 @@ namespace KiLib::Rasters
          this->j(j);
          this->is_nodata = true;
          this->data = NULL;
+      }
+
+      Cell(const KiLib::Rasters::IRaster<T>& parent_raster, size_t i, size_t j, const T& data) : parent_raster(parent_raster)
+      {
+         this->i(i);
+         this->j(j);
+         this->data = &data;
       }
 
       Cell(const KiLib::Rasters::IRaster<T>& parent_raster, size_t i, size_t j, T& data) : parent_raster(parent_raster)
@@ -294,4 +301,4 @@ bool IsClose(double A, double B)
    }
 
 
-}; // namespace BankforMAP::Utils
+}; // namespace KiLib::Rasters

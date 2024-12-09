@@ -18,15 +18,15 @@
  */
 
 
-#include <KiLib/Raster/Raster.hpp>
+#include <KiLib/Rasters/Raster.hpp>
 #include <fstream>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
 
-namespace KiLib
+namespace KiLib::Rasters
 {
-   void Raster::fromDEM(const std::string &path)
+   static  KiLib::Rasters::Raster<Default> fromDEM(const std::string &path)
    {
       std::ifstream      rasterFile;
       std::string        line, key;
@@ -39,6 +39,10 @@ namespace KiLib
          spdlog::error("Failed to open {} for reading", path);
          exit(EXIT_FAILURE);
       }
+
+
+      size_t nCols, nRows, cellsize;
+      double xllcorner, yllcorner, nodata_value;
 
       // Load header
       for (int i = 0; i < 6; i++)
@@ -54,27 +58,27 @@ namespace KiLib
 
          if (key == "ncols")
          {
-            stream >> this->nCols;
+            stream >> nCols;
          }
          else if (key == "nrows")
          {
-            stream >> this->nRows;
+            stream >> nRows;
          }
          else if (key == "xllcorner")
          {
-            stream >> this->xllcorner;
+            stream >> xllcorner;
          }
          else if (key == "yllcorner")
          {
-            stream >> this->yllcorner;
+            stream >> yllcorner;
          }
          else if (key == "cellsize")
          {
-            stream >> this->cellsize;
+            stream >> cellsize;
          }
          else if (key == "nodata_value")
          {
-            stream >> this->nodata_value;
+            stream >> nodata_value;
          }
          else
          {
@@ -83,9 +87,15 @@ namespace KiLib
          }
       }
 
-      this->data.resize(nRows * nCols);
+      
+
+      KiLib::Rasters::Raster<Default> raster(nRows, nCols);
+      raster.set_yllcorner(yllcorner);
+      raster.set_xllcorner(xllcorner);
+      raster.set_nodatavalue(nodata_value);
+
       // Load elevations
-      for (size_t row = 0; row < this->nRows; row++)
+      for (size_t row = 0; row < nRows; row++)
       {
          getline(rasterFile, line);
          stream.str(line);
@@ -93,59 +103,21 @@ namespace KiLib
 
          // Moving along a row (across columns) is movement through X
          // Moving down a column (across rows) is movement through Y
-         for (size_t col = 0; col < this->nCols; col++)
+         for (size_t col = 0; col < nCols; col++)
          {
             double value;
             stream >> value;
-            this->at(this->nRows - row - 1, col) = value;
+            Default val { .value = value, .is_nodata = value == nodata_value };
+            raster.set(nRows - row - 1, col, val);
          }
       }
 
-      this->width  = this->nCols * this->cellsize;
-      this->height = this->nRows * this->cellsize;
-      this->nData  = this->nRows * this->nCols;
+      raster.set_width( nCols * cellsize );
+      raster.set_height( nRows * cellsize );
 
       rasterFile.close();
+
+      return raster;
    }
 
-
-   void Raster::toDEM(const std::string &path) const
-   {
-      std::ofstream outFile = std::ofstream(path);
-      if (!outFile.is_open())
-      {
-         spdlog::error("Cannot open output {}", path);
-         exit(EXIT_FAILURE);
-      }
-
-      fmt::print(
-         outFile,
-         "ncols {}\n"
-         "nrows {}\n"
-         "xllcorner {}\n"
-         "yllcorner {}\n"
-         "cellsize {}\n"
-         "NODATA_value {}\n",
-         this->nCols, this->nRows, this->xllcorner, this->yllcorner, this->cellsize, this->nodata_value);
-
-      for (size_t row = 1; row <= this->nRows; row++)
-      {
-         for (size_t col = 0; col < this->nCols; col++)
-         {
-            double val = this->operator()(this->nRows - row, col);
-
-            if (val == this->nodata_value)
-            {
-               fmt::print(outFile, "{} ", this->nodata_value);
-            }
-            else
-            {
-               fmt::print(outFile, "{: .8f} ", val);
-            }
-         }
-         fmt::print(outFile, "\n");
-      }
-
-      outFile.close();
-   }
 } // namespace KiLib
