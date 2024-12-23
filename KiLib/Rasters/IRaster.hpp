@@ -126,4 +126,13 @@ namespace KiLib::Rasters
         double nodata_value; // Value associated with no data from DEM
 
     };
+
+
+    template<typename T>
+    class IDirectAccessRaster : public IRaster<T> {
+
+    public:
+        virtual T* GetUnderlyingDataArray() = 0;
+
+    };
 }

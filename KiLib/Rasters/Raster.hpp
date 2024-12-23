@@ -17,8 +17,10 @@ namespace KiLib::Rasters
         bool is_nodata;
     };
 
+
+
     template<typename T>
-    class Raster : public IRaster<T>
+    class Raster : public IDirectAccessRaster<T>
     {
     public:
         Raster(size_t rows, size_t cols): rows(rows), cols(cols) {
@@ -204,6 +206,10 @@ namespace KiLib::Rasters
             return Iterator(*this, data.end());
         };
 
+        T* GetUnderlyingDataArray() override {
+            return data.data(); 
+        }
+
     private:
         size_t rows, cols, nnz;
         std::vector<T> data;
@@ -214,4 +220,6 @@ namespace KiLib::Rasters
         double height;       // [m] Height in Y
         double nodata_value;
     };
+
+    static Raster<Default> FromFile(const std::string&);
 }

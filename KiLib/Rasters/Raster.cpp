@@ -18,39 +18,31 @@
  */
 
 
-#include <KiLib/Raster/Raster.hpp>
+#include <KiLib/Rasters/Raster.hpp>
 #include <KiLib/Utils/Distributions.hpp>
 #include <filesystem>
 #include <spdlog/fmt/ostr.h>
 
 namespace fs = std::filesystem;
 
-namespace KiLib
+namespace KiLib::Rasters
 {
-   Raster::Raster()
-   {
-      this->nRows = 0;
-      this->nCols = 0;
-      this->nData = 0;
-      this->data.resize(0);
-   }
-
    // Load data in Raster format from specified path
-   Raster::Raster(const std::string &path)
+   Raster<Default> FromFile(const std::string &path)
    {
       auto ext = fs::path(path).extension();
 
       if (ext == ".asc" || ext == ".dem")
-         this->fromDEM(path);
+         return fromDEM(path, [](Default d, double val) { d.value = val; }, [](Default d) { d.is_nodata = true; });
       else if (ext == ".tif" || ext == ".tiff")
-         this->fromTiff(path);
+         return fromTiff(path, [](Default d, double val) { d.value = val; }, [](Default d) { d.is_nodata = true; }  );
       else
       {
          spdlog::error("Unsupported file type given to raster constructor: {}", ext);
          exit(EXIT_FAILURE);
       }
    }
-
+/*
    // Returns (bilinear) interpolated data value at specified position
    // Takes in a vec3 for convenience, ignores Z
    double Raster::getInterpBilinear(const Vec3 &pos) const
@@ -77,7 +69,8 @@ namespace KiLib
 
       return val;
    }
-
+*/
+/*
    // Print Raster metadata
    void Raster::print() const
    {
@@ -109,6 +102,7 @@ namespace KiLib
       }
    }
 
+*/
    void Raster::writeToFile(const std::string &path) const
    {
 
@@ -124,7 +118,7 @@ namespace KiLib
          exit(EXIT_FAILURE);
       }
    }
-
+/*
    KiLib::Vec3 Raster::randPoint(std::mt19937_64 &gen) const
    {
       KiLib::Vec3                            point;
@@ -511,5 +505,5 @@ namespace KiLib
          return std::nullopt;
       }
    }
-
+*/
 } // namespace KiLib
