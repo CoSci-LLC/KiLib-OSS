@@ -23,10 +23,12 @@
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
+#include <stdexcept>
 
 namespace KiLib::Rasters
 {
-   static  KiLib::Rasters::Raster<Default> fromDEM(const std::string &path)
+   template<typename T>
+   static KiLib::Rasters::Raster<T> fromDEM(const std::string &path, std::function<bool(T&, double, bool)> construct_val)
    {
       std::ifstream      rasterFile;
       std::string        line, key;
@@ -82,14 +84,13 @@ namespace KiLib::Rasters
          }
          else
          {
-            spdlog::error("Unexpected value in header!");
-            exit(EXIT_FAILURE);
+            throw std::invalid_argument("Unexpected value in header!");
          }
       }
 
       
 
-      KiLib::Rasters::Raster<Default> raster(nRows, nCols);
+      KiLib::Rasters::Raster<T> raster(nRows, nCols);
       raster.set_yllcorner(yllcorner);
       raster.set_xllcorner(xllcorner);
       raster.set_nodatavalue(nodata_value);
@@ -107,8 +108,11 @@ namespace KiLib::Rasters
          {
             double value;
             stream >> value;
-            Default val { .value = value, .is_nodata = value == nodata_value };
-            raster.set(nRows - row - 1, col, val);
+             T v;
+               if( construct_val( v, value, value == raster.get_nodatavalue() ) ) {
+
+                    raster.set(nRows - row - 1, col, v);
+              }
          }
       }
 

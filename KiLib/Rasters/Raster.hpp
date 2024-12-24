@@ -9,6 +9,7 @@
 #include <KiLib/Rasters/IRaster.hpp>
 #include <map>
 
+
 namespace KiLib::Rasters
 {
 
@@ -221,5 +222,4 @@ namespace KiLib::Rasters
         double nodata_value;
     };
 
-    static Raster<Default> FromFile(const std::string&);
 }

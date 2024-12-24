@@ -19,6 +19,7 @@
 
 
 #include <KiLib/Rasters/Raster.hpp>
+#include <stdexcept>
 #include <tiffio.hxx>
 #ifdef _OPENMP
 #include <omp.h>
@@ -71,7 +72,7 @@ static void _XTIFFDefaultDirectory(TIFF *tif)
  * @brief Extends the tags that are defined by Libtiff while respecting other extensions which may be defined.
  *
  */
-static void _XTIFFInitialize(void)
+static inline void _XTIFFInitialize(void)
 {
    static bool b = false;
 
@@ -86,8 +87,8 @@ static void _XTIFFInitialize(void)
 
 namespace KiLib::Rasters
 {
-
-   KiLib::Rasters::Raster<Default> fromTiff(const std::string &path)
+   template<typename T>
+   static KiLib::Rasters::Raster<T> fromTiff(const std::string &path, std::function<bool(T&, double, bool)> construct_val)
    {
       _XTIFFInitialize();
 
@@ -151,7 +152,7 @@ namespace KiLib::Rasters
       const size_t nRows = h;
       const size_t nCols = w;
 
-      KiLib::Rasters::Raster<Default> raster( nRows, nCols );
+      KiLib::Rasters::Raster<T> raster( nRows, nCols );
       raster.set_width( nCols * scaling[0] );
       raster.set_height( nRows * scaling[1] );
       raster.set_xllcorner( tiepoint[3] );
@@ -161,8 +162,7 @@ namespace KiLib::Rasters
 
       if (TIFFIsTiled(tiff))
       {
-         spdlog::error("There is no support for tiled images yet.");
-         exit(EXIT_FAILURE);
+         throw std::invalid_argument("There is no support for tiled images yet.");
       }
       else
       {
@@ -183,8 +183,7 @@ namespace KiLib::Rasters
 
             if (TIFFReadScanline(tiff, buf, row) == -1)
             {
-               spdlog::error("Error when reading scanline");
-               exit(EXIT_FAILURE);
+               throw std::invalid_argument("Error when reading scanline");
             }
 
             for (size_t col = 0; col < nCols; col++)
@@ -220,11 +219,13 @@ namespace KiLib::Rasters
                      val = ((double *)buf)[col];
                   break;
                default:
-                  spdlog::error("Unknown data format.");
-                  exit(EXIT_FAILURE);
+                  throw std::invalid_argument("Unknown data format.");
                }
-               Default v { .value = val, .is_nodata = val == raster.get_nodatavalue() };
-               raster.set(nRows - row - 1, col, v);
+               T v;
+               if( construct_val( v, val, val == raster.get_nodatavalue() ) ) {
+
+                    raster.set(nRows - row - 1, col, v);
+              }
             }
          }
          _TIFFfree(buf);
