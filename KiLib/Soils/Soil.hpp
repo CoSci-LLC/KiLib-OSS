@@ -66,7 +66,7 @@ namespace KiLib::Soils
    {
    public:
 
-      virtual ~ISoil() {};
+      virtual ~ISoil() {}
       virtual std::string GetName() const     = 0;
       virtual std::string GetLongName() const = 0;
 
