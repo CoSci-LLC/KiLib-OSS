@@ -207,7 +207,7 @@ namespace KiLib::Rasters
             return Iterator(*this, data.end());
         };
 
-        T* GetUnderlyingDataArray() override {
+        const T* GetUnderlyingDataArray() const override {
             return data.data(); 
         }
 

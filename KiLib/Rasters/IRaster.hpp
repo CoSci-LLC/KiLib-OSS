@@ -132,7 +132,7 @@ namespace KiLib::Rasters
     class IDirectAccessRaster : public IRaster<T> {
 
     public:
-        virtual T* GetUnderlyingDataArray() = 0;
+        virtual const T* GetUnderlyingDataArray() const = 0;
 
     };
 }
