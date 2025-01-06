@@ -24,57 +24,41 @@ namespace KiLib::Rasters
     class Raster : public IDirectAccessRaster<T>
     {
     public:
-        Raster(size_t rows, size_t cols): rows(rows), cols(cols) {
+        Raster(size_t rows, size_t cols) {
+
+            // Initialize the base class variables
+            this->rows = rows;
+            this->cols = cols;
+
+            // Reserve the data sizes
             data.reserve( rows * cols );
+            data.resize( rows * cols );
 
             nnz = rows * cols;
-
         }
 
-        void set_yllcorner(double val) { yllcorner = val; }
-        void set_xllcorner(double val) { xllcorner = val; }
-        void set_cellsize(double val) { cellsize = val; }
-        void set_nodatavalue(double val) { nodata_value = val; }
-        double get_nodatavalue() { return nodata_value; }
-        void set_width(double val) { width = val; }
-        void set_height( double val ) { height = val; }
-
-        KiLib::Rasters::Cell<T> get(double x, double y) const override
-        {
-            double rF = (y - this->yllcorner) / this->cellsize;
-            double cF = (x - this->xllcorner) / this->cellsize;
-
-            size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
-            size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
-
-            return get(r, c);
-        }
+        void set_yllcorner(double val) { this->yllcorner = val; }
+        void set_xllcorner(double val) { this->xllcorner = val; }
+        void set_cellsize(double val) { this->cellsize = val; }
+        void set_nodatavalue(double val) { this->nodata_value = val; }
+        double get_nodatavalue() { return this->nodata_value; }
+        void set_width(double val) { this->width = val; }
+        void set_height( double val ) { this->height = val; }
 
         KiLib::Rasters::Cell<T> get(size_t i, size_t j) const override
         {
             // Check out of bounds
-            unsigned idx = i * cols + j;
-            if (idx > cols * rows) {
+            unsigned idx = i * this->cols + j;
+            if (idx > this->cols * this->rows) {
                 return KiLib::Rasters::Cell<T>(*this, i, j);
             }
 
            return KiLib::Rasters::Cell<T>(*this, i, j, data.at(idx));
         }
 
-        void set(double x, double y, const T& value) override
-        {
-            double rF = (y - this->yllcorner) / this->cellsize;
-            double cF = (x - this->xllcorner) / this->cellsize;
-
-            size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
-            size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
-            
-            set(r, c, value);
-        }
-
         void set(size_t i, size_t j, const T& value) override
         {
-            data[i * this->cols + j] = value;
+            data.at(i * this->cols + j) = value;
         }
 
         bool is_valid_cell(double x, double y) const
@@ -88,69 +72,9 @@ namespace KiLib::Rasters
             return is_valid_cell(r, c);
         }
 
-        size_t getNRows() const override
-        {
-            return rows;
-        }
-
-        size_t getNCols() const override
-        {
-            return cols;
-        }
-
-        KiLib::Rasters::Cell<T> at(size_t row, size_t col) const override
-        {
-            return get(row, col);
-        }
-
-        KiLib::Rasters::Cell<T> operator()(size_t row, size_t col) const override
-        {
-            return get(row, col);
-        }
-
-        double get_xllcorner() const override
-        {
-            return this->xllcorner;
-        }
-        double get_yllcorner() const override
-        {
-            return this->yllcorner;
-        }
-        double get_cellsize() const override
-        {
-            return this->cellsize;
-        }
-        double get_width() const override
-        {
-            return this->width;
-        }
-        double get_height() const override
-        {
-            return this->height;
-        }
-        double get_nodata_value() const override
-        {
-            return this->nodata_value;
-        }
-
-        size_t get_rows() const override
-        {
-            return this->rows;
-        }
-
-        size_t get_cols() const override
-        {
-            return this->cols;
-        }
-
         size_t get_ndata() const override
         {
             return this->nnz;
-        }
-
-        size_t flatten_index(size_t r, size_t c) const override
-        {
-            return r * this->cols + c;
         }
 
         struct Iterator {
@@ -212,14 +136,8 @@ namespace KiLib::Rasters
         }
 
     private:
-        size_t rows, cols, nnz;
+        size_t nnz;
         std::vector<T> data;
-        double xllcorner;    // Lower left corner x value in absolute coordinates
-        double yllcorner;    // Lower left corner y value in absolute coordinates
-        double cellsize;     // [m] Distance between values
-        double width;        // [m] Width in X
-        double height;       // [m] Height in Y
-        double nodata_value;
     };
 
 }

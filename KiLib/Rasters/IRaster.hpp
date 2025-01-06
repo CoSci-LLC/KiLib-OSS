@@ -24,13 +24,32 @@ namespace KiLib::Rasters
         using reference = T;
 
         IRaster() {}
+        IRaster(size_t rows, size_t cols): rows(rows), cols(cols) {}
         virtual ~IRaster() {}
         
-        virtual Cell<T> get(double x, double y) const = 0;
+        virtual Cell<T> get(double x, double y) const {
+
+            double rF = (y - this->yllcorner) / this->cellsize;
+            double cF = (x - this->xllcorner) / this->cellsize;
+
+            size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
+            size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
+
+            return get(r, c);
+        }
 
         virtual Cell<T> get(size_t i, size_t j) const = 0;
        
-        virtual void set(double i, double j, const T& value) = 0;
+        virtual void set(double x, double y, const T& value) {
+            double rF = (y - this->yllcorner) / this->cellsize;
+            double cF = (x - this->xllcorner) / this->cellsize;
+
+            size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
+            size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
+            
+            set(r, c, value);
+        }
+
         virtual void set(size_t i, size_t j, const T& value) = 0;
 
         virtual size_t getNRows() const
@@ -116,7 +135,7 @@ namespace KiLib::Rasters
             return r * this->cols + c;
         }
 
-    private:
+    protected:
         size_t rows, cols;
         double xllcorner;    // Lower left corner x value in absolute coordinates
         double yllcorner;    // Lower left corner y value in absolute coordinates

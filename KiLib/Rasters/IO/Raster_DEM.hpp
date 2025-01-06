@@ -96,6 +96,7 @@ namespace KiLib::Rasters
       raster.set_nodatavalue(nodata_value);
 
       // Load elevations
+      printf("Loading raster now: %zu x %zu", nRows, nCols);
       for (size_t row = 0; row < nRows; row++)
       {
          getline(rasterFile, line);
@@ -110,7 +111,7 @@ namespace KiLib::Rasters
             stream >> value;
              T v;
                if( construct_val( v, value, value == raster.get_nodatavalue() ) ) {
-
+                     printf("Adding value %lf", value);
                     raster.set(nRows - row - 1, col, v);
               }
          }
