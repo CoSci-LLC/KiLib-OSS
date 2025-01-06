@@ -60,9 +60,9 @@ static KiLib::Rasters::Raster<T> FromNetCDF(const std::string &path, const std::
       throw std::invalid_argument("Invalid amount of dims for loading from a NetCDF file");
    }
 
-   if ( unlimdimid_in == -1 ) {  
+   /*if ( unlimdimid_in == -1 ) {  
       throw std::invalid_argument("Missing time (unlimited) dimension");
-   }
+   }*/
 
    // Determine VAR ID from name given in parameters
    int varid_in;
