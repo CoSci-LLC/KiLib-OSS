@@ -8,6 +8,7 @@
 #include <functional>
 #include <KiLib/Rasters/IRaster.hpp>
 #include <map>
+#include <valarray>
 
 
 namespace KiLib::Rasters
@@ -24,14 +25,13 @@ namespace KiLib::Rasters
     class Raster : public IDirectAccessRaster<T>
     {
     public:
-        Raster(size_t rows, size_t cols) {
+        Raster(size_t rows, size_t cols) : data(rows * cols) {
 
             // Initialize the base class variables
             this->rows = rows;
             this->cols = cols;
 
             // Reserve the data sizes
-            data.reserve( rows * cols );
             data.resize( rows * cols );
 
             nnz = rows * cols;
@@ -53,12 +53,12 @@ namespace KiLib::Rasters
                 return KiLib::Rasters::Cell<T>(*this, i, j);
             }
 
-           return KiLib::Rasters::Cell<T>(*this, i, j, data.at(idx));
+           return KiLib::Rasters::Cell<T>(*this, i, j, data[idx]);
         }
 
         void set(size_t i, size_t j, const T& value) override
         {
-            data.at(i * this->cols + j) = value;
+            data[i * this->cols + j] = value;
         }
 
         bool is_valid_cell(double x, double y) const
@@ -131,13 +131,16 @@ namespace KiLib::Rasters
             return Iterator(*this, data.end());
         };
 
+        operator std::valarray<T>() const { return data; }
+        std::valarray<T>& get_array() const { return data; }
+
         const T* GetUnderlyingDataArray() const override {
-            return data.data(); 
+            return &(data[0]); 
         }
 
     private:
         size_t nnz;
-        std::vector<T> data;
+        std::valarray<T> data;
     };
 
 }
