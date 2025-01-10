@@ -41,7 +41,7 @@ namespace KiLib::Rasters
         void set_xllcorner(double val) { this->xllcorner = val; }
         void set_cellsize(double val) { this->cellsize = val; }
         void set_nodatavalue(double val) { this->nodata_value = val; }
-        double get_nodatavalue() { return this->nodata_value; }
+        double get_nodatavalue() const { return this->nodata_value; }
         void set_width(double val) { this->width = val; }
         void set_height( double val ) { this->height = val; }
 
@@ -132,7 +132,32 @@ namespace KiLib::Rasters
         };
 
         operator std::valarray<T>() const { return data; }
-        std::valarray<T>& get_array() const { return data; }
+        Raster<T> operator*(const Raster<T>& r) const {
+
+            const auto result = (std::valarray<T>)r * data;
+            Raster<T> new_raster(r, result);
+            return new_raster;
+        
+        }   
+
+
+           
+        Raster(const Raster<T>& other, std::valarray<T> d) 
+        {
+            this->nnz = other.get_ndata();
+            this->rows = other.get_rows();
+            this->cols = other.get_cols();
+
+            this->set_xllcorner(other.get_xllcorner());
+            this->set_yllcorner(other.get_yllcorner());
+            this->set_cellsize(other.get_cellsize());
+            this->set_nodatavalue(other.get_nodatavalue());
+            this->set_width(other.get_width());
+            this->set_height(other.get_height());
+
+            this->data = d;
+        }
+
 
         const T* GetUnderlyingDataArray() const override {
             return &(data[0]); 

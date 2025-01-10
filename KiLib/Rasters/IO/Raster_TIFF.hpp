@@ -21,6 +21,7 @@
 #include <KiLib/Rasters/Raster.hpp>
 #include <stdexcept>
 #include <tiffio.hxx>
+#include <optional>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -33,6 +34,7 @@
 #define GEOTIFFTAG_MODELPIXELSCALE 33550
 #define GEOTIFFTAG_MODELTIEPOINT 33922
 #define GEOTIFFTAG_NODATAVALUE 42113
+#define TIFFTAG_BANKFORMAP_METADATA 53100
 
 // The following code was retrieved from: http://www.simplesystems.org/libtiff/addingtags.html
 #define N(a) (sizeof(a) / sizeof(a[0]))
@@ -54,6 +56,7 @@ static void _XTIFFDefaultDirectory(TIFF *tif)
       {GEOTIFFTAG_MODELPIXELSCALE, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, false, true, (char *)"GeoPixelScale"},
       {GEOTIFFTAG_MODELTIEPOINT, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, false, true, (char *)"GeoTiePoints"},
       {GEOTIFFTAG_NODATAVALUE, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoNoDataValue"},
+      {TIFFTAG_BANKFORMAP_METADATA, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"BankforMAPData"},
    };
 
    /* Install the extended Tag field info */
@@ -247,4 +250,155 @@ namespace KiLib::Rasters
 
       return raster;
    }
+
+
+    template<class T>
+    struct RasterDirectory {
+        std::string name;
+        std::function<double(const Cell<T>&)> getter;
+        
+        /**
+         * @brief Get the value or nodata value of a cell. This will count cells
+         * without a valid CA as invalid
+         *
+         * @param cell The cell to investigate
+         * @param v The value to check
+         */
+         static inline double get_value_or_nodata(const Cell<T>& cell, std::function<std::optional<double>()> v) {
+            if (cell.is_nodata || !cell.data->ca.has_value()) {
+                return cell.parent_raster.get_nodata_value();
+            } 
+            
+            return v().value_or(cell.parent_raster.get_nodata_value());
+        };
+    };
+
+    template<class T>
+    void toTiff(const IRaster<T>& raster, std::string filepath, std::vector<RasterDirectory<T>> directories)
+    {
+         // clang-format off
+        // Key Directory
+        // Is a vector in case it needs to expand programatically with new keys
+        std::vector<uint16_t> kd = {
+            // The first 4 entries specify the following:
+            // GeoTIFF Version Major, Key Revision, Minor Revision, Number of Keys
+            1, 1, 0, 2,
+            // The following entries are a set of sorted keys organized in the following manner:
+            // KeyID, Tag Location, Count, Value Offset
+            // The meaning of the values are specified in the GeoTIFF specification, Annex B, section 1, paragraph 4
+            // (GeoTIFF File and "Key" Structure) as of GeoTIFF version 1.1
+            1024, 0, 1, 1,
+            1025, 0, 1, 1,
+        };
+        // clang-format on
+
+        // model pixel scale values
+        double mps[3] = {raster.get_cellsize(), raster.get_cellsize(), 0.0};
+
+        // model tiepoint values
+        double mtp[6] = {0.0, 0.0, 0.0, raster.get_xllcorner(), raster.get_yllcorner() + (raster.get_rows() * raster.get_cellsize()), 0.0};
+
+        _XTIFFInitialize();
+
+        TIFF *tiff = TIFFOpen(filepath.c_str(), "w8");
+
+        if (tiff == NULL)
+        {
+            spdlog::error("Failed to open {} for writing", filepath);
+            exit(EXIT_FAILURE);
+        }
+
+        
+
+        size_t count = 0;
+        do {
+            //spdlog::info("Writing {}", directories[count].name);
+            //TIFFSetField(tiff, TIFFTAG_COMPRESSION, 5); // LZW Compression
+
+            // GeoTIFF tags
+            if (kd.size() != (size_t)(4 + kd[3] * 4))
+            {
+                spdlog::error("Invalid number of entries in the GeoTIFF Key Dictionary");
+                exit(EXIT_FAILURE);
+            }
+            // TIFF tags
+            TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, directories[count].name.c_str());
+            TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, directories[count].name.c_str());
+
+            TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, raster.get_cols());
+            TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, raster.get_rows());
+            TIFFSetField(tiff, TIFFTAG_SOFTWARE, "BankforMAP");
+            TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 64);
+
+
+            time_t     now = time(0);
+            struct tm  tstruct;
+            char       time_buf[20];
+            tstruct = *localtime(&now);
+            // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+            // for more information about date/time format
+            strftime(time_buf, sizeof(time_buf), "%Y:%m:%d %X", &tstruct);
+
+            TIFFSetField(tiff, TIFFTAG_DATETIME, time_buf);
+
+
+            TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
+            TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, 3);
+            TIFFSetField(tiff, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+            TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
+            TIFFSetField(tiff, GEOTIFFTAG_KEYDIRECTORY, kd.size(), kd.data());
+            TIFFSetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, 3, mps);
+            TIFFSetField(tiff, GEOTIFFTAG_MODELTIEPOINT, 6, mtp);
+            TIFFSetField(tiff, GEOTIFFTAG_NODATAVALUE, fmt::format("{} ", raster.get_nodata_value()).c_str());
+
+
+
+            //TODO: Add CoSci Tags and data informtation into this!
+            const auto metadataString = fmt::format(
+                "<GDALMetadata>"
+                "\n\t<Item name=\"DESCRIPTION\" sample=\"0\" role=\"description\">{}</Item>"
+                "\n\t<Item name=\"grid_name\">{}</Item>"
+                "\n\t<Item name=\"UNITS\" sample=\"0\">Meters (elevation)</Item>"
+                "\n</GDALMetadata>",
+                    directories[count].name, 
+                    directories[count].name, 
+                    directories[count].name
+            );
+
+            const char* gdalMetadata = metadataString.c_str();
+
+            TIFFSetField(tiff, TIFFTAG_GDAL_METADATA, gdalMetadata);
+
+
+            const char* cosciMetadata = "{ \"data\": \"hello there\"}";
+            TIFFSetField(tiff, TIFFTAG_BANKFORMAP_METADATA, cosciMetadata);
+
+            // Writing data to file
+            uint64_t sls = TIFFScanlineSize64(tiff);
+            tdata_t  buf = _TIFFmalloc((signed int)sls);
+
+            // There is no use in parallelizing this as the file has to be written in order
+            for (size_t row = 0; row < raster.get_rows(); row++)
+            {
+                for (size_t col = 0; col < raster.get_cols(); col++)
+                    ((double *)buf)[col] = directories[count].getter(raster(raster.get_rows() - row - 1, col));
+
+                if (TIFFWriteScanline(tiff, buf, (uint32_t)row) == -1)
+                {
+                    spdlog::error("Failed to write data to {}", filepath);
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+            TIFFWriteDirectory(tiff);
+            _TIFFfree(buf);
+            count++;
+        } while (count < directories.size());
+
+        
+        TIFFClose(tiff);
+    };
+
+
+
 } // namespace KiLib
