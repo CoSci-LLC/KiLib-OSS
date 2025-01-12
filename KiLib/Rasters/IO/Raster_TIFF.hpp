@@ -226,7 +226,6 @@ namespace KiLib::Rasters
                }
                T v;
                if( construct_val( v, val, val == raster.get_nodatavalue() ) ) {
-
                     raster.set(nRows - row - 1, col, v);
               }
             }
@@ -274,7 +273,7 @@ namespace KiLib::Rasters
     };
 
     template<class T>
-    void toTiff(const IRaster<T>& raster, std::string filepath, std::vector<RasterDirectory<T>> directories)
+    void toTiff(const IRaster<T>& raster, const std::string& filepath, const std::vector<RasterDirectory<T>>& directories)
     {
          // clang-format off
         // Key Directory

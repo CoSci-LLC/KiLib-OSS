@@ -142,7 +142,7 @@ namespace KiLib::Rasters
 
 
            
-        Raster(const Raster<T>& other, std::valarray<T> d) 
+        Raster(const Raster<T>& other, const std::valarray<T>&& d) 
         {
             this->nnz = other.get_ndata();
             this->rows = other.get_rows();
@@ -155,7 +155,7 @@ namespace KiLib::Rasters
             this->set_width(other.get_width());
             this->set_height(other.get_height());
 
-            this->data = d;
+            this->data = std::valarray<double>(&d[0], d.size());
         }
 
 
