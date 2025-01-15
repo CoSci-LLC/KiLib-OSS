@@ -141,7 +141,8 @@ namespace KiLib::Rasters
         }   
 
 
-           
+        Raster(const Raster<T>& other) : Raster(other, (std::valarray<T>)other) {}
+
         Raster(const Raster<T>& other, const std::valarray<T>&& d) 
         {
             this->nnz = other.get_ndata();
@@ -156,6 +157,21 @@ namespace KiLib::Rasters
             this->set_height(other.get_height());
 
             this->data = std::valarray<double>(&d[0], d.size());
+        }
+
+
+        static Raster<T> Copy(const Raster<T>& other)
+        {
+            Raster<T> out(other.get_rows(), other.get_cols());
+
+            out.set_xllcorner(other.get_xllcorner());
+            out.set_yllcorner(other.get_yllcorner());
+            out.set_cellsize(other.get_cellsize());
+            out.set_nodatavalue(other.get_nodatavalue());
+            out.set_width(other.get_width());
+            out.set_height(other.get_height());
+
+            return out;
         }
 
 
