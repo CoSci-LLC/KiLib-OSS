@@ -75,7 +75,7 @@ static KiLib::Rasters::Raster<T> FromNetCDF(const std::string &path, const std::
    if (( retval = nc_inq_dimid( ncid, "y", &dim_y_id ))) {
       throw std::invalid_argument("Could not find project_y_coordinate dimension");
    }
-   if (( retval = nc_inq_dimid( ncid, "y", &dim_x_id ))) {
+   if (( retval = nc_inq_dimid( ncid, "x", &dim_x_id ))) {
       throw std::invalid_argument("Could not find project_x_coordinate dimension");
    }
    if (( retval = nc_inq_dimid( ncid, "time", &dim_time_id ))) {
@@ -94,6 +94,18 @@ static KiLib::Rasters::Raster<T> FromNetCDF(const std::string &path, const std::
       throw std::invalid_argument("Could not find 'time' length");
    }
 
+   // Determine variable ids
+   int var_y_id, var_x_id, var_time_id;
+   if (( retval = nc_inq_varid( ncid, "y", &var_y_id ))) {
+      throw std::invalid_argument("Could not find 'y' var id");
+   }
+   if (( retval = nc_inq_varid( ncid, "x", &var_x_id ))) {
+      throw std::invalid_argument("Could not find 'x' var id");
+   }
+   if (( retval = nc_inq_varid( ncid, "time", &var_time_id ))) {
+      throw std::invalid_argument("Could not find 'time' var id");
+   }
+
    // Now we can read it into a raster... abiet a little slowly right now but hey, it should work and
    // it won't be that massive right now.
    KiLib::Rasters::Raster<T> raster( dim_x_len, dim_y_len );
@@ -105,13 +117,13 @@ static KiLib::Rasters::Raster<T> FromNetCDF(const std::string &path, const std::
       for( size_t y = 0; y < dim_y_len; y++ ) {
          // Let's check to see if we have our lower corners for the raster later
          double y_loc;
-         if (( retval = nc_get_var1_double(ncid, dim_y_id, &y, &y_loc))) {
+         if (( retval = nc_get_var1_double(ncid, var_y_id, &y, &y_loc))) {
             throw std::invalid_argument("Could not retrieve y from netcdf");
          }
          yllcorner = std::min(yllcorner, y_loc);
 
          double x_loc;
-         if (( retval = nc_get_var1_double(ncid, dim_x_id, &x, &x_loc))) {
+         if (( retval = nc_get_var1_double(ncid, var_x_id, &x, &x_loc))) {
             throw std::invalid_argument("Could not retrieve value from netcdf");
          }
          xllcorner = std::min(xllcorner, x_loc);
@@ -119,20 +131,28 @@ static KiLib::Rasters::Raster<T> FromNetCDF(const std::string &path, const std::
          T v;
             size_t indexp[] = { index, y, x };
             double result;
-            if (( retval = nc_get_var1_double(ncid, dim_time_id, indexp, &result))) {
+            if (( retval = nc_get_var1_double(ncid, varid_in, indexp, &result))) {
                throw std::invalid_argument("Could not retrieve value from netcdf");
             }
 
             if( ! construct_val( v, index, result ) ) {
                throw std::invalid_argument("Could not construct values for given type");
-
             }
 
          raster.set(x, y, v);
       }
    }
 
-   size_t cellsize = 1;
+   double x1, x2;
+   size_t i1 = 0, i2 = 1;
+   if (( retval = nc_get_var1_double(ncid, var_x_id, &i1, &x1))) {
+      throw std::invalid_argument("Could not retrieve value from netcdf");
+   }
+   if (( retval = nc_get_var1_double(ncid, var_x_id, &i2, &x2))) {
+      throw std::invalid_argument("Could not retrieve value from netcdf");
+   }
+
+   double cellsize = x2 - x1;
 
    raster.set_yllcorner(yllcorner);
    raster.set_xllcorner(xllcorner);

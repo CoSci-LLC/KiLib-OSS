@@ -49,7 +49,7 @@ namespace KiLib::Rasters
         {
             // Check out of bounds
             unsigned idx = i * this->cols + j;
-            if (idx > this->cols * this->rows) {
+            if ( (idx > this->cols * this->rows) || data[idx] == this->get_nodatavalue() )  {
                 return KiLib::Rasters::Cell<T>(*this, i, j);
             }
 
