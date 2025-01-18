@@ -34,6 +34,7 @@
 #define GEOTIFFTAG_MODELPIXELSCALE 33550
 #define GEOTIFFTAG_MODELTIEPOINT 33922
 #define GEOTIFFTAG_NODATAVALUE 42113
+#define GEOTIFFTAG_GDALMETADATA 42112
 #define TIFFTAG_BANKFORMAP_METADATA 53100
 
 // The following code was retrieved from: http://www.simplesystems.org/libtiff/addingtags.html
@@ -55,6 +56,7 @@ static void _XTIFFDefaultDirectory(TIFF *tif)
       {GEOTIFFTAG_ASCIIPARAMS, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoASCIIParams"},
       {GEOTIFFTAG_MODELPIXELSCALE, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, false, true, (char *)"GeoPixelScale"},
       {GEOTIFFTAG_MODELTIEPOINT, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, false, true, (char *)"GeoTiePoints"},
+      {GEOTIFFTAG_GDALMETADATA, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoNoDataValue"},
       {GEOTIFFTAG_NODATAVALUE, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoNoDataValue"},
       {TIFFTAG_BANKFORMAP_METADATA, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"BankforMAPData"},
    };
