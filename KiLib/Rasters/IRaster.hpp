@@ -24,8 +24,22 @@ namespace KiLib::Rasters
         using reference = T;
 
         IRaster() {}
+        IRaster(const IRaster<T>& other) {
+            this->set_xllcorner(other.get_xllcorner());
+            this->set_yllcorner(other.get_yllcorner());
+            this->set_cellsize(other.get_cellsize());
+            this->set_nodata_value(other.get_nodata_value());
+            this->set_width(other.get_width());
+            this->set_height(other.get_height());
+            this->rows = other.get_rows();
+            this->cols = other.get_cols();
+            
+
+        }
         IRaster(size_t rows, size_t cols): rows(rows), cols(cols) {}
         virtual ~IRaster() {}
+
+
         
         virtual Cell<T> get(double x, double y) const {
 
@@ -97,27 +111,33 @@ namespace KiLib::Rasters
         {
             return this->xllcorner;
         }
+    virtual void set_xllcorner(double val) { this->xllcorner = val; }
         virtual double get_yllcorner() const
         {
             return this->yllcorner;
         }
+    virtual void set_yllcorner(double val) { this->yllcorner = val; }
         virtual double get_cellsize() const
         {
             return this->cellsize;
         }
+    virtual void set_cellsize(double val) { this->cellsize = val; }
         virtual double get_width() const
         {
             return this->width;
         }
+    virtual void set_width(double val) { this->width = val; }
         virtual double get_height() const
         {
             return this->height;
         }
+    virtual void set_height(double val) { this->height = val; }
         virtual double get_nodata_value() const
         {
             return this->nodata_value;
         }
 
+    virtual void set_nodata_value(double val) { this->nodata_value = val; }
         virtual size_t get_rows() const
         {
             return this->rows;
@@ -144,6 +164,7 @@ namespace KiLib::Rasters
         double height;       // [m] Height in Y
         double nodata_value; // Value associated with no data from DEM
 
+    private: 
     };
 
 

@@ -163,7 +163,7 @@ namespace KiLib::Rasters
       raster.set_xllcorner( tiepoint[3] );
       raster.set_yllcorner( tiepoint[4] - (nRows * scaling[1]) );
       raster.set_cellsize( scaling[0] );
-      raster.set_nodatavalue ( std::stod(nodat) );
+      raster.set_nodata_value ( std::stod(nodat) );
 
       if (TIFFIsTiled(tiff))
       {
@@ -227,7 +227,7 @@ namespace KiLib::Rasters
                   throw std::invalid_argument("Unknown data format.");
                }
                T v;
-               if( construct_val( v, val, val == raster.get_nodatavalue() ) ) {
+               if( construct_val( v, val, val == raster.get_nodata_value() ) ) {
                     raster.set(nRows - row - 1, col, v);
               }
             }

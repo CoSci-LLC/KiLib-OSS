@@ -37,19 +37,11 @@ namespace KiLib::Rasters
             nnz = rows * cols;
         }
 
-        void set_yllcorner(double val) { this->yllcorner = val; }
-        void set_xllcorner(double val) { this->xllcorner = val; }
-        void set_cellsize(double val) { this->cellsize = val; }
-        void set_nodatavalue(double val) { this->nodata_value = val; }
-        double get_nodatavalue() const { return this->nodata_value; }
-        void set_width(double val) { this->width = val; }
-        void set_height( double val ) { this->height = val; }
-
         KiLib::Rasters::Cell<T> get(size_t i, size_t j) const override
         {
             // Check out of bounds
             unsigned idx = i * this->cols + j;
-            if ( (idx > this->cols * this->rows) || data[idx] == this->get_nodatavalue() )  {
+            if ( (idx > this->cols * this->rows) || data[idx] == this->get_nodata_value() )  {
                 return KiLib::Rasters::Cell<T>(*this, i, j);
             }
 
@@ -132,16 +124,16 @@ namespace KiLib::Rasters
         };
 
         operator std::valarray<T>() const { return data; }
-        Raster<T> operator*(const Raster<T>& r) const {
+     /*   Raster<T> operator*(const Raster<T>& r) const {
 
             const auto result = (std::valarray<T>)r * data;
             Raster<T> new_raster(r, result);
             return new_raster;
         
-        }   
+        }*/   
 
 
-        Raster(const Raster<T>& other) : Raster(other, (std::valarray<T>)other) {}
+        Raster(const Raster<T>& other) :  Raster(other, (std::valarray<T>)other) {}
 
         Raster(const Raster<T>& other, const std::valarray<T>&& d) 
         {
@@ -152,13 +144,36 @@ namespace KiLib::Rasters
             this->set_xllcorner(other.get_xllcorner());
             this->set_yllcorner(other.get_yllcorner());
             this->set_cellsize(other.get_cellsize());
-            this->set_nodatavalue(other.get_nodatavalue());
+            this->set_nodata_value(other.get_nodata_value());
             this->set_width(other.get_width());
             this->set_height(other.get_height());
 
             this->data = std::valarray<double>(&d[0], d.size());
         }
 
+        /**
+        * Element by element multiplication. Returns a Raster class (may be different that what was provided)
+        */ 
+        Raster<T>& operator*(const Raster<T>& other) const 
+        {
+            return ApplyOperator(*this, other, std::multiplies<T>()); 
+        }
+
+        Raster<T>& operator+(const Raster<T>& other) const 
+        {
+            return ApplyOperator(*this, other, std::plus<T>()); 
+        }
+        
+        Raster<T>& operator-(const Raster<T>& other) const
+        {
+            return ApplyOperator(*this, other, std::minus<T>()); 
+        }
+
+        Raster<T>& operator/(const Raster<T>& other) const
+        {
+            return ApplyOperator(*this, other, std::divides<T>()); 
+
+        }
 
         static Raster<T> Copy(const Raster<T>& other)
         {
@@ -167,13 +182,12 @@ namespace KiLib::Rasters
             out.set_xllcorner(other.get_xllcorner());
             out.set_yllcorner(other.get_yllcorner());
             out.set_cellsize(other.get_cellsize());
-            out.set_nodatavalue(other.get_nodatavalue());
+            out.set_nodata_value(other.get_nodata_value());
             out.set_width(other.get_width());
             out.set_height(other.get_height());
 
             return out;
         }
-
 
         const T* GetUnderlyingDataArray() const override {
             return &(data[0]); 
@@ -182,6 +196,61 @@ namespace KiLib::Rasters
     private:
         size_t nnz;
         std::valarray<T> data;
+
+         Raster<T>& ApplyOperator(const Raster<T>& a, const Raster<T>& b, std::function<T(const T&, const T&)> op) const 
+        {
+            // Either use the index to multiply each element, or if we don't have the same kind of rasters
+            // we need to multiply by the location, which is slower
+            Raster<T> out(a);
+            if ( a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() )
+            {
+                for ( size_t i = 0; i < a.get_rows(); i ++ ) {
+                    for (size_t j = 0; j < a.get_cols(); j++ ) {
+                        auto val = op( *(a.get(i,j).data), *(b.get(i,j).data) ); 
+                        out.set( i, j, val);
+                    }
+
+                }
+
+            return out;
+
+            }
+            else //Multiply by rasters
+            {
+
+
+      //Need to loop through each cell in the larger raster.
+      for ( size_t r = 0; r < a.get_rows(); r++) {
+         for ( size_t c = 0; c < a.get_cols(); c++ ) { 
+            const auto& cell_a = a.get(r, c);
+
+            if ( cell_a.is_nodata || std::isnan( *(cell_a.data) ) || std::isinf( *(cell_a.data) ) ) {
+               out.set(r, c, out.get_nodata_value());
+               continue;
+            }
+
+            // Use the x,y coordinates to get the proper cell.
+            const auto& cell_b = b.get(cell_a.x(), cell_a.y());
+
+            double val = 0;
+
+            if ( cell_b.is_nodata || std::isnan( *(cell_b.data) ) || std::isinf( *(cell_b.data) ) ) {
+               out.set(r, c, out.get_nodata_value());
+               continue;
+            }
+
+            val = *(cell_b.data);
+            out.set(r, c, *(cell_a.data) * val);
+            
+         }
+      }
+
+      return out;
+            }
+        }
+
+
+
     };
 
 }

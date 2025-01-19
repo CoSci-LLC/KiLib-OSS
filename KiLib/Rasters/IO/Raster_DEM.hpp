@@ -93,7 +93,7 @@ namespace KiLib::Rasters
       KiLib::Rasters::Raster<T> raster(nRows, nCols);
       raster.set_yllcorner(yllcorner);
       raster.set_xllcorner(xllcorner);
-      raster.set_nodatavalue(nodata_value);
+      raster.set_nodata_value(nodata_value);
 
       // Load elevations
       printf("Loading raster now: %zu x %zu", nRows, nCols);
@@ -110,7 +110,7 @@ namespace KiLib::Rasters
             double value;
             stream >> value;
              T v;
-               if( construct_val( v, value, value == raster.get_nodatavalue() ) ) {
+               if( construct_val( v, value, value == raster.get_nodata_value() ) ) {
                      printf("Adding value %lf", value);
                     raster.set(nRows - row - 1, col, v);
               }

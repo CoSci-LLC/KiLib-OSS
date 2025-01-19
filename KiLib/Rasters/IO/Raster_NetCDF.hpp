@@ -156,7 +156,7 @@ static KiLib::Rasters::Raster<T> FromNetCDF(const std::string &path, const std::
 
    raster.set_yllcorner(yllcorner);
    raster.set_xllcorner(xllcorner);
-   raster.set_nodatavalue(9999);
+   raster.set_nodata_value(9999);
 
    raster.set_width(dim_y_len * cellsize);
    raster.set_height(dim_x_len * cellsize);
