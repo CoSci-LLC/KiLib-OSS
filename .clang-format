@@ -103,7 +103,7 @@ PenaltyBreakString: 1000
 PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
-PointerAlignment: Right
+PointerAlignment: Left
 ReflowComments:  true
 SortIncludes:    true
 SortUsingDeclarations: true
@@ -120,10 +120,10 @@ SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles:  false
-SpacesInConditionalStatement: false
+SpacesInConditionalStatement: true
 SpacesInContainerLiterals: true
 SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
+SpacesInParentheses: true
 SpacesInSquareBrackets: false
 SpaceBeforeSquareBrackets: false
 Standard:        Latest
