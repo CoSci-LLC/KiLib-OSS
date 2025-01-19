@@ -388,4 +388,29 @@ namespace std
       KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
       return out;
    }
+
+
 } // namespace std
+
+// This is the (scalar * Raster) operator
+template <class T, typename C> KiLib::Rasters::Raster<T> operator*( const C k, const KiLib::Rasters::Raster<T>& a )
+{
+      std::valarray<T>          result =   (std::valarray<T>)a * k;
+      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+      return out;
+}
+
+
+template <class T, typename C> KiLib::Rasters::Raster<T> operator-( const C k, const KiLib::Rasters::Raster<T>& a )
+{
+      std::valarray<T>          result =  k -  (std::valarray<T>)a;
+      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+      return out;
+}
+
+template <class T> KiLib::Rasters::Raster<T> operator-(const KiLib::Rasters::Raster<T>& a)
+{
+      std::valarray<T>          result =  -1 *  (std::valarray<T>)a;
+      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+      return out;
+}
