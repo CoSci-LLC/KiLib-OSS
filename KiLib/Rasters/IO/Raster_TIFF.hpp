@@ -164,6 +164,7 @@ namespace KiLib::Rasters
       raster.set_yllcorner( tiepoint[4] - (nRows * scaling[1]) );
       raster.set_cellsize( scaling[0] );
       raster.set_nodata_value ( std::stod(nodat) );
+      raster.set_name(path);
 
       if (TIFFIsTiled(tiff))
       {
@@ -255,7 +256,7 @@ namespace KiLib::Rasters
 
     template<class T>
     struct RasterDirectory {
-        std::string name;
+        const IRaster<T>& raster;
         std::function<double(const Cell<T>&)> getter;
         
         /**
@@ -275,7 +276,7 @@ namespace KiLib::Rasters
     };
 
     template<class T>
-    void toTiff(const IRaster<T>& raster, const std::string& filepath, const std::vector<RasterDirectory<T>>& directories)
+    void toTiff(const std::string& filepath, const std::vector<RasterDirectory<T>>& directories)
     {
          // clang-format off
         // Key Directory
@@ -292,12 +293,6 @@ namespace KiLib::Rasters
             1025, 0, 1, 1,
         };
         // clang-format on
-
-        // model pixel scale values
-        double mps[3] = {raster.get_cellsize(), raster.get_cellsize(), 0.0};
-
-        // model tiepoint values
-        double mtp[6] = {0.0, 0.0, 0.0, raster.get_xllcorner(), raster.get_yllcorner() + (raster.get_rows() * raster.get_cellsize()), 0.0};
 
         _XTIFFInitialize();
 
@@ -316,6 +311,16 @@ namespace KiLib::Rasters
             //spdlog::info("Writing {}", directories[count].name);
             //TIFFSetField(tiff, TIFFTAG_COMPRESSION, 5); // LZW Compression
 
+        const auto& raster = directories[count].raster;
+            
+        // model pixel scale values
+        double mps[3] = {raster.get_cellsize(), raster.get_cellsize(), 0.0};
+
+        // model tiepoint values
+        double mtp[6] = {0.0, 0.0, 0.0, raster.get_xllcorner(), raster.get_yllcorner() + (raster.get_rows() * raster.get_cellsize()), 0.0};
+
+
+
             // GeoTIFF tags
             if (kd.size() != (size_t)(4 + kd[3] * 4))
             {
@@ -323,12 +328,12 @@ namespace KiLib::Rasters
                 exit(EXIT_FAILURE);
             }
             // TIFF tags
-            TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, directories[count].name.c_str());
-            TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, directories[count].name.c_str());
+            TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, directories[count].raster.get_name().c_str());
+            TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, directories[count].raster.get_name().c_str());
 
             TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, raster.get_cols());
             TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, raster.get_rows());
-            TIFFSetField(tiff, TIFFTAG_SOFTWARE, "BankforMAP");
+            TIFFSetField(tiff, TIFFTAG_SOFTWARE, "CoSci LLC: KiLib");
             TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 64);
 
 
@@ -361,9 +366,9 @@ namespace KiLib::Rasters
                 "\n\t<Item name=\"grid_name\">{}</Item>"
                 "\n\t<Item name=\"UNITS\" sample=\"0\">Meters (elevation)</Item>"
                 "\n</GDALMetadata>",
-                    directories[count].name, 
-                    directories[count].name, 
-                    directories[count].name
+                    directories[count].raster.get_name(), 
+                    directories[count].raster.get_name(), 
+                    directories[count].raster.get_name()
             );
 
             const char* gdalMetadata = metadataString.c_str();

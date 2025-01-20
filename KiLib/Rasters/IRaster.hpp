@@ -71,6 +71,9 @@ namespace KiLib::Rasters
             return rows;
         }
 
+        virtual void set_name(std::string val) { name = val; }
+        virtual std::string get_name() const { return name; }
+
         virtual size_t getNCols() const
         {
             return cols;
@@ -163,6 +166,7 @@ namespace KiLib::Rasters
         double width;        // [m] Width in X
         double height;       // [m] Height in Y
         double nodata_value; // Value associated with no data from DEM
+        std::string name = "(No name)";
 
     private: 
     };
