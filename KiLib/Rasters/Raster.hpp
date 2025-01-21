@@ -225,6 +225,21 @@ namespace KiLib::Rasters
          return out;
       }
 
+      void ChangeInftoNoData()
+      {
+         auto nodata_value = this->get_nodata_value();
+         std::for_each(
+            std::begin( data ), std::end( data ),
+            [&nodata_value]( T val )
+            {
+               if ( std::isnan( val ) || std::isinf( val ) )
+               {
+                  return nodata_value;
+               }
+               return val;
+            } );
+      }
+
       const T* GetUnderlyingDataArray() const override
       {
          return &( data[0] );
@@ -246,9 +261,9 @@ namespace KiLib::Rasters
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
-         Raster<T> out( a );
          if ( a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() )
          {
+            Raster<T>        out( a );
             std::valarray<T> result;
             switch ( op )
             {
@@ -268,17 +283,42 @@ namespace KiLib::Rasters
                throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
             };
 
+            std::for_each(
+               std::begin( result ), std::end( result ),
+               [&a]( T val )
+               {
+                  if ( std::isnan( val ) || std::isinf( val ) )
+                  {
+                     return a.get_nodata_value();
+                  }
+                  return val;
+               } );
+
             out.data = std::valarray<double>( &result[0], result.size() );
             return out;
          }
          else // Multiply by rasters
          {
-            // Need to loop through each cell in the larger raster.
-            for ( size_t r = 0; r < a.get_rows(); r++ )
+
+            auto* op1     = &a;
+            auto* op2     = &b;
+            bool  swapped = false;
+
+            // Find the bigger, more element matrix.
+            if ( a.get_ndata() < b.get_ndata() )
             {
-               for ( size_t c = 0; c < a.get_cols(); c++ )
+               op1     = &b;
+               op2     = &a;
+               swapped = true;
+            }
+            Raster<T> out( *op1 );
+
+            // Need to loop through each cell in the larger raster.
+            for ( size_t r = 0; r < op1->get_rows(); r++ )
+            {
+               for ( size_t c = 0; c < op1->get_cols(); c++ )
                {
-                  const auto& cell_a = a.get( r, c );
+                  const auto& cell_a = op1->get( r, c );
 
                   if ( cell_a.is_nodata || std::isnan( *( cell_a.data ) ) || std::isinf( *( cell_a.data ) ) )
                   {
@@ -287,7 +327,7 @@ namespace KiLib::Rasters
                   }
 
                   // Use the x,y coordinates to get the proper cell.
-                  const auto& cell_b = b.get( cell_a.x(), cell_a.y() );
+                  const auto& cell_b = op2->get( cell_a.x(), cell_a.y() );
 
                   double val = 0;
 
@@ -303,13 +343,27 @@ namespace KiLib::Rasters
                      val = *( cell_a.data ) * *( cell_b.data );
                      break;
                   case OPERAND::DIVIDE:
-                     val = *( cell_a.data ) / *( cell_b.data );
+                     if ( !swapped )
+                     {
+                        val = *( cell_a.data ) / *( cell_b.data );
+                     }
+                     else
+                     {
+                        val = *( cell_b.data ) / *( cell_a.data );
+                     }
                      break;
                   case OPERAND::PLUS:
                      val = *( cell_a.data ) + *( cell_b.data );
                      break;
                   case OPERAND::MINUS:
-                     val = *( cell_a.data ) - *( cell_b.data );
+                     if ( !swapped )
+                     {
+                        val = *( cell_a.data ) - *( cell_b.data );
+                     }
+                     else
+                     {
+                        val = *( cell_b.data ) - *( cell_a.data );
+                     }
                      break;
                   default:
                      throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
@@ -395,22 +449,22 @@ namespace std
 // This is the (scalar * Raster) operator
 template <class T, typename C> KiLib::Rasters::Raster<T> operator*( const C k, const KiLib::Rasters::Raster<T>& a )
 {
-      std::valarray<T>          result =   (std::valarray<T>)a * k;
-      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
-      return out;
+   std::valarray<T>          result = (std::valarray<T>)a * k;
+   KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+   return out;
 }
 
 
 template <class T, typename C> KiLib::Rasters::Raster<T> operator-( const C k, const KiLib::Rasters::Raster<T>& a )
 {
-      std::valarray<T>          result =  k -  (std::valarray<T>)a;
-      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
-      return out;
+   std::valarray<T>          result = k - (std::valarray<T>)a;
+   KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+   return out;
 }
 
-template <class T> KiLib::Rasters::Raster<T> operator-(const KiLib::Rasters::Raster<T>& a)
+template <class T> KiLib::Rasters::Raster<T> operator-( const KiLib::Rasters::Raster<T>& a )
 {
-      std::valarray<T>          result =  -1 *  (std::valarray<T>)a;
-      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
-      return out;
+   std::valarray<T>          result = -1 * (std::valarray<T>)a;
+   KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+   return out;
 }
