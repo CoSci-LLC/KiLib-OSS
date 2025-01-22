@@ -24,7 +24,7 @@ namespace KiLib::Rasters
    template <typename T> class Raster : public IDirectAccessRaster<T>
    {
    public:
-      Raster( size_t rows, size_t cols ) : data( rows * cols )
+      Raster( size_t rows, size_t cols ) : data( rows * cols ), nodata_mask(rows * cols, false)
       {
 
          // Initialize the base class variables
@@ -33,6 +33,8 @@ namespace KiLib::Rasters
 
          // Reserve the data sizes
          data.resize( rows * cols );
+      nodata_mask.resize( rows * cols);
+      nodata_mask.reserve( rows * cols);
 
          nnz = rows * cols;
       }
@@ -41,7 +43,7 @@ namespace KiLib::Rasters
       {
          // Check out of bounds
          unsigned idx = i * this->cols + j;
-         if ( ( idx > this->cols * this->rows ) || data[idx] == this->get_nodata_value() )
+         if ( ( idx > this->cols * this->rows ) || data[idx] == this->get_nodata_value() || nodata_mask[idx] == true )
          {
             return KiLib::Rasters::Cell<T>( *this, i, j );
          }
@@ -52,6 +54,15 @@ namespace KiLib::Rasters
       void set( size_t i, size_t j, const T& value ) override
       {
          data[i * this->cols + j] = value;
+
+         if ( value == this->get_nodata_value() )
+         {
+            nodata_mask[i * this->cols + j] = true;
+         }
+         else
+   {
+            nodata_mask[i * this->cols + j] = false;
+         }
       }
 
       bool is_valid_cell( double x, double y ) const
@@ -156,6 +167,8 @@ namespace KiLib::Rasters
          this->set_height( other.get_height() );
 
          this->data = std::valarray<double>( &d[0], d.size() );
+         this->nodata_mask.resize( this->nnz );
+         this->nodata_mask = other.nodata_mask;
       }
 
       Raster<T>& operator=( const Raster<T>& other )
@@ -178,6 +191,8 @@ namespace KiLib::Rasters
          this->set_height( other.get_height() );
 
          this->data.resize( this->nnz );
+         this->nodata_mask.resize( this->nnz );
+         this->nodata_mask = other.nodata_mask;
 
          this->data = std::valarray<double>( &other.data[0], this->nnz );
       }
@@ -246,8 +261,9 @@ namespace KiLib::Rasters
       }
 
    private:
-      size_t           nnz;
-      std::valarray<T> data;
+      size_t            nnz;
+      std::valarray<T>  data;
+      std::vector<bool> nodata_mask;
 
       enum class OPERAND
       {
