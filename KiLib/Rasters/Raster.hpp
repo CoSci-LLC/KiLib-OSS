@@ -24,7 +24,7 @@ namespace KiLib::Rasters
    template <typename T> class Raster : public IDirectAccessRaster<T>
    {
    public:
-      Raster( size_t rows, size_t cols ) : data( rows * cols ), nodata_mask(rows * cols, false)
+      Raster( size_t rows, size_t cols ) : data( rows * cols ), nodata_mask( rows * cols, true )
       {
 
          // Initialize the base class variables
@@ -33,12 +33,13 @@ namespace KiLib::Rasters
 
          // Reserve the data sizes
          data.resize( rows * cols );
-      nodata_mask.resize( rows * cols);
-      nodata_mask.reserve( rows * cols);
+         nodata_mask.resize( rows * cols );
+         nodata_mask.reserve( rows * cols );
 
          nnz = rows * cols;
       }
 
+      using IRaster<T>::get;
       KiLib::Rasters::Cell<T> get( size_t i, size_t j ) const override
       {
          // Check out of bounds
@@ -51,6 +52,7 @@ namespace KiLib::Rasters
          return KiLib::Rasters::Cell<T>( *this, i, j, data[idx] );
       }
 
+      using IRaster<T>::set;
       void set( size_t i, size_t j, const T& value ) override
       {
          data[i * this->cols + j] = value;
@@ -60,7 +62,7 @@ namespace KiLib::Rasters
             nodata_mask[i * this->cols + j] = true;
          }
          else
-   {
+         {
             nodata_mask[i * this->cols + j] = false;
          }
       }
@@ -168,7 +170,7 @@ namespace KiLib::Rasters
 
          this->data = std::valarray<double>( &d[0], d.size() );
          this->nodata_mask.resize( this->nnz );
-         this->nodata_mask = other.nodata_mask;
+         std::copy( other.nodata_mask.begin(), other.nodata_mask.end(), this->nodata_mask.begin() );
       }
 
       Raster<T>& operator=( const Raster<T>& other )
@@ -192,7 +194,7 @@ namespace KiLib::Rasters
 
          this->data.resize( this->nnz );
          this->nodata_mask.resize( this->nnz );
-         this->nodata_mask = other.nodata_mask;
+         std::copy( other.nodata_mask.begin(), other.nodata_mask.end(), this->nodata_mask.begin() );
 
          this->data = std::valarray<double>( &other.data[0], this->nnz );
       }
@@ -226,19 +228,6 @@ namespace KiLib::Rasters
          return ApplyOperator( *this, other, Raster::OPERAND::DIVIDE );
       }
 
-      static Raster<T> Copy( const Raster<T>& other )
-      {
-         Raster<T> out( other.get_rows(), other.get_cols() );
-
-         out.set_xllcorner( other.get_xllcorner() );
-         out.set_yllcorner( other.get_yllcorner() );
-         out.set_cellsize( other.get_cellsize() );
-         out.set_nodata_value( other.get_nodata_value() );
-         out.set_width( other.get_width() );
-         out.set_height( other.get_height() );
-
-         return out;
-      }
 
       void ChangeInftoNoData()
       {
@@ -260,6 +249,7 @@ namespace KiLib::Rasters
          return &( data[0] );
       }
 
+
    private:
       size_t            nnz;
       std::valarray<T>  data;
@@ -279,7 +269,7 @@ namespace KiLib::Rasters
          // we need to multiply by the location, which is slower
          if ( a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() )
          {
-            Raster<T>        out( a );
+
             std::valarray<T> result;
             switch ( op )
             {
@@ -310,7 +300,12 @@ namespace KiLib::Rasters
                   return val;
                } );
 
-            out.data = std::valarray<double>( &result[0], result.size() );
+
+            Raster<T> out( a, result );
+            for ( size_t i; i < a.get_ndata(); i++ )
+            {
+               out.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];
+            }
             return out;
          }
          else // Multiply by rasters
@@ -398,7 +393,6 @@ namespace KiLib::Rasters
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
 
-         Raster<T> out( a );
 
          std::valarray<T> result;
          switch ( op )
@@ -419,7 +413,7 @@ namespace KiLib::Rasters
             throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
          };
 
-         out.data = std::valarray<double>( &result[0], result.size() );
+         Raster<T> out( a, result );
 
 
          return out;
@@ -434,28 +428,28 @@ namespace std
    template <class T> KiLib::Rasters::Raster<T> atan( const KiLib::Rasters::Raster<T>& a )
    {
       std::valarray<T>          result = std::atan( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+      KiLib::Rasters::Raster<T> out( a, result );
       return out;
    }
 
    template <class T> KiLib::Rasters::Raster<T> sin( const KiLib::Rasters::Raster<T>& a )
    {
       std::valarray<T>          result = std::sin( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+      KiLib::Rasters::Raster<T> out( a, result );
       return out;
    }
 
    template <class T> KiLib::Rasters::Raster<T> cos( const KiLib::Rasters::Raster<T>& a )
    {
       std::valarray<T>          result = std::cos( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+      KiLib::Rasters::Raster<T> out( a, result );
       return out;
    }
 
    template <class T> KiLib::Rasters::Raster<T> tan( const KiLib::Rasters::Raster<T>& a )
    {
       std::valarray<T>          result = std::tan( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+      KiLib::Rasters::Raster<T> out( a, result );
       return out;
    }
 
@@ -466,7 +460,7 @@ namespace std
 template <class T, typename C> KiLib::Rasters::Raster<T> operator*( const C k, const KiLib::Rasters::Raster<T>& a )
 {
    std::valarray<T>          result = (std::valarray<T>)a * k;
-   KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+   KiLib::Rasters::Raster<T> out( a, result );
    return out;
 }
 
@@ -474,13 +468,13 @@ template <class T, typename C> KiLib::Rasters::Raster<T> operator*( const C k, c
 template <class T, typename C> KiLib::Rasters::Raster<T> operator-( const C k, const KiLib::Rasters::Raster<T>& a )
 {
    std::valarray<T>          result = k - (std::valarray<T>)a;
-   KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+   KiLib::Rasters::Raster<T> out( a, result );
    return out;
 }
 
 template <class T> KiLib::Rasters::Raster<T> operator-( const KiLib::Rasters::Raster<T>& a )
 {
    std::valarray<T>          result = -1 * (std::valarray<T>)a;
-   KiLib::Rasters::Raster<T> out( a, std::valarray<double>( &result[0], result.size() ) );
+   KiLib::Rasters::Raster<T> out( a, result );
    return out;
 }

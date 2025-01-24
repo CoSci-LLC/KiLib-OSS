@@ -56,7 +56,7 @@ static void _XTIFFDefaultDirectory(TIFF *tif)
       {GEOTIFFTAG_ASCIIPARAMS, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoASCIIParams"},
       {GEOTIFFTAG_MODELPIXELSCALE, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, false, true, (char *)"GeoPixelScale"},
       {GEOTIFFTAG_MODELTIEPOINT, -1, -1, TIFF_DOUBLE, FIELD_CUSTOM, false, true, (char *)"GeoTiePoints"},
-      {GEOTIFFTAG_GDALMETADATA, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoNoDataValue"},
+      {GEOTIFFTAG_GDALMETADATA, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GDALMetadata"},
       {GEOTIFFTAG_NODATAVALUE, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"GeoNoDataValue"},
       {TIFFTAG_BANKFORMAP_METADATA, -1, -1, TIFF_ASCII, FIELD_CUSTOM, true, false, (char *)"BankforMAPData"},
    };
@@ -135,21 +135,21 @@ namespace KiLib::Rasters
 
       if (!TIFFGetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, &count, &scaling))
       {
-         spdlog::critical("Failed to find pixel scaling. Assuming 1:1");
+         spdlog::trace("Failed to find pixel scaling. Assuming 1:1");
          scaling = new double[2]{1, 1};
          free_flag |= 1;
       }
 
       if (!TIFFGetField(tiff, GEOTIFFTAG_MODELTIEPOINT, &count, &tiepoint))
       {
-         spdlog::critical("Failed to find model tiepoint. Assuming 0, 0");
+         spdlog::trace("Failed to find model tiepoint. Assuming 0, 0");
          tiepoint = new double[6]{0};
          free_flag |= 2;
       }
 
       if (!TIFFGetField(tiff, GEOTIFFTAG_NODATAVALUE, &nodat))
       {
-         spdlog::critical("Failed to find nodata value. Assuming -9999");
+         spdlog::trace("Failed to find nodata value. Assuming -9999");
          nodat = new char[7]{'-', '9', '9', '9', '9', '\n'};
          free_flag |= 4;
       }
@@ -230,7 +230,7 @@ namespace KiLib::Rasters
                T v;
                if( construct_val( v, val, val == raster.get_nodata_value() ) ) {
                     raster.set(nRows - row - 1, col, v);
-              }
+               }
             }
          }
          _TIFFfree(buf);
