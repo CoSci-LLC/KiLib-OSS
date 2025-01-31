@@ -48,6 +48,12 @@ include(CMake/libtiff.cmake)
 add_subdirectory(KiLib)
 SetKiLibOptions(${projectName})
 
+# If we are debug build, let's build the unit tests
+#IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+	add_subdirectory(test)
+	#ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+
+
 # Interface for library -- This is what directories are included when building
 # KiLib
 target_include_directories(${projectName}

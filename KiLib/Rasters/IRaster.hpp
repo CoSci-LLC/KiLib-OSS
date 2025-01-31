@@ -46,10 +46,10 @@ namespace KiLib::Rasters
             double rF = (y - this->yllcorner) / this->cellsize;
             double cF = (x - this->xllcorner) / this->cellsize;
 
-            size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
-            size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
+            //size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
+            //size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
 
-            return get(r, c);
+            return get((size_t)rF, (size_t)cF);
         }
 
         virtual Cell<T> get(size_t i, size_t j) const = 0;
@@ -58,10 +58,12 @@ namespace KiLib::Rasters
             double rF = (y - this->yllcorner) / this->cellsize;
             double cF = (x - this->xllcorner) / this->cellsize;
 
-            size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
-            size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
+            if (rF > this->get_rows() || rF < 0 || cF > this->get_cols() || cF < 0) throw std::invalid_argument("Invalid x,y given to raster. Out of bounds");
             
-            set(r, c, value);
+            //size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
+            //size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
+            
+            set((size_t)rF, (size_t)cF, value);
         }
 
         virtual void set(size_t i, size_t j, const T& value) = 0;

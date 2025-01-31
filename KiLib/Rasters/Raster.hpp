@@ -42,9 +42,10 @@ namespace KiLib::Rasters
       using IRaster<T>::get;
       KiLib::Rasters::Cell<T> get( size_t i, size_t j ) const override
       {
+   
          // Check out of bounds
          unsigned idx = i * this->cols + j;
-         if ( ( idx > this->cols * this->rows ) || data[idx] == this->get_nodata_value() || nodata_mask[idx] == true )
+         if (  (i >= this->rows) || (j >= this->cols)  || ( idx > this->cols * this->rows ) || data[idx] == this->get_nodata_value() || nodata_mask[idx] == true )
          {
             return KiLib::Rasters::Cell<T>( *this, i, j );
          }
@@ -229,6 +230,29 @@ namespace KiLib::Rasters
       }
 
 
+      bool operator==(const Raster<T>& rhs) const {
+         
+         // Shortcut true
+         if ( this == &rhs ) return true;
+
+         // Check each property
+         if ( this->get_xllcorner() != rhs.get_xllcorner() ) return false;
+         if ( this->get_yllcorner() != rhs.get_yllcorner() ) return false;
+         if ( this->get_height() != rhs.get_height() ) return false;
+         if ( this->get_width() != rhs.get_width() ) return false;
+         if ( this->get_nodata_value() != rhs.get_nodata_value() ) return false;
+         if ( this->get_cellsize() != rhs.get_cellsize() ) return false;
+         if ( this->get_rows() != rhs.get_rows() ) return false;
+         if ( this->get_cols() != rhs.get_cols() ) return false;
+
+         // Check data now
+         if ( ! std::equal(std::begin(this->data), std::end(this->data), std::begin(rhs.data) )) return false;
+
+         return true;
+
+
+      }
+
       void ChangeInftoNoData()
       {
          auto nodata_value = this->get_nodata_value();
@@ -302,7 +326,7 @@ namespace KiLib::Rasters
 
 
             Raster<T> out( a, result );
-            for ( size_t i; i < a.get_ndata(); i++ )
+            for ( size_t i = 0; i < a.get_ndata(); i++ )
             {
                out.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];
             }
@@ -344,7 +368,8 @@ namespace KiLib::Rasters
 
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
-                     out.set( r, c, out.get_nodata_value() );
+                     //out.set( r, c, out.get_nodata_value() );
+                     out.set( r, c, *(cell_a.data) );
                      continue;
                   }
 
@@ -453,7 +478,13 @@ namespace std
       return out;
    }
 
-
+   template <class T> KiLib::Rasters::Raster<T> clamp( const KiLib::Rasters::Raster<T>& a, const T& lo, const T& hi)
+   {
+      auto in = (std::valarray<T>)a;
+      std::for_each(std::begin(in), std::end(in), [&lo, &hi](T v) {  return std::clamp(v, lo, hi);  } );
+      KiLib::Rasters::Raster<T> out( a, in );
+      return out;
+   }
 } // namespace std
 
 // This is the (scalar * Raster) operator
