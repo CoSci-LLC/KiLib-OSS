@@ -77,6 +77,16 @@ TEST(Rasters, Basic_Operations) {
 }
 
 
+void Print(KiLib::Rasters::Raster<double> a) {
+
+   for ( size_t i = 0; i < a.get_rows(); i++ ) {
+      for ( size_t j = 0; j < a.get_cols(); j++ ) {
+         std::cerr << "[          ] ( " << i << ", " << j << ") = " <<  *(a.get(i,j).data) << std::endl;
+      }
+   }
+}
+
+
 TEST(Rasters, Different_Sized_Rasters_Operatins) {
 
 
@@ -127,13 +137,30 @@ TEST(Rasters, Different_Sized_Rasters_Operatins) {
    c.set((size_t)3, 3, 5);
 
    auto d = a * b;
-
-   for ( size_t i = 0; i < 4; i++ ) {
-      for ( size_t j = 0; j < 4; j++ ) {
-         std::cerr << "[          ] ( " << i << ", " << j << ") = " <<  *(d.get(i,j).data) << std::endl;
-      }
-   }
-
    EXPECT_EQ(b * a, c);
 
+}
+
+
+// Demonstrate some basic assertions.
+TEST(Rasters, Clamp) {
+
+   KiLib::Rasters::Raster<double> a(2, 2);
+   SetBasicRasterProperties(a);
+   a.set((size_t)0, 0, 1);
+   a.set((size_t)0, 1, 1);
+   a.set((size_t)1, 0, 1);
+   a.set((size_t)1, 1, 1);
+
+   KiLib::Rasters::Raster<double> b(2, 2);
+   SetBasicRasterProperties(b);
+   b.set((size_t)0, 0, 5);
+   b.set((size_t)0, 1, 5);
+   b.set((size_t)1, 0, 5);
+   b.set((size_t)1, 1, 5);
+
+   auto c = std::clamp(b, 0.0, 1.0);
+
+   // Ensure equality works
+   EXPECT_EQ(a, c);
 }

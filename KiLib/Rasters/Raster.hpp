@@ -480,8 +480,15 @@ namespace std
 
    template <class T> KiLib::Rasters::Raster<T> clamp( const KiLib::Rasters::Raster<T>& a, const T& lo, const T& hi)
    {
+/*      const auto va = (std::valarray<T>)a;
+      std::vector<double> v;
+      v.assign(std::begin(va), std::end(va));
+      std::for_each(std::begin(v), std::end(v), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
+      KiLib::Rasters::Raster<T> out( a, std::valarray<double>(v.data(), v.size()) );*/
+
+
       auto in = (std::valarray<T>)a;
-      std::for_each(std::begin(in), std::end(in), [&lo, &hi](T v) {  return std::clamp(v, lo, hi);  } );
+      std::transform(std::begin(in), std::end(in), std::begin(in), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
       KiLib::Rasters::Raster<T> out( a, in );
       return out;
    }
