@@ -181,7 +181,7 @@ namespace KiLib::Rasters
 
       raster.set_yllcorner( yllcorner );
       raster.set_xllcorner( xllcorner );
-      raster.set_nodata_value( 9999 );
+      raster.set_nodata_value( -9999 );
 
       raster.set_width( dim_y_len * cellsize );
       raster.set_height( dim_x_len * cellsize );

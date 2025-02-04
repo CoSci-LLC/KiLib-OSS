@@ -362,14 +362,13 @@ namespace KiLib::Rasters
                   }
 
                   // Use the x,y coordinates to get the proper cell.
-                  const auto& cell_b = op2->get( cell_a.x(), cell_a.y() );
+                  const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y() );
 
                   double val = 0;
 
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
-                     //out.set( r, c, out.get_nodata_value() );
-                     out.set( r, c, *(cell_a.data) );
+                     out.set( r, c, out.get_nodata_value() );
                      continue;
                   }
 
