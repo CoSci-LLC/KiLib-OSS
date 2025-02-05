@@ -81,7 +81,8 @@ void Print(KiLib::Rasters::Raster<double> a) {
 
    for ( size_t i = 0; i < a.get_rows(); i++ ) {
       for ( size_t j = 0; j < a.get_cols(); j++ ) {
-         std::cerr << "[          ] ( " << i << ", " << j << ") = " <<  *(a.get(i,j).data) << std::endl;
+         auto c = a.get(i,j);
+         std::cerr << "[          ] ( " << i << ", " << j << ") = " <<( c.is_nodata ? -9999 : *(a.get(i,j).data)) << std::endl;
       }
    }
 }
@@ -121,20 +122,20 @@ TEST(Rasters, Different_Sized_Rasters_Operatins) {
    SetBasicRasterProperties(c);
    c.set((size_t)0, 0, 10);
    c.set((size_t)0, 1, 10);
-   c.set((size_t)0, 2, 5);
-   c.set((size_t)0, 3, 5);
+   c.set((size_t)0, 2, c.get_nodata_value());
+   c.set((size_t)0, 3, c.get_nodata_value());
    c.set((size_t)1, 0, 10);
    c.set((size_t)1, 1, 10);
-   c.set((size_t)1, 2, 5);
-   c.set((size_t)1, 3, 5);
-   c.set((size_t)2, 0, 5);
-   c.set((size_t)2, 1, 5);
-   c.set((size_t)2, 2, 5);
-   c.set((size_t)2, 3, 5);
-   c.set((size_t)3, 0, 5);
-   c.set((size_t)3, 1, 5);
-   c.set((size_t)3, 2, 5);
-   c.set((size_t)3, 3, 5);
+   c.set((size_t)1, 2, c.get_nodata_value());
+   c.set((size_t)1, 3, c.get_nodata_value());
+   c.set((size_t)2, 0, c.get_nodata_value());
+   c.set((size_t)2, 1, c.get_nodata_value());
+   c.set((size_t)2, 2, c.get_nodata_value());
+   c.set((size_t)2, 3, c.get_nodata_value());
+   c.set((size_t)3, 0, c.get_nodata_value());
+   c.set((size_t)3, 1, c.get_nodata_value());
+   c.set((size_t)3, 2, c.get_nodata_value());
+   c.set((size_t)3, 3, c.get_nodata_value());
 
    auto d = a * b;
    EXPECT_EQ(b * a, c);
