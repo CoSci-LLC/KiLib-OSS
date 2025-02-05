@@ -125,7 +125,7 @@ namespace KiLib::Rasters
 
       // Now we can read it into a raster... abiet a little slowly right now but hey, it should work and
       // it won't be that massive right now.
-      KiLib::Rasters::Raster<T> raster( dim_x_len, dim_y_len );
+      KiLib::Rasters::Raster<T> raster( dim_y_len, dim_x_len );
 
       // A bit slower, but easier to be precise here
       double yllcorner = std::numeric_limits<double>::max();
@@ -162,7 +162,7 @@ namespace KiLib::Rasters
                throw std::invalid_argument( "Could not construct values for given type" );
             }
 
-            raster.set( x, y, v );
+            raster.set( y, x, v );
          }
       }
 
@@ -183,8 +183,8 @@ namespace KiLib::Rasters
       raster.set_xllcorner( xllcorner );
       raster.set_nodata_value( -9999 );
 
-      raster.set_width( dim_y_len * cellsize );
-      raster.set_height( dim_x_len * cellsize );
+      raster.set_width( dim_x_len * cellsize );
+      raster.set_height( dim_y_len * cellsize );
       raster.set_cellsize( cellsize );
 
       if ( ( retval = nc_close( ncid ) ) )
