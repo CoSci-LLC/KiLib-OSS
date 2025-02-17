@@ -294,38 +294,33 @@ namespace KiLib::Rasters
          if ( a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() )
          {
 
-            std::valarray<T> result;
+            Raster<T> out( a.get_rows(), a.get_cols()  );
+
+            out.set_xllcorner( a.get_xllcorner() );
+            out.set_yllcorner( a.get_yllcorner() );
+            out.set_cellsize( a.get_cellsize() );
+            out.set_nodata_value( a.get_nodata_value() );
+            out.set_width( a.get_width() );
+            out.set_height( a.get_height() );
+
             switch ( op )
             {
             case OPERAND::MULTIPLY:
-               result = (std::valarray<T>)a * (std::valarray<T>)b;
+               out.data = (std::valarray<T>)a * (std::valarray<T>)b;
                break;
             case OPERAND::DIVIDE:
-               result = (std::valarray<T>)a / (std::valarray<T>)b;
+               out.data = (std::valarray<T>)a / (std::valarray<T>)b;
                break;
             case OPERAND::PLUS:
-               result = (std::valarray<T>)a + (std::valarray<T>)b;
+               out.data = (std::valarray<T>)a + (std::valarray<T>)b;
                break;
             case OPERAND::MINUS:
-               result = (std::valarray<T>)a - (std::valarray<T>)b;
+               out.data = (std::valarray<T>)a - (std::valarray<T>)b;
                break;
             default:
                throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
             };
 
-            std::for_each(
-               std::begin( result ), std::end( result ),
-               [&a]( T val )
-               {
-                  if ( std::isnan( val ) || std::isinf( val ) )
-                  {
-                     return a.get_nodata_value();
-                  }
-                  return val;
-               } );
-
-
-            Raster<T> out( a, result );
             for ( size_t i = 0; i < a.get_ndata(); i++ )
             {
                out.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];
@@ -346,7 +341,15 @@ namespace KiLib::Rasters
                op2     = &a;
                swapped = true;
             }
-            Raster<T> out( *op1 );
+
+            Raster<T> out( op1->get_rows(), op1->get_cols()  );
+
+            out.set_xllcorner( op1->get_xllcorner() );
+            out.set_yllcorner( op1->get_yllcorner() );
+            out.set_cellsize( op1->get_cellsize() );
+            out.set_nodata_value( op1->get_nodata_value() );
+            out.set_width( op1->get_width() );
+            out.set_height( op1->get_height() );
 
             // Need to loop through each cell in the larger raster.
             for ( size_t r = 0; r < op1->get_rows(); r++ )
@@ -364,13 +367,13 @@ namespace KiLib::Rasters
                   // Use the x,y coordinates to get the proper cell.
                   const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y() );
 
-                  double val = 0;
-
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
                      out.set( r, c, out.get_nodata_value() );
                      continue;
                   }
+
+                  double val = 0;
 
                   switch ( op )
                   {
@@ -417,28 +420,32 @@ namespace KiLib::Rasters
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
 
+         Raster<T> out( a.get_rows(), a.get_cols()  );
 
-         std::valarray<T> result;
+         out.set_xllcorner( a.get_xllcorner() );
+         out.set_yllcorner( a.get_yllcorner() );
+         out.set_cellsize( a.get_cellsize() );
+         out.set_nodata_value( a.get_nodata_value() );
+         out.set_width( a.get_width() );
+         out.set_height( a.get_height() );
+
          switch ( op )
          {
          case OPERAND::MULTIPLY:
-            result = (std::valarray<T>)a * b;
+            out.data = (std::valarray<T>)a * b;
             break;
          case OPERAND::DIVIDE:
-            result = (std::valarray<T>)a / b;
+            out.data = (std::valarray<T>)a / b;
             break;
          case OPERAND::PLUS:
-            result = (std::valarray<T>)a + b;
+            out.data = (std::valarray<T>)a + b;
             break;
          case OPERAND::MINUS:
-            result = (std::valarray<T>)a - b;
+            out.data = (std::valarray<T>)a - b;
             break;
          default:
             throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
          };
-
-         Raster<T> out( a, result );
-
 
          return out;
       }
