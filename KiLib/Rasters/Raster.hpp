@@ -350,6 +350,8 @@ namespace KiLib::Rasters
             out.set_nodata_value( op1->get_nodata_value() );
             out.set_width( op1->get_width() );
             out.set_height( op1->get_height() );
+            const auto cellsize_x = op1->get_width();
+            const auto cellsize_y = op1->get_height();
 
             // Need to loop through each cell in the larger raster.
             for ( size_t r = 0; r < op1->get_rows(); r++ )
@@ -365,7 +367,7 @@ namespace KiLib::Rasters
                   }
 
                   // Use the x,y coordinates to get the proper cell.
-                  const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y() );
+                  const auto& cell_b = op2->get( (double) (cell_a.x() + cellsize_x / 2), (double) (cell_a.y() + cellsize_y / 2) );
 
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
