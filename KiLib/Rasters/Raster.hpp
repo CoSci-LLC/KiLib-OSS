@@ -350,8 +350,8 @@ namespace KiLib::Rasters
             out.set_nodata_value( op1->get_nodata_value() );
             out.set_width( op1->get_width() );
             out.set_height( op1->get_height() );
-            const auto cellsize_x = op1->get_cellsize();
-            const auto cellsize_y = op1->get_cellsize();
+            const auto cellsize_x = op2->get_cellsize();
+            const auto cellsize_y = op2->get_cellsize();
 
             // Need to loop through each cell in the larger raster.
             for ( size_t r = 0; r < op1->get_rows(); r++ )
