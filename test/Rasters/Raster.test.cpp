@@ -49,6 +49,9 @@ TEST(Rasters, Basic_Operations) {
    EXPECT_EQ(b * 1, b);
    EXPECT_EQ(1 * b, b);
 
+   EXPECT_EQ(a * 5, b);
+   EXPECT_EQ(5 * a, b);
+
    EXPECT_EQ(b / a, b);
    EXPECT_NE(a / b, b); // Make sure the ordering matters
 
@@ -139,6 +142,8 @@ TEST(Rasters, Different_Sized_Rasters_Operatins) {
 
    auto d = a * b;
    EXPECT_EQ(b * a, c);
+   EXPECT_EQ(d, c);
+   EXPECT_EQ(b * a, a * b);
 
 }
 

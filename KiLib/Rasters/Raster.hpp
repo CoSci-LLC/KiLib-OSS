@@ -149,7 +149,7 @@ namespace KiLib::Rasters
              Raster<T> new_raster(r, result);
              return new_raster;
 
-         }*/
+        }*/
 
 
       Raster( const Raster<T>& other ) : Raster( other, (std::valarray<T>)other )
@@ -350,8 +350,6 @@ namespace KiLib::Rasters
             out.set_nodata_value( op1->get_nodata_value() );
             out.set_width( op1->get_width() );
             out.set_height( op1->get_height() );
-            const auto cellsize_x = op2->get_cellsize();
-            const auto cellsize_y = op2->get_cellsize();
 
             // Need to loop through each cell in the larger raster.
             for ( size_t r = 0; r < op1->get_rows(); r++ )
@@ -367,8 +365,7 @@ namespace KiLib::Rasters
                   }
 
                   // Use the x,y coordinates to get the proper cell.
-                  //const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y() );
-                  const auto& cell_b = op2->get( (double) (cell_a.x() + cellsize_x / 2), (double) (cell_a.y() + cellsize_y / 2) );
+                  const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y() );
 
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
