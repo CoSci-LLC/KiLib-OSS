@@ -291,7 +291,7 @@ namespace KiLib::Rasters
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
-         if ( a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() )
+         if ( (a.get_rows() == b.get_rows()) && (a.get_cols() == b.get_cols()) && (a.get_xllcorner() == b.get_xllcorner()) && ( a.get_yllcorner() == b.get_yllcorner()) && ( a.get_cellsize() == b.get_cellsize() ))
          {
 
             Raster<T> out( a.get_rows(), a.get_cols()  );
