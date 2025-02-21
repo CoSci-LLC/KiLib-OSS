@@ -218,17 +218,28 @@ namespace KiLib::Rasters
       {
          return ApplyOperator( *this, other, Raster::OPERAND::PLUS );
       }
+      Raster<T> operator+( const T val ) const
+      {
+         return ApplyOperator( *this, val, Raster::OPERAND::PLUS );
+      }
 
       Raster<T> operator-( const Raster<T>& other ) const
       {
          return ApplyOperator( *this, other, Raster::OPERAND::MINUS );
+      }
+      Raster<T> operator-( const T val ) const
+      {
+         return ApplyOperator( *this, val, Raster::OPERAND::MINUS );
       }
 
       Raster<T> operator/( const Raster<T>& other ) const
       {
          return ApplyOperator( *this, other, Raster::OPERAND::DIVIDE );
       }
-
+      Raster<T> operator/( const T val ) const
+      {
+         return ApplyOperator( *this, val, Raster::OPERAND::DIVIDE );
+      }
 
       bool operator==(const Raster<T>& rhs) const {
          
@@ -272,12 +283,6 @@ namespace KiLib::Rasters
       {
          return &( data[0] );
       }
-
-
-   private:
-      size_t            nnz;
-      std::valarray<T>  data;
-      std::vector<bool> nodata_mask;
 
       enum class OPERAND
       {
@@ -415,7 +420,7 @@ namespace KiLib::Rasters
          }
       }
 
-      Raster<T> ApplyOperator( const Raster<T>& a, const T b, OPERAND op ) const
+      static Raster<T> ApplyOperator( const Raster<T>& a, const T b, OPERAND op ) 
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
@@ -449,10 +454,68 @@ namespace KiLib::Rasters
 
          return out;
       }
+
+      static Raster<T> ApplyOperator( const T b, const Raster<T>& a, OPERAND op ) 
+      {
+         Raster<T> out( a.get_rows(), a.get_cols()  );
+
+         out.set_xllcorner( a.get_xllcorner() );
+         out.set_yllcorner( a.get_yllcorner() );
+         out.set_cellsize( a.get_cellsize() );
+         out.set_nodata_value( a.get_nodata_value() );
+         out.set_width( a.get_width() );
+         out.set_height( a.get_height() );
+
+         switch ( op )
+         {
+         case OPERAND::MULTIPLY:
+            out.data = (std::valarray<T>)a * b;
+            break;
+         case OPERAND::DIVIDE:
+            out.data = b / (std::valarray<T>)a;
+            break;
+         case OPERAND::PLUS:
+            out.data = (std::valarray<T>)a + b;
+            break;
+         case OPERAND::MINUS:
+            out.data =  b - (std::valarray<T>)a;
+            break;
+         default:
+            throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+         };
+
+         return out;
+      }
+
+
+
+   private:
+      size_t            nnz;
+      std::valarray<T>  data;
+      std::vector<bool> nodata_mask;
+
+
    };
 
 } // namespace KiLib::Rasters
 
+template<typename T> 
+KiLib::Rasters::Raster<T> operator*( const T lhs, const KiLib::Rasters::Raster<T>& rhs ) 
+{
+   return rhs * lhs;
+}
+
+template<typename T> 
+KiLib::Rasters::Raster<double> operator-( const T lhs, const KiLib::Rasters::Raster<double>& rhs ) 
+{
+   return KiLib::Rasters::Raster<double>::ApplyOperator(lhs, rhs, KiLib::Rasters::Raster<double>::OPERAND::MINUS);
+}
+
+template<typename T> 
+KiLib::Rasters::Raster<double> operator/( const T lhs, const KiLib::Rasters::Raster<double>& rhs ) 
+{
+   return KiLib::Rasters::Raster<double>::ApplyOperator(lhs, rhs, KiLib::Rasters::Raster<double>::OPERAND::DIVIDE);
+}
 
 namespace std
 {
