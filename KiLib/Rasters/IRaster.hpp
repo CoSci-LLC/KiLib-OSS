@@ -33,15 +33,16 @@ namespace KiLib::Rasters
             this->set_height(other.get_height());
             this->rows = other.get_rows();
             this->cols = other.get_cols();
+            this->zindex = other.get_zindex();
             
 
         }
-        IRaster(size_t rows, size_t cols): rows(rows), cols(cols) {}
+        IRaster(size_t rows, size_t cols, size_t zindex): rows(rows), cols(cols), zindex(zindex) {}
         virtual ~IRaster() {}
 
 
         
-        virtual Cell<T> get(double x, double y) const {
+        virtual Cell<T> get(double x, double y, size_t z = 0) const {
 
             double rF = (y - this->yllcorner) / this->cellsize;
             double cF = (x - this->xllcorner) / this->cellsize;
@@ -49,12 +50,16 @@ namespace KiLib::Rasters
             //size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
             //size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
 
-            return get((size_t)rF, (size_t)cF);
+            return get((size_t)rF, (size_t)cF, z);
         }
 
-        virtual Cell<T> get(size_t i, size_t j) const = 0;
+        virtual Cell<T> get(size_t i, size_t j, size_t k) const = 0;
        
         virtual void set(double x, double y, const T& value) {
+            set(x,y,0, value);
+        }
+
+        virtual void set(double x, double y, size_t z, const T& value) {
             double rF = (y - this->yllcorner) / this->cellsize;
             double cF = (x - this->xllcorner) / this->cellsize;
 
@@ -63,10 +68,10 @@ namespace KiLib::Rasters
             //size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
             //size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
             
-            set((size_t)rF, (size_t)cF, value);
+            set((size_t)rF, (size_t)cF, z, value);
         }
 
-        virtual void set(size_t i, size_t j, const T& value) = 0;
+        virtual void set(size_t i, size_t j, size_t k, const T& value) = 0;
 
         virtual size_t getNRows() const
         {
@@ -81,35 +86,35 @@ namespace KiLib::Rasters
             return cols;
         }
 
-        virtual KiLib::Rasters::Cell<T> at(size_t row, size_t col)
+        virtual KiLib::Rasters::Cell<T> at(size_t row, size_t col, size_t zindex = 0)
         {
-            return get(row, col);
+            return get(row, col, zindex);
         }
 
-        virtual KiLib::Rasters::Cell<T> at(size_t row, size_t col) const
+        virtual KiLib::Rasters::Cell<T> at(size_t row, size_t col, size_t zindex = 0) const
         {
-            return get(row, col);
+            return get(row, col, zindex);
         }
 
-        virtual KiLib::Rasters::Cell<T> at(double x, double y)
+        virtual KiLib::Rasters::Cell<T> at(double x, double y, size_t zindex = 0)
         {
-            return get(x, y);
+            return get(x, y, zindex );
         }
 
-        virtual KiLib::Rasters::Cell<T> at(double x, double y) const
+        virtual KiLib::Rasters::Cell<T> at(double x, double y, size_t zindex = 0) const
         {
-            return get(x, y);
+            return get(x, y, zindex);
         }
 
 
-        virtual KiLib::Rasters::Cell<T> operator()(size_t row, size_t col)
+        virtual KiLib::Rasters::Cell<T> operator()(size_t row, size_t col, size_t zindex = 0)
         {
-            return get(row, col);
+            return get(row, col, zindex);
         }
 
-        virtual KiLib::Rasters::Cell<T> operator()(size_t row, size_t col) const
+        virtual KiLib::Rasters::Cell<T> operator()(size_t row, size_t col, size_t zindex = 0) const
         {
-            return get(row, col);
+            return get(row, col, zindex);
         }
 
         virtual double get_xllcorner() const
@@ -153,6 +158,11 @@ namespace KiLib::Rasters
             return this->cols;
         }
 
+        virtual size_t get_zindex() const
+        {
+            return this->zindex;
+        }
+
         virtual size_t get_ndata() const = 0;
 
         virtual size_t flatten_index(size_t r, size_t c) const
@@ -161,7 +171,7 @@ namespace KiLib::Rasters
         }
 
     protected:
-        size_t rows, cols;
+        size_t rows, cols, zindex;
         double xllcorner;    // Lower left corner x value in absolute coordinates
         double yllcorner;    // Lower left corner y value in absolute coordinates
         double cellsize;     // [m] Distance between values

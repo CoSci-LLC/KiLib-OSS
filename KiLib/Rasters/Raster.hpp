@@ -24,59 +24,50 @@ namespace KiLib::Rasters
    template <typename T> class Raster : public IDirectAccessRaster<T>
    {
    public:
-      Raster( size_t rows, size_t cols ) : data( rows * cols ), nodata_mask( rows * cols, true )
-      {
 
-         // Initialize the base class variables
+      // Just call the other constructor with the zindex = 1
+      Raster( size_t rows, size_t cols ) : Raster(rows, cols, 1)
+      {
+      }
+
+      Raster ( size_t rows, size_t cols, size_t zindex ) : data(rows * cols * zindex), nodata_mask(rows * cols * zindex, true)
+      {
+          // Initialize the base class variables
          this->rows = rows;
          this->cols = cols;
+         this->zindex = zindex;
 
          // Reserve the data sizes
-         data.resize( rows * cols );
-         nodata_mask.resize( rows * cols );
-         nodata_mask.reserve( rows * cols );
+         data.resize( rows * cols * zindex);
+         nodata_mask.resize( rows * cols * zindex);
+         nodata_mask.reserve( rows * cols * zindex);
 
-         nnz = rows * cols;
+         nnz = rows * cols * zindex;  
       }
 
       using IRaster<T>::get;
-      KiLib::Rasters::Cell<T> get( size_t i, size_t j ) const override
+      KiLib::Rasters::Cell<T> get( size_t i, size_t j, size_t k = 0 ) const override
       {
    
          // Check out of bounds
-         unsigned idx = i * this->cols + j;
-         if (  (i >= this->rows) || (j >= this->cols)  || ( idx > this->cols * this->rows ) || data[idx] == this->get_nodata_value() || nodata_mask[idx] == true )
+         unsigned idx = (this->rows * this->cols * k) + (this->cols * j) + i;
+         if (  (i >= this->rows) || (j >= this->cols) || (k >= this->zindex)  || ( idx > this->cols * this->rows * this->zindex ) || data[idx] == this->get_nodata_value() || nodata_mask[idx] == true )
          {
-            return KiLib::Rasters::Cell<T>( *this, i, j );
+            return KiLib::Rasters::Cell<T>( *this, i, j);
          }
 
          return KiLib::Rasters::Cell<T>( *this, i, j, data[idx] );
       }
 
       using IRaster<T>::set;
-      void set( size_t i, size_t j, const T& value ) override
+      void set( size_t i, size_t j, size_t k, const T& value ) override
       {
-         data[i * this->cols + j] = value;
+         unsigned idx = (this->rows * this->cols * k) + (this->cols * j) + i;
+         
+         if ( idx >= this->nnz ) throw std::invalid_argument("Cannot set field due to attempt to set value of index.");
 
-         if ( value == this->get_nodata_value() )
-         {
-            nodata_mask[i * this->cols + j] = true;
-         }
-         else
-         {
-            nodata_mask[i * this->cols + j] = false;
-         }
-      }
-
-      bool is_valid_cell( double x, double y ) const
-      {
-         double rF = ( y - this->yllcorner ) / this->cellsize;
-         double cF = ( x - this->xllcorner ) / this->cellsize;
-
-         size_t r = std::clamp<size_t>( (size_t)std::floor( rF ), 0UL, this->get_rows() - 1 );
-         size_t c = std::clamp<size_t>( (size_t)std::floor( cF ), 0UL, this->get_cols() - 1 );
-
-         return is_valid_cell( r, c );
+         data[idx] = value;
+         nodata_mask[idx] = value == this->get_nodata_value();
       }
 
       size_t get_ndata() const override
@@ -161,6 +152,7 @@ namespace KiLib::Rasters
          this->nnz  = other.get_ndata();
          this->rows = other.get_rows();
          this->cols = other.get_cols();
+         this->zindex = other.get_zindex();
 
          this->set_xllcorner( other.get_xllcorner() );
          this->set_yllcorner( other.get_yllcorner() );
@@ -185,6 +177,7 @@ namespace KiLib::Rasters
          this->nnz  = other.get_ndata();
          this->rows = other.get_rows();
          this->cols = other.get_cols();
+         this->zindex = other.get_zindex();
 
          this->set_xllcorner( other.get_xllcorner() );
          this->set_yllcorner( other.get_yllcorner() );
@@ -229,6 +222,10 @@ namespace KiLib::Rasters
          return ApplyOperator( *this, other, Raster::OPERAND::DIVIDE );
       }
 
+      Raster<T> operator/( const T val ) const
+      {
+         return ApplyOperator( *this, val, Raster::OPERAND::DIVIDE );
+      }
 
       bool operator==(const Raster<T>& rhs) const {
          
@@ -244,6 +241,7 @@ namespace KiLib::Rasters
          if ( this->get_cellsize() != rhs.get_cellsize() ) return false;
          if ( this->get_rows() != rhs.get_rows() ) return false;
          if ( this->get_cols() != rhs.get_cols() ) return false;
+         if ( this->get_zindex() != rhs.get_zindex() ) return false;
 
          // Check data now
          if ( ! std::equal(std::begin(this->data), std::end(this->data), std::begin(rhs.data) )) return false;
@@ -291,10 +289,10 @@ namespace KiLib::Rasters
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
-         if ( a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() )
+         if ( a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() && a.get_zindex() == b.get_zindex() )
          {
 
-            Raster<T> out( a.get_rows(), a.get_cols()  );
+            Raster<T> out( a.get_rows(), a.get_cols(), a.get_zindex() );
 
             out.set_xllcorner( a.get_xllcorner() );
             out.set_yllcorner( a.get_yllcorner() );
@@ -342,7 +340,7 @@ namespace KiLib::Rasters
                swapped = true;
             }
 
-            Raster<T> out( op1->get_rows(), op1->get_cols()  );
+            Raster<T> out( op1->get_rows(), op1->get_cols(), op1->get_zindex() );
 
             out.set_xllcorner( op1->get_xllcorner() );
             out.set_yllcorner( op1->get_yllcorner() );
@@ -356,58 +354,61 @@ namespace KiLib::Rasters
             {
                for ( size_t c = 0; c < op1->get_cols(); c++ )
                {
-                  const auto& cell_a = op1->get( r, c );
+                  for ( size_t zindex = 0; zindex < op1->get_zindex(); zindex++) {
 
-                  if ( cell_a.is_nodata || std::isnan( *( cell_a.data ) ) || std::isinf( *( cell_a.data ) ) )
-                  {
-                     out.set( r, c, out.get_nodata_value() );
-                     continue;
+                     const auto& cell_a = op1->get( r, c, zindex);
+
+                     if ( cell_a.is_nodata || std::isnan( *( cell_a.data ) ) || std::isinf( *( cell_a.data ) ) )
+                     {
+                        out.set( r, c, zindex, out.get_nodata_value() );
+                        continue;
+                     }
+
+                     // Use the x,y,z coordinates to get the proper cell.
+                     const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
+
+                     if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
+                     {
+                        out.set( r, c, zindex, out.get_nodata_value() );
+                        continue;
+                     }
+
+                     double val = 0;
+
+                     switch ( op )
+                     {
+                     case OPERAND::MULTIPLY:
+                        val = *( cell_a.data ) * *( cell_b.data );
+                        break;
+                     case OPERAND::DIVIDE:
+                        if ( !swapped )
+                        {
+                           val = *( cell_a.data ) / *( cell_b.data );
+                        }
+                        else
+                        {
+                           val = *( cell_b.data ) / *( cell_a.data );
+                        }
+                        break;
+                     case OPERAND::PLUS:
+                        val = *( cell_a.data ) + *( cell_b.data );
+                        break;
+                     case OPERAND::MINUS:
+                        if ( !swapped )
+                        {
+                           val = *( cell_a.data ) - *( cell_b.data );
+                        }
+                        else
+                        {
+                           val = *( cell_b.data ) - *( cell_a.data );
+                        }
+                        break;
+                     default:
+                        throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+                     };
+
+                     out.set( r, c, zindex, val );
                   }
-
-                  // Use the x,y coordinates to get the proper cell.
-                  const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y() );
-
-                  if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
-                  {
-                     out.set( r, c, out.get_nodata_value() );
-                     continue;
-                  }
-
-                  double val = 0;
-
-                  switch ( op )
-                  {
-                  case OPERAND::MULTIPLY:
-                     val = *( cell_a.data ) * *( cell_b.data );
-                     break;
-                  case OPERAND::DIVIDE:
-                     if ( !swapped )
-                     {
-                        val = *( cell_a.data ) / *( cell_b.data );
-                     }
-                     else
-                     {
-                        val = *( cell_b.data ) / *( cell_a.data );
-                     }
-                     break;
-                  case OPERAND::PLUS:
-                     val = *( cell_a.data ) + *( cell_b.data );
-                     break;
-                  case OPERAND::MINUS:
-                     if ( !swapped )
-                     {
-                        val = *( cell_a.data ) - *( cell_b.data );
-                     }
-                     else
-                     {
-                        val = *( cell_b.data ) - *( cell_a.data );
-                     }
-                     break;
-                  default:
-                     throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
-                  };
-
-                  out.set( r, c, val );
                }
             }
 
@@ -420,7 +421,7 @@ namespace KiLib::Rasters
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
 
-         Raster<T> out( a.get_rows(), a.get_cols()  );
+         Raster<T> out( a.get_rows(), a.get_cols(), a.get_zindex() );
 
          out.set_xllcorner( a.get_xllcorner() );
          out.set_yllcorner( a.get_yllcorner() );
@@ -508,6 +509,12 @@ template <class T, typename C> KiLib::Rasters::Raster<T> operator*( const C k, c
    return out;
 }
 
+template <class T, typename C> KiLib::Rasters::Raster<T> operator/( const C k, const KiLib::Rasters::Raster<T>& a )
+{
+   std::valarray<T>          result = (std::valarray<T>)a / k;
+   KiLib::Rasters::Raster<T> out( a, result );
+   return out;
+}
 
 template <class T, typename C> KiLib::Rasters::Raster<T> operator-( const C k, const KiLib::Rasters::Raster<T>& a )
 {
