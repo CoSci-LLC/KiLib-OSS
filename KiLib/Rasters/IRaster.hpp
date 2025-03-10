@@ -72,6 +72,11 @@ namespace KiLib::Rasters
         }
 
         virtual void set(size_t i, size_t j, size_t k, const T& value) = 0;
+        virtual void set(size_t i, size_t j, const T& value) {
+
+            set(i,j,0, value);
+
+            }
 
         virtual size_t getNRows() const
         {

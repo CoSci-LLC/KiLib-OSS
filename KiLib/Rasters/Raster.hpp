@@ -50,7 +50,7 @@ namespace KiLib::Rasters
       {
    
          // Check out of bounds
-         unsigned idx = (this->rows * this->cols * k) + (this->cols * j) + i;
+         unsigned idx = (this->rows * this->cols * k) + (this->cols * i) + j;
          if (  (i >= this->rows) || (j >= this->cols) || (k >= this->zindex)  || ( idx > this->cols * this->rows * this->zindex ) || data[idx] == this->get_nodata_value() || nodata_mask[idx] == true )
          {
             return KiLib::Rasters::Cell<T>( *this, i, j);
@@ -62,7 +62,7 @@ namespace KiLib::Rasters
       using IRaster<T>::set;
       void set( size_t i, size_t j, size_t k, const T& value ) override
       {
-         unsigned idx = (this->rows * this->cols * k) + (this->cols * j) + i;
+         unsigned idx = (this->rows * this->cols * k) + (this->cols * i) + j;
          
          if ( idx >= this->nnz ) throw std::invalid_argument("Cannot set field due to attempt to set value of index.");
 
