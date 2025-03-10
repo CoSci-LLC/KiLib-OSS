@@ -457,6 +457,21 @@ namespace KiLib::Rasters
 
 namespace std
 {
+// template <class T> T max( const KiLib::Rasters::Raster<T>& a )
+// {
+//    //std::valarray<T>          result = std::max( (std::valarray<T>)a );
+//    //KiLib::Rasters::Raster<T> out( a, result );
+//    auto in = (std::valarray<T>)a;
+//    return *std::max_element(std::begin(a), std::end(a));
+// }
+
+//   template <class T> KiLib::Rasters::Raster<T> min( const KiLib::Rasters::Raster<T>& a )
+//   {
+//      std::valarray<T>          result = std::min( (std::valarray<T>)a );
+//      KiLib::Rasters::Raster<T> out( a, result );
+//      return out;
+//   }
+
    template <class T> KiLib::Rasters::Raster<T> atan( const KiLib::Rasters::Raster<T>& a )
    {
       std::valarray<T>          result = std::atan( (std::valarray<T>)a );
