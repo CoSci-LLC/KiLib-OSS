@@ -485,6 +485,16 @@ namespace std
       return out;
    }
 
+   template <class T> T min( const KiLib::Rasters::Raster<T>& a )
+   {
+      return ((std::valarray<T>)a).min();
+   }
+
+   template <class T> T max( const KiLib::Rasters::Raster<T>& a )
+   {
+      return ((std::valarray<T>)a).max();
+   }
+
    template <class T> KiLib::Rasters::Raster<T> clamp( const KiLib::Rasters::Raster<T>& a, const T& lo, const T& hi)
    {
 /*      const auto va = (std::valarray<T>)a;

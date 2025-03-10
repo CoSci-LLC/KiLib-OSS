@@ -314,3 +314,17 @@ TEST(Rasters, Invalid_Index_set) {
    EXPECT_ANY_THROW(c.set((size_t)3, 2, 1, c.get_nodata_value()));
 
 }
+
+
+TEST(Rasters, Min_Max) {
+
+   KiLib::Rasters::Raster<double> a(2, 2);
+   SetBasicRasterProperties(a);
+   a.set((size_t)0, 0, 44);
+   a.set((size_t)0, 1, 93);
+   a.set((size_t)1, 0, 63);
+   a.set((size_t)1, 1, 42);
+
+   EXPECT_EQ(std::min(a),42); 
+   EXPECT_EQ(std::max(a),93); 
+}
