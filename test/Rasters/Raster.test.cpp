@@ -323,6 +323,7 @@ TEST(Rasters, Min_Max) {
    a.set((size_t)0, 0, 44);
    a.set((size_t)0, 1, 93);
    a.set((size_t)1, 0, 63);
+   a.set((size_t)1, 0, std::nan(""));
    a.set((size_t)1, 1, 42);
 
    EXPECT_EQ(std::min(a),42); 
