@@ -8,6 +8,7 @@
 #include <memory>
 #include <stddef.h>
 #include <stdexcept>
+#include <tuple>
 #include <valarray>
 
 
@@ -26,16 +27,26 @@ namespace KiLib::Rasters
    public:
 
       // Just call the other constructor with the zindex = 1
-      Raster( size_t rows, size_t cols ) : Raster(rows, cols, 1)
+      Raster( size_t rows, size_t cols) : Raster(rows, cols, 1)
       {
       }
 
-      Raster ( size_t rows, size_t cols, size_t zindex ) : data(rows * cols * zindex), nodata_mask(rows * cols * zindex, true)
+
+      Raster( size_t rows, size_t cols, double init_val) : Raster( {rows, cols, 1} , init_val) {}
+
+      
+      
+      Raster ( const std::tuple<size_t, size_t, size_t>& dims ) : data(std::get<0>(dims) * std::get<1>(dims) * std::get<2>(dims)), nodata_mask( std::get<0>(dims) * std::get<1>(dims) * std::get<2>(dims) , true)
       {
           // Initialize the base class variables
+         
+         const auto rows = std::get<0>(dims);
+         const auto cols = std::get<1>(dims);
+         const auto zindex = std::get<2>(dims);
+
          this->rows = rows;
          this->cols = cols;
-         this->zindex = zindex;
+         this->zindex = zindex; 
 
          // Reserve the data sizes
          data.resize( rows * cols * zindex);
@@ -43,6 +54,14 @@ namespace KiLib::Rasters
          nodata_mask.reserve( rows * cols * zindex);
 
          nnz = rows * cols * zindex;  
+      }
+
+      Raster (const std::tuple<size_t, size_t, size_t>& dims, T init_val ) : Raster(dims) 
+      {
+         for ( size_t i = 0; i < nnz; i++) {
+            nodata_mask[i] = false;
+            data[i] = init_val;
+         }
       }
 
       using IRaster<T>::get;
@@ -292,7 +311,8 @@ namespace KiLib::Rasters
          if ( a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() && a.get_zindex() == b.get_zindex() )
          {
 
-            Raster<T> out( a.get_rows(), a.get_cols(), a.get_zindex() );
+         Raster<T> out( std::make_tuple( a.get_rows(), a.get_cols(), a.get_zindex() ));
+
 
             out.set_xllcorner( a.get_xllcorner() );
             out.set_yllcorner( a.get_yllcorner() );
@@ -340,7 +360,7 @@ namespace KiLib::Rasters
                swapped = true;
             }
 
-            Raster<T> out( op1->get_rows(), op1->get_cols(), op1->get_zindex() );
+         Raster<T> out( std::make_tuple( op1->get_rows(), op1->get_cols(), op1->get_zindex() ));
 
             out.set_xllcorner( op1->get_xllcorner() );
             out.set_yllcorner( op1->get_yllcorner() );
@@ -421,7 +441,7 @@ namespace KiLib::Rasters
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
 
-         Raster<T> out( a.get_rows(), a.get_cols(), a.get_zindex() );
+         Raster<T> out( std::make_tuple( a.get_rows(), a.get_cols(), a.get_zindex() ));
 
          out.set_xllcorner( a.get_xllcorner() );
          out.set_yllcorner( a.get_yllcorner() );

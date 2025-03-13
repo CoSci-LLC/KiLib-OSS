@@ -5,7 +5,9 @@
  */
 
 #include <KiLib/Rasters/Raster.hpp>
+#include <cmath>
 #include <gtest/gtest.h>
+#include <tuple>
 
 
 
@@ -179,7 +181,7 @@ TEST(Rasters, Clamp) {
 
 TEST(Rasters, Layers) {
 
-   KiLib::Rasters::Raster<double> a(2, 2, 2);
+   KiLib::Rasters::Raster<double> a( std::make_tuple(2,2,2));
    SetBasicRasterProperties(a);
    a.set((size_t)0, 0, 0, 1);
    a.set((size_t)0, 0, 1, 1);
@@ -190,7 +192,7 @@ TEST(Rasters, Layers) {
    a.set((size_t)1, 1, 0, 1);
    a.set((size_t)1, 1, 1, 1);
 
-   KiLib::Rasters::Raster<double> b(2, 2, 2);
+   KiLib::Rasters::Raster<double> b(std::make_tuple(2,2,2));
    SetBasicRasterProperties(b);
    b.set((size_t)0, 0, 0, 5);
    b.set((size_t)0, 0, 1, 5);
@@ -214,7 +216,7 @@ TEST(Rasters, Layers) {
 TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
 
 
-   KiLib::Rasters::Raster<double> a(2, 2, 2);
+   KiLib::Rasters::Raster<double> a( std::make_tuple (2, 2, 2));
    SetBasicRasterProperties(a);
    a.set((size_t)0, 0, 0, 2);
    a.set((size_t)0, 0, 1, 2);
@@ -225,7 +227,7 @@ TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
    a.set((size_t)1, 1, 0, 2);
    a.set((size_t)1, 1, 1, 2);
 
-   KiLib::Rasters::Raster<double> b(4, 4, 2);
+   KiLib::Rasters::Raster<double> b( std::make_tuple(4, 4, 2));
    SetBasicRasterProperties(b);
    b.set((size_t)0, 0, 0,5);
    b.set((size_t)0, 1, 0,5);
@@ -262,7 +264,7 @@ TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
 
 
 
-   KiLib::Rasters::Raster<double> c(4, 4, 2);
+   KiLib::Rasters::Raster<double> c( std::make_tuple(4,4,2));
    SetBasicRasterProperties(c);
    c.set((size_t)0, 0, 0, 10);
    c.set((size_t)0, 1, 0, 10);
@@ -309,7 +311,7 @@ TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
 
 TEST(Rasters, Invalid_Index_set) {
 
-   KiLib::Rasters::Raster<double> c(4, 4, 1);
+   KiLib::Rasters::Raster<double> c( std::make_tuple(4, 4, 1));
    SetBasicRasterProperties(c);
    EXPECT_ANY_THROW(c.set((size_t)3, 2, 1, c.get_nodata_value()));
 
@@ -323,9 +325,21 @@ TEST(Rasters, Min_Max) {
    a.set((size_t)0, 0, 44);
    a.set((size_t)0, 1, 93);
    a.set((size_t)1, 0, 63);
-   a.set((size_t)1, 0, std::nan(""));
    a.set((size_t)1, 1, 42);
 
    EXPECT_EQ(std::min(a),42); 
    EXPECT_EQ(std::max(a),93); 
+
+   // Test with NAN in the data
+   a.set((size_t)1, 0, std::nan(""));
+   EXPECT_EQ(std::min(a),42); 
+   EXPECT_EQ(std::max(a),93); 
+
+
+   // Test with INF in the data
+//   a.set((size_t)1, 0, INFINITY);
+//   EXPECT_EQ(std::min(a),42); 
+//   EXPECT_EQ(std::max(a),93); 
+
+
 }
