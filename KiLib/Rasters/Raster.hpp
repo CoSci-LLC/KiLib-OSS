@@ -27,12 +27,12 @@ namespace KiLib::Rasters
    public:
 
       // Just call the other constructor with the zindex = 1
-      Raster( size_t rows, size_t cols) : Raster(rows, cols, 1)
+      Raster( size_t rows, size_t cols) : Raster( std::make_tuple(rows, cols, 1))
       {
       }
 
 
-      Raster( size_t rows, size_t cols, double init_val) : Raster( {rows, cols, 1} , init_val) {}
+      Raster( size_t rows, size_t cols, double init_val) : Raster( std::make_tuple(rows, cols, 1) , init_val) {}
 
       
       

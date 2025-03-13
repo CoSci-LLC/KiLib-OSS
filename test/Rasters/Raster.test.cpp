@@ -340,6 +340,41 @@ TEST(Rasters, Min_Max) {
 //   a.set((size_t)1, 0, INFINITY);
 //   EXPECT_EQ(std::min(a),42); 
 //   EXPECT_EQ(std::max(a),93); 
+}
 
+
+TEST(Rasters, Init_Values) {
+
+   KiLib::Rasters::Raster<double> a(2, 2, 5);
+   SetBasicRasterProperties(a);
+ 
+   KiLib::Rasters::Raster<double> b(2, 2);
+   SetBasicRasterProperties(b);
+   b.set((size_t)0, 0, 5);
+   b.set((size_t)0, 1, 5);
+   b.set((size_t)1, 0, 5);
+   b.set((size_t)1, 1, 5);
+
+
+   EXPECT_EQ(a, b);
+}
+
+TEST(Rasters, Init_Values_Z) {
+
+   KiLib::Rasters::Raster<double> a( std::make_tuple (2, 2, 2));
+   SetBasicRasterProperties(a);
+   a.set((size_t)0, 0, 0, 5);
+   a.set((size_t)0, 0, 1, 5);
+   a.set((size_t)0, 1, 0, 5);
+   a.set((size_t)0, 1, 1, 5);
+   a.set((size_t)1, 0, 0, 5);
+   a.set((size_t)1, 0, 1, 5);
+   a.set((size_t)1, 1, 0, 5);
+   a.set((size_t)1, 1, 1, 5);
+
+    KiLib::Rasters::Raster<double> b( std::make_tuple(2, 2, 2), 5);
+   SetBasicRasterProperties(b);
+ 
+   EXPECT_EQ(a, b);
 
 }
