@@ -544,6 +544,20 @@ namespace std
       KiLib::Rasters::Raster<T> out( a, in );
       return out;
    }
+
+   template <class T> KiLib::Rasters::Raster<T> ierfc ( const KiLib::Rasters::Raster<T>& a) {
+   
+      const auto n = (std::valarray<T>)a;
+      return 1 / std::sqrt(M_PI) * std::exp( -1 * std::pow(n, 2)) - n * std::erfc(n);
+   }
+
+   template <class T> std::valarray<T> erfc( const std::valarray<T>& a) {
+   
+      return a.apply([](T n) -> T { return std::erfc(n); });
+
+   }
+
+
 } // namespace std
 
 // This is the (scalar * Raster) operator
