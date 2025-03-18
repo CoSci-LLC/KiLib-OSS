@@ -378,3 +378,29 @@ TEST(Rasters, Init_Values_Z) {
    EXPECT_EQ(a, b);
 
 }
+
+
+TEST(Rasters, erfc) {
+   
+   std::valarray<double> a = {0, 0, 0};
+
+   auto b = std::erfc(a);
+
+   for (auto n : b)
+      EXPECT_EQ(1, n);
+}
+
+
+TEST(Rasters, ierfc) {
+
+   KiLib::Rasters::Raster<double> a(2, 2, 0);
+   SetBasicRasterProperties(a);
+
+   KiLib::Rasters::Raster<double> b(2, 2, 0.56418958354775628);
+   SetBasicRasterProperties(b);
+
+   auto c = std::ierfc(a);
+
+   EXPECT_EQ(b, c);
+
+}
