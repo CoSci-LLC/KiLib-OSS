@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <tuple>
 #include <valarray>
+#include <ranges>
 
 
 namespace KiLib::Rasters
@@ -291,6 +292,23 @@ namespace KiLib::Rasters
       }
 
 
+      T min() const {
+         T m = std::numeric_limits<double>::max();
+         for( size_t i = 0; i < nnz; i++ ) {
+            if ( nodata_mask[i] == false ) 
+               m = std::min(m, data[i]);
+         }
+         return m;
+      }
+
+      T max() const {
+         T m = std::numeric_limits<double>::min();
+         for( size_t i = 0; i < nnz; i++ ) {
+            if ( nodata_mask[i] == false ) 
+               m = std::max(m, data[i]);
+         }
+         return m;
+      }
    private:
       size_t            nnz;
       std::valarray<T>  data;
@@ -522,12 +540,12 @@ namespace std
 
    template <class T> T min( const KiLib::Rasters::Raster<T>& a )
    {
-      return ((std::valarray<T>)a).min();
+      return a.min();
    }
 
    template <class T> T max( const KiLib::Rasters::Raster<T>& a )
    {
-      return ((std::valarray<T>)a).max();
+      return a.max();
    }
 
    template <class T> KiLib::Rasters::Raster<T> clamp( const KiLib::Rasters::Raster<T>& a, const T& lo, const T& hi)
