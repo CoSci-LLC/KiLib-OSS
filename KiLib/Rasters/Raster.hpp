@@ -196,6 +196,7 @@ namespace KiLib::Rasters
          this->set_nodata_value( other.get_nodata_value() );
          this->set_width( other.get_width() );
          this->set_height( other.get_height() );
+         this->set_name( other.get_name() );
 
          this->data = std::valarray<double>( &d[0], d.size() );
          this->nodata_mask.resize( this->nnz );
@@ -219,6 +220,7 @@ namespace KiLib::Rasters
          this->set_yllcorner( other.get_yllcorner() );
          this->set_cellsize( other.get_cellsize() );
          this->set_nodata_value( other.get_nodata_value() );
+         this->set_name( other.get_name() );
          this->set_width( other.get_width() );
          this->set_height( other.get_height() );
 
