@@ -91,6 +91,7 @@ namespace KiLib::Rasters
       
 
       KiLib::Rasters::Raster<T> raster(nRows, nCols);
+      raster.set_name(path);
       raster.set_yllcorner(yllcorner);
       raster.set_xllcorner(xllcorner);
       raster.set_nodata_value(nodata_value);
