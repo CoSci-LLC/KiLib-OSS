@@ -18,7 +18,7 @@ namespace KiLib::Rasters
     public:
 
         using iterator_category = std::input_iterator_tag;
-        using value_type = T;
+        using value_type = T; //Typically will be doubles
         using difference_type = size_t;
         using pointer = const T*;
         using reference = T;
@@ -82,6 +82,7 @@ namespace KiLib::Rasters
         {
             return rows;
         }
+        
 
         virtual void set_name(std::string val) { name = val; }
         virtual std::string get_name() const { return name; }
@@ -170,9 +171,9 @@ namespace KiLib::Rasters
 
         virtual size_t get_ndata() const = 0;
 
-        virtual size_t flatten_index(size_t r, size_t c) const
+        virtual inline size_t flatten_index(size_t i, size_t j, size_t k) const
         {
-            return r * this->cols + c;
+            return (this->rows * this->cols * k) + (this->cols * i) + j;
         }
 
     protected:
@@ -186,6 +187,8 @@ namespace KiLib::Rasters
         std::string name = "(No name)";
 
     private: 
+        virtual bool is_valid_cell(size_t i, size_t j, size_t k) const = 0;
+        virtual T get_data(size_t i, size_t j, size_t k) const = 0;
     };
 
 

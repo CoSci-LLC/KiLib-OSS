@@ -136,6 +136,8 @@ namespace KiLib::Rasters
       private:
          const Raster<T>&                                           raster;
          typename std::map<std::pair<int, int>, T*>::const_iterator it;
+
+
       };
 
       // returning a const pointer to the front
@@ -313,6 +315,15 @@ namespace KiLib::Rasters
       size_t            nnz;
       std::valarray<T>  data;
       std::vector<bool> nodata_mask;
+
+         bool is_valid_cell(size_t i, size_t j, size_t k) const override  {
+            
+               return !nodata_mask[this->flatten_index(i, j, k)];
+         }
+         
+         T get_data(size_t i, size_t j, size_t k) const override {
+return data[this->flatten_index(i,j,k)];
+         }
 
       enum class OPERAND
       {
