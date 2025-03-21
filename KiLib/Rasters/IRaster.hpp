@@ -210,7 +210,18 @@ namespace KiLib::Rasters
                 i = std::get<0>(r);
                 j = std::get<1>(r);
                 k = std::get<2>(r);
-         return raster->get_data( i, j, k);
+         return *(raster->get( i, j, k).data);
+      }
+
+      Cell<T> operator&() const {
+            
+            size_t i,j,k;
+                auto r = raster->ind2sub(idx);
+                i = std::get<0>(r);
+                j = std::get<1>(r);
+                k = std::get<2>(r);
+         return raster->get( i, j, k);
+    
       }
 
       RasterIterator& operator++()
@@ -230,6 +241,7 @@ namespace KiLib::Rasters
 
          return *this;
       }
+
 
       RasterIterator operator++(int) {
          RasterIterator tmp = *this;

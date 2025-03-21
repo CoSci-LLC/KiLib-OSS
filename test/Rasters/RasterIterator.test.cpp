@@ -35,6 +35,7 @@ TEST(Rasters, TestIterator_Allvalues) {
    size_t count = 0;
    for (auto it = b.begin(); it != b.end(); ++it) {
       EXPECT_EQ(*it, 5); 
+      EXPECT_EQ( *((&it).data), 5); 
       count++;
    }
 
