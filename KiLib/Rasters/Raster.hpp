@@ -154,17 +154,6 @@ namespace KiLib::Rasters
 
       };
 
-      // returning a const pointer to the front
-      Iterator begin() const noexcept
-      {
-         return Iterator( *this, data.begin() );
-      };
-
-      // returning a const pointer to the back - the back is always null because it marks the end of the list
-      Iterator end() const noexcept
-      {
-         return Iterator( *this, data.end() );
-      };
 
       operator std::valarray<T>() const
       {

@@ -12,6 +12,7 @@
 
 namespace KiLib::Rasters
 {
+
     template<typename T>
     class IRaster
     {
@@ -39,7 +40,6 @@ namespace KiLib::Rasters
         }
         IRaster(size_t rows, size_t cols, size_t zindex): rows(rows), cols(cols), zindex(zindex) {}
         virtual ~IRaster() {}
-
 
         
         virtual Cell<T> get(double x, double y, size_t z = 0) const {
@@ -175,6 +175,88 @@ namespace KiLib::Rasters
         {
             return (this->rows * this->cols * k) + (this->cols * i) + j;
         }
+
+        virtual std::tuple<size_t, size_t, size_t> ind2sub(size_t idx) const 
+        {
+            size_t z = idx / (get_rows() * get_cols());
+            idx -= (z * get_rows() * get_cols());
+            size_t y = idx / get_rows();
+            size_t x = idx % get_rows();
+
+            return {x, y, z};
+        }
+
+
+
+
+   class RasterIterator
+   {
+   public:
+      using iterator_category = std::input_iterator_tag;
+      using value_type        = T; // Typically will be doubles
+      using difference_type   = double;
+      using pointer           = const T*;
+      using reference         = T;
+
+      RasterIterator( KiLib::Rasters::IRaster<T>* ptr, size_t idx = 0 ) : raster( ptr ), idx(idx)
+      {
+      }
+
+      reference operator*() const
+      {
+
+            size_t i,j,k;
+                auto r = raster->ind2sub(idx);
+                i = std::get<0>(r);
+                j = std::get<1>(r);
+                k = std::get<2>(r);
+         return raster->get_data( i, j, k);
+      }
+
+      RasterIterator& operator++()
+      {
+            size_t i,j,k;
+         do
+         {
+                if (idx > raster->get_ndata() - 1) break;
+
+                idx++;
+
+                auto r = raster->ind2sub(idx);
+                i = std::get<0>(r);
+                j = std::get<1>(r);
+                k = std::get<2>(r);
+         } while ( ! raster->is_valid_cell( i, j, k) );
+
+         return *this;
+      }
+
+      RasterIterator operator++(int) {
+         RasterIterator tmp = *this;
+         ++(*this);
+         return tmp;
+      }
+
+      friend bool operator==(const RasterIterator& a, const RasterIterator& b) {
+            return a.idx == b.idx;
+      }
+
+      friend bool operator!=(const RasterIterator& a, const RasterIterator& b) {
+         return ! ( a == b);
+      }
+
+   private:
+      KiLib::Rasters::IRaster<T>* raster;
+      size_t                      idx;
+   };
+
+
+        virtual RasterIterator begin() { return RasterIterator(this); }
+        virtual RasterIterator end() { return RasterIterator(this, this->get_ndata()); }
+
+
+
+
 
     protected:
         size_t rows, cols, zindex;

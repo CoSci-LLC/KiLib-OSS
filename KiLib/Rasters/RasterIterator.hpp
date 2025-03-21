@@ -15,7 +15,7 @@ namespace KiLib::Rasters
       using pointer           = const T*;
       using reference         = T;
 
-      RasterIterator<T>( KiLib::Rasters::IRaster<T>* ptr ) : raster( ptr )
+      RasterIterator<T>( KiLib::Rasters::IRaster<T>* ptr, size_t i = 0, size_t j = 0, size_t k = 0 ) : raster( ptr ), i(i), j(j), k(k)
       {
       }
 
