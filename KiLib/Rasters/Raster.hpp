@@ -173,6 +173,23 @@ namespace KiLib::Rasters
       {
       }
 
+      Raster( const Raster<T>& other, double d ) : nodata_mask(other.get_ndata(), false)
+      {
+         this->nnz  = other.get_ndata();
+         this->rows = other.get_rows();
+         this->cols = other.get_cols();
+         this->zindex = other.get_zindex();
+
+         this->set_xllcorner( other.get_xllcorner() );
+         this->set_yllcorner( other.get_yllcorner() );
+         this->set_cellsize( other.get_cellsize() );
+         this->set_nodata_value( other.get_nodata_value() );
+         this->set_width( other.get_width() );
+         this->set_height( other.get_height() );
+         this->set_name( other.get_name() );
+
+         this->data = std::valarray<double>( d, this->nnz );
+      }
       Raster( const Raster<T>& other, const std::valarray<T>& d )
       {
          this->nnz  = other.get_ndata();
