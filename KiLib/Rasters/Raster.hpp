@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IRaster.hpp"
 #include <KiLib/Rasters/IRaster.hpp>
 #include <algorithm>
 #include <functional>
@@ -24,7 +25,7 @@ namespace KiLib::Rasters
    };
 
 
-   template <typename T> class Raster : public IDirectAccessRaster<T>
+   template <typename T> class Raster : virtual public IDirectAccessRaster<T>, virtual public IValArrayRaster<T>
    {
    public:
 
@@ -297,6 +298,11 @@ namespace KiLib::Rasters
       {
          return &( data[0] );
       }
+
+      const std::valarray<T>& get_valarray() const override
+   {
+      return data;
+   }
 
 
       T min() const {

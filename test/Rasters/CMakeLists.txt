@@ -4,4 +4,5 @@ set(projectTestName KiLibTest)
 target_sources(${projectTestName} PRIVATE
 	        Raster.test.cpp
 		RasterIterator.test.cpp
+		SparseRaster.test.cpp
 		)

@@ -287,10 +287,20 @@ namespace KiLib::Rasters
 
 
     template<typename T>
-    class IDirectAccessRaster : public IRaster<T> {
+    class IDirectAccessRaster : virtual public IRaster<T> {
 
     public:
         virtual const T* GetUnderlyingDataArray() const = 0;
 
     };
+
+
+    template<typename T>
+    class IValArrayRaster : virtual public IRaster<T> {
+
+    public:
+        virtual const std::valarray<T>& get_valarray() const = 0;
+
+    };
+
 }
