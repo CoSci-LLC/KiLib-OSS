@@ -166,6 +166,13 @@ namespace KiLib::Rasters
       raster.set_nodata_value ( std::stod(nodat) );
       raster.set_name(path);
 
+
+      // There is a piece of software out there that doesn't do the nodata_value correctly. This is here to fix that:
+      if ( raster.get_nodata_value() == 3.40282346600000016e+38) {
+         raster.set_nodata_value(3.4028234663852886e+38);
+      }
+
+
       if (TIFFIsTiled(tiff))
       {
          throw std::invalid_argument("There is no support for tiled images yet.");
