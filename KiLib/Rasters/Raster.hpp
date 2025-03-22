@@ -288,8 +288,16 @@ namespace KiLib::Rasters
          if ( this->get_cols() != rhs.get_cols() ) return false;
          if ( this->get_zindex() != rhs.get_zindex() ) return false;
 
-         // Check data now
-         if ( ! std::equal(std::begin(this->data), std::end(this->data), std::begin(rhs.data) )) return false;
+         // Check data now, but needs to respect the nodata attributes.
+         if ( ! std::equal(std::begin(this->nodata_mask), std::end(this->nodata_mask), std::begin(rhs.nodata_mask) )) return false;
+
+         // Check each value in the data. We don't need to be careful about bounds because
+         // of all the checks above. If we aren't good, then a new feature was added and
+         // someone (probably me) didn't check here.
+         for (auto a = this->begin(), b = rhs.begin(); a != this->end(); ++a, ++b) {
+            if (*a != *b) return false;
+         } 
+
 
          return true;
 
@@ -524,6 +532,8 @@ return data[this->flatten_index(i,j,k)];
          default:
             throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
          };
+
+         out.nodata_mask = a.nodata_mask;
 
          return out;
       }

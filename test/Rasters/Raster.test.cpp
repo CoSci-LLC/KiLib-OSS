@@ -23,6 +23,20 @@ void SetBasicRasterProperties(KiLib::Rasters::Raster<double>& a)
 
 
 
+void Print(KiLib::Rasters::Raster<double> a) {
+
+   for ( size_t i = 0; i < a.get_rows(); i++ ) {
+      for ( size_t j = 0; j < a.get_cols(); j++ ) {
+         for ( size_t k = 0; k < a.get_zindex(); k++) {
+            auto c = a.get(i,j,k );
+            std::cerr << "[          ] ( " << i << ", " << j << ", " << k << ") = " <<( c.is_nodata ? -9999 : *(a.get(i,j, k).data)) << std::endl;
+         }
+      }
+   }
+}
+
+
+
 // Demonstrate some basic assertions.
 TEST(Rasters, Basic_Operations) {
 
@@ -50,6 +64,7 @@ TEST(Rasters, Basic_Operations) {
    // Test a single multiplication
    EXPECT_EQ(b * 1, b);
    EXPECT_EQ(1 * b, b);
+
 
    EXPECT_EQ(a * 5, b);
    EXPECT_EQ(5 * a, b);
@@ -79,21 +94,16 @@ TEST(Rasters, Basic_Operations) {
 
    EXPECT_EQ(b - a, d);
    EXPECT_NE(a - b, d); // MAke sure the order does matter
+   
+   // Make sure that nodata cells are staying no data
+   a.set((size_t)0, 1, a.get_nodata_value());
+   c.set((size_t)0, 1, c.get_nodata_value());
+ 
+   EXPECT_EQ(a + b, c);
+   EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
+
+
 }
-
-
-void Print(KiLib::Rasters::Raster<double> a) {
-
-   for ( size_t i = 0; i < a.get_rows(); i++ ) {
-      for ( size_t j = 0; j < a.get_cols(); j++ ) {
-         for ( size_t k = 0; k < a.get_zindex(); k++) {
-            auto c = a.get(i,j,k );
-            std::cerr << "[          ] ( " << i << ", " << j << ", " << k << ") = " <<( c.is_nodata ? -9999 : *(a.get(i,j, k).data)) << std::endl;
-         }
-      }
-   }
-}
-
 
 TEST(Rasters, Different_Sized_Rasters_Operatins) {
 

@@ -202,6 +202,10 @@ namespace KiLib::Rasters
       {
       }
 
+      RasterIterator( const KiLib::Rasters::IRaster<T>* ptr, size_t idx = 0 ) : raster( ptr ), idx(idx)
+      {
+      }
+
       reference operator*() const
       {
 
@@ -258,13 +262,15 @@ namespace KiLib::Rasters
       }
 
    private:
-      KiLib::Rasters::IRaster<T>* raster;
+      const KiLib::Rasters::IRaster<T>* raster;
       size_t                      idx;
    };
 
 
-        virtual RasterIterator begin() { return RasterIterator(this); }
-        virtual RasterIterator end() { return RasterIterator(this, this->get_ndata()); }
+        virtual RasterIterator begin()  { return RasterIterator(this); }
+        virtual RasterIterator begin() const  { return RasterIterator(this); }
+        virtual RasterIterator end()  { return RasterIterator(this, this->get_ndata()); }
+        virtual RasterIterator end() const  { return RasterIterator(this, this->get_ndata()); }
 
 
 
