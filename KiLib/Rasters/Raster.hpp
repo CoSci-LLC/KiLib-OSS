@@ -637,7 +637,7 @@ template <class T, typename C> KiLib::Rasters::Raster<T> operator*( const C k, c
 
 template <class T, typename C> KiLib::Rasters::Raster<T> operator/( const C k, const KiLib::Rasters::Raster<T>& a )
 {
-   std::valarray<T>          result = (std::valarray<T>)a / k;
+   std::valarray<T>          result = k / (std::valarray<T>)a;
    KiLib::Rasters::Raster<T> out( a, result );
    return out;
 }

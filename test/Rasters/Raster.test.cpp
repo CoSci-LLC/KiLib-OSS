@@ -71,6 +71,13 @@ TEST(Rasters, Basic_Operations) {
 
    EXPECT_EQ(b / a, b);
    EXPECT_NE(a / b, b); // Make sure the ordering matters
+   
+   EXPECT_EQ(1 / a, a);
+
+   KiLib::Rasters::Raster<double> b_div_result(2,2, 0.2);
+   SetBasicRasterProperties(b_div_result);
+   EXPECT_EQ(1 / b, b_div_result);
+
 
    // Testing Addition
    KiLib::Rasters::Raster<double> c(2, 2);
