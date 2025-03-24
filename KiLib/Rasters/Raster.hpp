@@ -587,6 +587,13 @@ namespace std
       return out;
    }
 
+   template <class T> KiLib::Rasters::Raster<T> exp( const KiLib::Rasters::Raster<T>& a )
+   {
+      std::valarray<T>          result = std::exp( (std::valarray<T>)a );
+      KiLib::Rasters::Raster<T> out( a, result );
+      return out;
+   }
+
    template <class T> T min( const KiLib::Rasters::Raster<T>& a )
    {
       return a.min();
