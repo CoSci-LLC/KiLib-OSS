@@ -263,8 +263,10 @@ namespace KiLib::Rasters
 
     template<class T>
     struct RasterDirectory {
+      
         const IRaster<T>& raster;
         std::function<double(const Cell<T>&)> getter;
+         size_t zindex;
         
         /**
          * @brief Get the value or nodata value of a cell. This will count cells
@@ -335,9 +337,16 @@ namespace KiLib::Rasters
                 exit(EXIT_FAILURE);
             }
             // TIFF tags
-            TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, directories[count].raster.get_name().c_str());
-            TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, directories[count].raster.get_name().c_str());
-
+            
+            // Add layer into name if applicable
+            if ( directories[count].zindex != 0 ) {
+               auto name = (directories[count].raster.get_name() + " [ " + std::to_string(directories[count].zindex) + "]").c_str();
+               TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, directories[count].raster.get_name().c_str());
+               TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, directories[count].raster.get_name().c_str());
+            }  else {
+               TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, directories[count].raster.get_name().c_str());
+               TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, directories[count].raster.get_name().c_str());
+            }
             TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, raster.get_cols());
             TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, raster.get_rows());
             TIFFSetField(tiff, TIFFTAG_SOFTWARE, "CoSci LLC: KiLib");
@@ -394,7 +403,7 @@ namespace KiLib::Rasters
             for (size_t row = 0; row < raster.get_rows(); row++)
             {
                 for (size_t col = 0; col < raster.get_cols(); col++)
-                    ((double *)buf)[col] = directories[count].getter(raster(raster.get_rows() - row - 1, col));
+                    ((double *)buf)[col] = directories[count].getter(raster(raster.get_rows() - row - 1, col, directories[count].zindex));
 
                 if (TIFFWriteScanline(tiff, buf, (uint32_t)row) == -1)
                 {
