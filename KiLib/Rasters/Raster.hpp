@@ -592,6 +592,7 @@ namespace std
       KiLib::Rasters::Raster<T> out( a, result );
       return out;
    }
+
    template <class T> T min( const KiLib::Rasters::Raster<T>& a )
    {
       return a.min();
