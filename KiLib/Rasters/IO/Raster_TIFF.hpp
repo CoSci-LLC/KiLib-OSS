@@ -339,14 +339,17 @@ namespace KiLib::Rasters
             // TIFF tags
             
             // Add layer into name if applicable
+            std::string tmp_name;
             if ( directories[count].zindex != 0 ) {
-               auto name = (directories[count].raster.get_name() + " [ " + std::to_string(directories[count].zindex) + "]").c_str();
-               TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, directories[count].raster.get_name().c_str());
-               TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, directories[count].raster.get_name().c_str());
-            }  else {
-               TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, directories[count].raster.get_name().c_str());
-               TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, directories[count].raster.get_name().c_str());
+               tmp_name = (directories[count].raster.get_name() + " [" + std::to_string(directories[count].zindex) + "]");
+            } else {
+               tmp_name = (directories[count].raster.get_name());
             }
+
+            const char* name = tmp_name.c_str();
+
+            TIFFSetField(tiff, TIFFTAG_IMAGEDESCRIPTION, name);
+            TIFFSetField(tiff, TIFFTAG_DOCUMENTNAME, name);
             TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, raster.get_cols());
             TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, raster.get_rows());
             TIFFSetField(tiff, TIFFTAG_SOFTWARE, "CoSci LLC: KiLib");
@@ -382,9 +385,7 @@ namespace KiLib::Rasters
                 "\n\t<Item name=\"grid_name\">{}</Item>"
                 "\n\t<Item name=\"UNITS\" sample=\"0\">Meters (elevation)</Item>"
                 "\n</GDALMetadata>",
-                    directories[count].raster.get_name(), 
-                    directories[count].raster.get_name(), 
-                    directories[count].raster.get_name()
+                  name, name, name
             );
 
             const char* gdalMetadata = metadataString.c_str();
@@ -392,7 +393,7 @@ namespace KiLib::Rasters
             TIFFSetField(tiff, TIFFTAG_GDAL_METADATA, gdalMetadata);
 
 
-            const char* cosciMetadata = "{ \"data\": \"hello there\"}";
+            const char* cosciMetadata = "{ \"data\": \"KiLib Generated\"}";
             TIFFSetField(tiff, TIFFTAG_BANKFORMAP_METADATA, cosciMetadata);
 
             // Writing data to file
