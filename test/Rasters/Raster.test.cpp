@@ -162,7 +162,7 @@ TEST(Rasters, Different_Sized_Rasters_Operatins) {
    c.set((size_t)3, 3, c.get_nodata_value());
 
    const auto d = a * b;
-   const auto e = a * b;
+   const auto e = b * a;
 
    EXPECT_EQ(e, c);
    EXPECT_EQ(d, c);
@@ -317,7 +317,7 @@ TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
    c.set((size_t)3, 3, 1, c.get_nodata_value());
 
    const auto d = a * b;
-   const auto e = a * b;
+   const auto e = b * a;
 
    EXPECT_EQ(e, c);
    EXPECT_EQ(d, c);

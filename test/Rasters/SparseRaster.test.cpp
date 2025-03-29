@@ -24,19 +24,23 @@ void SetBasicRasterProperties(KiLib::Rasters::SparseRaster<double>& a)
 // Demonstrate some basic assertions.
 TEST(SparseRasters, Basic_Operations) {
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 1}, 4);
+   KiLib::Rasters::SparseRaster<double> a({2, 2, 1},
+   {
+      {{0, 0, 0}, 1},
+      {{0, 1, 0}, 1},
+      {{1, 0, 0}, 1},
+      {{1, 1, 0}, 1}
+   });
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 1);
-   a.set((size_t)0, 1, 1);
-   a.set((size_t)1, 0, 1);
-   a.set((size_t)1, 1, 1);
 
-   KiLib::Rasters::SparseRaster<double> b({2, 2, 1}, 4);
+   KiLib::Rasters::SparseRaster<double> b({2, 2, 1},
+   {
+      {{0, 0, 0}, 5},
+      {{0, 1, 0}, 5},
+      {{1, 0, 0}, 5},
+      {{1, 1, 0}, 5}
+   });
    SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 5);
-   b.set((size_t)0, 1, 5);
-   b.set((size_t)1, 0, 5);
-   b.set((size_t)1, 1, 5);
 
    // Ensure equality works
    EXPECT_EQ(a, a);
@@ -56,24 +60,28 @@ TEST(SparseRasters, Basic_Operations) {
    EXPECT_NE(a / b, b); // Make sure the ordering matters
 
    // Testing Addition
-   KiLib::Rasters::SparseRaster<double> c({2, 2, 1}, 4);
+   KiLib::Rasters::SparseRaster<double> c({2, 2, 1},
+   {
+      {{0, 0, 0}, 6},
+      {{0, 1, 0}, 6},
+      {{1, 0, 0}, 6},
+      {{1, 1, 0}, 6}
+   });
    SetBasicRasterProperties(c);
-   c.set((size_t)0, 0, 6);
-   c.set((size_t)0, 1, 6);
-   c.set((size_t)1, 0, 6);
-   c.set((size_t)1, 1, 6);
 
    EXPECT_EQ(a + b, c);
    EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
 
    //
    // Testing Subtraction
-   KiLib::Rasters::SparseRaster<double> d({2, 2, 1}, 4);
+   KiLib::Rasters::SparseRaster<double> d({2, 2, 1},
+   {
+      {{0, 0, 0}, 4},
+      {{0, 1, 0}, 4},
+      {{1, 0, 0}, 4},
+      {{1, 1, 0}, 4}
+   });
    SetBasicRasterProperties(d);
-   d.set((size_t)0, 0, 4);
-   d.set((size_t)0, 1, 4);
-   d.set((size_t)1, 0, 4);
-   d.set((size_t)1, 1, 4);
 
    EXPECT_EQ(b - a, d);
    EXPECT_NE(a - b, d); // MAke sure the order does matter
@@ -96,39 +104,45 @@ void Print(KiLib::Rasters::SparseRaster<double> a) {
 TEST(SparseRasters, Different_Sized_Rasters_Operatins) {
 
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 1}, 4);
+   KiLib::Rasters::SparseRaster<double> a({2, 2, 1},
+   {
+      {{0, 0, 0}, 2},
+      {{0, 1, 0}, 2},
+      {{1, 0, 0}, 2},
+      {{1, 1, 0}, 2}
+   });
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 2);
-   a.set((size_t)0, 1, 2);
-   a.set((size_t)1, 0, 2);
-   a.set((size_t)1, 1, 2);
 
-   KiLib::Rasters::SparseRaster<double> b({4, 4, 1}, 16);
+   KiLib::Rasters::SparseRaster<double> b({4, 4, 1},
+   {
+      {{0, 0, 0}, 5},
+      {{0, 1, 0}, 5},
+      {{0, 2, 0}, 5},
+      {{0, 3, 0}, 5},
+      {{1, 0, 0}, 5},
+      {{1, 1, 0}, 5},
+      {{1, 2, 0}, 5},
+      {{1, 3, 0}, 5},
+      {{2, 0, 0}, 5},
+      {{2, 1, 0}, 5},
+      {{2, 2, 0}, 5},
+      {{2, 3, 0}, 5},
+      {{3, 0, 0}, 5},
+      {{3, 1, 0}, 5},
+      {{3, 2, 0}, 5},
+      {{3, 3, 0}, 5},
+   });
    SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 5);
-   b.set((size_t)0, 1, 5);
-   b.set((size_t)0, 2, 5);
-   b.set((size_t)0, 3, 5);
-   b.set((size_t)1, 0, 5);
-   b.set((size_t)1, 1, 5);
-   b.set((size_t)1, 2, 5);
-   b.set((size_t)1, 3, 5);
-   b.set((size_t)2, 0, 5);
-   b.set((size_t)2, 1, 5);
-   b.set((size_t)2, 2, 5);
-   b.set((size_t)2, 3, 5);
-   b.set((size_t)3, 0, 5);
-   b.set((size_t)3, 1, 5);
-   b.set((size_t)3, 2, 5);
-   b.set((size_t)3, 3, 5);
 
+   KiLib::Rasters::SparseRaster<double> c({4, 4, 1},
+   {
+      {{0, 0, 0}, 10},
+      {{0, 1, 0}, 10},
+      {{1, 0, 0}, 10},
+      {{1, 1, 0}, 10}
+   });
 
-   KiLib::Rasters::SparseRaster<double> c({4, 4, 1}, 4);
    SetBasicRasterProperties(c);
-   c.set((size_t)0, 0, 10);
-   c.set((size_t)0, 1, 10);
-   c.set((size_t)1, 0, 10);
-   c.set((size_t)1, 1, 10);
 
    const auto d = a * b;
    const auto e = a * b;
@@ -143,19 +157,26 @@ TEST(SparseRasters, Different_Sized_Rasters_Operatins) {
 // Demonstrate some basic assertions.
 TEST(SparseRasters, Clamp) {
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 1}, 4);
-   SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 1);
-   a.set((size_t)0, 1, 1);
-   a.set((size_t)1, 0, 1);
-   a.set((size_t)1, 1, 1);
+   KiLib::Rasters::SparseRaster<double> a({2, 2, 1}, 
+   {
+      {{0, 0, 0}, 1},
+      {{0, 1, 0}, 1},
+      {{1, 0, 0}, 1},
+      {{1, 1, 0}, 1}
+   });
 
-   KiLib::Rasters::SparseRaster<double> b({2, 2, 1}, 4);
+   SetBasicRasterProperties(a);
+
+   KiLib::Rasters::SparseRaster<double> b({2, 2, 1},
+   {
+      {{0, 0, 0}, 5},
+      {{0, 1, 0}, 5},
+      {{1, 0, 0}, 5},
+      {{1, 1, 0}, 5}
+   });
+
+
    SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 5);
-   b.set((size_t)0, 1, 5);
-   b.set((size_t)1, 0, 5);
-   b.set((size_t)1, 1, 5);
 
    auto c = std::clamp(b, 0.0, 1.0);
 
@@ -167,27 +188,33 @@ TEST(SparseRasters, Clamp) {
 
 TEST(SparseRasters, Layers) {
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 2}, 8);
+   KiLib::Rasters::SparseRaster<double> a({2, 2, 2},
+   {
+      {{0, 0, 0}, 1},
+      {{0, 0, 1}, 1},
+      {{0, 1, 0}, 1},
+      {{0, 1, 1}, 1},
+      {{1, 0, 0}, 1},
+      {{1, 0, 1}, 1},
+      {{1, 1, 0}, 1},
+      {{1, 1, 1}, 1},
+   });
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 0, 1);
-   a.set((size_t)0, 0, 1, 1);
-   a.set((size_t)0, 1, 0, 1);
-   a.set((size_t)0, 1, 1, 1);
-   a.set((size_t)1, 0, 0, 1);
-   a.set((size_t)1, 0, 1, 1);
-   a.set((size_t)1, 1, 0, 1);
-   a.set((size_t)1, 1, 1, 1);
 
-   KiLib::Rasters::SparseRaster<double> b({2, 2, 2}, 8);
+   KiLib::Rasters::SparseRaster<double> b({2, 2, 2},
+   {
+      {{0, 0, 0}, 5},
+      {{0, 0, 1}, 5},
+      {{0, 1, 0}, 5},
+      {{0, 1, 1}, 5},
+      {{1, 0, 0}, 5},
+      {{1, 0, 1}, 5},
+      {{1, 1, 0}, 5},
+      {{1, 1, 1}, 5},
+   });
+
    SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 0, 5);
-   b.set((size_t)0, 0, 1, 5);
-   b.set((size_t)0, 1, 0, 5);
-   b.set((size_t)0, 1, 1, 5);
-   b.set((size_t)1, 0, 0, 5);
-   b.set((size_t)1, 0, 1, 5);
-   b.set((size_t)1, 1, 0, 5);
-   b.set((size_t)1, 1, 1, 5);
+   //
    // Ensure equality works
    EXPECT_EQ(a, a);
    EXPECT_NE(a, b);
@@ -198,71 +225,105 @@ TEST(SparseRasters, Layers) {
    EXPECT_EQ(b / 5, a);
 }
 
+TEST(SparseRasters, InitFromMap) {
+
+
+   KiLib::Rasters::SparseRaster<double> a({2, 2, 2},
+   {
+      {{0, 0, 0}, 1},
+      {{0, 0, 1}, 2},
+      {{0, 1, 0}, 3},
+      {{0, 1, 1}, 4},
+      {{1, 0, 0}, 5},
+      {{1, 0, 1}, 6},
+      {{1, 1, 0}, 7},
+      {{1, 1, 1}, 8},
+   });
+
+   EXPECT_EQ(*(a.get((size_t)0,0,0).data), 1);
+   EXPECT_EQ(*(a.get((size_t)0,0,1).data), 2);
+   EXPECT_EQ(*(a.get((size_t)0,1,0).data), 3);
+   EXPECT_EQ(*(a.get((size_t)0,1,1).data), 4);
+   EXPECT_EQ(*(a.get((size_t)1,0,0).data), 5);
+   EXPECT_EQ(*(a.get((size_t)1,0,1).data), 6);
+   EXPECT_EQ(*(a.get((size_t)1,1,0).data), 7);
+   EXPECT_EQ(*(a.get((size_t)1,1,1).data), 8);
+}
+
 
 TEST(SparseRasters, Layers_Different_Sized_Rasters_Operations) {
 
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 2}, 8);
+   KiLib::Rasters::SparseRaster<double> a({2, 2, 2},
+   {
+      {{0, 0, 0}, 2},
+      {{0, 0, 1}, 2},
+      {{0, 1, 0}, 2},
+      {{0, 1, 1}, 2},
+      {{1, 0, 0}, 2},
+      {{1, 0, 1}, 2},
+      {{1, 1, 0}, 2},
+      {{1, 1, 1}, 2},
+   });
+
+
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 0, 2);
-   a.set((size_t)0, 0, 1, 2);
-   a.set((size_t)0, 1, 0, 2);
-   a.set((size_t)0, 1, 1, 2);
-   a.set((size_t)1, 0, 0, 2);
-   a.set((size_t)1, 0, 1, 2);
-   a.set((size_t)1, 1, 0, 2);
-   a.set((size_t)1, 1, 1, 2);
 
-   KiLib::Rasters::SparseRaster<double> b({4, 4, 2}, 32);
+   KiLib::Rasters::SparseRaster<double> b({4, 4, 2},
+   {
+      {{0, 0, 0},5},
+      {{0, 1, 0},5},
+      {{0, 2, 0},5},
+      {{0, 3, 0},5},
+      {{1, 0, 0},5},
+      {{1, 1, 0},5},
+      {{1, 2, 0},5},
+      {{1, 3, 0},5},
+      {{2, 0, 0},5},
+      {{2, 1, 0},5},
+      {{2, 2, 0},5},
+      {{2, 3, 0},5},
+      {{3, 0, 0},5},
+      {{3, 1, 0},5},
+      {{3, 2, 0},5},
+      {{3, 3, 0},5},
+      {{0, 0, 1},5},
+      {{0, 1, 1},5},
+      {{0, 2, 1},5},
+      {{0, 3, 1},5},
+      {{1, 0, 1},5},
+      {{1, 1, 1},5},
+      {{1, 2, 1},5},
+      {{1, 3, 1},5},
+      {{2, 0, 1},5},
+      {{2, 1, 1},5},
+      {{2, 2, 1},5},
+      {{2, 3, 1},5},
+      {{3, 0, 1},5},
+      {{3, 1, 1},5},
+      {{3, 2, 1},5},
+      {{3, 3, 1},5}
+   });
    SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 0,5);
-   b.set((size_t)0, 1, 0,5);
-   b.set((size_t)0, 2, 0,5);
-   b.set((size_t)0, 3, 0,5);
-   b.set((size_t)1, 0, 0,5);
-   b.set((size_t)1, 1, 0,5);
-   b.set((size_t)1, 2, 0,5);
-   b.set((size_t)1, 3, 0,5);
-   b.set((size_t)2, 0, 0,5);
-   b.set((size_t)2, 1, 0,5);
-   b.set((size_t)2, 2, 0,5);
-   b.set((size_t)2, 3, 0,5);
-   b.set((size_t)3, 0, 0,5);
-   b.set((size_t)3, 1, 0,5);
-   b.set((size_t)3, 2, 0,5);
-   b.set((size_t)3, 3, 0,5);
-   b.set((size_t)0, 0, 1,5);
-   b.set((size_t)0, 1, 1,5);
-   b.set((size_t)0, 2, 1,5);
-   b.set((size_t)0, 3, 1,5);
-   b.set((size_t)1, 0, 1,5);
-   b.set((size_t)1, 1, 1,5);
-   b.set((size_t)1, 2, 1,5);
-   b.set((size_t)1, 3, 1,5);
-   b.set((size_t)2, 0, 1,5);
-   b.set((size_t)2, 1, 1,5);
-   b.set((size_t)2, 2, 1,5);
-   b.set((size_t)2, 3, 1,5);
-   b.set((size_t)3, 0, 1,5);
-   b.set((size_t)3, 1, 1,5);
-   b.set((size_t)3, 2, 1,5);
-   b.set((size_t)3, 3, 1,5);
 
 
+   KiLib::Rasters::SparseRaster<double> c({4, 4, 2}, 
+   {
+      {{0, 0, 0}, 10},
+      {{0, 0, 1}, 10},
+      {{0, 1, 0}, 10},
+      {{0, 1, 1}, 10},
+      {{1, 0, 0}, 10},
+      {{1, 0, 1}, 10},
+      {{1, 1, 0}, 10},
+      {{1, 1, 1}, 10},
+   });
 
-   KiLib::Rasters::SparseRaster<double> c({4, 4, 2}, 8);
    SetBasicRasterProperties(c);
-   c.set((size_t)0, 0, 0, 10);
-   c.set((size_t)0, 1, 0, 10);
-   c.set((size_t)1, 0, 0, 10);
-   c.set((size_t)1, 1, 0, 10);
-   c.set((size_t)0, 0, 1, 10);
-   c.set((size_t)0, 1, 1, 10);
-   c.set((size_t)1, 0, 1, 10);
-   c.set((size_t)1, 1, 1, 10);
 
    const auto d = a * b;
-   const auto e = a * b;
+   const auto e = b * a;
+
 
    EXPECT_EQ(e, c);
    EXPECT_EQ(d, c);
@@ -282,17 +343,14 @@ TEST(SparseRasters, Invalid_Index_set) {
 
 TEST(SparseRasters, Min_Max) {
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2,1}, 3);
+   KiLib::Rasters::SparseRaster<double> a({2, 2,1},
+   {
+      {{ 0, 0, 0}, 44},
+      {{ 0, 1, 0}, 93},
+      {{ 1, 1, 0}, 42}
+   });
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 44);
-   a.set((size_t)0, 1, 93);
-   // Missing one on purpose
-   a.set((size_t)1, 1, 42);
 
-   EXPECT_EQ(std::min(a),42); 
-   EXPECT_EQ(std::max(a),93); 
-
-   // Test with NAN in the data
    EXPECT_EQ(std::min(a),42); 
    EXPECT_EQ(std::max(a),93); 
 
