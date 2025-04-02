@@ -129,7 +129,7 @@ namespace KiLib::Rasters
       {
       }
 
-      DenseRaster( const DenseRaster<T>& other, double d ) : nodata_mask(other.get_ndata(), false)
+      DenseRaster( const DenseRaster<T>& other, double d ) 
       {
          this->nnz  = other.get_ndata();
          this->rows = other.get_rows();
@@ -145,6 +145,8 @@ namespace KiLib::Rasters
          this->set_name( other.get_name() );
 
          this->data = std::valarray<double>( d, this->nnz );
+         this->nodata_mask.resize( this->nnz );
+         std::copy( other.nodata_mask.begin(), other.nodata_mask.end(), this->nodata_mask.begin() );
       }
       DenseRaster( const DenseRaster<T>& other, const std::valarray<T>& d )
       {

@@ -43,7 +43,11 @@ namespace KiLib::Rasters
       }
 
       ~Raster() {
-         delete raster;
+         
+         if ( raster != nullptr) {
+            delete raster;
+            raster = nullptr;
+         }
       }
 
       Raster (const std::tuple<size_t, size_t, size_t>& dims, T init_val ) 
@@ -105,20 +109,45 @@ namespace KiLib::Rasters
          switch (other.get_type()) {
             
             case Rasters::TYPE::DENSE:
-               raster = new KiLib::Rasters::DenseRaster<T>( { other.get_rows(), other.get_cols(), other.get_zindex() }, init_val );
+               raster = new KiLib::Rasters::DenseRaster<T>( std::make_tuple( other.get_rows(), other.get_cols(), other.get_zindex() ), init_val );
                break;
             case Rasters::TYPE::SPARSE:
-               raster = new KiLib::Rasters::SparseRaster<T>((KiLib::Rasters::SparseRaster<T>)other.raster, init_val);
+               raster = new KiLib::Rasters::SparseRaster<T>(other, [init_val](const auto&) { return init_val; });
                break;
             default:
                throw NotImplementedException("Other raster types not implemented for this constructor");
          }
       }
 
+      // Move Operator
+      Raster<T>& operator=(Raster<T>&& other) 
+      {
+         // Just move the pointer
+         delete raster;
+         raster = other.raster;
+         other.raster = nullptr;
+         return *this;
+      }
+
+      // Copy Operator
       Raster<T>& operator=( const Raster<T>& other )
       {
-         *raster = *(other.raster);
+         delete this->raster;
+
+         switch (other.get_type()) {
+            
+            case Rasters::TYPE::DENSE:
+               raster = new KiLib::Rasters::DenseRaster<T>( *((KiLib::Rasters::DenseRaster<T>*)other.raster));
+               break;
+            case Rasters::TYPE::SPARSE:
+               raster = new KiLib::Rasters::SparseRaster<T>( *((KiLib::Rasters::SparseRaster<T>*)other.raster));
+               break;
+            default:
+               throw NotImplementedException("Other raster types not implemented for this constructor");
+         }
+
          return *this;
+
       }
 
       size_t get_rows() const override { return raster->get_rows();}
@@ -130,6 +159,7 @@ namespace KiLib::Rasters
       double get_yllcorner() const override { return raster->get_yllcorner();}
       double get_nodata_value() const override { return raster->get_nodata_value(); }
       double get_cellsize() const override { return raster->get_cellsize();}
+      std::string get_name() const override {return raster->get_name();}
 
       KiLib::Rasters::Cell<T> at(size_t row, size_t col, size_t zindex = 0) override { return raster->get(row, col, zindex);}
       KiLib::Rasters::Cell<T> at(size_t row, size_t col, size_t zindex = 0) const override { return raster->get(row,col, zindex);}
@@ -145,6 +175,7 @@ namespace KiLib::Rasters
       void set_width(double val) override { raster->set_width(val); }
       void set_height(double val) override { raster->set_height(val); }
       void set_nodata_value(double val) override { raster->set_nodata_value(val); }
+      void set_name(std::string val) override { raster->set_name(val); }
 
 
       void clamp(const T& lo, const T& hi) override { raster->clamp(lo, hi);}
@@ -290,11 +321,11 @@ namespace KiLib::Rasters
       }
 
       void tan() const {
-         raster->apply( std::tan );
+         raster->apply( [](T t) { return std::tan(t); } );
       }
 
       void cos() const {
-         raster->apply( std::cos );
+         raster->apply( [](T t) { return std::cos(t); } );
       }
 
       void sin() const {
@@ -302,7 +333,7 @@ namespace KiLib::Rasters
       }
 
       void exp() const {
-         raster->apply( std::exp );
+         raster->apply( [](T t) { return std::exp(t); } );
       }
 
       T max() const override {

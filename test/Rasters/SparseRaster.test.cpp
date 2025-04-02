@@ -375,7 +375,7 @@ TEST(SparseRasters, Layers_Different_Sized_Rasters_Operations) {
 
 TEST(SparseRasters, Invalid_Index_set) {
 
-   KiLib::Rasters::SparseRaster<double> sparse_c({4, 4, 1}, 0);
+   KiLib::Rasters::SparseRaster<double> sparse_c({4, 4, 1}, {});
    SetBasicRasterProperties(sparse_c);
    KiLib::Rasters::Raster<double> c (sparse_c);
    EXPECT_ANY_THROW(c.set((size_t)3, 2, 1, c.get_nodata_value()));
@@ -424,7 +424,7 @@ TEST(SparseRasters, CopyFromRaster) {
    SetBasicRasterProperties(b);
 
 
-   KiLib::Rasters::SparseRaster<double> c(a);
+   KiLib::Rasters::SparseRaster<double> c(a, [](const KiLib::Rasters::Cell<double>& c) { return *(c.data); } );
 
    EXPECT_EQ(c, b);
 

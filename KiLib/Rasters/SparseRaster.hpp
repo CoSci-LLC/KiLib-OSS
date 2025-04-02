@@ -26,7 +26,7 @@ namespace KiLib::Rasters
       {
       }
       
-       SparseRaster(const KiLib::Rasters::Raster<T>& from_raster)  
+       SparseRaster(const KiLib::Rasters::Raster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)
           {
               nnz = 0;
               for (size_t row = 0; row < from_raster.get_rows(); row++)
@@ -58,7 +58,7 @@ namespace KiLib::Rasters
                      for (size_t z = 0; z < from_raster.get_zindex(); z++) {
 
                         if ( ! from_raster.get( row, col, z).is_nodata ) {
-                           V[v_index] = *(from_raster.get(row,col,z).data);
+                           V[v_index] =  get_val(from_raster.get(row,col,z));
 
                            //Link col_index to V
                            this->COL_INDEX[v_index] = col;
@@ -131,55 +131,6 @@ namespace KiLib::Rasters
          ROW_INDEX[row_index] = v_index;
       }
 
-
-
-      SparseRaster( const std::tuple<size_t, size_t, size_t>& dims, size_t count ) : nnz( count ), V( count ), COL_INDEX(nnz), ROW_INDEX(std::get<0>(dims) + 1)
-      {
-         const auto rows   = std::get<0>( dims );
-         const auto cols   = std::get<1>( dims );
-         const auto zindex = std::get<2>( dims );
-
-         this->rows   = rows;
-         this->cols   = cols;
-         this->zindex = zindex;
-
-
-         // import nnz values into the new system
-         /*
-         size_t row_index = 0;
-         size_t v_index = 0;
-
-
-         for (size_t row = 0; row < from_raster.get_rows(); row++)
-         {
-             ROW_INDEX[row_index] = v_index;
-             for (size_t col = 0; col < from_raster.get_cols(); col++)
-             {
-                 if (!from_raster.get(row, col).is_nodata)
-                 {
-                     // Put value into the value array
-                     V[v_index] = *(from_raster.at(row, col).data);
-
-                     //Link col_index to V
-                     COL_INDEX[v_index] = col;
-
-                     // increase the next index
-                     v_index++;
-                 }
-             }
-             row_index++;
-         }
-
-         ROW_INDEX[row_index] = v_index;
-
-         this->xllcorner = from_raster.get_xllcorner();
-         this->yllcorner = from_raster.get_yllcorner();
-         this->cellsize = from_raster.get_cellsize();
-         this->width = from_raster.get_width();
-         this->height = from_raster.get_height();
-         this->nodata_value = from_raster.get_nodata_value();
-                   */
-      }
 
         SparseRaster(const SparseRaster<T>& other, const std::valarray<T>& new_data) : nnz( other.nnz ), V( new_data ), COL_INDEX(other.COL_INDEX), ROW_INDEX(other.ROW_INDEX), Z_INDEX(other.Z_INDEX)
          {
