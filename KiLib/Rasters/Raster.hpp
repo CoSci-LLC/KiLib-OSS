@@ -118,6 +118,7 @@ namespace KiLib::Rasters
       Raster<T>& operator=( const Raster<T>& other )
       {
          *raster = *(other.raster);
+         return *this;
       }
 
       size_t get_rows() const override { return raster->get_rows();}
@@ -284,6 +285,25 @@ namespace KiLib::Rasters
          return raster->min();
       }
 
+      void atan() const {
+         raster->apply( [](T t) { return std::atan(t);} );
+      }
+
+      void tan() const {
+         raster->apply( std::tan );
+      }
+
+      void cos() const {
+         raster->apply( std::cos );
+      }
+
+      void sin() const {
+         raster->apply( [](T t) { return std::sin(t); } );
+      }
+
+      void exp() const {
+         raster->apply( std::exp );
+      }
 
       T max() const override {
          return raster->max();
@@ -529,52 +549,38 @@ namespace KiLib::Rasters
 
 namespace std
 {
-// template <class T> T max( const KiLib::Rasters::Raster<T>& a )
-// {
-//    //std::valarray<T>          result = std::max( (std::valarray<T>)a );
-//    //KiLib::Rasters::Raster<T> out( a, result );
-//    auto in = (std::valarray<T>)a;
-//    return *std::max_element(std::begin(a), std::end(a));
-// }
-
-//   template <class T> KiLib::Rasters::Raster<T> min( const KiLib::Rasters::Raster<T>& a )
-//   {
-//      std::valarray<T>          result = std::min( (std::valarray<T>)a );
-//      KiLib::Rasters::Raster<T> out( a, result );
-//      return out;
-//   }
 
    template <class T> KiLib::Rasters::Raster<T> atan( const KiLib::Rasters::Raster<T>& a )
    {
-      std::valarray<T>          result = std::atan( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, result );
+      KiLib::Rasters::Raster<T> out(a);
+      out.atan();
       return out;
    }
 
    template <class T> KiLib::Rasters::Raster<T> sin( const KiLib::Rasters::Raster<T>& a )
    {
-      std::valarray<T>          result = std::sin( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, result );
+      KiLib::Rasters::Raster<T> out(a);
+      out.sin();
       return out;
    }
 
    template <class T> KiLib::Rasters::Raster<T> cos( const KiLib::Rasters::Raster<T>& a )
    {
-      std::valarray<T>          result = std::cos( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, result );
+      KiLib::Rasters::Raster<T> out(a);
+      out.cos();
       return out;
    }
 
    template <class T> KiLib::Rasters::Raster<T> tan( const KiLib::Rasters::Raster<T>& a )
    {
-      std::valarray<T>          result = std::tan( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, result );
+      KiLib::Rasters::Raster<T> out(a);
+      out.tan();
       return out;
    }
    template <class T> KiLib::Rasters::Raster<T> exp( const KiLib::Rasters::Raster<T>& a )
    {
-      std::valarray<T>          result = std::exp( (std::valarray<T>)a );
-      KiLib::Rasters::Raster<T> out( a, result );
+      KiLib::Rasters::Raster<T> out(a);
+      out.exp();
       return out;
    }
 
@@ -590,21 +596,9 @@ namespace std
 
    template <class T> KiLib::Rasters::Raster<T> clamp( const KiLib::Rasters::Raster<T>& a, const T& lo, const T& hi)
    {
-/*      const auto va = (std::valarray<T>)a;
-      std::vector<double> v;
-      v.assign(std::begin(va), std::end(va));
-      std::for_each(std::begin(v), std::end(v), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
-      KiLib::Rasters::Raster<T> out( a, std::valarray<double>(v.data(), v.size()) );*/
-
-
       KiLib::Rasters::Raster<T> out(a);
       out.clamp(lo, hi);
       return out;
-
-   /*   auto in = (std::valarray<T>)a;
-      std::transform(std::begin(in), std::end(in), std::begin(in), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
-      KiLib::Rasters::Raster<T> out( a, in );
-      return out;*/
    }
 
 

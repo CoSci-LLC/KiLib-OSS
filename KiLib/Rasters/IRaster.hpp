@@ -232,6 +232,8 @@ namespace KiLib::Rasters
             return m;
         }
 
+        
+
         virtual T max() const {
             T m = std::numeric_limits<T>::min();
             for ( auto cell : *this ) {
@@ -241,11 +243,23 @@ namespace KiLib::Rasters
         }
 
 
+        virtual void apply( std::function<T(T)> f) {
+            for ( size_t idx = 0; idx < this->get_ndata(); idx++ ) {
+                size_t i,j,k;
+                auto r = this->ind2sub(idx);
+                i = std::get<0>(r);
+                j = std::get<1>(r);
+                k = std::get<2>(r);
+                if ( this->is_valid_cell(i, j, k) ) {
+                    this->set(i,j,k, f(get_data(i,j,k)));
+                }
+            } 
+
+        }
+
+
+
         virtual void clamp(const T& lo, const T& hi) {
-/*   auto in = (std::valarray<T>)a;
-      std::transform(std::begin(in), std::end(in), std::begin(in), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
-      KiLib::Rasters::Raster<T> out( a, in );
-      return out;*/
             for ( size_t idx = 0; idx < this->get_ndata(); idx++ ) {
                 size_t i,j,k;
                 auto r = this->ind2sub(idx);

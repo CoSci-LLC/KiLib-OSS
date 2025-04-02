@@ -37,6 +37,22 @@ void Print(KiLib::Rasters::Raster<double> a) {
 
 
 
+TEST(Rasters, CopyOperator) {
+  KiLib::Rasters::Raster<double> a(2, 2);
+   SetBasicRasterProperties(a);
+   a.set((size_t)0, 0, 1);
+   a.set((size_t)0, 1, 1);
+   a.set((size_t)1, 0, 1);
+   a.set((size_t)1, 1, 1);
+
+   auto b = a;
+
+   EXPECT_EQ(a, b);
+
+
+}
+
+
 // Demonstrate some basic assertions.
 TEST(Rasters, Basic_Operations) {
 
@@ -398,6 +414,8 @@ TEST(Rasters, Init_Values_Z) {
 
 }
 
+
+//Add sin/cos/etcc
 
 TEST(Rasters, erfc) {
    
