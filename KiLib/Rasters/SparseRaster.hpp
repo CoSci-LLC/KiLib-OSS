@@ -254,6 +254,34 @@ namespace KiLib::Rasters
          return m;
       }
 
+      TYPE get_type() const override { return TYPE::SPARSE; }
+      
+      SparseRaster<T> op_divide(const T val) const {
+          KiLib::Rasters::SparseRaster<T> out(*this, val / V);
+            return out;
+         }  
+
+
+      SparseRaster<T> op_minus(const T val) const {
+          KiLib::Rasters::SparseRaster<T> out(*this, val - V);
+            return out;
+         }  
+
+      SparseRaster<T> op_ierfc() const {
+            const auto n = V;
+            const auto r = 1 / std::sqrt(M_PI) * std::exp( -1 * std::pow(n, 2)) - n * std::erfc(n);
+            KiLib::Rasters::SparseRaster<T> out( *this,r );
+            return out;
+         }  
+
+      SparseRaster<T> op_erfc() const {
+            const auto n = V;
+            const auto r = n.apply([](T n) -> T { return std::erfc(n); });
+
+            KiLib::Rasters::SparseRaster<T> out (*this, r);
+            return out;
+         }  
+
 
     bool operator==(const SparseRaster<T>& rhs) const {
         if ( ! can_perform_operation(rhs) ) return false;
@@ -272,7 +300,18 @@ template <typename C> SparseRaster<T> operator*(const C k ) const
    return out;
 }
 
+template <typename C> SparseRaster<T> operator+(const C k ) const  
+{
+    KiLib::Rasters::SparseRaster<T> out(*this, V + k);
+   return out;
+}
 
+
+template <typename C> SparseRaster<T> operator-(const C k ) const  
+{
+    KiLib::Rasters::SparseRaster<T> out(*this, V - k);
+   return out;
+}
 
     SparseRaster<T> operator*( const SparseRaster<T>& b) const 
     {

@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 
 void SetBasicRasterProperties(KiLib::Rasters::Raster<double>&);
+void Print(KiLib::Rasters::Raster<double>) ;
 
 void SetBasicRasterProperties(KiLib::Rasters::SparseRaster<double>& a) 
 {
@@ -26,23 +27,26 @@ void SetBasicRasterProperties(KiLib::Rasters::SparseRaster<double>& a)
 // Demonstrate some basic assertions.
 TEST(SparseRasters, Basic_Operations) {
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 1},
+   KiLib::Rasters::SparseRaster<double> sparse_a({2, 2, 1},
    {
       {{0, 0, 0}, 1},
       {{0, 1, 0}, 1},
       {{1, 0, 0}, 1},
       {{1, 1, 0}, 1}
    });
-   SetBasicRasterProperties(a);
+   SetBasicRasterProperties(sparse_a);
 
-   KiLib::Rasters::SparseRaster<double> b({2, 2, 1},
+   KiLib::Rasters::SparseRaster<double> sparse_b({2, 2, 1},
    {
       {{0, 0, 0}, 5},
       {{0, 1, 0}, 5},
       {{1, 0, 0}, 5},
       {{1, 1, 0}, 5}
    });
-   SetBasicRasterProperties(b);
+   SetBasicRasterProperties(sparse_b);
+
+   KiLib::Rasters::Raster<double> a (sparse_a);
+   KiLib::Rasters::Raster<double> b (sparse_b);
 
    // Ensure equality works
    EXPECT_EQ(a, a);
@@ -62,60 +66,51 @@ TEST(SparseRasters, Basic_Operations) {
    EXPECT_NE(a / b, b); // Make sure the ordering matters
 
    // Testing Addition
-   KiLib::Rasters::SparseRaster<double> c({2, 2, 1},
+   KiLib::Rasters::SparseRaster<double> sparse_c({2, 2, 1},
    {
       {{0, 0, 0}, 6},
       {{0, 1, 0}, 6},
       {{1, 0, 0}, 6},
       {{1, 1, 0}, 6}
    });
-   SetBasicRasterProperties(c);
+   SetBasicRasterProperties(sparse_c);
+   KiLib::Rasters::Raster<double> c (sparse_c);
 
    EXPECT_EQ(a + b, c);
    EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
 
    //
    // Testing Subtraction
-   KiLib::Rasters::SparseRaster<double> d({2, 2, 1},
+   KiLib::Rasters::SparseRaster<double> sparse_d({2, 2, 1},
    {
       {{0, 0, 0}, 4},
       {{0, 1, 0}, 4},
       {{1, 0, 0}, 4},
       {{1, 1, 0}, 4}
    });
-   SetBasicRasterProperties(d);
+   SetBasicRasterProperties(sparse_d);
+   KiLib::Rasters::Raster<double> d (sparse_d);
 
    EXPECT_EQ(b - a, d);
    EXPECT_NE(a - b, d); // MAke sure the order does matter
 }
 
 
-void Print(KiLib::Rasters::SparseRaster<double> a) {
-
-   for ( size_t i = 0; i < a.get_rows(); i++ ) {
-      for ( size_t j = 0; j < a.get_cols(); j++ ) {
-         for ( size_t k = 0; k < a.get_zindex(); k++) {
-            auto c = a.get(i,j,k );
-            std::cerr << "[          ] ( " << i << ", " << j << ", " << k << ") = " <<( c.is_nodata ? -9999 : *(a.get(i,j, k).data)) << std::endl;
-         }
-      }
-   }
-}
-
 
 TEST(SparseRasters, Different_Sized_Rasters_Operatins) {
 
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 1},
+   KiLib::Rasters::SparseRaster<double> sparse_a({2, 2, 1},
    {
       {{0, 0, 0}, 2},
       {{0, 1, 0}, 2},
       {{1, 0, 0}, 2},
       {{1, 1, 0}, 2}
    });
-   SetBasicRasterProperties(a);
+   SetBasicRasterProperties(sparse_a);
+   KiLib::Rasters::Raster<double> a (sparse_a);
 
-   KiLib::Rasters::SparseRaster<double> b({4, 4, 1},
+   KiLib::Rasters::SparseRaster<double> sparse_b({4, 4, 1},
    {
       {{0, 0, 0}, 5},
       {{0, 1, 0}, 5},
@@ -134,15 +129,27 @@ TEST(SparseRasters, Different_Sized_Rasters_Operatins) {
       {{3, 2, 0}, 5},
       {{3, 3, 0}, 5},
    });
-   SetBasicRasterProperties(b);
+   SetBasicRasterProperties(sparse_b);
+   KiLib::Rasters::Raster<double> b (sparse_b);
 
-   KiLib::Rasters::SparseRaster<double> c({4, 4, 1},
-   {
-      {{0, 0, 0}, 10},
-      {{0, 1, 0}, 10},
-      {{1, 0, 0}, 10},
-      {{1, 1, 0}, 10}
-   });
+   KiLib::Rasters::Raster<double> c(4, 4);
+   SetBasicRasterProperties(c);
+   c.set((size_t)0, 0, 10);
+   c.set((size_t)0, 1, 10);
+   c.set((size_t)0, 2, c.get_nodata_value());
+   c.set((size_t)0, 3, c.get_nodata_value());
+   c.set((size_t)1, 0, 10);
+   c.set((size_t)1, 1, 10);
+   c.set((size_t)1, 2, c.get_nodata_value());
+   c.set((size_t)1, 3, c.get_nodata_value());
+   c.set((size_t)2, 0, c.get_nodata_value());
+   c.set((size_t)2, 1, c.get_nodata_value());
+   c.set((size_t)2, 2, c.get_nodata_value());
+   c.set((size_t)2, 3, c.get_nodata_value());
+   c.set((size_t)3, 0, c.get_nodata_value());
+   c.set((size_t)3, 1, c.get_nodata_value());
+   c.set((size_t)3, 2, c.get_nodata_value());
+   c.set((size_t)3, 3, c.get_nodata_value());
 
    SetBasicRasterProperties(c);
 
@@ -159,7 +166,7 @@ TEST(SparseRasters, Different_Sized_Rasters_Operatins) {
 // Demonstrate some basic assertions.
 TEST(SparseRasters, Clamp) {
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 1}, 
+   KiLib::Rasters::SparseRaster<double> sparse_a({2, 2, 1}, 
    {
       {{0, 0, 0}, 1},
       {{0, 1, 0}, 1},
@@ -167,9 +174,10 @@ TEST(SparseRasters, Clamp) {
       {{1, 1, 0}, 1}
    });
 
-   SetBasicRasterProperties(a);
+   SetBasicRasterProperties(sparse_a);
+   KiLib::Rasters::Raster<double> a (sparse_a);
 
-   KiLib::Rasters::SparseRaster<double> b({2, 2, 1},
+   KiLib::Rasters::SparseRaster<double> sparse_b({2, 2, 1},
    {
       {{0, 0, 0}, 5},
       {{0, 1, 0}, 5},
@@ -178,7 +186,8 @@ TEST(SparseRasters, Clamp) {
    });
 
 
-   SetBasicRasterProperties(b);
+   SetBasicRasterProperties(sparse_b);
+   KiLib::Rasters::Raster<double> b (sparse_b);
 
    auto c = std::clamp(b, 0.0, 1.0);
 
@@ -190,7 +199,7 @@ TEST(SparseRasters, Clamp) {
 
 TEST(SparseRasters, Layers) {
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 2},
+   KiLib::Rasters::SparseRaster<double> sparse_a({2, 2, 2},
    {
       {{0, 0, 0}, 1},
       {{0, 0, 1}, 1},
@@ -201,9 +210,10 @@ TEST(SparseRasters, Layers) {
       {{1, 1, 0}, 1},
       {{1, 1, 1}, 1},
    });
-   SetBasicRasterProperties(a);
+   SetBasicRasterProperties(sparse_a);
+   KiLib::Rasters::Raster<double> a (sparse_a);
 
-   KiLib::Rasters::SparseRaster<double> b({2, 2, 2},
+   KiLib::Rasters::SparseRaster<double> sparse_b({2, 2, 2},
    {
       {{0, 0, 0}, 5},
       {{0, 0, 1}, 5},
@@ -215,7 +225,8 @@ TEST(SparseRasters, Layers) {
       {{1, 1, 1}, 5},
    });
 
-   SetBasicRasterProperties(b);
+   SetBasicRasterProperties(sparse_b);
+   KiLib::Rasters::Raster<double> b (sparse_b);
    //
    // Ensure equality works
    EXPECT_EQ(a, a);
@@ -230,7 +241,7 @@ TEST(SparseRasters, Layers) {
 TEST(SparseRasters, InitFromMap) {
 
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 2},
+   KiLib::Rasters::SparseRaster<double> sparse_a({2, 2, 2},
    {
       {{0, 0, 0}, 1},
       {{0, 0, 1}, 2},
@@ -241,6 +252,7 @@ TEST(SparseRasters, InitFromMap) {
       {{1, 1, 0}, 7},
       {{1, 1, 1}, 8},
    });
+   KiLib::Rasters::Raster<double> a (sparse_a);
 
    EXPECT_EQ(*(a.get((size_t)0,0,0).data), 1);
    EXPECT_EQ(*(a.get((size_t)0,0,1).data), 2);
@@ -256,7 +268,7 @@ TEST(SparseRasters, InitFromMap) {
 TEST(SparseRasters, Layers_Different_Sized_Rasters_Operations) {
 
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2, 2},
+   KiLib::Rasters::SparseRaster<double> sparse_a({2, 2, 2},
    {
       {{0, 0, 0}, 2},
       {{0, 0, 1}, 2},
@@ -269,9 +281,10 @@ TEST(SparseRasters, Layers_Different_Sized_Rasters_Operations) {
    });
 
 
-   SetBasicRasterProperties(a);
+   SetBasicRasterProperties(sparse_a);
+   KiLib::Rasters::Raster<double> a (sparse_a);
 
-   KiLib::Rasters::SparseRaster<double> b({4, 4, 2},
+   KiLib::Rasters::SparseRaster<double> sparse_b({4, 4, 2},
    {
       {{0, 0, 0},5},
       {{0, 1, 0},5},
@@ -306,20 +319,46 @@ TEST(SparseRasters, Layers_Different_Sized_Rasters_Operations) {
       {{3, 2, 1},5},
       {{3, 3, 1},5}
    });
-   SetBasicRasterProperties(b);
+   SetBasicRasterProperties(sparse_b);
+   KiLib::Rasters::Raster<double> b (sparse_b);
 
 
-   KiLib::Rasters::SparseRaster<double> c({4, 4, 2}, 
-   {
-      {{0, 0, 0}, 10},
-      {{0, 0, 1}, 10},
-      {{0, 1, 0}, 10},
-      {{0, 1, 1}, 10},
-      {{1, 0, 0}, 10},
-      {{1, 0, 1}, 10},
-      {{1, 1, 0}, 10},
-      {{1, 1, 1}, 10},
-   });
+
+   KiLib::Rasters::Raster<double> c( std::make_tuple(4,4,2));
+   SetBasicRasterProperties(c);
+   c.set((size_t)0, 0, 0, 10);
+   c.set((size_t)0, 1, 0, 10);
+   c.set((size_t)0, 2, 0, c.get_nodata_value());
+   c.set((size_t)0, 3, 0, c.get_nodata_value());
+   c.set((size_t)1, 0, 0, 10);
+   c.set((size_t)1, 1, 0, 10);
+   c.set((size_t)1, 2, 0, c.get_nodata_value());
+   c.set((size_t)1, 3, 0, c.get_nodata_value());
+   c.set((size_t)2, 0, 0, c.get_nodata_value());
+   c.set((size_t)2, 1, 0, c.get_nodata_value());
+   c.set((size_t)2, 2, 0, c.get_nodata_value());
+   c.set((size_t)2, 3, 0, c.get_nodata_value());
+   c.set((size_t)3, 0, 0, c.get_nodata_value());
+   c.set((size_t)3, 1, 0, c.get_nodata_value());
+   c.set((size_t)3, 2, 0, c.get_nodata_value());
+   c.set((size_t)3, 3, 0, c.get_nodata_value());
+   c.set((size_t)0, 0, 1, 10);
+   c.set((size_t)0, 1, 1, 10);
+   c.set((size_t)0, 2, 1, c.get_nodata_value());
+   c.set((size_t)0, 3, 1, c.get_nodata_value());
+   c.set((size_t)1, 0, 1, 10);
+   c.set((size_t)1, 1, 1, 10);
+   c.set((size_t)1, 2, 1, c.get_nodata_value());
+   c.set((size_t)1, 3, 1, c.get_nodata_value());
+   c.set((size_t)2, 0, 1, c.get_nodata_value());
+   c.set((size_t)2, 1, 1, c.get_nodata_value());
+   c.set((size_t)2, 2, 1, c.get_nodata_value());
+   c.set((size_t)2, 3, 1, c.get_nodata_value());
+   c.set((size_t)3, 0, 1, c.get_nodata_value());
+   c.set((size_t)3, 1, 1, c.get_nodata_value());
+   c.set((size_t)3, 2, 1, c.get_nodata_value());
+   c.set((size_t)3, 3, 1, c.get_nodata_value());
+
 
    SetBasicRasterProperties(c);
 
@@ -336,8 +375,9 @@ TEST(SparseRasters, Layers_Different_Sized_Rasters_Operations) {
 
 TEST(SparseRasters, Invalid_Index_set) {
 
-   KiLib::Rasters::SparseRaster<double> c({4, 4, 1}, 0);
-   SetBasicRasterProperties(c);
+   KiLib::Rasters::SparseRaster<double> sparse_c({4, 4, 1}, 0);
+   SetBasicRasterProperties(sparse_c);
+   KiLib::Rasters::Raster<double> c (sparse_c);
    EXPECT_ANY_THROW(c.set((size_t)3, 2, 1, c.get_nodata_value()));
 
 }
@@ -345,13 +385,14 @@ TEST(SparseRasters, Invalid_Index_set) {
 
 TEST(SparseRasters, Min_Max) {
 
-   KiLib::Rasters::SparseRaster<double> a({2, 2,1},
+   KiLib::Rasters::SparseRaster<double> sparse_a({2, 2,1},
    {
       {{ 0, 0, 0}, 44},
       {{ 0, 1, 0}, 93},
       {{ 1, 1, 0}, 42}
    });
-   SetBasicRasterProperties(a);
+   SetBasicRasterProperties(sparse_a);
+   KiLib::Rasters::Raster<double> a (sparse_a);
 
    EXPECT_EQ(std::min(a),42); 
    EXPECT_EQ(std::max(a),93); 
@@ -384,8 +425,6 @@ TEST(SparseRasters, CopyFromRaster) {
 
 
    KiLib::Rasters::SparseRaster<double> c(a);
-
-   Print(c);
 
    EXPECT_EQ(c, b);
 

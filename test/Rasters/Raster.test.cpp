@@ -321,7 +321,6 @@ TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
    const auto d = a * b;
    const auto e = b * a;
 
-   Print(e);
 
    EXPECT_EQ(e, c);
    EXPECT_EQ(d, c);

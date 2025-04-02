@@ -215,7 +215,8 @@ namespace KiLib::Rasters
                return (*ad).op_erfc();
                
             } else if ( this->get_type() == TYPE::SPARSE ) {
-               throw NotImplementedException("Sparse types for operands have not been created");
+               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)raster;
+               return (*ad).op_erfc();
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
@@ -228,7 +229,8 @@ namespace KiLib::Rasters
                KiLib::Rasters::DenseRaster<T>* ad = (KiLib::Rasters::DenseRaster<T>*)raster;
                return (*ad).op_ierfc();
             } else if ( this->get_type() == TYPE::SPARSE ) {
-               throw NotImplementedException("Sparse types for operands have not been created");
+               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)raster;
+               return (*ad).op_erfc();
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
@@ -323,7 +325,25 @@ namespace KiLib::Rasters
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
             } else if ( a.get_type() == TYPE::SPARSE ) {
-               throw NotImplementedException("Sparse types for operands have not been created");
+                // Cast to the sparse rasters so we can utilize the special methods there
+               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
+               KiLib::Rasters::SparseRaster<T>* bd = (KiLib::Rasters::SparseRaster<T>*)b.raster;
+
+               switch ( op )
+               {
+               case IRaster<T>::OPERAND::MULTIPLY:
+                  return *ad * *bd;
+               case IRaster<T>::OPERAND::DIVIDE:
+                  return *ad / *bd;
+                  break;
+               case IRaster<T>::OPERAND::PLUS:
+                  return *ad + *bd;
+                  break;
+               case IRaster<T>::OPERAND::MINUS:
+                  return *ad - *bd;
+               default:
+                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+               };
             }
             throw NotImplementedException("Other types for operands have not been created");
          }
@@ -436,7 +456,24 @@ namespace KiLib::Rasters
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
             } else if ( a.get_type() == TYPE::SPARSE ) {
-               throw NotImplementedException("Sparse types for operands have not been created");
+               // Cast to the sparse rasters so we can utilize the special methods there
+               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
+
+               switch ( op )
+               {
+               case IRaster<T>::OPERAND::MULTIPLY:
+                  return *ad * b;
+               case IRaster<T>::OPERAND::DIVIDE:
+                  return *ad / b;
+                  break;
+               case IRaster<T>::OPERAND::PLUS:
+                  return *ad + b;
+                  break;
+               case IRaster<T>::OPERAND::MINUS:
+                  return *ad - b;
+               default:
+                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+               };
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
@@ -464,7 +501,24 @@ namespace KiLib::Rasters
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
             } else if ( a.get_type() == TYPE::SPARSE ) {
-               throw NotImplementedException("Sparse types for operands have not been created");
+               // Cast to the sparse rasters so we can utilize the special methods there
+               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
+
+               switch ( op )
+               {
+               case IRaster<T>::OPERAND::MULTIPLY:
+                  return *ad * b;
+               case IRaster<T>::OPERAND::DIVIDE:
+                  return (*ad).op_divide(b) ;
+                  break;
+               case IRaster<T>::OPERAND::PLUS:
+                  return *ad + b;
+                  break;
+               case IRaster<T>::OPERAND::MINUS:
+                  return (*ad).op_minus(b);
+               default:
+                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+               };
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
