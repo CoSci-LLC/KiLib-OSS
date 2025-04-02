@@ -119,6 +119,22 @@ namespace KiLib::Rasters
          }
       }
 
+      void convert_type_to(Rasters::TYPE type) {
+         
+         if ( type == this->get_type()) return; // Nothing to due, it is already that type!
+      
+
+         else if (type == Rasters::TYPE::SPARSE && this->get_type() == Rasters::TYPE::DENSE ) {
+
+            auto* old = raster;
+            raster = new KiLib::Rasters::SparseRaster<T>( *raster, [](const auto& c) { return *(c.data); });
+            return; 
+
+         }
+         throw NotImplementedException("Other raster types not implemented for this constructor");
+
+      }
+
       // Move Operator
       Raster<T>& operator=(Raster<T>&& other) 
       {

@@ -9,7 +9,7 @@ namespace KiLib::Rasters {
 
    // Load data in Raster format from specified path
     template<typename T>
-   Raster<T> FromFile(const std::string &path, std::function<bool(T&, double, bool)> construct_val)
+   Raster<T> FromFile(const std::string &path, std::function<bool(T&, double, bool)> construct_val, bool sparse = false)
    {
       auto ext = std::filesystem::path(path).extension();
 
