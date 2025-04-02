@@ -5,9 +5,11 @@
  */
 
 #include <KiLib/Rasters/SparseRaster.hpp>
+#include <KiLib/Rasters/Raster.hpp>
 #include <cmath>
 #include <gtest/gtest.h>
 
+void SetBasicRasterProperties(KiLib::Rasters::Raster<double>&);
 
 void SetBasicRasterProperties(KiLib::Rasters::SparseRaster<double>& a) 
 {
@@ -362,3 +364,29 @@ TEST(SparseRasters, Min_Max) {
 }
 
 
+TEST(SparseRasters, CopyFromRaster) {
+
+   KiLib::Rasters::Raster<double> a(2, 2);
+   SetBasicRasterProperties(a);
+   a.set((size_t)0, 0, 1);
+   a.set((size_t)0, 1, 1);
+   a.set((size_t)1, 0, 1);
+   a.set((size_t)1, 1, 1); 
+
+   KiLib::Rasters::SparseRaster<double> b({2, 2, 1},
+   {
+      {{0, 0, 0}, 1},
+      {{0, 1, 0}, 1},
+      {{1, 0, 0}, 1},
+      {{1, 1, 0}, 1}
+   });
+   SetBasicRasterProperties(b);
+
+
+   KiLib::Rasters::SparseRaster<double> c(a);
+
+   Print(c);
+
+   EXPECT_EQ(c, b);
+
+}

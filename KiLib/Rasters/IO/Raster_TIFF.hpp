@@ -19,6 +19,7 @@
 
 
 #include <KiLib/Rasters/Raster.hpp>
+#include <KiLib/Rasters/MetadataRaster.hpp>
 #include <stdexcept>
 #include <tiffio.hxx>
 #include <optional>
@@ -92,6 +93,14 @@ static inline void _XTIFFInitialize(void)
 
 namespace KiLib::Rasters
 {
+   /**
+    * @brief Load a raster from a tiff file
+    * @param path path The path of the raster
+    * @param construct_val A callback to build the proper value before it is placed in the raster.
+    * @return A full raster with values from the TIFF file
+    * @deprecated since 7.0.0
+    * @see fromTIFF(...) for the more flexible replacement
+    */ 
    template<typename T>
    static KiLib::Rasters::Raster<T> fromTiff(const std::string &path, std::function<bool(T&, double, bool)> construct_val)
    {
@@ -423,5 +432,197 @@ namespace KiLib::Rasters
     };
 
 
+   
+   /**
+   * Load a TIFF File from filesystem
+   * 
+   * @param[in] path The location of the raster to load. There is no intelligence so be careful about relative vs absolute paths
+   * @param[in] set_val A callback function to set the value at i and j coordinates
+   * @param[in] metadata A reference to a Metadata Raster that will have the metadata set appropriately. This is necessary for rasters that need to be built before metadata can be applied. One such example is a SparseRaster.
+   */
+   static void fromTIFF(const std::string &path, std::function<void(size_t, size_t, double)> set_val, KiLib::Rasters::MetadataRaster<double>& metadata)
+   {
+      _XTIFFInitialize();
 
-} // namespace KiLib
+      TIFF *tiff = TIFFOpen(path.c_str(), "r");
+
+      if (tiff == NULL)
+      {
+         spdlog::error("Failed to open {} for reading", path);
+         exit(EXIT_FAILURE);
+      }
+
+      size_t   free_flag = 0;
+      uint16_t count     = 0;
+      uint32_t w         = 0;
+      uint32_t h         = 0;
+      double  *scaling   = nullptr;
+      double  *tiepoint  = nullptr;
+      char    *nodat     = nullptr;
+
+      size_t num_dir = 1;
+
+      while (TIFFReadDirectory(tiff))
+         num_dir++;
+
+      // The file is can to only contain one directory for now as multiple directories would correspond to multiple
+      // rasters
+      if (num_dir > 1)
+      {
+         spdlog::error("Multi-raster images are not supported as of yet.");
+         exit(EXIT_FAILURE);
+      }
+
+      // Retrieve the width and height of the image. Fail if either can't be retrieved.
+      if (!(TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &w) && TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h)))
+      {
+         spdlog::error("Failed to read image width or image height.");
+         exit(EXIT_FAILURE);
+      }
+
+      if (!TIFFGetField(tiff, GEOTIFFTAG_MODELPIXELSCALE, &count, &scaling))
+      {
+         spdlog::trace("Failed to find pixel scaling. Assuming 1:1");
+         scaling = new double[2]{1, 1};
+         free_flag |= 1;
+      }
+
+      if (!TIFFGetField(tiff, GEOTIFFTAG_MODELTIEPOINT, &count, &tiepoint))
+      {
+         spdlog::trace("Failed to find model tiepoint. Assuming 0, 0");
+         tiepoint = new double[6]{0};
+         free_flag |= 2;
+      }
+
+      if (!TIFFGetField(tiff, GEOTIFFTAG_NODATAVALUE, &nodat))
+      {
+         spdlog::trace("Failed to find nodata value. Assuming -9999");
+         nodat = new char[7]{'-', '9', '9', '9', '9', '\n'};
+         free_flag |= 4;
+      }
+
+      const size_t nRows = h;
+      const size_t nCols = w;
+
+      metadata.set_width( nCols * scaling[0] );
+      metadata.set_height( nRows * scaling[1] );
+      metadata.set_xllcorner( tiepoint[3] );
+      metadata.set_yllcorner( tiepoint[4] - (nRows * scaling[1]) );
+      metadata.set_cellsize( scaling[0] );
+      metadata.set_nodata_value ( std::stod(nodat) );
+      metadata.set_name(path);
+
+
+      // There is a piece of software out there that doesn't do the nodata_value correctly. This is here to fix that:
+      if ( metadata.get_nodata_value() == 3.40282346600000016e+38) {
+         metadata.set_nodata_value(3.4028234663852886e+38);
+      }
+
+
+      if (TIFFIsTiled(tiff))
+      {
+         throw NotImplementedException("There is no support for tiled images yet.");
+      }
+      else
+      {
+         uint16_t bps = 1;
+
+         // Format is currently undefined: https://www.awaresystems.be/imaging/tiff/tifftags/sampleformat.html
+         uint16_t format = 4;
+
+         // The number of bytes a strip occupies
+         uint64_t sls = TIFFScanlineSize64(tiff);
+
+         TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bps);
+         TIFFGetField(tiff, TIFFTAG_SAMPLEFORMAT, &format);
+
+         tdata_t buf = _TIFFmalloc((signed int)sls);
+         for (size_t row = 0; row < nRows; row++)
+         {
+
+            if (TIFFReadScanline(tiff, buf, row) == -1)
+            {
+               throw std::invalid_argument("Error when reading scanline");
+            }
+
+            for (size_t col = 0; col < nCols; col++)
+            {
+               double val = 0;
+
+               switch (format)
+               {
+               case 1:
+                  if (bps == 8)
+                     val = (double)((uint8_t *)buf)[col];
+                  else if (bps == 16)
+                     val = (double)((uint16_t *)buf)[col];
+                  else if (bps == 32)
+                     val = (double)((uint32_t *)buf)[col];
+                  else
+                     val = (double)((uint64_t *)buf)[col];
+                  break;
+               case 2:
+                  if (bps == 8)
+                     val = (double)((int8_t *)buf)[col];
+                  else if (bps == 16)
+                     val = (double)((int16_t *)buf)[col];
+                  else if (bps == 32)
+                     val = (double)((int32_t *)buf)[col];
+                  else
+                     val = (double)((int64_t *)buf)[col];
+                  break;
+               case 3:
+                  if (bps == 32)
+                     val = (double)((float *)buf)[col];
+                  else
+                     val = ((double *)buf)[col];
+                  break;
+               default:
+                  throw std::invalid_argument("Unknown data format.");
+               }
+               
+               // Use callback to let the user decided how to place this value. Let's
+               // only use this when we have a true value, but if we detect there is 
+               // a nodata val, we will just skip it. By default, the rasters should
+               // init everything to the nodata value
+               if ( val != metadata.get_nodata_value())
+                  set_val(nRows - row - 1, col, val);
+            }
+         }
+         _TIFFfree(buf);
+      }
+
+      // Remember to free necessary variables
+      if (free_flag & 1)
+         delete scaling;
+
+      // Remember to free necessary variables
+      if (free_flag & 2)
+         delete tiepoint;
+
+      // Remember to free necessary variables
+      if (free_flag & 4)
+         delete nodat;
+
+      TIFFClose(tiff);
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+} // namespace KiLib::Rasters

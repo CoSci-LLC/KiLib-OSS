@@ -4,15 +4,32 @@
 #include <algorithm>
 #include <memory>
 #include <stdexcept>
+
 #include <iostream>
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Rasters/Cell.hpp>
 #include <functional>
 #include <iterator>
+#include <valarray>
+
+
+
+namespace std { 
+   template <class T> std::valarray<T> erfc( const std::valarray<T>& a) {
+      return a.apply([](T n) -> T { return std::erfc(n); });
+   }
+}
+
 
 namespace KiLib::Rasters
 {
-
+    
+    enum class TYPE {
+        INVALID,
+        DENSE,
+        SPARSE
+    };
+    
     template<typename T>
     class IRaster
     {
@@ -26,17 +43,10 @@ namespace KiLib::Rasters
 
         IRaster() {}
         IRaster(const IRaster<T>& other) {
-            this->set_xllcorner(other.get_xllcorner());
-            this->set_yllcorner(other.get_yllcorner());
-            this->set_cellsize(other.get_cellsize());
-            this->set_nodata_value(other.get_nodata_value());
-            this->set_width(other.get_width());
-            this->set_height(other.get_height());
             this->rows = other.get_rows();
             this->cols = other.get_cols();
             this->zindex = other.get_zindex();
-            
-
+            this->copy_metadata_from(other);
         }
         IRaster(size_t rows, size_t cols, size_t zindex): rows(rows), cols(cols), zindex(zindex) {}
         virtual ~IRaster() {}
@@ -44,8 +54,8 @@ namespace KiLib::Rasters
         
         virtual Cell<T> get(double x, double y, size_t z = 0) const {
 
-            double rF = (y - this->yllcorner) / this->cellsize;
-            double cF = (x - this->xllcorner) / this->cellsize;
+            double rF = (y - this->get_yllcorner()) / this->get_cellsize();
+            double cF = (x - this->get_xllcorner()) / this->get_cellsize();
 
             //size_t r = std::clamp<size_t>((size_t)std::floor(rF), 0UL, this->get_rows() - 1);
             //size_t c = std::clamp<size_t>((size_t)std::floor(cF), 0UL, this->get_cols() - 1);
@@ -53,15 +63,28 @@ namespace KiLib::Rasters
             return get((size_t)rF, (size_t)cF, z);
         }
 
-        virtual Cell<T> get(size_t i, size_t j, size_t k) const = 0;
+        virtual TYPE get_type() const { return TYPE::INVALID; }
+            
+        void copy_metadata_from(const IRaster<T>& other) {
+
+            this->set_xllcorner(other.get_xllcorner());
+            this->set_yllcorner(other.get_yllcorner());
+            this->set_cellsize(other.get_cellsize());
+            this->set_nodata_value(other.get_nodata_value());
+            this->set_width(other.get_width());
+            this->set_height(other.get_height());
+            this->set_name(other.get_name());
+        }
+
+        virtual Cell<T> get(size_t,  size_t , size_t ) const  = 0;
        
         virtual void set(double x, double y, const T& value) {
             set(x,y,0, value);
         }
 
         virtual void set(double x, double y, size_t z, const T& value) {
-            double rF = (y - this->yllcorner) / this->cellsize;
-            double cF = (x - this->xllcorner) / this->cellsize;
+            double rF = (y - this->get_yllcorner()) / this->get_cellsize();
+            double cF = (x - this->get_xllcorner()) / this->get_cellsize();
 
             if (rF > this->get_rows() || rF < 0 || cF > this->get_cols() || cF < 0) throw std::invalid_argument("Invalid x,y given to raster. Out of bounds");
             
@@ -71,7 +94,7 @@ namespace KiLib::Rasters
             set((size_t)rF, (size_t)cF, z, value);
         }
 
-        virtual void set(size_t i, size_t j, size_t k, const T& value) = 0;
+        virtual void set(size_t , size_t, size_t, const T&)  = 0;
         virtual void set(size_t i, size_t j, const T& value) {
 
             set(i,j,0, value);
@@ -81,6 +104,16 @@ namespace KiLib::Rasters
         virtual size_t getNRows() const
         {
             return rows;
+        }
+
+        virtual size_t get_valid_cell_count() const 
+        {
+            size_t count = 0;
+            for ( auto it = (*this).begin(); it != (*this).end(); ++it) {
+                if ( !(&it).is_nodata )
+                    count++;
+            }
+            return count++;
         }
         
 
@@ -127,7 +160,7 @@ namespace KiLib::Rasters
         {
             return this->xllcorner;
         }
-    virtual void set_xllcorner(double val) { this->xllcorner = val; }
+        virtual void set_xllcorner(double val) { this->xllcorner = val; }
         virtual double get_yllcorner() const
         {
             return this->yllcorner;
@@ -153,7 +186,7 @@ namespace KiLib::Rasters
             return this->nodata_value;
         }
 
-    virtual void set_nodata_value(double val) { this->nodata_value = val; }
+        virtual void set_nodata_value(double val) { this->nodata_value = val; }
         virtual size_t get_rows() const
         {
             return this->rows;
@@ -169,11 +202,15 @@ namespace KiLib::Rasters
             return this->zindex;
         }
 
-        virtual size_t get_ndata() const = 0;
+        virtual size_t get_ndata() const = 0 ;
 
         virtual inline size_t flatten_index(size_t i, size_t j, size_t k) const
         {
-            return (this->rows * this->cols * k) + (this->cols * i) + j;
+            return (this->get_rows() * this->get_cols() * k) + (this->get_cols() * i) + j;
+        }
+
+        virtual std::string to_string() const {
+            return "KiLib Raster [" + std::to_string(get_rows()) + " x " + std::to_string(get_cols()) + "]";
         }
 
         virtual std::tuple<size_t, size_t, size_t> ind2sub(size_t idx) const 
@@ -187,7 +224,40 @@ namespace KiLib::Rasters
         }
 
 
+        virtual T min() const {
+            T m = std::numeric_limits<T>::max();
+            for ( auto cell : *this ) {
+                    m = std::min(m, *(cell.data));
+            } 
+            return m;
+        }
 
+        virtual T max() const {
+            T m = std::numeric_limits<T>::min();
+            for ( auto cell : *this ) {
+                    m = std::max(m, *(cell.data));
+            } 
+            return m;
+        }
+
+
+        virtual void clamp(const T& lo, const T& hi) {
+/*   auto in = (std::valarray<T>)a;
+      std::transform(std::begin(in), std::end(in), std::begin(in), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
+      KiLib::Rasters::Raster<T> out( a, in );
+      return out;*/
+            for ( size_t idx = 0; idx < this->get_ndata(); idx++ ) {
+                size_t i,j,k;
+                auto r = this->ind2sub(idx);
+                i = std::get<0>(r);
+                j = std::get<1>(r);
+                k = std::get<2>(r);
+                if ( this->is_valid_cell(i, j, k) ) {
+                    this->set(i,j,k, std::clamp(get_data(i,j,k), lo, hi));
+                }
+            } 
+
+        }
 
    class RasterIterator
    {
@@ -196,14 +266,38 @@ namespace KiLib::Rasters
       using value_type        = T; // Typically will be doubles
       using difference_type   = double;
       using pointer           = const T*;
-      using reference         = T;
+      using reference         = Rasters::Cell<T>;
 
       RasterIterator( KiLib::Rasters::IRaster<T>* ptr, size_t idx = 0 ) : raster( ptr ), idx(idx)
       {
+            auto r = raster->ind2sub(this->idx);
+            size_t i = std::get<0>(r);
+            size_t j = std::get<1>(r);
+            size_t k = std::get<2>(r);
+            
+            while ( ! raster->is_valid_cell( i, j, k) && (this->idx < (raster->get_ndata()))) {
+                this->idx++;
+                r = raster->ind2sub(this->idx);
+                i = std::get<0>(r);
+                j = std::get<1>(r);
+                k = std::get<2>(r);
+            }
       }
 
       RasterIterator( const KiLib::Rasters::IRaster<T>* ptr, size_t idx = 0 ) : raster( ptr ), idx(idx)
       {
+            auto r = raster->ind2sub(this->idx);
+            size_t i = std::get<0>(r);
+            size_t j = std::get<1>(r);
+            size_t k = std::get<2>(r);
+            
+            while ( ! raster->is_valid_cell( i, j, k) && (this->idx < (raster->get_ndata()))) {
+                this->idx++;
+                r = raster->ind2sub(this->idx);
+                i = std::get<0>(r);
+                j = std::get<1>(r);
+                k = std::get<2>(r);
+            }
       }
 
       reference operator*() const
@@ -214,7 +308,7 @@ namespace KiLib::Rasters
                 i = std::get<0>(r);
                 j = std::get<1>(r);
                 k = std::get<2>(r);
-         return *(raster->get( i, j, k).data);
+         return raster->get( i, j, k);
       }
 
       Cell<T> operator&() const {
@@ -233,11 +327,11 @@ namespace KiLib::Rasters
             size_t i,j,k;
          do
          {
-                if (idx > raster->get_ndata() - 1) break;
+                if (this->idx > raster->get_ndata() - 1) break;
 
-                idx++;
+                this->idx++;
 
-                auto r = raster->ind2sub(idx);
+                auto r = raster->ind2sub(this->idx);
                 i = std::get<0>(r);
                 j = std::get<1>(r);
                 k = std::get<2>(r);
@@ -272,8 +366,8 @@ namespace KiLib::Rasters
         virtual RasterIterator end()  { return RasterIterator(this, this->get_ndata()); }
         virtual RasterIterator end() const  { return RasterIterator(this, this->get_ndata()); }
 
-
-
+        virtual bool is_valid_cell(size_t , size_t , size_t ) const = 0;
+        virtual T get_data(size_t , size_t , size_t ) const  =0;
 
 
     protected:
@@ -285,28 +379,14 @@ namespace KiLib::Rasters
         double height;       // [m] Height in Y
         double nodata_value; // Value associated with no data from DEM
         std::string name = "(No name)";
-
-    private: 
-        virtual bool is_valid_cell(size_t i, size_t j, size_t k) const = 0;
-        virtual T get_data(size_t i, size_t j, size_t k) const = 0;
-    };
-
-
-    template<typename T>
-    class IDirectAccessRaster : virtual public IRaster<T> {
-
-    public:
-        virtual const T* GetUnderlyingDataArray() const = 0;
+      enum class OPERAND
+      {
+         MULTIPLY = 0,
+         DIVIDE,
+         PLUS,
+         MINUS
+      };
 
     };
-
-
-    template<typename T>
-    class IValArrayRaster : virtual public IRaster<T> {
-
-    public:
-        virtual const std::valarray<T>& get_valarray() const = 0;
-
-    };
-
 }
+

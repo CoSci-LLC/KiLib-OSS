@@ -16,70 +16,77 @@
 
 namespace KiLib::Rasters
 {
-   template <typename T> class SparseRaster : public IValArrayRaster<T>
+
+   template<typename T> class Raster;
+
+   template <typename T> class SparseRaster : public IRaster<T>
    {
    public:
       SparseRaster()
       {
       }
-      /*
-          SparseRaster(const KiLib::Raster& from_raster, double threshold, T default_value, std::function<void(T& obj,
-         double value)> set_cell) : rows(from_raster.nRows), cols(from_raster.nCols)
+      
+       SparseRaster(const KiLib::Rasters::Raster<T>& from_raster)  
           {
-              // get NNZ
-              SparseRaster::nnz = 0;
-              for (size_t row = 0; row < from_raster.nRows; row++)
+              nnz = 0;
+              for (size_t row = 0; row < from_raster.get_rows(); row++)
               {
-                  for (size_t col = 0; col < from_raster.nCols; col++)
+                  for (size_t col = 0; col < from_raster.get_cols(); col++)
                   {
-                      if (from_raster.at(row, col) > threshold)
+                      if (!from_raster.at(row, col).is_nodata)
                       {
                           nnz++; // get a total amount of cells we will be processing
                       }
                   }
               }
 
-              this->V = new T[nnz];
-              std::fill_n(V, nnz, default_value);
-
-              this->COL_INDEX = new size_t[nnz];
-              this->ROW_INDEX = new size_t[rows + 1];
-              this->default_value = default_value;
+              V.resize(nnz);
+             COL_INDEX.resize(nnz);
+             Z_INDEX.resize(nnz);
+             ROW_INDEX.resize(from_raster.get_rows() + 1);
 
               // import nnz values into the new system
               size_t row_index = 0;
               size_t v_index = 0;
 
-              for (size_t row = 0; row < from_raster.nRows; row++)
+              for (size_t row = 0; row < from_raster.get_rows(); row++)
               {
                   ROW_INDEX[row_index] = v_index;
-                  for (size_t col = 0; col < from_raster.nCols; col++)
+                  for (size_t col = 0; col < from_raster.get_cols(); col++)
                   {
-                      if (from_raster.at(row, col) > threshold)
-                      {
-                          // Put value into the value array
-                          set_cell(V[v_index], from_raster.at(row,col));
 
-                          //Link col_index to V
-                          COL_INDEX[v_index] = col;
+                     for (size_t z = 0; z < from_raster.get_zindex(); z++) {
+
+                        if ( ! from_raster.get( row, col, z).is_nodata ) {
+                           V[v_index] = *(from_raster.get(row,col,z).data);
+
+                           //Link col_index to V
+                           this->COL_INDEX[v_index] = col;
+
+                           // Link z_index to V
+                           Z_INDEX[v_index] = z;
 
                           // increase the next index
                           v_index++;
-                      }
+                        }
+                     }
+
                   }
+
                   row_index++;
               }
 
               ROW_INDEX[row_index] = v_index;
 
-              this->xllcorner = from_raster.xllcorner;
-              this->yllcorner = from_raster.yllcorner;
-              this->cellsize = from_raster.cellsize;
-              this->width = from_raster.width;
-              this->height = from_raster.height;
-              this->nodata_value = from_raster.nodata_value;
+
+
+            this->copy_metadata_from(from_raster);
+            this->rows = from_raster.get_rows();
+            this->cols = from_raster.get_cols();
+            this->zindex = from_raster.get_zindex();
+
+
           }
-  */
 
       SparseRaster( const std::tuple<size_t, size_t, size_t>& dims, const std::map<std::tuple<size_t, size_t, size_t>, double>& values ) : nnz( values.size() ), V(nnz), COL_INDEX(nnz), ROW_INDEX(std::get<0>(dims) + 1), Z_INDEX(nnz)
       {
@@ -197,8 +204,6 @@ namespace KiLib::Rasters
       {
       }
 
-     const std::valarray<T>& get_valarray() const override { return V; }
-
       using IRaster<T>::get;
       KiLib::Rasters::Cell<T> get( size_t i, size_t j, size_t k = 0 ) const override
       {
@@ -233,7 +238,7 @@ namespace KiLib::Rasters
          return this->nnz;
       }
 
-      T min() const {
+      T min() const override {
          T m = std::numeric_limits<double>::max();
          for( size_t i = 0; i < nnz; i++ ) {
                m = std::min(m, V[i]);
@@ -241,7 +246,7 @@ namespace KiLib::Rasters
          return m;
       }
 
-      T max() const {
+      T max() const override {
          T m = std::numeric_limits<double>::min();
          for( size_t i = 0; i < nnz; i++ ) {
                m = std::max(m, V[i]);
@@ -261,7 +266,7 @@ namespace KiLib::Rasters
 
     }
 
-template <typename C> SparseRaster<T> operator*(C k ) const
+template <typename C> SparseRaster<T> operator*(const C k ) const  
 {
     KiLib::Rasters::SparseRaster<T> out(*this, V * k);
    return out;
@@ -269,7 +274,7 @@ template <typename C> SparseRaster<T> operator*(C k ) const
 
 
 
-    SparseRaster<T> operator*( const SparseRaster<T>& b) const
+    SparseRaster<T> operator*( const SparseRaster<T>& b) const 
     {
     if ( ! can_perform_operation(b) ) {
          return ApplyOperator(*this, b, OPERAND::MULTIPLY);
@@ -278,6 +283,8 @@ template <typename C> SparseRaster<T> operator*(C k ) const
     out.set_name(this->get_name() + " * " + b.get_name());
    return out;
     }
+
+
 
 template <typename C> KiLib::Rasters::SparseRaster<T> operator/(const C k ) const
 {

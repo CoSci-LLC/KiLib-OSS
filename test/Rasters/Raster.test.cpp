@@ -74,7 +74,7 @@ TEST(Rasters, Basic_Operations) {
    
    EXPECT_EQ(1 / a, a);
 
-   KiLib::Rasters::Raster<double> b_div_result(2,2, 0.2);
+   KiLib::Rasters::Raster<double> b_div_result( {2,2, 1}, 0.2);
    SetBasicRasterProperties(b_div_result);
    EXPECT_EQ(1 / b, b_div_result);
 
@@ -99,6 +99,7 @@ TEST(Rasters, Basic_Operations) {
    d.set((size_t)1, 0, 4);
    d.set((size_t)1, 1, 4);
 
+   EXPECT_EQ(b - 1, d);
    EXPECT_EQ(b - a, d);
    EXPECT_NE(a - b, d); // MAke sure the order does matter
    
@@ -163,6 +164,7 @@ TEST(Rasters, Different_Sized_Rasters_Operatins) {
 
    const auto d = a * b;
    const auto e = b * a;
+
 
    EXPECT_EQ(e, c);
    EXPECT_EQ(d, c);
@@ -319,6 +321,8 @@ TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
    const auto d = a * b;
    const auto e = b * a;
 
+   Print(e);
+
    EXPECT_EQ(e, c);
    EXPECT_EQ(d, c);
    EXPECT_EQ(b * a, a * b);
@@ -361,7 +365,7 @@ TEST(Rasters, Min_Max) {
 
 TEST(Rasters, Init_Values) {
 
-   KiLib::Rasters::Raster<double> a(2, 2, 5);
+   KiLib::Rasters::Raster<double> a({2, 2,1}, 5);
    SetBasicRasterProperties(a);
  
    KiLib::Rasters::Raster<double> b(2, 2);
@@ -409,10 +413,10 @@ TEST(Rasters, erfc) {
 
 TEST(Rasters, ierfc) {
 
-   KiLib::Rasters::Raster<double> a(2, 2, 0);
+   KiLib::Rasters::Raster<double> a( {2, 2, 1}, 0);
    SetBasicRasterProperties(a);
 
-   KiLib::Rasters::Raster<double> b(2, 2, 0.56418958354775628);
+   KiLib::Rasters::Raster<double> b( {2, 2, 1}, 0.56418958354775628);
    SetBasicRasterProperties(b);
 
    auto c = std::ierfc(a);
