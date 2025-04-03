@@ -25,7 +25,31 @@ namespace KiLib::Rasters
       SparseRaster()
       {
       }
-      
+
+
+
+      SparseRaster(const KiLib::Rasters::SparseRaster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)
+          {
+             COL_INDEX = from_raster.COL_INDEX;
+             Z_INDEX = from_raster.Z_INDEX;
+            ROW_INDEX = from_raster.ROW_INDEX;
+              V.resize(from_raster.get_ndata());
+            for ( size_t idx = 0; idx < from_raster.get_ndata(); idx++) {
+               V[idx] = get_val( Cell<T>(from_raster, ROW_INDEX[idx], COL_INDEX[idx], from_raster.V[idx]));
+            }
+
+            this->copy_metadata_from(from_raster);
+            this->rows = from_raster.get_rows();
+            this->cols = from_raster.get_cols();
+            this->zindex = from_raster.get_zindex();
+            this->nnz = from_raster.get_ndata();
+
+          }
+
+
+
+
+
        SparseRaster(const KiLib::Rasters::Raster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)
           {
               nnz = 0;
@@ -374,11 +398,10 @@ SparseRaster<T> operator-(const SparseRaster<T>& b )
          if ( this == &other ) return true;
 
          // Check each property
-         if ( this->get_xllcorner() != other.get_xllcorner() ) return false;
-         if ( this->get_yllcorner() != other.get_yllcorner() ) return false;
+         //if ( this->get_xllcorner() != other.get_xllcorner() ) return false;
+         //if ( this->get_yllcorner() != other.get_yllcorner() ) return false;
          if ( this->get_height() != other.get_height() ) return false;
          if ( this->get_width() != other.get_width() ) return false;
-         if ( this->get_nodata_value() != other.get_nodata_value() ) return false;
          if ( this->get_cellsize() != other.get_cellsize() ) return false;
          if ( this->get_rows() != other.get_rows() ) return false;
          if ( this->get_cols() != other.get_cols() ) return false;

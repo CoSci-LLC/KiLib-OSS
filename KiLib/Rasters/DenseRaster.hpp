@@ -7,7 +7,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
-#include <sstream>
+
 #include <stddef.h>
 #include <stdexcept>
 #include <tuple>
@@ -86,15 +86,6 @@ namespace KiLib::Rasters
       size_t get_valid_cell_count() const override {
          return std::count(nodata_mask.begin(), nodata_mask.end(), false);
       }
-
-      std::string to_string() const override {
-         std::stringstream ss; 
-         
-         ss << fmt::format( "Raster {}\n", this->name);
-         ss << fmt::format( "  {} valid cells out of {} ({:.2f}% valid)\n", get_valid_cell_count(), this->nnz, 100.0 * get_valid_cell_count() / this->nnz);
-
-         return ss.str();
-      }    
 
       using IRaster<T>::set;
       void set( size_t i, size_t j, size_t k, const T& value ) override

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <memory>
 #include <stdexcept>
+#include <sstream>
 
 #include <iostream>
 #include <KiLib/Exceptions/NotImplemented.hpp>
@@ -210,7 +211,12 @@ namespace KiLib::Rasters
         }
 
         virtual std::string to_string() const {
-            return "KiLib Raster [" + std::to_string(get_rows()) + " x " + std::to_string(get_cols()) + "]";
+         std::stringstream ss; 
+         
+         ss << fmt::format( "Raster {} [{} x {}]\n", this->name, get_rows(), get_cols());
+         ss << fmt::format( "  {} valid cells out of {} ({:.2f}% valid)\n", get_valid_cell_count(), this->get_ndata(), 100.0 * get_valid_cell_count() / this->get_ndata());
+
+         return ss.str();
         }
 
         virtual std::tuple<size_t, size_t, size_t> ind2sub(size_t idx) const 

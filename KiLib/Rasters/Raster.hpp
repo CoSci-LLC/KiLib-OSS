@@ -112,7 +112,7 @@ namespace KiLib::Rasters
                raster = new KiLib::Rasters::DenseRaster<T>( std::make_tuple( other.get_rows(), other.get_cols(), other.get_zindex() ), init_val );
                break;
             case Rasters::TYPE::SPARSE:
-               raster = new KiLib::Rasters::SparseRaster<T>(other, [init_val](const auto&) { return init_val; });
+               raster = new KiLib::Rasters::SparseRaster<T>( *((KiLib::Rasters::SparseRaster<T>*)other.raster), [init_val](const auto&) { return init_val; });
                break;
             default:
                throw NotImplementedException("Other raster types not implemented for this constructor");
@@ -429,24 +429,19 @@ namespace KiLib::Rasters
                swapped = true;
             }
 
-         Raster<T> out( std::make_tuple( op1->get_rows(), op1->get_cols(), op1->get_zindex() ));
+         Raster<T> out( *op1 ); // std::make_tuple( op1->get_rows(), op1->get_cols(), op1->get_zindex() ));
 
             out.copy_metadata_from(*op1);
 
             // Need to loop through each cell in the larger raster->
-            for ( size_t r = 0; r < op1->get_rows(); r++ )
+            for ( auto it = op1->begin(); it != op1->end(); ++it) 
             {
-               for ( size_t c = 0; c < op1->get_cols(); c++ )
-               {
+               size_t r = (&it).i();
+               size_t c = (&it).j();
+
                   for ( size_t zindex = 0; zindex < op1->get_zindex(); zindex++) {
 
-                     const auto& cell_a = op1->get( r, c, zindex);
-
-                     if ( cell_a.is_nodata || std::isnan( *( cell_a.data ) ) || std::isinf( *( cell_a.data ) ) )
-                     {
-                        out.set( r, c, zindex, out.get_nodata_value() );
-                        continue;
-                     }
+                     const auto& cell_a = &(it);
 
                      // Use the x,y,z coordinates to get the proper cell.
                      const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
@@ -493,7 +488,6 @@ namespace KiLib::Rasters
 
                      out.set( r, c, zindex, val );
                   }
-               }
             }
 
             return out;
