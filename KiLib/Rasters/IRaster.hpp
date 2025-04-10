@@ -250,7 +250,8 @@ namespace KiLib::Rasters
 
 
         virtual void apply( std::function<T(T)> f) {
-            for ( size_t idx = 0; idx < this->get_ndata(); idx++ ) {
+            size_t total = this->get_rows() * this->get_cols();
+            for ( size_t idx = 0; idx < total; idx++ ) {
                 size_t i,j,k;
                 auto r = this->ind2sub(idx);
                 i = std::get<0>(r);
@@ -266,7 +267,8 @@ namespace KiLib::Rasters
 
 
         virtual void clamp(const T& lo, const T& hi) {
-            for ( size_t idx = 0; idx < this->get_ndata(); idx++ ) {
+            size_t total = this->get_rows() * this->get_cols();
+            for ( size_t idx = 0; idx < total; idx++ ) {
                 size_t i,j,k;
                 auto r = this->ind2sub(idx);
                 i = std::get<0>(r);

@@ -48,8 +48,17 @@ TEST(Rasters, CopyOperator) {
    auto b = a;
 
    EXPECT_EQ(a, b);
+}
 
 
+TEST(Rasters, atan) {
+   KiLib::Rasters::Raster<double> a(1,1);
+   a.set((size_t)0,0, 0, -5);
+
+   auto b = std::atan(a);
+
+   EXPECT_EQ(*(b.get((size_t)0,0,0).data), std::atan(-5.0));
+//   std::cerr << "std::atan(-5.0) == " << std::atan(-5.0) << std::endl;
 }
 
 

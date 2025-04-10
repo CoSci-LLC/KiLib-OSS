@@ -163,6 +163,32 @@ TEST(SparseRasters, Different_Sized_Rasters_Operatins) {
 }
 
 
+/**
+* We ran into an issue where we used ndata instead of
+* the rows x columns, and thus the apply functions
+* were not processing all of the data. This specifically
+* tests for that regression now
+*/
+TEST(SparseRasters, atan) {
+
+   KiLib::Rasters::SparseRaster<double> sparse_a({2, 2, 1},
+   {
+      {{1, 0, 0}, 5},
+      {{1, 1, 0}, 5}
+   });
+   SetBasicRasterProperties(sparse_a);
+   
+   KiLib::Rasters::Raster<double> a(sparse_a);
+
+   EXPECT_NE(*(a.get((size_t)1,1,0).data), std::atan(5));
+
+   a.atan();
+
+   EXPECT_EQ(*(a.get((size_t)1,1,0).data), std::atan(5));
+}
+ 
+
+
 // Demonstrate some basic assertions.
 TEST(SparseRasters, Clamp) {
 
