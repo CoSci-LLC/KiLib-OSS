@@ -16,7 +16,6 @@
 #include <stdexcept>
 #include <tuple>
 #include <valarray>
-#include <ranges>
 
 namespace KiLib::Rasters
 {
