@@ -179,11 +179,6 @@ namespace KiLib::Rasters
 
       double cellsize = x2 - x1;
 
-
-      // Adjust the yllcorner and xllcorner since the NetCDF goes by center of the cell
-      yllcorner = yllcorner - cellsize / 2;
-      xllcorner = xllcorner - cellsize / 2;
-
       raster.set_yllcorner( yllcorner );
       raster.set_xllcorner( xllcorner );
       raster.set_nodata_value( -9999 );
