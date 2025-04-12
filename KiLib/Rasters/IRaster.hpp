@@ -248,7 +248,6 @@ namespace KiLib::Rasters
             return m;
         }
 
-
         virtual void apply( std::function<T(T)> f) {
             size_t total = this->get_rows() * this->get_cols();
             for ( size_t idx = 0; idx < total; idx++ ) {
@@ -406,7 +405,9 @@ namespace KiLib::Rasters
          MULTIPLY = 0,
          DIVIDE,
          PLUS,
-         MINUS
+         MINUS,
+         MAX,
+         MIN
       };
 
     };

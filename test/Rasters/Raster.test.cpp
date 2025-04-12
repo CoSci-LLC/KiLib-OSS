@@ -380,6 +380,39 @@ TEST(Rasters, Min_Max) {
    EXPECT_EQ(std::max(a),93); 
 
 
+
+   KiLib::Rasters::Raster<double> b(2, 2);
+   SetBasicRasterProperties(b);
+   b.set((size_t)0, 0, 44);
+   b.set((size_t)0, 1, 92);
+   // Missing one on purpose
+   b.set((size_t)1, 1, 48);
+
+
+
+
+   KiLib::Rasters::Raster<double> max(2, 2);
+   SetBasicRasterProperties(max);
+   max.set((size_t)0, 0, 44);
+   max.set((size_t)0, 1, 93);
+   // Missing one on purpose
+   max.set((size_t)1, 1, 48);
+
+   EXPECT_EQ(std::max(a,b), max);
+
+
+
+
+   KiLib::Rasters::Raster<double> min(2, 2);
+   SetBasicRasterProperties(min);
+   min.set((size_t)0, 0, 44);
+   min.set((size_t)0, 1, 92);
+   // Missing one on purpose
+   min.set((size_t)1, 1, 42);
+
+   EXPECT_EQ(std::min(a,b), min);
+   Print(std::min(a,b));
+
    // Test with INF in the data
 //   a.set((size_t)1, 0, INFINITY);
 //   EXPECT_EQ(std::min(a),42); 

@@ -355,6 +355,7 @@ namespace KiLib::Rasters
          return raster->max();
       }
 
+      
    private:
       IRaster<T>* raster;
       
@@ -633,6 +634,53 @@ namespace std
    {
       return a.max();
    }
+
+
+   template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& a, const KiLib::Rasters::Raster<T>& b)
+   {
+      KiLib::Rasters::Raster<T> out(a);
+      for ( auto it = out.begin(); it != out.end(); ++it) 
+      {
+         size_t r = (&it).i();
+         size_t c = (&it).j();
+
+         // Check if b is a no data cell
+         for ( size_t zindex = 0; zindex < out.get_zindex(); zindex++) {
+            auto cell_b = b.get(r,c, zindex);
+            
+            if (cell_b.is_nodata) continue;
+
+            out.set(r,c, zindex, std::max( *(a.get(r,c,zindex).data), *(cell_b.data) ));
+
+         }
+      }
+      return out;
+   }
+
+
+
+   template <class T> KiLib::Rasters::Raster<T> min( const KiLib::Rasters::Raster<T>& a, const KiLib::Rasters::Raster<T>& b)
+   {
+      KiLib::Rasters::Raster<T> out(a);
+      for ( auto it = out.begin(); it != out.end(); ++it) 
+      {
+         size_t r = (&it).i();
+         size_t c = (&it).j();
+
+         // Check if b is a no data cell
+         for ( size_t zindex = 0; zindex < out.get_zindex(); zindex++) {
+            auto cell_b = b.get(r,c, zindex);
+            
+            if (cell_b.is_nodata) continue;
+
+            out.set(r,c, zindex, std::min( *(a.get(r,c,zindex).data), *(cell_b.data) ));
+
+         }
+      }
+      return out;
+   }
+
+
 
    template <class T> KiLib::Rasters::Raster<T> clamp( const KiLib::Rasters::Raster<T>& a, const T& lo, const T& hi)
    {
