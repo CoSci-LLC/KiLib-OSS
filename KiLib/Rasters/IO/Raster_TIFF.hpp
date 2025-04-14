@@ -169,8 +169,8 @@ namespace KiLib::Rasters
       KiLib::Rasters::Raster<T> raster( nRows, nCols );
       raster.set_width( nCols * scaling[0] );
       raster.set_height( nRows * scaling[1] );
-      raster.set_xllcorner( tiepoint[3] );
-      raster.set_yllcorner( tiepoint[4] - (nRows * scaling[1]) );
+      raster.set_xllcorner( tiepoint[3] - scaling[0] / 2.0);
+      raster.set_yllcorner( tiepoint[4] - (nRows * scaling[1]) + scaling[1] / 2.0);
       raster.set_cellsize( scaling[0] );
       raster.set_nodata_value ( std::stod(nodat) );
       raster.set_name(path);
