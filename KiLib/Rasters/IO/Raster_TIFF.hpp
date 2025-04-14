@@ -506,8 +506,8 @@ namespace KiLib::Rasters
 
       metadata.set_width( nCols * scaling[0] );
       metadata.set_height( nRows * scaling[1] );
-      metadata.set_xllcorner( tiepoint[3] );
-      metadata.set_yllcorner( tiepoint[4] - (nRows * scaling[1]) );
+      metadata.set_xllcorner( tiepoint[3]  - scaling[0] / 2.0);
+      metadata.set_yllcorner( tiepoint[4] - (nRows * scaling[1]) + scaling[1] / 2.0);
       metadata.set_cellsize( scaling[0] );
       metadata.set_nodata_value ( std::stod(nodat) );
       metadata.set_name(path);
