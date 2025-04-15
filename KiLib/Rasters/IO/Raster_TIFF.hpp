@@ -165,6 +165,8 @@ namespace KiLib::Rasters
 
       const size_t nRows = h;
       const size_t nCols = w;
+      spdlog::trace("tiepoint[3] = {}", tiepoint[3]);
+      spdlog::trace("tiepoint[4] = {}", tiepoint[4]);
 
       KiLib::Rasters::Raster<T> raster( nRows, nCols );
       raster.set_width( nCols * scaling[0] );
