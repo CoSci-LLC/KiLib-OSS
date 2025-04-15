@@ -20,6 +20,7 @@
 
 #include <KiLib/Rasters/Raster.hpp>
 #include <KiLib/Rasters/MetadataRaster.hpp>
+#include <cstdint>
 #include <stdexcept>
 #include <tiffio.hxx>
 #include <optional>
@@ -28,6 +29,8 @@
 #endif
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
+
+#define GEOKEYDIRECTORYTAG_RASTERTYPE 1025
 
 #define GEOTIFFTAG_KEYDIRECTORY 34735
 #define GEOTIFFTAG_DOUBLEPARAMS 34736
@@ -121,6 +124,9 @@ namespace KiLib::Rasters
       double  *scaling   = nullptr;
       double  *tiepoint  = nullptr;
       char    *nodat     = nullptr;
+      char*   metadata  = nullptr;
+      uint16_t key_directory_count = 0;
+      uint16_t *key_directory     = 0;
 
       size_t num_dir = 1;
 
@@ -163,6 +169,50 @@ namespace KiLib::Rasters
          free_flag |= 4;
       }
 
+
+      if (!TIFFGetField(tiff, GEOTIFFTAG_GDALMETADATA, &metadata))
+      {
+         free_flag |= 8;
+      }
+   
+      if (!TIFFGetField(tiff, GEOTIFFTAG_KEYDIRECTORY, &key_directory_count, &key_directory))
+      {
+         spdlog::trace("Failed to find raster type. Assuming raster is POINT style");
+         free_flag |= 16;
+      }
+
+      bool raster_is_area = false;
+      // Determine if raster type is point or area
+      if ( key_directory_count != 0 ) {
+         for (size_t i = 0; i < key_directory_count; ++i) {
+            uint16_t tiff_tag_location = 0;
+            uint16_t count = 0;
+            uint16_t value_offset = 0;
+
+            switch(key_directory[i]) {
+            case GEOKEYDIRECTORYTAG_RASTERTYPE:
+               tiff_tag_location = key_directory[i + 1];
+               count = key_directory[i + 2];
+               value_offset = key_directory[ i + 3];
+
+               if (tiff_tag_location != 0 || count != 1) {
+                  spdlog::error("Malformed Raster Type GeoKey");
+                  break;
+               }
+
+               if (value_offset == 1 ) {
+                  raster_is_area = true;
+               }
+               break;
+            default:
+               continue;
+               
+            }
+         }
+      }
+
+
+
       const size_t nRows = h;
       const size_t nCols = w;
 
@@ -174,6 +224,13 @@ namespace KiLib::Rasters
       raster.set_cellsize( scaling[0] );
       raster.set_nodata_value ( std::stod(nodat) );
       raster.set_name(path);
+
+      if (raster_is_area) {
+
+         raster.set_yllcorner( raster.get_yllcorner() - raster.get_cellsize() / 2);
+         raster.set_xllcorner( raster.get_xllcorner() + raster.get_cellsize() / 2);
+
+      }
 
 
       // There is a piece of software out there that doesn't do the nodata_value correctly. This is here to fix that:
@@ -263,6 +320,12 @@ namespace KiLib::Rasters
       // Remember to free necessary variables
       if (free_flag & 4)
          delete nodat;
+
+      if (free_flag & 8)
+         delete metadata;
+
+      if (free_flag & 16) 
+         delete key_directory;
 
       TIFFClose(tiff);
 
