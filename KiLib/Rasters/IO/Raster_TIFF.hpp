@@ -22,6 +22,8 @@
 #include <KiLib/Rasters/MetadataRaster.hpp>
 #include <stdexcept>
 #include <tiffio.hxx>
+//#include <geotiffio.h>
+//#include <geokeys.h>
 #include <optional>
 #ifdef _OPENMP
 #include <omp.h>
@@ -163,10 +165,23 @@ namespace KiLib::Rasters
          free_flag |= 4;
       }
 
+//      short rasterType;
+//      if (GTIFKeyGet(tiff, GTRasterTypeGeoKey, &rasterType, 0, 1)) {
+//            if (rasterType == RasterPixelIsPoint) {
+//                std::cout << "Pixel is POINT-based\n";
+//            } else if (rasterType == RasterPixelIsArea) {
+//                std::cout << "Pixel is AREA-based\n";
+//            } else {
+//                std::cout << "Unknown pixel interpretation\n";
+//            }
+//        } else {
+//            std::cout << "GTRasterTypeGeoKey not found — defaulting to AREA\n";
+//        }
+
       const size_t nRows = h;
       const size_t nCols = w;
-      spdlog::trace("tiepoint[3] = {}", tiepoint[3]);
-      spdlog::trace("tiepoint[4] = {}", tiepoint[4]);
+      spdlog::trace("  tiepoint[3] = {}", tiepoint[3]);
+      spdlog::trace("  tiepoint[4] = {}", tiepoint[4]);
 
       KiLib::Rasters::Raster<T> raster( nRows, nCols );
       raster.set_width( nCols * scaling[0] );
