@@ -239,13 +239,14 @@ namespace KiLib::Rasters
       raster.set_nodata_value ( std::stod(nodat) );
       raster.set_name(path);
 
-      //if (raster_is_area) 
-      //{
+      spdlog::trace("  raster_is_area = {}", raster_is_area ? "true" : "false");
+      if (raster_is_area) 
+      {
          raster.set_yllcorner( raster.get_yllcorner() - raster.get_cellsize() / 2);
          raster.set_xllcorner( raster.get_xllcorner() + raster.get_cellsize() / 2);
-      //}
+      }
       spdlog::trace("  xllcorner = {}", raster.get_xllcorner());
-      spdlog::trace("  yllcorner = {}", raster.get_xllcorner());
+      spdlog::trace("  yllcorner = {}", raster.get_yllcorner());
 
 
       // There is a piece of software out there that doesn't do the nodata_value correctly. This is here to fix that:
