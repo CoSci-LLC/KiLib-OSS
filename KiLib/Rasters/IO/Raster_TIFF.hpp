@@ -247,6 +247,10 @@ namespace KiLib::Rasters
          raster.set_yllcorner( raster.get_yllcorner() - raster.get_cellsize() / 2);
          raster.set_xllcorner( raster.get_xllcorner() + raster.get_cellsize() / 2);
       }
+      // Move everything upleft 1/2 cell
+      raster.set_xllcorner( raster.get_xllcorner() - raster.get_cellsize() / 2);
+      raster.set_yllcorner( raster.get_yllcorner() + raster.get_cellsize() / 2);
+
       spdlog::trace("  xllcorner = {}", raster.get_xllcorner());
       spdlog::trace("  yllcorner = {}", raster.get_yllcorner());
 
