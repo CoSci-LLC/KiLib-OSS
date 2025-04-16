@@ -227,6 +227,8 @@ namespace KiLib::Rasters
 
       const size_t nRows = h;
       const size_t nCols = w;
+      spdlog::trace("  scaling[0]  = {}", scaling[0]);
+      spdlog::trace("  scaling[1]  = {}", scaling[1]);
       spdlog::trace("  tiepoint[3] = {}", tiepoint[3]);
       spdlog::trace("  tiepoint[4] = {}", tiepoint[4]);
 
