@@ -2,6 +2,7 @@
 
 #include "DenseRaster.hpp"
 #include "IRaster.hpp"
+#include "SparseRaster.hpp"
 #include <KiLib/Rasters/IRaster.hpp>
 #include <KiLib/Rasters/SparseRaster.hpp>
 #include <KiLib/Rasters/DenseRaster.hpp>
@@ -40,8 +41,30 @@ namespace KiLib::Rasters
          // This is just a preference of CoSci and has been seen around.
          raster->set_nodata_value(-9999);
       }
+   
+      Raster( const std::tuple<size_t, size_t, size_t>& dims, const std::map<std::tuple<size_t, size_t, size_t>, double>& values, Rasters::TYPE type = Rasters::TYPE::DENSE) 
+      {
+         switch(type) {
+            case Rasters::TYPE::DENSE:
+               raster = new KiLib::Rasters::DenseRaster<T>(dims);
+               for (auto const& [location, val] : values) {
+                  const auto row   = std::get<0>( location );
+                  const auto col   = std::get<1>( location );
+                  const auto z = std::get<2>( location );
 
-      ~Raster() {
+                  raster->set(row, col, z, val);
+               }
+               break;
+            case Rasters::TYPE::SPARSE:
+               raster = new KiLib::Rasters::SparseRaster<T>(dims, values);
+               break;
+            default:
+               throw NotImplementedException("Other raster types not implemented for this constructor");
+         }
+         raster->set_nodata_value(-9999);
+      }
+
+      ~Raster() override {
          
          if ( raster != nullptr) {
             delete raster;
@@ -125,8 +148,9 @@ namespace KiLib::Rasters
 
          else if (type == Rasters::TYPE::SPARSE && this->get_type() == Rasters::TYPE::DENSE ) {
 
-            auto* old = raster;
+           // auto* old = raster;
             raster = new KiLib::Rasters::SparseRaster<T>( *raster, [](const auto& c) { return *(c.data); });
+            //delete old;
             return; 
 
          }
@@ -277,7 +301,7 @@ namespace KiLib::Rasters
                return (*ad).op_ierfc();
             } else if ( this->get_type() == TYPE::SPARSE ) {
                KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)raster;
-               return (*ad).op_erfc();
+               return (*ad).op_ierfc();
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
@@ -638,22 +662,34 @@ namespace std
 
    template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& a, const KiLib::Rasters::Raster<T>& b)
    {
+      // Check the properties
+      if ( a.get_xllcorner() != b.get_xllcorner() ) throw invalid_argument("Rasters must have the same coordinates");
+      if ( a.get_yllcorner() != b.get_yllcorner() ) throw invalid_argument("Rasters must have the same coordinates");
+      if ( a.get_height() != b.get_height() ) throw invalid_argument("Rasters must have the same height");
+      if ( a.get_width() != b.get_width() ) throw invalid_argument("Rasters must have the same width");
+      if ( a.get_cellsize() != b.get_cellsize() ) throw invalid_argument("Rasters must have the same cell size");
+      if ( a.get_rows() != b.get_rows() ) throw invalid_argument("Rasters must have the same rows");
+      if ( a.get_cols() != b.get_cols() ) throw invalid_argument("Rasters must have the same cols");
+      if ( a.get_zindex() != b.get_zindex() ) throw invalid_argument("Rasters must have the same zindex");
+
+
+
       KiLib::Rasters::Raster<T> out(a);
       for ( auto it = out.begin(); it != out.end(); ++it) 
       {
          size_t r = (&it).i();
          size_t c = (&it).j();
+         size_t z = (&it).k();
 
-         // Check if b is a no data cell
-         for ( size_t zindex = 0; zindex < out.get_zindex(); zindex++) {
-            auto cell_b = b.get(r,c, zindex);
-            
-            if (cell_b.is_nodata) continue;
+      
 
-            out.set(r,c, zindex, std::max( *(a.get(r,c,zindex).data), *(cell_b.data) ));
+         auto cell_b = b.get(r,c, z);
+
+         if (cell_b.is_nodata) continue;
+
+         out.set(r,c,z, std::max( *((*it).data), *(cell_b.data) ));
 
          }
-      }
       return out;
    }
 

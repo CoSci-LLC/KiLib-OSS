@@ -28,7 +28,7 @@ namespace KiLib::Rasters
       static double norm_ij(const Cell &a);
 
       SafeDouble _x, _y;       // The real position on the map cooresponding to the i,j
-      Attribute<size_t> _i, _j;       // the row/col position
+      Attribute<size_t> _i, _j, _k;       // the row/col position
       const KiLib::Rasters::IRaster<T>& parent_raster;
       const T* data;         // The data at the cell
       bool is_nodata = false;
@@ -43,25 +43,28 @@ namespace KiLib::Rasters
          is_nodata = in.is_nodata;
       }
 
-      Cell(const KiLib::Rasters::IRaster<T>& parent_raster, size_t i, size_t j) : parent_raster(parent_raster)
+      Cell(const KiLib::Rasters::IRaster<T>& parent_raster, size_t i, size_t j, size_t k) : parent_raster(parent_raster)
       {
          this->i(i);
          this->j(j);
+         this->k(k);
          this->is_nodata = true;
          this->data = NULL;
       }
 
-      Cell(const KiLib::Rasters::IRaster<T>& parent_raster, size_t i, size_t j, const T& data) : parent_raster(parent_raster)
+      Cell(const KiLib::Rasters::IRaster<T>& parent_raster, size_t i, size_t j, size_t k, const T& data) : parent_raster(parent_raster)
       {
          this->i(i);
          this->j(j);
+         this->k(k);
          this->data = &data;
       }
 
-      Cell(const KiLib::Rasters::IRaster<T>& parent_raster, size_t i, size_t j, T& data) : parent_raster(parent_raster)
+      Cell(const KiLib::Rasters::IRaster<T>& parent_raster, size_t i, size_t j, size_t k, T& data) : parent_raster(parent_raster)
       {
          this->i(i);
          this->j(j);
+         this->k(k);
          this->data = &data;
       }
 
@@ -124,6 +127,11 @@ namespace KiLib::Rasters
          return _j();
       }
 
+      size_t k() const 
+   {
+      return _k();
+   }
+
       
 
       double x() const
@@ -155,6 +163,7 @@ namespace KiLib::Rasters
          this->_y = in.y();
          this->_i = in.i();
          this->_j = in.j();
+         this->_k = in.k();
          this->data = in.data;
       }
 
@@ -253,6 +262,12 @@ bool IsClose(double A, double B)
 
          // Update y
          _x = get_cell_position_x(value);
+      }
+
+      void k(size_t value)
+      {
+         _k(value);
+
       }
 
       void x(double value)

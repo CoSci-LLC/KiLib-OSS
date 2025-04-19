@@ -35,7 +35,6 @@ namespace KiLib::Rasters
       {
       }
 
-
       DenseRaster( size_t rows, size_t cols, double init_val) : DenseRaster( std::make_tuple(rows, cols, 1) , init_val) {}
 
       
@@ -76,10 +75,10 @@ namespace KiLib::Rasters
          unsigned idx = (this->rows * this->cols * k) + (this->cols * i) + j;
          if (  (i >= this->rows) || (j >= this->cols) || (k >= this->zindex)  || ( idx > this->cols * this->rows * this->zindex ) || data[idx] == this->get_nodata_value() || nodata_mask[idx] == true )
          {
-            return KiLib::Rasters::Cell<T>( *this, i, j);
+            return KiLib::Rasters::Cell<T>( *this, i, j, k);
          }
 
-         return KiLib::Rasters::Cell<T>( *this, i, j, data[idx] );
+         return KiLib::Rasters::Cell<T>( *this, i, j, k, data[idx] );
       }
 
       size_t get_valid_cell_count() const override {
@@ -250,7 +249,7 @@ namespace KiLib::Rasters
          // of all the checks above. If we aren't good, then a new feature was added and
          // someone (probably me) didn't check here.
          for (auto a = this->begin(), b = rhs.begin(); a != this->end(); ++a, ++b) {
-            if ( *(&a).data != *(&b).data) return false;
+            if ( *((*a).data) != *((*b).data)) return false;
          } 
 
 

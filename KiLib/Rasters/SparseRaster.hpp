@@ -26,8 +26,6 @@ namespace KiLib::Rasters
       {
       }
 
-
-
       SparseRaster(const KiLib::Rasters::SparseRaster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)
           {
              COL_INDEX = from_raster.COL_INDEX;
@@ -53,17 +51,9 @@ namespace KiLib::Rasters
        SparseRaster(const KiLib::Rasters::Raster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)
           {
               nnz = 0;
-              for (size_t row = 0; row < from_raster.get_rows(); row++)
-              {
-                  for (size_t col = 0; col < from_raster.get_cols(); col++)
-                  {
-                      if (!from_raster.at(row, col).is_nodata)
-                      {
-                          nnz++; // get a total amount of cells we will be processing
-                      }
-                  }
-              }
-
+              for (auto it = from_raster.begin(); it != from_raster.end(); ++it) {
+                  nnz++;
+               }
               V.resize(nnz);
              COL_INDEX.resize(nnz);
              Z_INDEX.resize(nnz);
@@ -174,22 +164,17 @@ namespace KiLib::Rasters
 
         }
 
-
-      ~SparseRaster()
-      {
-      }
-
       using IRaster<T>::get;
       KiLib::Rasters::Cell<T> get( size_t i, size_t j, size_t k = 0 ) const override
       {
         auto d = _get_data_index(i, j, k);
 
         if ( d.has_value() ) {
-               return KiLib::Rasters::Cell<T>( *this, i, j, V[d.value()] );
+               return KiLib::Rasters::Cell<T>( *this, i, j, k, V[d.value()] );
         }
         else {
 
-        return KiLib::Rasters::Cell<T>( *this, i, j );
+        return KiLib::Rasters::Cell<T>( *this, i, j ,k );
         }
       }
 
@@ -232,10 +217,11 @@ namespace KiLib::Rasters
       TYPE get_type() const override { return TYPE::SPARSE; }
       
       SparseRaster<T> op_divide(const T val) const {
+         auto nd = V == this->get_nodata_value();
           KiLib::Rasters::SparseRaster<T> out(*this, val / V);
+            out.V[nd] = this->get_nodata_value();
             return out;
          }  
-
 
       SparseRaster<T> op_minus(const T val) const {
           KiLib::Rasters::SparseRaster<T> out(*this, val - V);
@@ -271,30 +257,47 @@ namespace KiLib::Rasters
 
 template <typename C> SparseRaster<T> operator*(const C k ) const  
 {
-    KiLib::Rasters::SparseRaster<T> out(*this, V * k);
-   return out;
+
+      // Get nodata values
+      auto nd = V == this->get_nodata_value();
+      KiLib::Rasters::SparseRaster<T> out(*this, V * k);
+      out.V[nd] = this->get_nodata_value();
+      return out;
 }
 
 template <typename C> SparseRaster<T> operator+(const C k ) const  
 {
+      auto nd = V == this->get_nodata_value();
     KiLib::Rasters::SparseRaster<T> out(*this, V + k);
+      out.V[nd] = this->get_nodata_value();
    return out;
 }
 
 
 template <typename C> SparseRaster<T> operator-(const C k ) const  
 {
+     auto ad = (V == this->get_nodata_value());
     KiLib::Rasters::SparseRaster<T> out(*this, V - k);
+    out.V[ad] = this->get_nodata_value();
    return out;
 }
 
-    SparseRaster<T> operator*( const SparseRaster<T>& b) const 
+
+SparseRaster<T> operator*( const SparseRaster<T>& b) const 
     {
     if ( ! can_perform_operation(b) ) {
          return ApplyOperator(*this, b, OPERAND::MULTIPLY);
     }
-       KiLib::Rasters::SparseRaster<T> out(b, V * b.V);
+
+     auto ad = (V == this->get_nodata_value());
+    auto bd = (b.V == this->get_nodata_value());
+
+      KiLib::Rasters::SparseRaster<T> out(b, V * b.V);
     out.set_name(this->get_name() + " * " + b.get_name());
+    out.V[ad] = this->get_nodata_value();
+    out.V[bd] = this->get_nodata_value();
+
+
    return out;
     }
 
@@ -314,8 +317,14 @@ SparseRaster<T> operator/(const SparseRaster<T>& b )
     if ( ! can_perform_operation(b) ) {
         throw std::invalid_argument("Rasters cannot be divided because they aren't the same dimensions");
     }
+    auto ad = (V == this->get_nodata_value());
+    auto bd = (b.V == this->get_nodata_value());
+ 
    KiLib::Rasters::SparseRaster<T> out(*this, V / b.V);
     out.set_name(this->get_name() + " / " + b.get_name());
+    out.V[ad] = this->get_nodata_value();
+    out.V[bd] = this->get_nodata_value();
+
    return out;
 }
 
@@ -324,8 +333,12 @@ SparseRaster<T> operator+(const SparseRaster<T>& b )
     if ( ! can_perform_operation(b) ) {
         throw std::invalid_argument("Rasters cannot be added because they aren't the same dimensions");
     }
+    auto ad = (V == this->get_nodata_value());
+    auto bd = (b.V == this->get_nodata_value());
    SparseRaster<T> out(*this, V + b.V);
     out.set_name(this->get_name() + " + " + b.get_name());
+    out.V[ad] = this->get_nodata_value();
+    out.V[bd] = this->get_nodata_value();
    return out;
 }
 
@@ -334,8 +347,14 @@ SparseRaster<T> operator-(const SparseRaster<T>& b )
     if ( ! can_perform_operation(b) ) {
         throw std::invalid_argument("Rasters cannot be subtracted because they aren't the same dimensions");
     }
+    auto ad = (V == this->get_nodata_value());
+    auto bd = (b.V == this->get_nodata_value());
+
    SparseRaster<T> out(*this, V - b.V);
     out.set_name(this->get_name() + " - " + b.get_name());
+    out.V[ad] = this->get_nodata_value();
+    out.V[bd] = this->get_nodata_value();
+
    return out;
 }
         friend KiLib::Rasters::SparseRaster<T> std::clamp( const KiLib::Rasters::SparseRaster<T>&  ,const T&, const T&);
@@ -591,16 +610,4 @@ namespace std {
       KiLib::Rasters::SparseRaster<T> out( a, result );
       return out;
    }
-
-   template <class T> T min( const KiLib::Rasters::SparseRaster<T>& a )
-   {
-      return a.min();
-   }
-
-   template <class T> T max( const KiLib::Rasters::SparseRaster<T>& a )
-   {
-      return a.max();
-   }
-
-
 };

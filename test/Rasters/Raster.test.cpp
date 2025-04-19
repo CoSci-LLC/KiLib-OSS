@@ -7,8 +7,45 @@
 #include <KiLib/Rasters/Raster.hpp>
 #include <cmath>
 #include <gtest/gtest.h>
+#include <ostream>
 #include <tuple>
 
+class Rasters : public testing::TestWithParam<KiLib::Rasters::TYPE> {};
+
+
+namespace KiLib::Rasters {
+      template<typename T>
+      void PrintTo(const  Raster<T>& raster, std::ostream* os) { 
+         *os << raster.to_string();
+
+         for ( size_t i = 0; i < raster.get_rows(); i++ ) {
+            for ( size_t j = 0; j < raster.get_cols(); j++ ) {
+               for ( size_t k = 0; k < raster.get_zindex(); k++) {
+                  auto c = raster.get(i,j,k );
+                  *os << "[          ] ( " << i << ", " << j << ", " << k << ") = " <<( c.is_nodata ? -9999 : *(c.data)) << std::endl;
+               }
+            }
+         }
+
+      }
+} //namespace
+
+
+
+
+INSTANTIATE_TEST_SUITE_P(
+   KiLib, Rasters,
+      testing::Values(KiLib::Rasters::TYPE::SPARSE, KiLib::Rasters::TYPE::DENSE),
+   [](const testing::TestParamInfo<KiLib::Rasters::TYPE>& info) {
+      switch(info.param) {
+         case KiLib::Rasters::TYPE::SPARSE:
+            return "Sparse";
+         case KiLib::Rasters::TYPE::DENSE:
+            return "Dense";
+         default:
+            return "Unknown";
+      }
+   });
 
 
 void SetBasicRasterProperties(KiLib::Rasters::Raster<double>& a) 
@@ -23,7 +60,7 @@ void SetBasicRasterProperties(KiLib::Rasters::Raster<double>& a)
 
 
 
-void Print(KiLib::Rasters::Raster<double> a) {
+void Print(const KiLib::Rasters::Raster<double>& a) {
 
    for ( size_t i = 0; i < a.get_rows(); i++ ) {
       for ( size_t j = 0; j < a.get_cols(); j++ ) {
@@ -37,13 +74,15 @@ void Print(KiLib::Rasters::Raster<double> a) {
 
 
 
-TEST(Rasters, CopyOperator) {
-  KiLib::Rasters::Raster<double> a(2, 2);
+TEST_P(Rasters, CopyOperator) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 1},
+      {
+         {{0, 0, 0}, 1},
+         {{0, 1, 0}, 1},
+         {{1, 0, 0}, 1},
+         {{1, 1, 0}, 1},
+      }, GetParam());
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 1);
-   a.set((size_t)0, 1, 1);
-   a.set((size_t)1, 0, 1);
-   a.set((size_t)1, 1, 1);
 
    auto b = a;
 
@@ -51,33 +90,136 @@ TEST(Rasters, CopyOperator) {
 }
 
 
-TEST(Rasters, atan) {
-   KiLib::Rasters::Raster<double> a(1,1);
-   a.set((size_t)0,0, 0, -5);
+TEST_P(Rasters, atan) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, -5},
+         {{0, 1, 0}, -5},
+         {{1, 0, 0}, -5},
+         {{1, 1, 0}, -5},
+         {{0, 0, 1}, -5},
+         {{0, 1, 1}, -5},
+         {{1, 0, 1}, -5},
+         {{1, 1, 1}, -5},
+      }, GetParam());
 
    auto b = std::atan(a);
 
-   EXPECT_EQ(*(b.get((size_t)0,0,0).data), std::atan(-5.0));
-//   std::cerr << "std::atan(-5.0) == " << std::atan(-5.0) << std::endl;
+   for ( auto it = b.begin(); it != b.end(); ++it) {
+      EXPECT_EQ(*((&it).data), std::atan(-5.0));
+   }
+}
+
+TEST_P(Rasters, tan) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, -5},
+         {{0, 1, 0}, -5},
+         {{1, 0, 0}, -5},
+         {{1, 1, 0}, -5},
+         {{0, 0, 1}, -5},
+         {{0, 1, 1}, -5},
+         {{1, 0, 1}, -5},
+         {{1, 1, 1}, -5},
+      }, GetParam());
+
+   auto b = std::tan(a);
+
+   for ( auto it = b.begin(); it != b.end(); ++it) {
+      EXPECT_EQ(*((&it).data), std::tan(-5.0));
+   }
+}
+
+TEST_P(Rasters, cos) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, -5},
+         {{0, 1, 0}, -5},
+         {{1, 0, 0}, -5},
+         {{1, 1, 0}, -5},
+         {{0, 0, 1}, -5},
+         {{0, 1, 1}, -5},
+         {{1, 0, 1}, -5},
+         {{1, 1, 1}, -5},
+      }, GetParam());
+
+   auto b = std::cos(a);
+
+   for ( auto it = b.begin(); it != b.end(); ++it) {
+      EXPECT_EQ(*((&it).data), std::cos(-5.0));
+   }
+}
+
+TEST_P(Rasters, sin) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, -5},
+         {{0, 1, 0}, -5},
+         {{1, 0, 0}, -5},
+         {{1, 1, 0}, -5},
+         {{0, 0, 1}, -5},
+         {{0, 1, 1}, -5},
+         {{1, 0, 1}, -5},
+         {{1, 1, 1}, -5},
+      }, GetParam());
+
+   auto b = std::sin(a);
+
+   for ( auto it = b.begin(); it != b.end(); ++it) {
+      EXPECT_EQ(*((&it).data), std::sin(-5.0));
+   }
+}
+
+TEST_P(Rasters, exp) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, -5},
+         {{0, 1, 0}, -5},
+         {{1, 0, 0}, -5},
+         {{1, 1, 0}, -5},
+         {{0, 0, 1}, -5},
+         {{0, 1, 1}, -5},
+         {{1, 0, 1}, -5},
+         {{1, 1, 1}, -5},
+      }, GetParam());
+
+   auto b = std::exp(a);
+
+   for ( auto it = b.begin(); it != b.end(); ++it) {
+      EXPECT_EQ(*((&it).data), std::exp(-5.0));
+   }
 }
 
 
+
 // Demonstrate some basic assertions.
-TEST(Rasters, Basic_Operations) {
+TEST_P(Rasters, Basic_Operations) {
 
-   KiLib::Rasters::Raster<double> a(2, 2);
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 1},
+         {{0, 1, 0}, 1},
+         {{1, 0, 0}, 1},
+         {{1, 1, 0}, 1},
+         {{0, 0, 1}, 1},
+         {{0, 1, 1}, 1},
+         {{1, 0, 1}, 1},
+         {{1, 1, 1}, 1},
+      }, GetParam());
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 1);
-   a.set((size_t)0, 1, 1);
-   a.set((size_t)1, 0, 1);
-   a.set((size_t)1, 1, 1);
 
-   KiLib::Rasters::Raster<double> b(2, 2);
+   KiLib::Rasters::Raster<double> b( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 5},
+         {{0, 1, 0}, 5},
+         {{1, 0, 0}, 5},
+         {{1, 1, 0}, 5},
+         {{0, 0, 1}, 5},
+         {{0, 1, 1}, 5},
+         {{1, 0, 1}, 5},
+         {{1, 1, 1}, 5},
+      }, GetParam());
    SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 5);
-   b.set((size_t)0, 1, 5);
-   b.set((size_t)1, 0, 5);
-   b.set((size_t)1, 1, 5);
 
    // Ensure equality works
    EXPECT_EQ(a, a);
@@ -99,30 +241,45 @@ TEST(Rasters, Basic_Operations) {
    
    EXPECT_EQ(1 / a, a);
 
-   KiLib::Rasters::Raster<double> b_div_result( {2,2, 1}, 0.2);
+   KiLib::Rasters::Raster<double> b_div_result( {2,2,2}, 0.2);
    SetBasicRasterProperties(b_div_result);
+   b_div_result.set_name("b_div_result");
+   b_div_result.convert_type_to(GetParam());
    EXPECT_EQ(1 / b, b_div_result);
 
-
    // Testing Addition
-   KiLib::Rasters::Raster<double> c(2, 2);
+   KiLib::Rasters::Raster<double> c( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 6},
+         {{0, 1, 0}, 6},
+         {{1, 0, 0}, 6},
+         {{1, 1, 0}, 6},
+         {{0, 0, 1}, 6},
+         {{0, 1, 1}, 6},
+         {{1, 0, 1}, 6},
+         {{1, 1, 1}, 6},
+      }, GetParam());
    SetBasicRasterProperties(c);
-   c.set((size_t)0, 0, 6);
-   c.set((size_t)0, 1, 6);
-   c.set((size_t)1, 0, 6);
-   c.set((size_t)1, 1, 6);
 
    EXPECT_EQ(a + b, c);
    EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
 
    //
    // Testing Subtraction
-   KiLib::Rasters::Raster<double> d(2, 2);
+   KiLib::Rasters::Raster<double> d( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 4},
+         {{0, 1, 0}, 4},
+         {{1, 0, 0}, 4},
+         {{1, 1, 0}, 4},
+         {{0, 0, 1}, 4},
+         {{0, 1, 1}, 4},
+         {{1, 0, 1}, 4},
+         {{1, 1, 1}, 4},
+      }, GetParam());
    SetBasicRasterProperties(d);
-   d.set((size_t)0, 0, 4);
-   d.set((size_t)0, 1, 4);
-   d.set((size_t)1, 0, 4);
-   d.set((size_t)1, 1, 4);
+
+
 
    EXPECT_EQ(b - 1, d);
    EXPECT_EQ(b - a, d);
@@ -130,10 +287,26 @@ TEST(Rasters, Basic_Operations) {
    
    // Make sure that nodata cells are staying no data
    a.set((size_t)0, 1, a.get_nodata_value());
+
+   auto b_r = b; // copying b and making it a result raster for the tests.
+   b_r.set((size_t)0, 1, c.get_nodata_value());
+
    c.set((size_t)0, 1, c.get_nodata_value());
+   d.set((size_t)0, 1, c.get_nodata_value());
  
+   // This makes sure the nodata values for each operation are respected
    EXPECT_EQ(a + b, c);
    EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
+   EXPECT_EQ(b - a, d);
+   EXPECT_NE(a - b, d); // MAke sure the order does matter
+   EXPECT_EQ(a * b, b_r);
+   EXPECT_EQ(b * a, b_r);
+   EXPECT_EQ(a * 5, b_r);
+   EXPECT_EQ(5 * a, b_r);
+   EXPECT_EQ(b / a, b_r);
+   EXPECT_NE(a / b, b_r); // Make sure the ordering matters
+   EXPECT_EQ(1 / a, a);
+
 
 
 }
@@ -222,39 +395,6 @@ TEST(Rasters, Clamp) {
 }
 
 
-
-TEST(Rasters, Layers) {
-
-   KiLib::Rasters::Raster<double> a( std::make_tuple(2,2,2));
-   SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 0, 1);
-   a.set((size_t)0, 0, 1, 1);
-   a.set((size_t)0, 1, 0, 1);
-   a.set((size_t)0, 1, 1, 1);
-   a.set((size_t)1, 0, 0, 1);
-   a.set((size_t)1, 0, 1, 1);
-   a.set((size_t)1, 1, 0, 1);
-   a.set((size_t)1, 1, 1, 1);
-
-   KiLib::Rasters::Raster<double> b(std::make_tuple(2,2,2));
-   SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 0, 5);
-   b.set((size_t)0, 0, 1, 5);
-   b.set((size_t)0, 1, 0, 5);
-   b.set((size_t)0, 1, 1, 5);
-   b.set((size_t)1, 0, 0, 5);
-   b.set((size_t)1, 0, 1, 5);
-   b.set((size_t)1, 1, 0, 5);
-   b.set((size_t)1, 1, 1, 5);
-   // Ensure equality works
-   EXPECT_EQ(a, a);
-   EXPECT_NE(a, b);
-
-   EXPECT_EQ(a * 5, b);
-   EXPECT_EQ(5 * a, b);
-
-   EXPECT_EQ(b / 5, a);
-}
 
 
 TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
@@ -354,24 +494,26 @@ TEST(Rasters, Layers_Different_Sized_Rasters_Operations) {
 }
 
 
-TEST(Rasters, Invalid_Index_set) {
+TEST_P(Rasters, Invalid_Index_set) {
 
-   KiLib::Rasters::Raster<double> c( std::make_tuple(4, 4, 1));
+   KiLib::Rasters::Raster<double> c( std::make_tuple(4, 4, 1), {}, GetParam());
    SetBasicRasterProperties(c);
    EXPECT_ANY_THROW(c.set((size_t)3, 2, 1, c.get_nodata_value()));
 
 }
 
 
-TEST(Rasters, Min_Max) {
+TEST_P(Rasters, Element_Min_Max) {
 
-   KiLib::Rasters::Raster<double> a(2, 2);
+   KiLib::Rasters::Raster<double> a( {2, 2, 2},
+      {
+         { {0,0,1}, 44},
+         { {0,1,1}, 93}, //This is sparse on purpose
+         { {1,1,0}, 42},
+      }
+   , GetParam());
+
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 44);
-   a.set((size_t)0, 1, 93);
-   // Missing one on purpose
-   a.set((size_t)1, 1, 42);
-
    EXPECT_EQ(std::min(a),42); 
    EXPECT_EQ(std::max(a),93); 
 
@@ -379,44 +521,52 @@ TEST(Rasters, Min_Max) {
    EXPECT_EQ(std::min(a),42); 
    EXPECT_EQ(std::max(a),93); 
 
+}
+
+TEST_P(Rasters, Raster_Min_Max) {
+
+   KiLib::Rasters::Raster<double> a( {2, 2, 2},
+      {
+         { {0,0,1}, 44},
+         { {0,1,1}, 93}, //This is sparse on purpose
+         { {1,1,0}, 42},
+      }
+   , GetParam());
+   SetBasicRasterProperties(a);
 
 
-   KiLib::Rasters::Raster<double> b(2, 2);
+   KiLib::Rasters::Raster<double> b( {2, 2, 2},
+      {
+         { {0,0,1}, 44},
+         { {0,1,1}, 92}, //This is sparse on purpose
+         { {1,1,0}, 48},
+      }
+   , GetParam());
    SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 44);
-   b.set((size_t)0, 1, 92);
-   // Missing one on purpose
-   b.set((size_t)1, 1, 48);
 
-
-
-
-   KiLib::Rasters::Raster<double> max(2, 2);
+   KiLib::Rasters::Raster<double> max( {2, 2, 2},
+      {
+         { {0,0,1}, 44},
+         { {0,1,1}, 93}, //This is sparse on purpose
+         { {1,1,0}, 48},
+      }
+   , GetParam());
    SetBasicRasterProperties(max);
-   max.set((size_t)0, 0, 44);
-   max.set((size_t)0, 1, 93);
-   // Missing one on purpose
-   max.set((size_t)1, 1, 48);
 
    EXPECT_EQ(std::max(a,b), max);
 
 
 
-
-   KiLib::Rasters::Raster<double> min(2, 2);
+   KiLib::Rasters::Raster<double> min( {2, 2, 2},
+      {
+         { {0,0,1}, 44},
+         { {0,1,1}, 92}, //This is sparse on purpose
+         { {1,1,0}, 42},
+      }
+   , GetParam());
    SetBasicRasterProperties(min);
-   min.set((size_t)0, 0, 44);
-   min.set((size_t)0, 1, 92);
-   // Missing one on purpose
-   min.set((size_t)1, 1, 42);
 
    EXPECT_EQ(std::min(a,b), min);
-   Print(std::min(a,b));
-
-   // Test with INF in the data
-//   a.set((size_t)1, 0, INFINITY);
-//   EXPECT_EQ(std::min(a),42); 
-//   EXPECT_EQ(std::max(a),93); 
 }
 
 
@@ -470,16 +620,18 @@ TEST(Rasters, erfc) {
 }
 
 
-TEST(Rasters, ierfc) {
+TEST_P(Rasters, ierfc) {
 
-   KiLib::Rasters::Raster<double> a( {2, 2, 1}, 0);
-   SetBasicRasterProperties(a);
+   KiLib::Rasters::Raster<double> in( {2, 2, 2}, 0);
+   in.convert_type_to(GetParam());
+   SetBasicRasterProperties(in);
 
-   KiLib::Rasters::Raster<double> b( {2, 2, 1}, 0.56418958354775628);
-   SetBasicRasterProperties(b);
+   KiLib::Rasters::Raster<double> expected( {2, 2, 2}, 0.56418958354775628);
+   expected.convert_type_to(GetParam());
+   SetBasicRasterProperties(expected);
 
-   auto c = std::ierfc(a);
+   auto c = std::ierfc(in);
 
-   EXPECT_EQ(b, c);
+   EXPECT_EQ(c, expected);
 
 }

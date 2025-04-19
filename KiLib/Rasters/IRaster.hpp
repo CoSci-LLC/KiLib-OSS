@@ -215,6 +215,7 @@ namespace KiLib::Rasters
          
          ss << fmt::format( "Raster {} [{} x {}]\n", this->name, get_rows(), get_cols());
          ss << fmt::format( "  {} valid cells out of {} ({:.2f}% valid)\n", get_valid_cell_count(), this->get_ndata(), 100.0 * get_valid_cell_count() / this->get_ndata());
+         ss << fmt::format( "  x: {}  y: {} nodata_val: {}\n", get_xllcorner(), get_yllcorner(), get_nodata_value()); 
 
          return ss.str();
         }
@@ -249,7 +250,7 @@ namespace KiLib::Rasters
         }
 
         virtual void apply( std::function<T(T)> f) {
-            size_t total = this->get_rows() * this->get_cols();
+            size_t total = this->get_rows() * this->get_cols() * this->get_zindex();
             for ( size_t idx = 0; idx < total; idx++ ) {
                 size_t i,j,k;
                 auto r = this->ind2sub(idx);
@@ -257,7 +258,8 @@ namespace KiLib::Rasters
                 j = std::get<1>(r);
                 k = std::get<2>(r);
                 if ( this->is_valid_cell(i, j, k) ) {
-                    this->set(i,j,k, f(get_data(i,j,k)));
+                    auto v = f(get_data(i,j,k));
+                    this->set(i,j,k, v);
                 }
             } 
 
@@ -348,7 +350,7 @@ namespace KiLib::Rasters
             size_t i,j,k;
          do
          {
-                if (this->idx > raster->get_ndata() - 1) break;
+                if (this->idx > (raster->get_rows() * raster->get_cols() * raster->get_zindex()) - 1) break;
 
                 this->idx++;
 
@@ -384,8 +386,8 @@ namespace KiLib::Rasters
 
         virtual RasterIterator begin()  { return RasterIterator(this); }
         virtual RasterIterator begin() const  { return RasterIterator(this); }
-        virtual RasterIterator end()  { return RasterIterator(this, this->get_ndata()); }
-        virtual RasterIterator end() const  { return RasterIterator(this, this->get_ndata()); }
+        virtual RasterIterator end() { return RasterIterator(this, this->get_rows() * this->get_cols() * this->get_zindex()); }
+        virtual RasterIterator end() const { return RasterIterator(this, this->get_rows() * this->get_cols() * this->get_zindex()); }
 
         virtual bool is_valid_cell(size_t , size_t , size_t ) const = 0;
         virtual T get_data(size_t , size_t , size_t ) const  =0;
