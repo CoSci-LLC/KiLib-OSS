@@ -33,7 +33,8 @@ namespace KiLib::Rasters
             ROW_INDEX = from_raster.ROW_INDEX;
               V.resize(from_raster.get_ndata());
             for ( size_t idx = 0; idx < from_raster.get_ndata(); idx++) {
-               V[idx] = get_val( Cell<T>(from_raster, ROW_INDEX[idx], COL_INDEX[idx], from_raster.V[idx]));
+               // We don't need to pass in the i/j right now. Really this is about the values
+               V[idx] = get_val( Cell<T>(from_raster, 0, 0, from_raster.V[idx]));
             }
 
             this->copy_metadata_from(from_raster);
