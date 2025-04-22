@@ -141,6 +141,48 @@ namespace KiLib::Rasters
          }
       }
 
+     Raster( const Raster<T>& other, const std::tuple<size_t, size_t, size_t>& dims, double init_val ) : Raster( { other.get_rows(), other.get_cols(), std::get<2>(dims) }, extract_values(other, init_val), other.get_type()) {
+         const auto row   = std::get<0>( dims );
+         const auto col   = std::get<1>( dims );
+
+         if (row != 0 || col != 0) {
+            throw std::invalid_argument("Please set row and col to 0 acknowledging you are just changing the zindex for initilization");
+         }
+      }
+
+      
+      std::map<std::tuple<size_t, size_t, size_t>, double> extract_values(const Raster<T>& other) {
+         // Create a list of values and then pass those into the constructor.
+         std::map<std::tuple<size_t, size_t, size_t>, double> values;
+         for ( auto it = other.begin(); it != other.end(); ++it ) {
+            const auto cell= (&it);
+            values.insert({ { cell.i(), cell.j(), cell.k()}, *(cell.data) });
+         }
+         return values;
+      }
+
+      std::map<std::tuple<size_t, size_t, size_t>, double> extract_values(const Raster<T>& other, double init_val) {
+         // Create a list of values and then pass those into the constructor.
+         std::map<std::tuple<size_t, size_t, size_t>, double> values;
+         for ( auto it = other.begin(); it != other.end(); ++it ) {
+            const auto cell= (&it);
+            values.insert({ { cell.i(), cell.j(), cell.k()}, init_val });
+         }
+         return values;
+      }
+
+
+
+      Raster( const Raster<T>& other, const std::tuple<size_t, size_t, size_t>& dims ) : Raster( { other.get_rows(), other.get_cols(), std::get<2>(dims) }, extract_values(other), other.get_type()) {
+   
+         const auto row   = std::get<0>( dims );
+         const auto col   = std::get<1>( dims );
+
+         if (row != 0 || col != 0) {
+            throw std::invalid_argument("Please set row and col to 0 acknowledging you are just changing the zindex for initilization");
+         }
+      }
+
       void convert_type_to(Rasters::TYPE type) {
          
          if ( type == this->get_type()) return; // Nothing to due, it is already that type!

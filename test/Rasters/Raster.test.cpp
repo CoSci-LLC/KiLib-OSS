@@ -606,6 +606,47 @@ TEST(Rasters, Init_Values_Z) {
 
 }
 
+TEST_P(Rasters, Init_3d_from_2d) {
+
+   KiLib::Rasters::Raster<double> a( {2, 2, 1},
+      {
+         { {0,0,0}, 44},
+         { {0,1,0}, 92}, //This is sparse on purpose
+         { {1,1,0}, 42},
+      }
+   , GetParam());
+   SetBasicRasterProperties(a);
+
+   const size_t Z = 6;
+   KiLib::Rasters::Raster<double> b( a, {0,0,Z});
+   SetBasicRasterProperties(b);
+
+   EXPECT_EQ(b.get_zindex(), Z);
+   EXPECT_EQ( *(b.get((size_t)0,0,0).data), *(a.get((size_t)0,0,0).data));
+   EXPECT_EQ( *(b.get((size_t)0,1,0).data), *(a.get((size_t)0,1,0).data));
+   EXPECT_EQ( *(b.get((size_t)1,1,0).data), *(a.get((size_t)1,1,0).data));
+}
+
+TEST_P(Rasters, Init_3d_from_2d_with_value) {
+
+   KiLib::Rasters::Raster<double> a( {2, 2, 1},
+      {
+         { {0,0,0}, 44},
+         { {0,1,0}, 92}, //This is sparse on purpose
+         { {1,1,0}, 42},
+      }
+   , GetParam());
+   SetBasicRasterProperties(a);
+
+   const size_t Z = 6;
+   KiLib::Rasters::Raster<double> b( a, {0,0,Z}, 8);
+   SetBasicRasterProperties(b);
+
+   EXPECT_EQ(b.get_zindex(), Z);
+   EXPECT_EQ( *(b.get((size_t)0,0,0).data), 8);
+   EXPECT_EQ( *(b.get((size_t)0,1,0).data), 8);
+   EXPECT_EQ( *(b.get((size_t)1,1,0).data), 8);
+}
 
 //Add sin/cos/etcc
 
