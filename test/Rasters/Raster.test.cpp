@@ -625,6 +625,10 @@ TEST_P(Rasters, Init_3d_from_2d) {
    EXPECT_EQ( *(b.get((size_t)0,0,0).data), *(a.get((size_t)0,0,0).data));
    EXPECT_EQ( *(b.get((size_t)0,1,0).data), *(a.get((size_t)0,1,0).data));
    EXPECT_EQ( *(b.get((size_t)1,1,0).data), *(a.get((size_t)1,1,0).data));
+
+   // Allow us to set a value in the new zindex
+   b.set((size_t)0, 0, 3, 4);
+
 }
 
 TEST_P(Rasters, Init_3d_from_2d_with_value) {
@@ -646,6 +650,8 @@ TEST_P(Rasters, Init_3d_from_2d_with_value) {
    EXPECT_EQ( *(b.get((size_t)0,0,0).data), 8);
    EXPECT_EQ( *(b.get((size_t)0,1,0).data), 8);
    EXPECT_EQ( *(b.get((size_t)1,1,0).data), 8);
+
+   b.set((size_t)0, 0, 3, 4);
 }
 
 //Add sin/cos/etcc

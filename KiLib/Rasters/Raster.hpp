@@ -141,7 +141,7 @@ namespace KiLib::Rasters
          }
       }
 
-     Raster( const Raster<T>& other, const std::tuple<size_t, size_t, size_t>& dims, double init_val ) : Raster( { other.get_rows(), other.get_cols(), std::get<2>(dims) }, extract_values(other, init_val), other.get_type()) {
+     Raster( const Raster<T>& other, const std::tuple<size_t, size_t, size_t>& dims, double init_val ) : Raster( { other.get_rows(), other.get_cols(), std::get<2>(dims) }, extract_values(other, std::get<2>(dims), init_val), other.get_type()) {
          const auto row   = std::get<0>( dims );
          const auto col   = std::get<1>( dims );
 
@@ -151,29 +151,33 @@ namespace KiLib::Rasters
       }
 
       
-      std::map<std::tuple<size_t, size_t, size_t>, double> extract_values(const Raster<T>& other) {
+      static std::map<std::tuple<size_t, size_t, size_t>, double> extract_values(const Raster<T>& other, size_t z) {
          // Create a list of values and then pass those into the constructor.
          std::map<std::tuple<size_t, size_t, size_t>, double> values;
          for ( auto it = other.begin(); it != other.end(); ++it ) {
             const auto cell= (&it);
-            values.insert({ { cell.i(), cell.j(), cell.k()}, *(cell.data) });
+            for (size_t z_loop = 0; z_loop < z; z_loop++) {
+              values.insert({ { cell.i(), cell.j(), z_loop}, *(cell.data) });
+            }
          }
          return values;
       }
 
-      std::map<std::tuple<size_t, size_t, size_t>, double> extract_values(const Raster<T>& other, double init_val) {
+      static std::map<std::tuple<size_t, size_t, size_t>, double> extract_values(const Raster<T>& other, size_t z, double init_val) {
          // Create a list of values and then pass those into the constructor.
          std::map<std::tuple<size_t, size_t, size_t>, double> values;
          for ( auto it = other.begin(); it != other.end(); ++it ) {
             const auto cell= (&it);
-            values.insert({ { cell.i(), cell.j(), cell.k()}, init_val });
+            for (size_t z_loop = 0; z_loop < z; z_loop++) {
+              values.insert({ { cell.i(), cell.j(), z_loop}, init_val });
+            }
          }
          return values;
       }
 
 
 
-      Raster( const Raster<T>& other, const std::tuple<size_t, size_t, size_t>& dims ) : Raster( { other.get_rows(), other.get_cols(), std::get<2>(dims) }, extract_values(other), other.get_type()) {
+      Raster( const Raster<T>& other, const std::tuple<size_t, size_t, size_t>& dims ) : Raster( { other.get_rows(), other.get_cols(), std::get<2>(dims) }, extract_values(other, std::get<2>(dims)), other.get_type()) {
    
          const auto row   = std::get<0>( dims );
          const auto col   = std::get<1>( dims );
