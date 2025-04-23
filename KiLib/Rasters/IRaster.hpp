@@ -1,7 +1,9 @@
 #pragma once
 
+#include <execution>
 #include <stddef.h>
 #include <algorithm>
+#include <mutex>
 #include <memory>
 #include <stdexcept>
 #include <sstream>
@@ -109,12 +111,7 @@ namespace KiLib::Rasters
 
         virtual size_t get_valid_cell_count() const 
         {
-            size_t count = 0;
-            for ( auto it = (*this).begin(); it != (*this).end(); ++it) {
-                if ( !(&it).is_nodata )
-                    count++;
-            }
-            return count++;
+            return std::distance( (*this).begin(), (*this).end()); 
         }
         
 

@@ -190,8 +190,6 @@ TEST_P(Rasters, exp) {
    }
 }
 
-
-
 // Demonstrate some basic assertions.
 TEST_P(Rasters, Basic_Operations) {
 
@@ -231,7 +229,6 @@ TEST_P(Rasters, Basic_Operations) {
    // Test a single multiplication
    EXPECT_EQ(b * 1, b);
    EXPECT_EQ(1 * b, b);
-
 
    EXPECT_EQ(a * 5, b);
    EXPECT_EQ(5 * a, b);
@@ -652,6 +649,21 @@ TEST_P(Rasters, Init_3d_from_2d_with_value) {
    EXPECT_EQ( *(b.get((size_t)1,1,0).data), 8);
 
    b.set((size_t)0, 0, 3, 4);
+}
+
+
+TEST_P(Rasters, valid_cell_count) {
+
+   KiLib::Rasters::Raster<double> a( {2, 2, 1},
+      {
+         { {0,0,0}, 44},
+         { {0,1,0}, 92}, //This is sparse on purpose
+         { {1,1,0}, 42},
+      }
+   , GetParam());
+   SetBasicRasterProperties(a);
+
+   EXPECT_EQ(a.get_valid_cell_count(), 3);
 }
 
 //Add sin/cos/etcc

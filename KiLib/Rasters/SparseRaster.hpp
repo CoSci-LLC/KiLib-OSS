@@ -179,6 +179,14 @@ namespace KiLib::Rasters
         }
       }
 
+      size_t get_valid_cell_count() const override  
+      {
+         auto nd = V == this->get_nodata_value();
+         return V.size() - V[nd].size();
+         // return std::distance( (*this).begin(), (*this).end()); 
+      }
+
+
       using IRaster<T>::set;
       void set( size_t i, size_t j, size_t k, const T& value ) override
       {
