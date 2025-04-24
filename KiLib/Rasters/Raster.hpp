@@ -306,6 +306,11 @@ namespace KiLib::Rasters
          return ApplyOperator( *this, other, Raster::OPERAND::PLUS );
       }
 
+      Raster<T> operator+( const T& val ) const
+      {
+         return ApplyOperator( *this, val, Raster::OPERAND::PLUS );
+      }
+
       Raster<T> operator-( const Raster<T>& other ) const
       {
          return ApplyOperator( *this, other, Raster::OPERAND::MINUS );
@@ -799,6 +804,11 @@ template <class T, typename C> KiLib::Rasters::Raster<T> operator/( const C& k, 
 template <class T, typename C> KiLib::Rasters::Raster<T> operator-( const C& k, const KiLib::Rasters::Raster<T>& a )
 {
    return a.op_minus(k);
+}
+
+template <class T, typename C> KiLib::Rasters::Raster<T> operator+( const C k, const KiLib::Rasters::Raster<T>& a )
+{
+   return a + k;
 }
 
 template <class T> KiLib::Rasters::Raster<T> operator-( const KiLib::Rasters::Raster<T>& a )
