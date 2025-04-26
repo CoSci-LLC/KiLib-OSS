@@ -430,7 +430,6 @@ namespace KiLib::Rasters
          return raster->max();
       }
 
-      
    private:
       IRaster<T>* raster;
       
@@ -815,3 +814,4 @@ template <class T> KiLib::Rasters::Raster<T> operator-( const KiLib::Rasters::Ra
 {
    return a * -1;
 }
+

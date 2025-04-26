@@ -260,7 +260,8 @@ TEST_P(Rasters, Basic_Operations) {
 
    EXPECT_EQ(a + b, c);
    EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
-   EXPECT_EQ(1 + b, c); // Make sure the order doesn't matter
+   EXPECT_EQ(1 + b, c); 
+   EXPECT_EQ(b + 1, c); // Make sure the order doesn't matter
 
    //
    // Testing Subtraction
@@ -695,3 +696,4 @@ TEST_P(Rasters, ierfc) {
    EXPECT_EQ(c, expected);
 
 }
+
