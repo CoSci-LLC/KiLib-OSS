@@ -150,6 +150,16 @@ namespace KiLib::Rasters
          }
       }
 
+
+     Raster( const Raster<T>& other, const std::tuple<size_t, size_t, size_t>& dims, double init_val, Rasters::TYPE type ): Raster( { other.get_rows(), other.get_cols(), std::get<2>(dims) }, extract_values(other, std::get<2>(dims), init_val), type) {
+         const auto row   = std::get<0>( dims );
+         const auto col   = std::get<1>( dims );
+
+         if (row != 0 || col != 0) {
+            throw std::invalid_argument("Please set row and col to 0 acknowledging you are just changing the zindex for initilization");
+         }
+      }
+
       
       static std::map<std::tuple<size_t, size_t, size_t>, double> extract_values(const Raster<T>& other, size_t z) {
          // Create a list of values and then pass those into the constructor.
