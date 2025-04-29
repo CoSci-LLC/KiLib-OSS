@@ -148,6 +148,8 @@ namespace KiLib::Rasters
          if (row != 0 || col != 0) {
             throw std::invalid_argument("Please set row and col to 0 acknowledging you are just changing the zindex for initilization");
          }
+
+         raster->copy_metadata_from(other);
       }
 
 
