@@ -759,23 +759,67 @@ namespace std
 
    template <class T> KiLib::Rasters::Raster<T> min( const KiLib::Rasters::Raster<T>& a, const KiLib::Rasters::Raster<T>& b)
    {
-      KiLib::Rasters::Raster<T> out(a);
-      for ( auto it = out.begin(); it != out.end(); ++it) 
+      if ( a.get_type() == b.get_type() &&  a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() && a.get_zindex() == b.get_zindex() )
       {
-         size_t r = (&it).i();
-         size_t c = (&it).j();
 
-         // Check if b is a no data cell
-         for ( size_t zindex = 0; zindex < out.get_zindex(); zindex++) {
-            auto cell_b = b.get(r,c, zindex);
-            
-            if (cell_b.is_nodata) continue;
+         KiLib::Rasters::Raster<T> out(a);
 
-            out.set(r,c, zindex, std::min( *(a.get(r,c,zindex).data), *(cell_b.data) ));
+         for ( auto it = out.begin(); it != out.end(); ++it) 
+         {
+            size_t r = (&it).i();
+            size_t c = (&it).j();
 
+            // Check if b is a no data cell
+            for ( size_t zindex = 0; zindex < out.get_zindex(); zindex++) {
+               auto cell_b = b.get(r, c, zindex);
+               
+               if (cell_b.is_nodata) continue;
+
+               out.set(r,c, zindex, std::min( *((&it).data), *(cell_b.data) ));
+
+            }
          }
+         return out;
+
+
+
+   
       }
-      return out;
+      else {
+
+
+         auto* op1     = &a;
+         auto* op2     = &b;
+
+         // Find the bigger, more element matrix.
+         if ( a.get_ndata() < b.get_ndata() )
+         {
+            op1     = &b;
+            op2     = &a;
+         }
+
+         KiLib::Rasters::Raster<T> out(*op1);
+         out.copy_metadata_from(*op1);
+
+         for ( auto it = out.begin(); it != out.end(); ++it) 
+         {
+            size_t r = (&it).i();
+            size_t c = (&it).j();
+            size_t x = (&it).x();
+            size_t y = (&it).y();
+
+            // Check if b is a no data cell
+            for ( size_t zindex = 0; zindex < out.get_zindex(); zindex++) {
+               auto cell_b = (*op2).get((double)x,(double)y, zindex);
+               
+               if (cell_b.is_nodata) continue;
+
+               out.set(r,c, zindex, std::min( *((&it).data), *(cell_b.data) ));
+
+            }
+         }
+         return out;
+      }
    }
 
 

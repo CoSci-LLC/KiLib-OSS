@@ -157,6 +157,8 @@ namespace KiLib::Rasters
                throw std::invalid_argument( "Could not retrieve value from netcdf" );
             }
 
+            if ( result == -9999) continue;
+
             if ( !construct_val( v, index, result ) )
             {
                throw std::invalid_argument( "Could not construct values for given type" );
