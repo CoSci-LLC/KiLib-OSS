@@ -724,35 +724,61 @@ namespace std
 
    template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& a, const KiLib::Rasters::Raster<T>& b)
    {
-      // Check the properties
-      if ( a.get_xllcorner() != b.get_xllcorner() ) throw invalid_argument("Rasters must have the same coordinates");
-      if ( a.get_yllcorner() != b.get_yllcorner() ) throw invalid_argument("Rasters must have the same coordinates");
-      if ( a.get_height() != b.get_height() ) throw invalid_argument("Rasters must have the same height");
-      if ( a.get_width() != b.get_width() ) throw invalid_argument("Rasters must have the same width");
-      if ( a.get_cellsize() != b.get_cellsize() ) throw invalid_argument("Rasters must have the same cell size");
-      if ( a.get_rows() != b.get_rows() ) throw invalid_argument("Rasters must have the same rows");
-      if ( a.get_cols() != b.get_cols() ) throw invalid_argument("Rasters must have the same cols");
-      if ( a.get_zindex() != b.get_zindex() ) throw invalid_argument("Rasters must have the same zindex");
-
-
-
-      KiLib::Rasters::Raster<T> out(a);
-      for ( auto it = out.begin(); it != out.end(); ++it) 
+      if ( a.get_type() == b.get_type() &&  a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() && a.get_zindex() == b.get_zindex() )
       {
-         size_t r = (&it).i();
-         size_t c = (&it).j();
-         size_t z = (&it).k();
 
-      
+         KiLib::Rasters::Raster<T> out(a);
 
-         auto cell_b = b.get(r,c, z);
+         for ( auto it = out.begin(); it != out.end(); ++it) 
+         {
+            size_t r = (&it).i();
+            size_t c = (&it).j();
+            size_t z = (&it).k();
 
-         if (cell_b.is_nodata) continue;
+            // Check if b is a no data cell
+               auto cell_b = b.get(r, c, z);
+               
+               if (cell_b.is_nodata) continue;
 
-         out.set(r,c,z, std::max( *((*it).data), *(cell_b.data) ));
+               out.set(r,c, z, std::max( *((&it).data), *(cell_b.data) ));
 
          }
-      return out;
+         return out;
+      }
+      else {
+
+
+         auto* op1     = &a;
+         auto* op2     = &b;
+
+         // Find the bigger, more element matrix.
+         if ( a.get_ndata() < b.get_ndata() )
+         {
+            op1     = &b;
+            op2     = &a;
+         }
+
+         KiLib::Rasters::Raster<T> out(*op1);
+         out.copy_metadata_from(*op1);
+
+         for ( auto it = out.begin(); it != out.end(); ++it) 
+         {
+            size_t r = (&it).i();
+            size_t c = (&it).j();
+            size_t z = (&it).k();
+            size_t x = (&it).x();
+            size_t y = (&it).y();
+
+               auto cell_b = (*op2).get((double)x,(double)y, z);
+               
+               if (cell_b.is_nodata) continue;
+
+               out.set(r,c, z, std::max( *((&it).data), *(cell_b.data) ));
+
+         }
+         return out;
+
+      }
    }
 
 
@@ -768,16 +794,15 @@ namespace std
          {
             size_t r = (&it).i();
             size_t c = (&it).j();
+            size_t z = (&it).k();
 
             // Check if b is a no data cell
-            for ( size_t zindex = 0; zindex < out.get_zindex(); zindex++) {
-               auto cell_b = b.get(r, c, zindex);
+               auto cell_b = b.get(r, c, z);
                
                if (cell_b.is_nodata) continue;
 
-               out.set(r,c, zindex, std::min( *((&it).data), *(cell_b.data) ));
+               out.set(r,c, z, std::min( *((&it).data), *(cell_b.data) ));
 
-            }
          }
          return out;
 
@@ -805,18 +830,16 @@ namespace std
          {
             size_t r = (&it).i();
             size_t c = (&it).j();
+            size_t z = (&it).k();
             size_t x = (&it).x();
             size_t y = (&it).y();
 
             // Check if b is a no data cell
-            for ( size_t zindex = 0; zindex < out.get_zindex(); zindex++) {
-               auto cell_b = (*op2).get((double)x,(double)y, zindex);
+               auto cell_b = (*op2).get((double)x,(double)y, z);
                
                if (cell_b.is_nodata) continue;
 
-               out.set(r,c, zindex, std::min( *((&it).data), *(cell_b.data) ));
-
-            }
+               out.set(r,c, z, std::min( *((&it).data), *(cell_b.data) ));
          }
          return out;
       }
