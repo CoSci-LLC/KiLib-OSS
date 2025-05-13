@@ -508,8 +508,11 @@ namespace KiLib::Rasters
             auto* op2     = &b;
             bool  swapped = false;
 
-            // Find the bigger, more element matrix.
-            if ( a.get_ndata() < b.get_ndata() )
+            if ( b.get_cellsize() < a.get_cellsize() ) {
+               op1     = &b;
+               op2     = &a;
+               swapped = true;
+            } else if ( a.get_ndata() < b.get_ndata() )
             {
                op1     = &b;
                op2     = &a;
