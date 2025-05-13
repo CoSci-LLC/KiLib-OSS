@@ -755,12 +755,16 @@ namespace std
          auto* op1     = &a;
          auto* op2     = &b;
 
-         // Find the bigger, more element matrix.
-         if ( a.get_ndata() < b.get_ndata() )
-         {
-            op1     = &b;
-            op2     = &a;
-         }
+            if ( b.get_cellsize() < a.get_cellsize() ) {
+               op1     = &b;
+               op2     = &a;
+            } else if ( a.get_ndata() < b.get_ndata() )
+            {
+               op1     = &b;
+               op2     = &a;
+            }
+
+
 
          KiLib::Rasters::Raster<T> out(*op1);
          out.copy_metadata_from(*op1);
@@ -821,11 +825,16 @@ namespace std
          auto* op2     = &b;
 
          // Find the bigger, more element matrix.
-         if ( a.get_ndata() < b.get_ndata() )
-         {
-            op1     = &b;
-            op2     = &a;
-         }
+            if ( b.get_cellsize() < a.get_cellsize() ) {
+               op1     = &b;
+               op2     = &a;
+            } else if ( a.get_ndata() < b.get_ndata() )
+            {
+               op1     = &b;
+               op2     = &a;
+            }
+
+
 
          KiLib::Rasters::Raster<T> out(*op1);
          out.copy_metadata_from(*op1);
