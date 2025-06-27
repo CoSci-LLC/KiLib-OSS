@@ -4,7 +4,7 @@
  * @date Jan 2025
  */
 
-#include <KiLib/Rasters/SparseRaster.hpp>
+//#include <KiLib/Rasters/SparseRaster.hpp>
 #include <KiLib/Rasters/Raster.hpp>
 #include <cmath>
 #include <gtest/gtest.h>

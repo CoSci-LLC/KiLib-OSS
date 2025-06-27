@@ -2,9 +2,9 @@
 
 #include "DenseRaster.hpp"
 #include "IRaster.hpp"
-#include "SparseRaster.hpp"
+//#include "SparseRaster.hpp"
 #include <KiLib/Rasters/IRaster.hpp>
-#include <KiLib/Rasters/SparseRaster.hpp>
+#include <KiLib/Rasters/SparseRaster_Vector.hpp>
 #include <KiLib/Rasters/DenseRaster.hpp>
 #include <algorithm>
 #include <functional>
@@ -526,58 +526,56 @@ namespace KiLib::Rasters
             // Need to loop through each cell in the larger raster->
             for ( auto it = op1->begin(); it != op1->end(); ++it) 
             {
-               size_t r = (&it).i();
-               size_t c = (&it).j();
+               const size_t r = (&it).i();
+               const size_t c = (&it).j();
+               const size_t zindex = (&it).k();
 
-                  for ( size_t zindex = 0; zindex < op1->get_zindex(); zindex++) {
+               const auto& cell_a = &(it);
 
-                     const auto& cell_a = &(it);
+                  // Use the x,y,z coordinates to get the proper cell.
+                  const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
 
-                     // Use the x,y,z coordinates to get the proper cell.
-                     const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
-
-                     if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
-                     {
-                        out.set( r, c, zindex, out.get_nodata_value() );
-                        continue;
-                     }
-
-                     double val = 0;
-
-                     switch ( op )
-                     {
-                     case IRaster<T>::OPERAND::MULTIPLY:
-                        val = *( cell_a.data ) * *( cell_b.data );
-                        break;
-                     case IRaster<T>::OPERAND::DIVIDE:
-                        if ( !swapped )
-                        {
-                           val = *( cell_a.data ) / *( cell_b.data );
-                        }
-                        else
-                        {
-                           val = *( cell_b.data ) / *( cell_a.data );
-                        }
-                        break;
-                     case IRaster<T>::OPERAND::PLUS:
-                        val = *( cell_a.data ) + *( cell_b.data );
-                        break;
-                     case IRaster<T>::OPERAND::MINUS:
-                        if ( !swapped )
-                        {
-                           val = *( cell_a.data ) - *( cell_b.data );
-                        }
-                        else
-                        {
-                           val = *( cell_b.data ) - *( cell_a.data );
-                        }
-                        break;
-                     default:
-                        throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
-                     };
-
-                     out.set( r, c, zindex, val );
+                  if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
+                  {
+                     out.set( r, c, zindex, out.get_nodata_value() );
+                     continue;
                   }
+
+                  double val = 0;
+
+                  switch ( op )
+                  {
+                  case IRaster<T>::OPERAND::MULTIPLY:
+                     val = *( cell_a.data ) * *( cell_b.data );
+                     break;
+                  case IRaster<T>::OPERAND::DIVIDE:
+                     if ( !swapped )
+                     {
+                        val = *( cell_a.data ) / *( cell_b.data );
+                     }
+                     else
+                     {
+                        val = *( cell_b.data ) / *( cell_a.data );
+                     }
+                     break;
+                  case IRaster<T>::OPERAND::PLUS:
+                     val = *( cell_a.data ) + *( cell_b.data );
+                     break;
+                  case IRaster<T>::OPERAND::MINUS:
+                     if ( !swapped )
+                     {
+                        val = *( cell_a.data ) - *( cell_b.data );
+                     }
+                     else
+                     {
+                        val = *( cell_b.data ) - *( cell_a.data );
+                     }
+                     break;
+                  default:
+                        throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+                  };
+
+                  out.set( r, c, zindex, val );
             }
 
             return out;
