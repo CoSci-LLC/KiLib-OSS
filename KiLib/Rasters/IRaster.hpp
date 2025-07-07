@@ -32,6 +32,16 @@ namespace KiLib::Rasters
         DENSE,
         SPARSE
     };
+
+      enum class OPERAND
+      {
+         MULTIPLY = 0,
+         DIVIDE,
+         PLUS,
+         MINUS,
+         MAX,
+         MIN
+      };
     
     template<typename T>
     class IRaster
@@ -209,8 +219,24 @@ namespace KiLib::Rasters
 
         virtual std::string to_string() const {
          std::stringstream ss; 
-         
-         ss << fmt::format( "Raster {} [{} x {}]\n", this->name, get_rows(), get_cols());
+        
+         ss << fmt::format( "Raster {} [{} x {}] [", this->name, get_rows(), get_cols());
+
+        // Get type of raster
+        switch (this->get_type()) {
+            case TYPE::DENSE:
+             ss << fmt::format( "DENSE]\n");
+            break;
+            case TYPE::SPARSE:
+             ss << fmt::format( "SPARSE]\n");
+            break;
+            case TYPE::INVALID:
+             ss << fmt::format( "INVALID]\n");
+            break;
+            default:
+             ss << fmt::format( "UNKNOWN]\n");
+
+        }
          ss << fmt::format( "  {} valid cells out of {} ({:.2f}% valid)\n", get_valid_cell_count(), this->get_ndata(), 100.0 * get_valid_cell_count() / this->get_ndata());
          ss << fmt::format( "  x: {}  y: {} nodata_val: {}\n", get_xllcorner(), get_yllcorner(), get_nodata_value()); 
 
@@ -399,16 +425,6 @@ namespace KiLib::Rasters
         double height;       // [m] Height in Y
         double nodata_value; // Value associated with no data from DEM
         std::string name = "(No name)";
-      enum class OPERAND
-      {
-         MULTIPLY = 0,
-         DIVIDE,
-         PLUS,
-         MINUS,
-         MAX,
-         MIN
-      };
-
     };
 }
 

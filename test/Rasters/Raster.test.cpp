@@ -224,6 +224,9 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_NE(a, b);
 
    EXPECT_EQ(a * b, b);
+   EXPECT_EQ(a * std::move(b), b);
+   EXPECT_EQ(std::move(a) * b, b);
+   EXPECT_EQ(std::move(a) * std::move(b), b);
    EXPECT_EQ(b * a, b);
 
    // Test a single multiplication
@@ -231,9 +234,14 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(1 * b, b);
 
    EXPECT_EQ(a * 5, b);
+   EXPECT_EQ(std::move(a) * 5, b);
    EXPECT_EQ(5 * a, b);
+   EXPECT_EQ(5 * std::move(a), b);
 
    EXPECT_EQ(b / a, b);
+   EXPECT_EQ(std::move(b) / std::move(a), b);
+   EXPECT_EQ(std::move(b) / a, b);
+   EXPECT_EQ(b / std::move(a), b);
    EXPECT_NE(a / b, b); // Make sure the ordering matters
    
    EXPECT_EQ(1 / a, a);
@@ -259,7 +267,13 @@ TEST_P(Rasters, Basic_Operations) {
    SetBasicRasterProperties(c);
 
    EXPECT_EQ(a + b, c);
+   EXPECT_EQ(std::move(a) + b, c);
+   EXPECT_EQ(a + std::move(b), c);
+   EXPECT_EQ(std::move(a) + std::move(b), c);
    EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
+   EXPECT_EQ(std::move(b) + a, c); 
+   EXPECT_EQ(b + std::move(a), c); 
+   EXPECT_EQ(std::move(b) + std::move(a), c); 
    EXPECT_EQ(1 + b, c); 
    EXPECT_EQ(b + 1, c); // Make sure the order doesn't matter
 
@@ -282,6 +296,10 @@ TEST_P(Rasters, Basic_Operations) {
 
    EXPECT_EQ(b - 1, d);
    EXPECT_EQ(b - a, d);
+
+   EXPECT_EQ(std::move(b) - a, d);
+   EXPECT_EQ(b - std::move(a), d);
+   EXPECT_EQ(std::move(b) - std::move(a), d);
    EXPECT_NE(a - b, d); // MAke sure the order does matter
    
    // Make sure that nodata cells are staying no data
@@ -310,61 +328,79 @@ TEST_P(Rasters, Basic_Operations) {
 
 }
 
-TEST(Rasters, Different_Sized_Rasters_Operatins) {
+TEST_P(Rasters, Different_Sized_Rasters_Operations) {
 
-
-   KiLib::Rasters::Raster<double> a(2, 2);
+   KiLib::Rasters::Raster<double> a( { 2, 2, 1},
+      {
+         {{0, 0, 0}, 2},
+         {{0, 1, 0}, 2},
+         {{1, 0, 0}, 2},
+         {{1, 1, 0}, 2},
+      }, GetParam());
    SetBasicRasterProperties(a);
-   a.set((size_t)0, 0, 2);
-   a.set((size_t)0, 1, 2);
-   a.set((size_t)1, 0, 2);
-   a.set((size_t)1, 1, 2);
 
-   KiLib::Rasters::Raster<double> b(4, 4);
+
+   KiLib::Rasters::Raster<double> b({4, 4, 1},
+   {
+      {{0, 0, 0}, 5},
+      {{0, 1, 0}, 5},
+      {{0, 2, 0}, 5},
+      {{0, 3, 0}, 5},
+      {{1, 0, 0}, 5},
+      {{1, 1, 0}, 5},
+      {{1, 2, 0}, 5},
+      {{1, 3, 0}, 5},
+      {{2, 0, 0}, 5},
+      {{2, 1, 0}, 5},
+      {{2, 2, 0}, 5},
+      {{2, 3, 0}, 5},
+      {{3, 0, 0}, 5},
+      {{3, 1, 0}, 5},
+      {{3, 2, 0}, 5},
+      {{3, 3, 0}, 5},
+   }, GetParam());
+ 
    SetBasicRasterProperties(b);
-   b.set((size_t)0, 0, 5);
-   b.set((size_t)0, 1, 5);
-   b.set((size_t)0, 2, 5);
-   b.set((size_t)0, 3, 5);
-   b.set((size_t)1, 0, 5);
-   b.set((size_t)1, 1, 5);
-   b.set((size_t)1, 2, 5);
-   b.set((size_t)1, 3, 5);
-   b.set((size_t)2, 0, 5);
-   b.set((size_t)2, 1, 5);
-   b.set((size_t)2, 2, 5);
-   b.set((size_t)2, 3, 5);
-   b.set((size_t)3, 0, 5);
-   b.set((size_t)3, 1, 5);
-   b.set((size_t)3, 2, 5);
-   b.set((size_t)3, 3, 5);
 
-
-   KiLib::Rasters::Raster<double> c(4, 4);
+   // To limit the amount of cycles on an operation, we are
+   // filling the sparse matrix on operations instead of
+   // filtering out to valid entries only. While it would be
+   // nice to have it 'resparse' itself, the cost for that operation
+   // would likely outweight the benefits
+    KiLib::Rasters::Raster<double> c( { 4, 4, 1},
+      {
+         {{0, 0, 0}, 10},
+         {{0, 1, 0}, 10},
+         {{1, 0, 0}, 10},
+         {{1, 1, 0}, 10},
+      {{0, 0, 0}, 10},
+      {{0, 1, 0}, 10},
+      {{0, 2, 0}, -9999},
+      {{0, 3, 0}, -9999},
+      {{1, 0, 0}, 10},
+      {{1, 1, 0}, 10},
+      {{1, 2, 0}, -9999},
+      {{1, 3, 0}, -9999},
+      {{2, 0, 0}, -9999},
+      {{2, 1, 0}, -9999},
+      {{2, 2, 0}, -9999},
+      {{2, 3, 0}, -9999},
+      {{3, 0, 0}, -9999},
+      {{3, 1, 0}, -9999},
+      {{3, 2, 0}, -9999},
+      {{3, 3, 0}, -9999},
+      }, GetParam());
    SetBasicRasterProperties(c);
-   c.set((size_t)0, 0, 10);
-   c.set((size_t)0, 1, 10);
-   c.set((size_t)0, 2, c.get_nodata_value());
-   c.set((size_t)0, 3, c.get_nodata_value());
-   c.set((size_t)1, 0, 10);
-   c.set((size_t)1, 1, 10);
-   c.set((size_t)1, 2, c.get_nodata_value());
-   c.set((size_t)1, 3, c.get_nodata_value());
-   c.set((size_t)2, 0, c.get_nodata_value());
-   c.set((size_t)2, 1, c.get_nodata_value());
-   c.set((size_t)2, 2, c.get_nodata_value());
-   c.set((size_t)2, 3, c.get_nodata_value());
-   c.set((size_t)3, 0, c.get_nodata_value());
-   c.set((size_t)3, 1, c.get_nodata_value());
-   c.set((size_t)3, 2, c.get_nodata_value());
-   c.set((size_t)3, 3, c.get_nodata_value());
 
-   const auto d = a * b;
-   const auto e = b * a;
+   auto e = b * a;
 
 
-   EXPECT_EQ(e, c);
-   EXPECT_EQ(d, c);
+
+   EXPECT_EQ(b * a, c);
+   EXPECT_EQ(a * b, c);
+   EXPECT_EQ(std::move(a) * b, c);
+   EXPECT_EQ(a * std::move(b), c);
+   EXPECT_EQ(std::move(a) * std::move(b), c);
    EXPECT_EQ(b * a, a * b);
 
 }
@@ -697,3 +733,162 @@ TEST_P(Rasters, ierfc) {
 
 }
 
+
+TEST_P(Rasters, operator_multi_rvalue) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 1},
+         {{0, 1, 0}, 1},
+         {{1, 0, 0}, 1},
+         {{1, 1, 0}, 1},
+         {{0, 0, 1}, 1},
+         {{0, 1, 1}, 1},
+         {{1, 0, 1}, 1},
+         {{1, 1, 1}, 1},
+      }, GetParam());
+   SetBasicRasterProperties(a);
+
+   KiLib::Rasters::Raster<double> b( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 5},
+         {{0, 1, 0}, 5},
+         {{1, 0, 0}, 5},
+         {{1, 1, 0}, 5},
+         {{0, 0, 1}, 5},
+         {{0, 1, 1}, 5},
+         {{1, 0, 1}, 5},
+         {{1, 1, 1}, 5},
+      }, GetParam());
+   SetBasicRasterProperties(b);
+
+   EXPECT_EQ(std::move(b) * 1, b);
+   EXPECT_EQ(1 * std::move(b), b);
+
+   EXPECT_EQ(std::move(a) * 5, b);
+   EXPECT_EQ(5 * std::move(a), b);
+}
+
+TEST_P(Rasters, operator_div_rvalue) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 1},
+         {{0, 1, 0}, 1},
+         {{1, 0, 0}, 1},
+         {{1, 1, 0}, 1},
+         {{0, 0, 1}, 1},
+         {{0, 1, 1}, 1},
+         {{1, 0, 1}, 1},
+         {{1, 1, 1}, 1},
+      }, GetParam());
+   SetBasicRasterProperties(a);
+
+   KiLib::Rasters::Raster<double> b( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 5},
+         {{0, 1, 0}, 5},
+         {{1, 0, 0}, 5},
+         {{1, 1, 0}, 5},
+         {{0, 0, 1}, 5},
+         {{0, 1, 1}, 5},
+         {{1, 0, 1}, 5},
+         {{1, 1, 1}, 5},
+      }, GetParam());
+   SetBasicRasterProperties(b);
+
+   EXPECT_EQ(1 / std::move(a), a);
+
+   KiLib::Rasters::Raster<double> b_div_result( {2,2,2}, 0.2);
+   SetBasicRasterProperties(b_div_result);
+   b_div_result.set_name("b_div_result");
+   b_div_result.convert_type_to(GetParam());
+   EXPECT_EQ(1 / std::move(b), b_div_result);
+}
+
+TEST_P(Rasters, operator_add_rvalue) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 1},
+         {{0, 1, 0}, 1},
+         {{1, 0, 0}, 1},
+         {{1, 1, 0}, 1},
+         {{0, 0, 1}, 1},
+         {{0, 1, 1}, 1},
+         {{1, 0, 1}, 1},
+         {{1, 1, 1}, 1},
+      }, GetParam());
+   SetBasicRasterProperties(a);
+
+   KiLib::Rasters::Raster<double> b( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 5},
+         {{0, 1, 0}, 5},
+         {{1, 0, 0}, 5},
+         {{1, 1, 0}, 5},
+         {{0, 0, 1}, 5},
+         {{0, 1, 1}, 5},
+         {{1, 0, 1}, 5},
+         {{1, 1, 1}, 5},
+      }, GetParam());
+   SetBasicRasterProperties(b);
+
+   KiLib::Rasters::Raster<double> c( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 6},
+         {{0, 1, 0}, 6},
+         {{1, 0, 0}, 6},
+         {{1, 1, 0}, 6},
+         {{0, 0, 1}, 6},
+         {{0, 1, 1}, 6},
+         {{1, 0, 1}, 6},
+         {{1, 1, 1}, 6},
+      }, GetParam());
+   SetBasicRasterProperties(c);
+
+   EXPECT_EQ(1 + std::move(b), c); // Make sure the order doesn't matter
+   EXPECT_EQ(std::move(b) + 1, c); // Make sure the order doesn't matter
+
+}
+
+
+TEST_P(Rasters, operator_sub_rvalue) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 1},
+         {{0, 1, 0}, 1},
+         {{1, 0, 0}, 1},
+         {{1, 1, 0}, 1},
+         {{0, 0, 1}, 1},
+         {{0, 1, 1}, 1},
+         {{1, 0, 1}, 1},
+         {{1, 1, 1}, 1},
+      }, GetParam());
+   SetBasicRasterProperties(a);
+
+   KiLib::Rasters::Raster<double> b( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 5},
+         {{0, 1, 0}, 5},
+         {{1, 0, 0}, 5},
+         {{1, 1, 0}, 5},
+         {{0, 0, 1}, 5},
+         {{0, 1, 1}, 5},
+         {{1, 0, 1}, 5},
+         {{1, 1, 1}, 5},
+      }, GetParam());
+   SetBasicRasterProperties(b);
+
+   KiLib::Rasters::Raster<double> d( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 4},
+         {{0, 1, 0}, 4},
+         {{1, 0, 0}, 4},
+         {{1, 1, 0}, 4},
+         {{0, 0, 1}, 4},
+         {{0, 1, 1}, 4},
+         {{1, 0, 1}, 4},
+         {{1, 1, 1}, 4},
+      }, GetParam());
+   SetBasicRasterProperties(d);
+
+   EXPECT_EQ(std::move(b) - 1, d);
+}

@@ -3,6 +3,7 @@
 # Add sources to the main project
 target_sources(${projectName} PRIVATE
 	Raster.cpp
+	SparseRaster_Vector.cpp
 #	ComputeSlope.cpp
 )
 

@@ -9,6 +9,9 @@
 #include <stdexcept>
 #include <vector>
 
+#ifndef EXEC_POLICY
+#define EXEC_POLICY std::execution::seq
+#endif
 
 namespace KiLib::Rasters
 {
@@ -42,6 +45,48 @@ namespace KiLib::Rasters
           }
 
 
+   friend SparseRaster<T> operator*(SparseRaster<T>&& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> operator*(const SparseRaster<T>& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> operator*(const SparseRaster<T>& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> operator*(SparseRaster<T>&& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> operator*(const double k, const SparseRaster<T>& a);
+   friend SparseRaster<T> operator*(const double k, SparseRaster<T>&& a);
+   friend SparseRaster<T> operator*(const SparseRaster<T>& a, const double k);
+   friend SparseRaster<T> operator*(SparseRaster<T>&& a, const double k);
+
+
+
+
+   friend SparseRaster<T> operator+(SparseRaster<T>&& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> operator+(const SparseRaster<T>& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> operator+(const SparseRaster<T>& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> operator+(SparseRaster<T>&& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> operator+(const double k, const SparseRaster<T>& a);
+   friend SparseRaster<T> operator+(const double k, SparseRaster<T>&& a);
+   friend SparseRaster<T> operator+(const SparseRaster<T>& a, const double k);
+   friend SparseRaster<T> operator+(SparseRaster<T>&& a, const double k);
+
+
+
+   friend SparseRaster<T> operator-(SparseRaster<T>&& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> operator-(const SparseRaster<T>& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> operator-(const SparseRaster<T>& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> operator-(SparseRaster<T>&& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> operator-(const double k, const SparseRaster<T>& a);
+   friend SparseRaster<T> operator-(const double k, SparseRaster<T>&& a);
+   friend SparseRaster<T> operator-(const SparseRaster<T>& a, const double k);
+   friend SparseRaster<T> operator-(SparseRaster<T>&& a, const double k);
+
+
+
+   friend SparseRaster<T> operator/(SparseRaster<T>&& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> operator/(const SparseRaster<T>& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> operator/(const SparseRaster<T>& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> operator/(SparseRaster<T>&& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> operator/(const double k, const SparseRaster<T>& a);
+   friend SparseRaster<T> operator/(const double k, SparseRaster<T>&& a);
+   friend SparseRaster<T> operator/(const SparseRaster<T>& a, const double k);
+   friend SparseRaster<T> operator/(SparseRaster<T>&& a, const double k);
 
 
 
@@ -99,7 +144,9 @@ namespace KiLib::Rasters
 
           }
 
-      SparseRaster( const std::tuple<size_t, size_t, size_t>& dims, const std::map<std::tuple<size_t, size_t, size_t>, double>& values ) : nnz( values.size() ), V(nnz), COL_INDEX(nnz), ROW_INDEX(std::get<0>(dims) + 1), Z_INDEX(nnz)
+
+
+      SparseRaster( const std::tuple<size_t, size_t, size_t>& dims, const std::map<std::tuple<size_t, size_t, size_t>, double>& values ) : nnz( std::get<0>(dims) * std::get<1>(dims) * std::get<2>(dims) ), V(values.size()), COL_INDEX(values.size()), ROW_INDEX(std::get<0>(dims) + 1), Z_INDEX(values.size())
       {
          const auto rows   = std::get<0>( dims );
          const auto cols   = std::get<1>( dims );
@@ -143,7 +190,7 @@ namespace KiLib::Rasters
       }
 
 
-        SparseRaster(const SparseRaster<T>& other, const std::valarray<T>& new_data) : nnz( other.nnz ), V( new_data ), COL_INDEX(other.COL_INDEX), ROW_INDEX(other.ROW_INDEX), Z_INDEX(other.Z_INDEX)
+        SparseRaster(const SparseRaster<T>& other, const std::vector<T>& new_data) : nnz( other.nnz ), V( new_data ), COL_INDEX(other.COL_INDEX), ROW_INDEX(other.ROW_INDEX), Z_INDEX(other.Z_INDEX)
          {
 
          this->nnz  = other.get_ndata();
@@ -199,21 +246,23 @@ namespace KiLib::Rasters
 
       size_t get_ndata() const override
       {
-         return this->nnz;
+         return this->V.size();
       }
 
       T min() const override {
          T m = std::numeric_limits<double>::max();
-         for( size_t i = 0; i < nnz; i++ ) {
-               m = std::min(m, V[i]);
+         for( size_t i = 0; i < V.size(); i++ ) {
+               if ( V[i] != this->get_nodata_value()) 
+                  m = std::min(m, V[i]);
          }
          return m;
       }
 
       T max() const override {
          T m = std::numeric_limits<double>::min();
-         for( size_t i = 0; i < nnz; i++ ) {
-               m = std::max(m, V[i]);
+         for( size_t i = 0; i < V.size(); i++ ) {
+               if ( V[i] != this->get_nodata_value()) 
+                  m = std::max(m, V[i]);
          }
          return m;
       }
@@ -225,7 +274,7 @@ namespace KiLib::Rasters
             KiLib::Rasters::SparseRaster<T> out(*this);
 
             const auto nodata = this->get_nodata_value();
-            std::transform(V.begin(), V.end(), out.V.begin(), [&nodata, &val](T v) { if (v == nodata) {return nodata; } else { return val / v;  } } );
+            std::transform(EXEC_POLICY, V.begin(), V.end(), out.V.begin(), [&nodata, &val](T v) { if (v == nodata) {return nodata; } else { return val / v;  } } );
 
             return out;
          }  
@@ -235,7 +284,7 @@ namespace KiLib::Rasters
             KiLib::Rasters::SparseRaster<T> out(*this);
 
             const auto nodata = this->get_nodata_value();
-            std::transform(V.begin(), V.end(), out.V.begin(), [&nodata, &val](T v) { if (v == nodata) {return nodata; } else { return val - v;  } } );
+            std::transform(EXEC_POLICY, V.begin(), V.end(), out.V.begin(), [&nodata, &val](T v) { if (v == nodata) {return nodata; } else { return val - v;  } } );
 
             return out;
          }  
@@ -245,7 +294,7 @@ namespace KiLib::Rasters
             KiLib::Rasters::SparseRaster<T> out(*this);
 
             const auto nodata = this->get_nodata_value();
-            std::transform(V.begin(), V.end(), out.V.begin(), [&nodata](T v) { if (v == nodata) {return nodata; } else {
+            std::transform(EXEC_POLICY, V.begin(), V.end(), out.V.begin(), [&nodata](T v) { if (v == nodata) {return nodata; } else {
 
                return 1 / std::sqrt(M_PI) * std::exp( -1 * std::pow(v, 2)) - v * std::erfc(v);
           } } );
@@ -259,7 +308,7 @@ namespace KiLib::Rasters
             KiLib::Rasters::SparseRaster<T> out(*this);
 
             const auto nodata = this->get_nodata_value();
-            std::transform(V.begin(), V.end(), out.V.begin(), [&nodata](T v) { if (v == nodata) {return nodata; } else { return std::erfc(v);  } } );
+            std::transform( EXEC_POLICY, V.begin(), V.end(), out.V.begin(), [&nodata](T v) { if (v == nodata) {return nodata; } else { return std::erfc(v);  } } );
 
             return out;
          }  
@@ -276,120 +325,6 @@ namespace KiLib::Rasters
 
     }
 
-template <typename C> SparseRaster<T> operator*(const C k ) const  
-{
-      KiLib::Rasters::SparseRaster<T> out(*this);
-      const auto nodata = this->get_nodata_value();
-      std::transform(V.begin(), V.end(), out.V.begin(), [&nodata, &k](T v) { if (v == nodata) {return nodata; } else { return v * k;  } } );
-
-      return out;
-}
-
-template <typename C> SparseRaster<T> operator+(const C k ) const  
-{
-      KiLib::Rasters::SparseRaster<T> out(*this);
-
-      const auto nodata = this->get_nodata_value();
-      std::transform(V.begin(), V.end(), out.V.begin(), [&nodata, &k](T v) { if (v == nodata) {return nodata; } else { return v + k;  } } );
-
-      return out;
-}
-
-
-template <typename C> SparseRaster<T> operator-(const C k ) const  
-{
-    KiLib::Rasters::SparseRaster<T> out(*this);
-
-
-      const auto nodata = this->get_nodata_value();
-      std::transform(V.begin(), V.end(), out.V.begin(), [&nodata, &k](T v) { if (v == nodata) {return nodata; } else { return v - k;  } } );
-
-
-   return out;
-}
-
-
-SparseRaster<T> operator*( const SparseRaster<T>& b) const 
-{
-    if ( ! can_perform_operation(b) ) {
-      return ApplyOperator(*this, b, OPERAND::MULTIPLY);
-    }
-
-      KiLib::Rasters::SparseRaster<T> out(*this);
-      const auto nodata = this->get_nodata_value();
-      const auto nodata_b = b.get_nodata_value();
-      std::transform(V.begin(), V.end(), b.V.begin(), out.V.begin(), [&nodata, &nodata_b](const T& a, const T& b) { if (a == nodata || b == nodata_b) {return nodata_b; } else { return a * b;  } } );
-
-      out.set_name(this->get_name() + " * " + b.get_name());
-
-      return out;
-}
-
-
-
-template <typename C> KiLib::Rasters::SparseRaster<T> operator/(const C k ) const
-{
-
-    KiLib::Rasters::SparseRaster<T> out(*this);
-      const auto nodata = this->get_nodata_value();
-      std::transform(V.begin(), V.end(), out.V.begin(), [&nodata, &k](T v) { if (v == nodata) {return nodata; } else { return v / k;  } } );
-   return out;
-}
-
-        template <typename C> friend KiLib::Rasters::SparseRaster<T> operator/( const C, const KiLib::Rasters::SparseRaster<T>&  );
-
-
-SparseRaster<T> operator/(const SparseRaster<T>& b )
-{
-    if ( ! can_perform_operation(b) ) {
-        throw std::invalid_argument("Rasters cannot be divided because they aren't the same dimensions");
-    }
-
-      KiLib::Rasters::SparseRaster<T> out(*this);
-      const auto nodata = this->get_nodata_value();
-      const auto nodata_b = b.get_nodata_value();
-      std::transform(V.begin(), V.end(), b.V.begin(), out.V.begin(), [&nodata, &nodata_b](const T& a, const T& b) { if (a == nodata || b == nodata_b) {return nodata_b; } else { return a / b;  } } );
-
-      out.set_name(this->get_name() + " / " + b.get_name());
-
-   return out;
-}
-
-SparseRaster<T> operator+(const SparseRaster<T>& b )
-{
-    if ( ! can_perform_operation(b) ) {
-        throw std::invalid_argument("Rasters cannot be added because they aren't the same dimensions");
-    }
-
-    KiLib::Rasters::SparseRaster<T> out(*this);
-      const auto nodata = this->get_nodata_value();
-      const auto nodata_b = b.get_nodata_value();
-      std::transform(V.begin(), V.end(), b.V.begin(), out.V.begin(), [&nodata, &nodata_b](const T& a, const T& b) { if (a == nodata || b == nodata_b) {return nodata_b; } else { return a + b;  } } );
-
-
-
-
-
-    out.set_name(this->get_name() + " + " + b.get_name());
-   return out;
-}
-
-SparseRaster<T> operator-(const SparseRaster<T>& b )
-{
-    if ( ! can_perform_operation(b) ) {
-        throw std::invalid_argument("Rasters cannot be subtracted because they aren't the same dimensions");
-    }
-
-    KiLib::Rasters::SparseRaster<T> out(*this);
-      const auto nodata = this->get_nodata_value();
-      const auto nodata_b = b.get_nodata_value();
-      std::transform(V.begin(), V.end(), b.V.begin(), out.V.begin(), [&nodata, &nodata_b](const T& a, const T& b) { if (a == nodata || b == nodata_b) {return nodata_b; } else { return a - b;  } } );
-
-
-    out.set_name(this->get_name() + " - " + b.get_name());
-
-   return out;
-}
         friend KiLib::Rasters::SparseRaster<T> std::clamp( const KiLib::Rasters::SparseRaster<T>&  ,const T&, const T&);
 
 
@@ -463,15 +398,7 @@ SparseRaster<T> operator-(const SparseRaster<T>& b )
 
        }
 
-      enum class OPERAND
-      {
-         MULTIPLY = 0,
-         DIVIDE,
-         PLUS,
-         MINUS
-      };
-
-      SparseRaster<T> ApplyOperator( const SparseRaster<T>& a, const SparseRaster<T>& b, OPERAND op ) const
+      static SparseRaster<T> ApplyOperator( const SparseRaster<T>& a, const SparseRaster<T>& b, OPERAND op )
       {
          auto* op1     = &a;
          auto* op2     = &b;
@@ -572,33 +499,6 @@ SparseRaster<T> operator-(const SparseRaster<T>& b )
 } // namespace KiLib::Rasters
 
 
-template <typename T, typename C> KiLib::Rasters::SparseRaster<T> operator*( const C k, const KiLib::Rasters::SparseRaster<T>& a )
-{
-   return a * k;
-}
-
-template <class T, typename C> KiLib::Rasters::SparseRaster<T> operator/( const C k, const KiLib::Rasters::SparseRaster<T>& a )
-{
-   KiLib::Rasters::SparseRaster<T> out(a);
-
-   const auto nodata = a.get_nodata_value();
-   std::transform(a.V.begin(), a.V.end(), out.V.begin(), [&nodata, &k](T v) { if (v == nodata) {return nodata; } else { return k / v;  } } );
-
-
-    return out;
-}
-
-template <class T, typename C> KiLib::Rasters::SparseRaster<T> operator-( const C k, const KiLib::Rasters::SparseRaster<T>& a )
-{
-   KiLib::Rasters::SparseRaster<T> out(a, k - a.V );
-   return out;
-}
-template <class T, typename C> KiLib::Rasters::SparseRaster<T> operator+( const C k, const KiLib::Rasters::SparseRaster<T>& a )
-{
-   return a + k;
-}
-
-
 template <class T> KiLib::Rasters::SparseRaster<T> operator-( const KiLib::Rasters::SparseRaster<T>& a )
 {
    return -1 * a;
@@ -609,7 +509,7 @@ namespace std {
    template <class T> KiLib::Rasters::SparseRaster<T> clamp( const KiLib::Rasters::SparseRaster<T>& a, const T& lo, const T& hi)
    {
       auto in = a.V;
-      std::transform(std::begin(in), std::end(in), std::begin(in), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
+      std::transform(EXEC_POLICY, std::begin(in), std::end(in), std::begin(in), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
       KiLib::Rasters::SparseRaster<T> out( a, in );
       return out;
    }

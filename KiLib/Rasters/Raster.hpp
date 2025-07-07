@@ -20,6 +20,7 @@
 
 namespace KiLib::Rasters
 {
+
    /**
     * A proxy class for KiLib Rasters. Enables the use of different kinds of rasters 
     * without having to adjust dependent code
@@ -27,6 +28,45 @@ namespace KiLib::Rasters
    template <typename T> class Raster  : public IRaster<T>
    {
    public:
+
+   friend Raster<T> operator*(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T> operator*(const Raster<T>& a, const Raster<T>& b) ;
+   friend Raster<T> operator*(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator*(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator*(const double k, const Raster<T>& a);
+   friend Raster<T> operator*(const double k, Raster<T>&& a);
+   friend Raster<T> operator*(const Raster<T>& a, const double k);
+   friend Raster<T> operator*(Raster<T>&& a, const double k);
+
+   friend Raster<T> operator-(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T> operator-(const Raster<T>& a, const Raster<T>& b) ;
+   friend Raster<T> operator-(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator-(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator-(const double k, const Raster<T>& a);
+   friend Raster<T> operator-(const double k, Raster<T>&& a);
+   friend Raster<T> operator-(const Raster<T>& a, const double k);
+   friend Raster<T> operator-(Raster<T>&& a, const double k);
+
+   friend Raster<T> operator+(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T> operator+(const Raster<T>& a, const Raster<T>& b) ;
+   friend Raster<T> operator+(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator+(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator+(const double k, const Raster<T>& a);
+   friend Raster<T> operator+(const double k, Raster<T>&& a);
+   friend Raster<T> operator+(const Raster<T>& a, const double k);
+   friend Raster<T> operator+(Raster<T>&& a, const double k);
+
+   friend Raster<T> operator/(Raster<T>&& a, const Raster<T>& b) ;
+   friend Raster<T> operator/(const Raster<T>& a, const Raster<T>& b) ;
+   friend Raster<T> operator/(const Raster<T>& a, Raster<T>&& b) ;
+   friend Raster<T> operator/(Raster<T>&& a, Raster<T>&& b) ;
+   friend Raster<T> operator/(const double k, const Raster<T>& a);
+   friend Raster<T> operator/(const double k, Raster<T>&& a);
+   friend Raster<T> operator/(const Raster<T>& a, const double k);
+   friend Raster<T> operator/(Raster<T>&& a, const double k);
+
+
+
 
       // Just call the other constructor with the zindex = 1
       Raster( size_t rows, size_t cols) : Raster( std::make_tuple(rows, cols, 1))
@@ -301,44 +341,12 @@ namespace KiLib::Rasters
 
       TYPE get_type() const override { return raster->get_type(); }
 
-      /**
-       * Element by element multiplication. Returns a Raster class (may be different that what was provided)
-       */
-      Raster<T> operator*( const Raster<T>& other ) const 
-      {
-         return ApplyOperator( *this, other, Raster::OPERAND::MULTIPLY );
-      }
-
-      Raster<T> operator*( const T val ) const 
-      {
-         return ApplyOperator( *this, val, Raster::OPERAND::MULTIPLY );
-      }
-
-      Raster<T> operator+( const Raster<T>& other ) const
-      {
-         return ApplyOperator( *this, other, Raster::OPERAND::PLUS );
-      }
-
-      Raster<T> operator+( const T& val ) const
-      {
-         return ApplyOperator( *this, val, Raster::OPERAND::PLUS );
-      }
-
-      Raster<T> operator-( const Raster<T>& other ) const
-      {
-         return ApplyOperator( *this, other, Raster::OPERAND::MINUS );
-      }
-      Raster<T> operator-( const T& val ) const
-      {
-         return ApplyOperator( *this, val, Raster::OPERAND::MINUS );
-      }
-
       Raster<T> op_minus(const T& val) const {
-         return ApplyOperator( val, *this, Raster::OPERAND::MINUS);
+         return ApplyOperator( val, *this, OPERAND::MINUS);
       }
 
       Raster<T> op_divide(const T& val) const {
-         return ApplyOperator( val, *this, Raster::OPERAND::DIVIDE);
+         return ApplyOperator( val, *this, OPERAND::DIVIDE);
       }
 
       Raster<T> op_erfc() const
@@ -370,21 +378,6 @@ namespace KiLib::Rasters
             throw NotImplementedException("Other types for operands have not been created");
       }
 
-
-
-
-
-
-
-      Raster<T> operator/( const Raster<T>& other ) const
-      {
-         return ApplyOperator( *this, other, Raster::OPERAND::DIVIDE );
-      }
-
-      Raster<T> operator/( const T& val ) const
-      {
-         return ApplyOperator( *this, val, Raster::OPERAND::DIVIDE );
-      }
 
       bool operator==(const Raster<T>& rhs) const {
          
@@ -450,139 +443,13 @@ namespace KiLib::Rasters
       T get_data(size_t i, size_t j, size_t k) const override { return raster->get_data(i,j,k); }
 
 
-      Raster<T> ApplyOperator( const Raster<T>& a, const Raster<T>& b, typename IRaster<T>::OPERAND op ) const
-      {
-         // Either use the index to multiply each element, or if we don't have the same kind of rasters
-         // we need to multiply by the location, which is slower
-         if ( a.get_type() == b.get_type() &&  a.get_rows() == b.get_rows() && a.get_cols() == b.get_cols() && a.get_zindex() == b.get_zindex() )
-         {
 
-            if (a.get_type() == TYPE::DENSE ) {
-
-               // Cast to the dense rasters so we can utilize the special methods there
-               KiLib::Rasters::DenseRaster<T>* ad = (KiLib::Rasters::DenseRaster<T>*)a.raster;
-               KiLib::Rasters::DenseRaster<T>* bd = (KiLib::Rasters::DenseRaster<T>*)b.raster;
-
-               switch ( op )
-               {
-               case IRaster<T>::OPERAND::MULTIPLY:
-                  return *ad * *bd;
-               case IRaster<T>::OPERAND::DIVIDE:
-                  return *ad / *bd;
-                  break;
-               case IRaster<T>::OPERAND::PLUS:
-                  return *ad + *bd;
-                  break;
-               case IRaster<T>::OPERAND::MINUS:
-                  return *ad - *bd;
-               default:
-                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
-               };
-            } else if ( a.get_type() == TYPE::SPARSE ) {
-                // Cast to the sparse rasters so we can utilize the special methods there
-               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
-               KiLib::Rasters::SparseRaster<T>* bd = (KiLib::Rasters::SparseRaster<T>*)b.raster;
-
-               switch ( op )
-               {
-               case IRaster<T>::OPERAND::MULTIPLY:
-                  return *ad * *bd;
-               case IRaster<T>::OPERAND::DIVIDE:
-                  return *ad / *bd;
-                  break;
-               case IRaster<T>::OPERAND::PLUS:
-                  return *ad + *bd;
-                  break;
-               case IRaster<T>::OPERAND::MINUS:
-                  return *ad - *bd;
-               default:
-                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
-               };
-            }
-            throw NotImplementedException("Other types for operands have not been created");
-         }
-         else // Multiply by rasters
-         {
-
-            auto* op1     = &a;
-            auto* op2     = &b;
-            bool  swapped = false;
-
-            if ( b.get_cellsize() < a.get_cellsize() ) {
-               op1     = &b;
-               op2     = &a;
-               swapped = true;
-            } else if ( a.get_ndata() < b.get_ndata() )
-            {
-               op1     = &b;
-               op2     = &a;
-               swapped = true;
-            }
-
-         Raster<T> out( *op1 ); // std::make_tuple( op1->get_rows(), op1->get_cols(), op1->get_zindex() ));
-
-            out.copy_metadata_from(*op1);
-
-            // Need to loop through each cell in the larger raster->
-            for ( auto it = op1->begin(); it != op1->end(); ++it) 
-            {
-               const size_t r = (&it).i();
-               const size_t c = (&it).j();
-               const size_t zindex = (&it).k();
-
-               const auto& cell_a = &(it);
-
-                  // Use the x,y,z coordinates to get the proper cell.
-                  const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
-
-                  if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
-                  {
-                     out.set( r, c, zindex, out.get_nodata_value() );
-                     continue;
-                  }
-
-                  double val = 0;
-
-                  switch ( op )
-                  {
-                  case IRaster<T>::OPERAND::MULTIPLY:
-                     val = *( cell_a.data ) * *( cell_b.data );
-                     break;
-                  case IRaster<T>::OPERAND::DIVIDE:
-                     if ( !swapped )
-                     {
-                        val = *( cell_a.data ) / *( cell_b.data );
-                     }
-                     else
-                     {
-                        val = *( cell_b.data ) / *( cell_a.data );
-                     }
-                     break;
-                  case IRaster<T>::OPERAND::PLUS:
-                     val = *( cell_a.data ) + *( cell_b.data );
-                     break;
-                  case IRaster<T>::OPERAND::MINUS:
-                     if ( !swapped )
-                     {
-                        val = *( cell_a.data ) - *( cell_b.data );
-                     }
-                     else
-                     {
-                        val = *( cell_b.data ) - *( cell_a.data );
-                     }
-                     break;
-                  default:
-                        throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
-                  };
-
-                  out.set( r, c, zindex, val );
-            }
-
-            return out;
-         }
-      }
-
-      Raster<T> ApplyOperator( const Raster<T>& a, const T b, typename IRaster<T>::OPERAND op ) const
+      static Raster<T> ApplyOperator( const Raster<T>& a, const Raster<T>& b, OPERAND op );
+      static Raster<T> ApplyOperator_LR( const Raster<T>& a, Raster<T>&& b, OPERAND op );
+      static Raster<T> ApplyOperator_RL( Raster<T>&& a, const Raster<T>& b, OPERAND op );
+      static Raster<T> ApplyOperator_RR( Raster<T>&& a, Raster<T>&& b, OPERAND op );
+    
+      static Raster<T> ApplyOperator( const Raster<T>& a, const T b, OPERAND op )
       {
          if (a.get_type() == TYPE::DENSE ) {
 
@@ -591,15 +458,15 @@ namespace KiLib::Rasters
 
                switch ( op )
                {
-               case IRaster<T>::OPERAND::MULTIPLY:
+               case OPERAND::MULTIPLY:
                   return *ad * b;
-               case IRaster<T>::OPERAND::DIVIDE:
+               case OPERAND::DIVIDE:
                   return *ad / b;
                   break;
-               case IRaster<T>::OPERAND::PLUS:
+               case OPERAND::PLUS:
                   return *ad + b;
                   break;
-               case IRaster<T>::OPERAND::MINUS:
+               case OPERAND::MINUS:
                   return *ad - b;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
@@ -610,15 +477,15 @@ namespace KiLib::Rasters
 
                switch ( op )
                {
-               case IRaster<T>::OPERAND::MULTIPLY:
+               case OPERAND::MULTIPLY:
                   return *ad * b;
-               case IRaster<T>::OPERAND::DIVIDE:
+               case OPERAND::DIVIDE:
                   return *ad / b;
                   break;
-               case IRaster<T>::OPERAND::PLUS:
+               case OPERAND::PLUS:
                   return *ad + b;
                   break;
-               case IRaster<T>::OPERAND::MINUS:
+               case OPERAND::MINUS:
                   return *ad - b;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
@@ -627,7 +494,7 @@ namespace KiLib::Rasters
             throw NotImplementedException("Other types for operands have not been created");
       }
 
-      Raster<T> ApplyOperator(  const T& b, const Raster<T>& a, typename IRaster<T>::OPERAND op ) const
+      static Raster<T> ApplyOperator( Raster<T>&& a, const T b, OPERAND op )
       {
          if (a.get_type() == TYPE::DENSE ) {
 
@@ -636,15 +503,62 @@ namespace KiLib::Rasters
 
                switch ( op )
                {
-               case IRaster<T>::OPERAND::MULTIPLY:
+               case OPERAND::MULTIPLY:
                   return *ad * b;
-               case IRaster<T>::OPERAND::DIVIDE:
-                  return (*ad).op_divide(b) ;
+               case OPERAND::DIVIDE:
+                  return *ad / b;
                   break;
-               case IRaster<T>::OPERAND::PLUS:
+               case OPERAND::PLUS:
                   return *ad + b;
                   break;
-               case IRaster<T>::OPERAND::MINUS:
+               case OPERAND::MINUS:
+                  return *ad - b;
+               default:
+                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+               };
+            } else if ( a.get_type() == TYPE::SPARSE ) {
+               // Cast to the sparse rasters so we can utilize the special methods there
+               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
+
+               switch ( op )
+               {
+               case OPERAND::MULTIPLY:
+                  return *ad * b;
+               case OPERAND::DIVIDE:
+                  return *ad / b;
+                  break;
+               case OPERAND::PLUS:
+                  return *ad + b;
+                  break;
+               case OPERAND::MINUS:
+                  return *ad - b;
+               default:
+                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+               };
+            }
+            throw NotImplementedException("Other types for operands have not been created");
+      }
+
+
+
+      static Raster<T> ApplyOperator(  const T& b, const Raster<T>& a, OPERAND op ) 
+      {
+         if (a.get_type() == TYPE::DENSE ) {
+
+               // Cast to the dense rasters so we can utilize the special methods there
+               KiLib::Rasters::DenseRaster<T>* ad = (KiLib::Rasters::DenseRaster<T>*)a.raster;
+
+               switch ( op )
+               {
+               case OPERAND::MULTIPLY:
+                  return *ad * b;
+               case OPERAND::DIVIDE:
+                  return (*ad).op_divide(b) ;
+                  break;
+               case OPERAND::PLUS:
+                  return *ad + b;
+                  break;
+               case OPERAND::MINUS:
                   return (*ad).op_minus(b);
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
@@ -655,24 +569,72 @@ namespace KiLib::Rasters
 
                switch ( op )
                {
-               case IRaster<T>::OPERAND::MULTIPLY:
+               case OPERAND::MULTIPLY:
                   return *ad * b;
-               case IRaster<T>::OPERAND::DIVIDE:
-                  return (*ad).op_divide(b) ;
+               case OPERAND::DIVIDE:
+                  return b / *ad;
                   break;
-               case IRaster<T>::OPERAND::PLUS:
+               case OPERAND::PLUS:
                   return *ad + b;
                   break;
-               case IRaster<T>::OPERAND::MINUS:
-                  return (*ad).op_minus(b);
+               case OPERAND::MINUS:
+                  return b - *ad;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
+
+      static Raster<T> ApplyOperator(  const T& b, Raster<T>&& a, OPERAND op ) 
+      {
+         if (a.get_type() == TYPE::DENSE ) {
+
+               // Cast to the dense rasters so we can utilize the special methods there
+               KiLib::Rasters::DenseRaster<T>* ad = (KiLib::Rasters::DenseRaster<T>*)a.raster;
+
+               switch ( op )
+               {
+               case OPERAND::MULTIPLY:
+                  return *ad * b;
+               case OPERAND::DIVIDE:
+                  //return b / *ad;
+                  return (*ad).op_divide(b) ;
+                  break;
+               case OPERAND::PLUS:
+                  return *ad + b;
+                  break;
+               case OPERAND::MINUS:
+                  return (*ad).op_minus(b) ;
+               default:
+                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+               };
+            } else if ( a.get_type() == TYPE::SPARSE ) {
+               // Cast to the sparse rasters so we can utilize the special methods there
+               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
+
+               switch ( op )
+               {
+               case OPERAND::MULTIPLY:
+                  return std::move(*ad * b);
+               case OPERAND::DIVIDE:
+                  return std::move(b / *ad);
+                  break;
+               case OPERAND::PLUS:
+                  return std::move(*ad + b);
+                  break;
+               case OPERAND::MINUS:
+                  return std::move(b - *ad);
+               default:
+                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+               };
+            }
+            throw NotImplementedException("Other types for operands have not been created");
+      }
+
+
+
    };
-
 } // namespace KiLib::Rasters
 
 
@@ -879,29 +841,13 @@ namespace std
 
 } // namespace std
 
-// This is the (scalar * Raster) operator
-template <class T, typename C> KiLib::Rasters::Raster<T> operator*( const C k, const KiLib::Rasters::Raster<T>& a )
-{
-   return a * k;
-}
-
-template <class T, typename C> KiLib::Rasters::Raster<T> operator/( const C& k, const KiLib::Rasters::Raster<T>& a )
-{
-   return a.op_divide(static_cast<const double>(k));
-}
-
-template <class T, typename C> KiLib::Rasters::Raster<T> operator-( const C& k, const KiLib::Rasters::Raster<T>& a )
-{
-   return a.op_minus(k);
-}
-
-template <class T, typename C> KiLib::Rasters::Raster<T> operator+( const C k, const KiLib::Rasters::Raster<T>& a )
-{
-   return a + k;
-}
-
 template <class T> KiLib::Rasters::Raster<T> operator-( const KiLib::Rasters::Raster<T>& a )
 {
    return a * -1;
 }
 
+
+template <class T> KiLib::Rasters::Raster<T> operator-( const KiLib::Rasters::Raster<T>&& a )
+{
+   return std::move(a) * -1;
+}

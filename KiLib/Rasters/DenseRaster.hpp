@@ -192,38 +192,38 @@ namespace KiLib::Rasters
        */
       DenseRaster<T> operator*( const DenseRaster<T>& other ) const 
       {
-         return ApplyOperator( *this, other, IRaster<T>::OPERAND::MULTIPLY );
+         return ApplyOperator( *this, other, OPERAND::MULTIPLY );
       }
 
       DenseRaster<T> operator*( const T val ) const 
       {
-         return ApplyOperator( *this, val, IRaster<T>::OPERAND::MULTIPLY );
+         return ApplyOperator( *this, val, OPERAND::MULTIPLY );
       }
 
       DenseRaster<T> operator+( const DenseRaster<T>& other ) const
       {
-         return ApplyOperator( *this, other, IRaster<T>::OPERAND::PLUS );
+         return ApplyOperator( *this, other, OPERAND::PLUS );
       }
       DenseRaster<T> operator+( const T val ) const
       {
-         return ApplyOperator( *this, val, IRaster<T>::OPERAND::PLUS );
+         return ApplyOperator( *this, val, OPERAND::PLUS );
       }
       DenseRaster<T> operator-( const DenseRaster<T>& other ) const
       {
-         return ApplyOperator( *this, other, IRaster<T>::OPERAND::MINUS );
+         return ApplyOperator( *this, other, OPERAND::MINUS );
       }
       DenseRaster<T> operator-( const T val ) const
       {
-         return ApplyOperator( *this, val, IRaster<T>::OPERAND::MINUS );
+         return ApplyOperator( *this, val, OPERAND::MINUS );
       }
       DenseRaster<T> operator/( const DenseRaster<T>& other ) const
       {
-         return ApplyOperator( *this, other, IRaster<T>::OPERAND::DIVIDE );
+         return ApplyOperator( *this, other, OPERAND::DIVIDE );
       }
 
       DenseRaster<T> operator/( const T val ) const
       {
-         return ApplyOperator( *this, val, IRaster<T>::OPERAND::DIVIDE );
+         return ApplyOperator( *this, val, OPERAND::DIVIDE );
       }
 
       bool operator==(const DenseRaster<T>& rhs) const {
@@ -292,12 +292,12 @@ namespace KiLib::Rasters
       }
 
       DenseRaster<T> op_divide(const T val) const {
-         return ApplyOperator( val, *this, IRaster<T>::OPERAND::DIVIDE);
+         return ApplyOperator( val, *this, OPERAND::DIVIDE);
          }  
 
 
       DenseRaster<T> op_minus(const T val) const {
-         return ApplyOperator( val, *this, IRaster<T>::OPERAND::MINUS);
+         return ApplyOperator( val, *this, OPERAND::MINUS);
          }  
 
       DenseRaster<T> op_ierfc() const {
@@ -328,7 +328,7 @@ namespace KiLib::Rasters
 return data[this->flatten_index(i,j,k)];
          }
 
-      DenseRaster<T> ApplyOperator( const DenseRaster<T>& a, const DenseRaster<T>& b, typename IRaster<T>::OPERAND op ) const
+      DenseRaster<T> ApplyOperator( const DenseRaster<T>& a, const DenseRaster<T>& b,  OPERAND op ) const
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
@@ -341,16 +341,16 @@ return data[this->flatten_index(i,j,k)];
 
             switch ( op )
             {
-            case IRaster<T>::OPERAND::MULTIPLY:
+            case OPERAND::MULTIPLY:
                out.data = (std::valarray<T>)a * (std::valarray<T>)b;
                break;
-            case IRaster<T>::OPERAND::DIVIDE:
+            case OPERAND::DIVIDE:
                out.data = (std::valarray<T>)a / (std::valarray<T>)b;
                break;
-            case IRaster<T>::OPERAND::PLUS:
+            case OPERAND::PLUS:
                out.data = (std::valarray<T>)a + (std::valarray<T>)b;
                break;
-            case IRaster<T>::OPERAND::MINUS:
+            case OPERAND::MINUS:
                out.data = (std::valarray<T>)a - (std::valarray<T>)b;
                break;
             default:
@@ -415,10 +415,10 @@ return data[this->flatten_index(i,j,k)];
 
                      switch ( op )
                      {
-                     case IRaster<T>::OPERAND::MULTIPLY:
+                     case OPERAND::MULTIPLY:
                         val = *( cell_a.data ) * *( cell_b.data );
                         break;
-                     case IRaster<T>::OPERAND::DIVIDE:
+                     case OPERAND::DIVIDE:
                         if ( !swapped )
                         {
                            val = *( cell_a.data ) / *( cell_b.data );
@@ -428,10 +428,10 @@ return data[this->flatten_index(i,j,k)];
                            val = *( cell_b.data ) / *( cell_a.data );
                         }
                         break;
-                     case IRaster<T>::OPERAND::PLUS:
+                     case OPERAND::PLUS:
                         val = *( cell_a.data ) + *( cell_b.data );
                         break;
-                     case IRaster<T>::OPERAND::MINUS:
+                     case OPERAND::MINUS:
                         if ( !swapped )
                         {
                            val = *( cell_a.data ) - *( cell_b.data );
@@ -453,7 +453,7 @@ return data[this->flatten_index(i,j,k)];
             return out;
          }
       }
-      DenseRaster<T> ApplyOperator( const T b, const DenseRaster<T>& a, typename IRaster<T>::OPERAND op ) const
+      DenseRaster<T> ApplyOperator( const T b, const DenseRaster<T>& a,  OPERAND op ) const
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
@@ -469,16 +469,16 @@ return data[this->flatten_index(i,j,k)];
 
          switch ( op )
          {
-         case IRaster<T>::OPERAND::MULTIPLY:
+         case OPERAND::MULTIPLY:
             out.data = a.data * b;
             break;
-         case IRaster<T>::OPERAND::DIVIDE:
+         case OPERAND::DIVIDE:
             out.data = b / a.data;
             break;
-         case IRaster<T>::OPERAND::PLUS:
+         case OPERAND::PLUS:
             out.data = a.data + b;
             break;
-         case IRaster<T>::OPERAND::MINUS:
+         case OPERAND::MINUS:
             out.data = b - a.data;
             break;
          default:
@@ -490,7 +490,7 @@ return data[this->flatten_index(i,j,k)];
          return out;
       }
 
-      DenseRaster<T> ApplyOperator( const DenseRaster<T>& a, const T b, typename IRaster<T>::OPERAND op ) const
+      DenseRaster<T> ApplyOperator( const DenseRaster<T>& a, const T b,  OPERAND op ) const
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
@@ -506,16 +506,16 @@ return data[this->flatten_index(i,j,k)];
 
          switch ( op )
          {
-         case IRaster<T>::OPERAND::MULTIPLY:
+         case OPERAND::MULTIPLY:
             out.data = (std::valarray<T>)a * b;
             break;
-         case IRaster<T>::OPERAND::DIVIDE:
+         case OPERAND::DIVIDE:
             out.data = (std::valarray<T>)a / b;
             break;
-         case IRaster<T>::OPERAND::PLUS:
+         case OPERAND::PLUS:
             out.data = (std::valarray<T>)a + b;
             break;
-         case IRaster<T>::OPERAND::MINUS:
+         case OPERAND::MINUS:
             out.data = (std::valarray<T>)a - b;
             break;
          default:
