@@ -133,13 +133,13 @@ namespace KiLib::Rasters
             out.copy_metadata_from(*op1);
 
             // Need to loop through each cell in the larger raster->
-            for ( auto it = op1->begin(); it != op1->end(); ++it) 
-            {
-               const size_t r = (&it).i();
-               const size_t c = (&it).j();
-               const size_t zindex = (&it).k();
+      // TODO: Make this parllel
+            std::for_each(std::execution::par, op1->begin(), op1->end(), [&](auto it) {
+               const size_t r = it.i();
+               const size_t c = it.j();
+               const size_t zindex = it.k();
 
-               const auto& cell_a = &(it);
+               const auto& cell_a = it;
 
                   // Use the x,y,z coordinates to get the proper cell.
                   const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
@@ -147,7 +147,7 @@ namespace KiLib::Rasters
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
                      out.set( r, c, zindex, out.get_nodata_value() );
-                     continue;
+                     return;
                   }
 
                   double val = 0;
@@ -185,7 +185,7 @@ namespace KiLib::Rasters
                   };
 
                   out.set( r, c, zindex, val );
-            }
+            });
 
             return out;
          }
