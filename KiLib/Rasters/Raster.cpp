@@ -29,6 +29,9 @@
 
 //namespace fs = std::filesystem;
 
+#ifndef EXEC_POLICY
+#define EXEC_POLICY std::execution::par
+#endif
 
 
 
@@ -134,7 +137,7 @@ namespace KiLib::Rasters
 
             // Need to loop through each cell in the larger raster->
       // TODO: Make this parllel
-            std::for_each(std::execution::par, op1->begin(), op1->end(), [&](auto it) {
+            std::for_each(EXEC_POLICY, op1->begin(), op1->end(), [&](auto it) {
                const size_t r = it.i();
                const size_t c = it.j();
                const size_t zindex = it.k();
