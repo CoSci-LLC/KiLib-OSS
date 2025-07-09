@@ -7,12 +7,15 @@ include(GoogleTest)
 
 include(../CMake/Gtest.cmake)
 
+set(projectTestName KiLibTest)
+
 # Add the test exe
 add_executable(${projectTestName}
 	main.cpp
 )
 SetKiLibOptions(${projectTestName})
 
+add_subdirectory(./example)
 # Codecov
 if (KILIB_COMPILER_IS_GNU_LIKE)
     message("-- KILIB: Adding coverage flag")
@@ -49,3 +52,6 @@ gtest_discover_tests(${projectTestName})
 add_test(NAME KiLibTest COMMAND ${projectTestName})
 
 install(TARGETS ${projectTestName})
+
+
+
