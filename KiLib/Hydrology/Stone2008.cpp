@@ -17,11 +17,21 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define _USE_MATH_DEFINES
+#include <KiLib/Exceptions/NotImplemented.hpp>
+#include <KiLib/Hydrology/Hydrology.hpp>
+#include <algorithm>
+#include <cmath>
 
-#pragma once
+using namespace KiLib::Hydrology;
 
-#include <KiLib/Hydrology/BaseHydrology.hpp>
-#include <KiLib/Hydrology/TopModel.hpp>
-#include <KiLib/Hydrology/BaseInfiltration.hpp>
-#include <KiLib/Hydrology/Bonetti2021.hpp>
-#include <KiLib/Hydrology/Stone2008.hpp>
+Stone2008::Stone2008(){};
+
+// clang-format off
+double Stone2008::ComputeInfiltration(
+   const double rainfall,     // Rainfall rate [L/T]
+   const double mu_f) const   // Mean infiltration [L/T]
+{
+   return mu_f * (1.0 - std::exp(-rainfall/ mu_f));
+}
+// clang-format on

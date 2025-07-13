@@ -20,8 +20,19 @@
 
 #pragma once
 
-#include <KiLib/Hydrology/BaseHydrology.hpp>
-#include <KiLib/Hydrology/TopModel.hpp>
 #include <KiLib/Hydrology/BaseInfiltration.hpp>
-#include <KiLib/Hydrology/Bonetti2021.hpp>
-#include <KiLib/Hydrology/Stone2008.hpp>
+
+namespace KiLib::Hydrology
+{
+   class Stone2008 : public BaseInfiltration
+   {
+   public:
+      Stone2008();
+
+      // clang-format off
+      double ComputeInfiltration(
+         const double rainfall,    // Rainfall rate [L/T]
+         const double mu_f) const; // Mean infiltration [L/T]
+      // clang-format on
+   };
+} // namespace KiLib::Hydrology

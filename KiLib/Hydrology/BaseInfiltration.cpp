@@ -18,10 +18,12 @@
  */
 
 
-#pragma once
-
-#include <KiLib/Hydrology/BaseHydrology.hpp>
-#include <KiLib/Hydrology/TopModel.hpp>
+#include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Hydrology/BaseInfiltration.hpp>
-#include <KiLib/Hydrology/Bonetti2021.hpp>
-#include <KiLib/Hydrology/Stone2008.hpp>
+
+using namespace KiLib::Hydrology;
+
+double BaseInfiltration::ComputeInfiltration() const
+{
+   throw NotImplementedException("Method not implemented");
+}

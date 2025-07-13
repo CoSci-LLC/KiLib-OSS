@@ -20,8 +20,15 @@
 
 #pragma once
 
-#include <KiLib/Hydrology/BaseHydrology.hpp>
-#include <KiLib/Hydrology/TopModel.hpp>
-#include <KiLib/Hydrology/BaseInfiltration.hpp>
-#include <KiLib/Hydrology/Bonetti2021.hpp>
-#include <KiLib/Hydrology/Stone2008.hpp>
+#include <KiLib/Exceptions/NotImplemented.hpp>
+
+namespace KiLib::Hydrology
+{
+   class BaseInfiltration
+   {
+   public:
+      BaseInfiltration(){};
+
+      double ComputeInfiltration() const;
+   };
+} // namespace KiLib::Hydrology
