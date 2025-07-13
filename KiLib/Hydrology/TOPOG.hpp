@@ -21,8 +21,22 @@
 #pragma once
 
 #include <KiLib/Hydrology/BaseHydrology.hpp>
-#include <KiLib/Hydrology/TopModel.hpp>
-#include <KiLib/Hydrology/TOPOG.hpp>
-#include <KiLib/Hydrology/BaseInfiltration.hpp>
-#include <KiLib/Hydrology/Bonetti2021.hpp>
-#include <KiLib/Hydrology/Stone2008.hpp>
+
+namespace KiLib::Hydrology
+{
+   class TOPOG : public BaseHydrology
+   {
+   public:
+      TOPOG();
+
+      // clang-format off
+      double ComputeWetness(
+         const double rainfall,     // Rainfall intensity [L/T]
+         const double A_c,          // Accumulation area [L^2]
+         const double ks,           // Hydraulic conductivity [L/T]
+         const double thickness,    // Soil thickness [L]
+         const double slope_angle,  // Slope angle [rad]
+         const double b) const;     // Contour length [L]
+      // clang-format on
+   };
+} // namespace KiLib::Hydrology

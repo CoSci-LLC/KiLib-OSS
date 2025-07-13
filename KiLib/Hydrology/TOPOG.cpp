@@ -17,12 +17,25 @@
  *  along with KiLib-OSS.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define _USE_MATH_DEFINES
+#include <KiLib/Exceptions/NotImplemented.hpp>
+#include <KiLib/Hydrology/Hydrology.hpp>
+#include <algorithm>
+#include <cmath>
 
-#pragma once
+using namespace KiLib::Hydrology;
 
-#include <KiLib/Hydrology/BaseHydrology.hpp>
-#include <KiLib/Hydrology/TopModel.hpp>
-#include <KiLib/Hydrology/TOPOG.hpp>
-#include <KiLib/Hydrology/BaseInfiltration.hpp>
-#include <KiLib/Hydrology/Bonetti2021.hpp>
-#include <KiLib/Hydrology/Stone2008.hpp>
+TOPOG::TOPOG(){};
+
+// clang-format off
+double TOPOG::ComputeWetness(
+   const double rainfall,     // Rainfall intensity [L/T]
+   const double A_c,          // Accumulation area [L^2]
+   const double ks,           // Hydraulic conductivity [L/T]
+   const double thickness,    // Soil thickness [L]
+   const double slope_angle,  // Slope angle [rad]
+   const double b) const      // Contour length [L]
+{
+   return std::clamp( (rainfall * A_c) / ( b * ks * thickness * std::sin(slope_angle)), 0.0, 1.0);
+}
+// clang-format on
