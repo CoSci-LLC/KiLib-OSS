@@ -1,11 +1,6 @@
 
 #include <KiLib/Rasters/SparseRaster_Vector.hpp>
 
-#ifndef EXEC_POLICY
-#define EXEC_POLICY std::execution::seq
-#endif
-
-
 
 
 #define OPERATOR(OPERAND)   \
