@@ -226,7 +226,13 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(a * b, b);
    EXPECT_EQ(a * std::move(b), b);
    EXPECT_EQ(std::move(a) * b, b);
-   EXPECT_EQ(std::move(a) * std::move(b), b);
+
+   // We will get segfault issues if we start messing with rvalue/lvalue things here... so let's make a copy
+   auto aa = a;
+   auto bb = b;
+   EXPECT_EQ(std::move(aa) * std::move(bb), b);
+   
+
    EXPECT_EQ(b * a, b);
 
    // Test a single multiplication
@@ -239,7 +245,10 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(5 * std::move(a), b);
 
    EXPECT_EQ(b / a, b);
-   EXPECT_EQ(std::move(b) / std::move(a), b);
+
+   aa = a;
+   bb = b;
+   EXPECT_EQ(std::move(bb) / std::move(aa), b);
    EXPECT_EQ(std::move(b) / a, b);
    EXPECT_EQ(b / std::move(a), b);
    EXPECT_NE(a / b, b); // Make sure the ordering matters
@@ -269,11 +278,17 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(a + b, c);
    EXPECT_EQ(std::move(a) + b, c);
    EXPECT_EQ(a + std::move(b), c);
-   EXPECT_EQ(std::move(a) + std::move(b), c);
+
+   aa = a;
+   bb = b;
+   EXPECT_EQ(std::move(aa) + std::move(bb), c);
    EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
    EXPECT_EQ(std::move(b) + a, c); 
    EXPECT_EQ(b + std::move(a), c); 
-   EXPECT_EQ(std::move(b) + std::move(a), c); 
+
+   aa = a;
+   bb = b;
+   EXPECT_EQ(std::move(bb) + std::move(aa), c); 
    EXPECT_EQ(1 + b, c); 
    EXPECT_EQ(b + 1, c); // Make sure the order doesn't matter
 
@@ -299,7 +314,10 @@ TEST_P(Rasters, Basic_Operations) {
 
    EXPECT_EQ(std::move(b) - a, d);
    EXPECT_EQ(b - std::move(a), d);
-   EXPECT_EQ(std::move(b) - std::move(a), d);
+
+   aa = a;
+   bb = b;
+   EXPECT_EQ(std::move(bb) - std::move(aa), d);
    EXPECT_NE(a - b, d); // MAke sure the order does matter
    
    // Make sure that nodata cells are staying no data
@@ -323,9 +341,6 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(b / a, b_r);
    EXPECT_NE(a / b, b_r); // Make sure the ordering matters
    EXPECT_EQ(1 / a, a);
-
-
-
 }
 
 TEST_P(Rasters, Different_Sized_Rasters_Operations) {

@@ -31,7 +31,28 @@
    } \
    SparseRaster<double> operator OPERAND( SparseRaster<double>&& a, SparseRaster<double>&& b ) \
    { \
-      return  a OPERAND static_cast<const SparseRaster<double>&>( b ) ; \
+      if ( !a.can_perform_operation( b ) ) \
+      {\
+         throw std::invalid_argument( "Cannot Multiple disimilar rasters" ); \
+      }\
+\
+      const auto nodata   = a.get_nodata_value();\
+      const auto nodata_b = b.get_nodata_value();\
+      std::transform(\
+         EXEC_POLICY, a.V.begin(), a.V.end(), b.V.begin(), a.V.begin(),\
+         [&nodata, &nodata_b]( const double& a, const double& b )\
+         {\
+            if ( a == nodata || b == nodata_b )\
+            {\
+               return nodata_b;\
+            }\
+            else\
+            {\
+               return a OPERAND b;\
+            }\
+         } );\
+      a.set_name( a.get_name() + " OPERAND " + b.get_name() );\
+      return std::move( a );\
    } \
    SparseRaster<double> operator OPERAND( SparseRaster<double>&& a, const SparseRaster<double>& b ) \
   { \

@@ -49,9 +49,9 @@ add_subdirectory(KiLib)
 SetKiLibOptions(${projectName})
 
 # If we are debug build, let's build the unit tests
-IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
 	add_subdirectory(test)
-ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+ENDIF(CMAKE_BUILD_TYPE MATCHES Debug)
 
 
 # Interface for library -- This is what directories are included when building
