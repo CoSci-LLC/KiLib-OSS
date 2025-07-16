@@ -29,11 +29,6 @@
 
 //namespace fs = std::filesystem;
 
-#ifndef EXEC_POLICY
-#define EXEC_POLICY std::execution::seq
-#endif
-
-
 
 
 #define SINGLE_OPERATOR(OP, NAME) \
@@ -246,15 +241,14 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  return *ad * *bd;
+                  return std::move(*ad) * *bd;
                case OPERAND::DIVIDE:
-                  return *ad / *bd;
-                  break;
+                  return std::move(*ad) / *bd;
                case OPERAND::PLUS:
-                  return *ad + *bd;
+                  return std::move(*ad) + *bd;
                   break;
                case OPERAND::MINUS:
-                  return *ad - *bd;
+                  return std::move(*ad) - *bd;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -387,15 +381,15 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  return *ad * *bd;
+                  return *ad * std::move(*bd);
                case OPERAND::DIVIDE:
-                  return *ad / *bd;
+                  return *ad / std::move(*bd);
                   break;
                case OPERAND::PLUS:
-                  return *ad + *bd;
+                  return *ad + std::move(*bd);
                   break;
                case OPERAND::MINUS:
-                  return *ad - *bd;
+                  return *ad - std::move(*bd);
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };

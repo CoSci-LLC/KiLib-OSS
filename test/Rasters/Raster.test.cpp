@@ -224,12 +224,15 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_NE(a, b);
 
    EXPECT_EQ(a * b, b);
-   EXPECT_EQ(a * std::move(b), b);
-   EXPECT_EQ(std::move(a) * b, b);
 
-   // We will get segfault issues if we start messing with rvalue/lvalue things here... so let's make a copy
    auto aa = a;
    auto bb = b;
+   EXPECT_EQ(a * std::move(bb), b);
+   EXPECT_EQ(std::move(aa) * b, b);
+
+   // We will get segfault issues if we start messing with rvalue/lvalue things here... so let's make a copy
+   aa = a;
+   bb = b;
    EXPECT_EQ(std::move(aa) * std::move(bb), b);
    
 
@@ -240,17 +243,22 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(1 * b, b);
 
    EXPECT_EQ(a * 5, b);
-   EXPECT_EQ(std::move(a) * 5, b);
+
+   aa = a;
+   EXPECT_EQ(std::move(aa) * 5, b);
    EXPECT_EQ(5 * a, b);
-   EXPECT_EQ(5 * std::move(a), b);
+   aa =a;
+   EXPECT_EQ(5 * std::move(aa), b);
 
    EXPECT_EQ(b / a, b);
 
    aa = a;
    bb = b;
    EXPECT_EQ(std::move(bb) / std::move(aa), b);
-   EXPECT_EQ(std::move(b) / a, b);
-   EXPECT_EQ(b / std::move(a), b);
+   bb = b;
+   EXPECT_EQ(std::move(bb) / a, b);
+   aa = a;
+   EXPECT_EQ(b / std::move(aa), b);
    EXPECT_NE(a / b, b); // Make sure the ordering matters
    
    EXPECT_EQ(1 / a, a);
@@ -276,15 +284,19 @@ TEST_P(Rasters, Basic_Operations) {
    SetBasicRasterProperties(c);
 
    EXPECT_EQ(a + b, c);
-   EXPECT_EQ(std::move(a) + b, c);
-   EXPECT_EQ(a + std::move(b), c);
+   aa = a;
+   EXPECT_EQ(std::move(aa) + b, c);
+   bb = b;
+   EXPECT_EQ(a + std::move(bb), c);
 
    aa = a;
    bb = b;
    EXPECT_EQ(std::move(aa) + std::move(bb), c);
    EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
-   EXPECT_EQ(std::move(b) + a, c); 
-   EXPECT_EQ(b + std::move(a), c); 
+   bb = b;
+   EXPECT_EQ(std::move(bb) + a, c); 
+   aa = a;
+   EXPECT_EQ(b + std::move(aa), c); 
 
    aa = a;
    bb = b;
@@ -312,8 +324,10 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(b - 1, d);
    EXPECT_EQ(b - a, d);
 
-   EXPECT_EQ(std::move(b) - a, d);
-   EXPECT_EQ(b - std::move(a), d);
+   bb = b;
+   EXPECT_EQ(std::move(bb) - a, d);
+   aa = a;
+   EXPECT_EQ(b - std::move(aa), d);
 
    aa = a;
    bb = b;

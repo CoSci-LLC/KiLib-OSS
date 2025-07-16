@@ -523,15 +523,15 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  return *ad * b;
+                  return std::move(*ad) * b;
                case OPERAND::DIVIDE:
-                  return *ad / b;
+                  return std::move(*ad) / b;
                   break;
                case OPERAND::PLUS:
-                  return *ad + b;
+                  return std::move(*ad) + b;
                   break;
                case OPERAND::MINUS:
-                  return *ad - b;
+                  return std::move(*ad) - b;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
