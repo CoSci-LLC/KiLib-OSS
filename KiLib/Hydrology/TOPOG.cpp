@@ -20,6 +20,7 @@
 #define _USE_MATH_DEFINES
 #include <KiLib/Exceptions/NotImplemented.hpp>
 #include <KiLib/Hydrology/Hydrology.hpp>
+#include <KiLib/Constants.hpp>
 #include <algorithm>
 #include <cmath>
 
@@ -37,5 +38,13 @@ double TOPOG::ComputeWetness(
    const double b) const      // Contour length [L]
 {
    return std::clamp( (rainfall * A_c) / ( b * ks * thickness * std::sin(slope_angle)), 0.0, 1.0);
+}
+
+double TOPOG::ComputeWaterPressure(
+   const double thickness,         // Soil thickness [L]
+   const double wetness,           // Wetness index [-]
+   const double slope_angle) const // Slope angle [rad]
+{
+   return KiLib::Constants::GRAVITY * KiLib::Constants::WATER_DENSITY * thickness * wetness * std::cos(slope_angle);
 }
 // clang-format on

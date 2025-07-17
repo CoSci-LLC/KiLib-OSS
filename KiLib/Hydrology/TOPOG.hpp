@@ -31,12 +31,17 @@ namespace KiLib::Hydrology
 
       // clang-format off
       double ComputeWetness(
-         const double rainfall,     // Rainfall intensity [L/T]
-         const double A_c,          // Accumulation area [L^2]
-         const double ks,           // Hydraulic conductivity [L/T]
-         const double thickness,    // Soil thickness [L]
-         const double slope_angle,  // Slope angle [rad]
-         const double b) const;     // Contour length [L]
+         const double rainfall,           // Rainfall intensity [L/T]
+         const double A_c,                // Accumulation area [L^2]
+         const double ks,                 // Hydraulic conductivity [L/T]
+         const double thickness,          // Soil thickness [L]
+         const double slope_angle,        // Slope angle [rad]
+         const double b) const;           // Contour length [L]
+
+      double ComputeWaterPressure(
+         const double thickness,          // Soil thickness [L]
+         const double wetness,            // Wetness index [-]
+         const double slope_angle) const; // Slope angle [rad]
       // clang-format on
    };
 } // namespace KiLib::Hydrology
