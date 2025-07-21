@@ -282,13 +282,13 @@ namespace KiLib::Rasters
             if ( ! swapped ) {
 
             // Need to loop through each cell in the larger raster->
-            for ( auto it = a.begin(); it != a.end(); ++it) 
-            {
-               const size_t r = (&it).i();
-               const size_t c = (&it).j();
-               const size_t zindex = (&it).k();
+         //
+            std::for_each(EXEC_POLICY, op1->begin(), op1->end(), [&](auto it) {
+               const size_t r = it.i();
+               const size_t c = it.j();
+               const size_t zindex = it.k();
 
-               const auto& cell_a = &(it);
+               const auto& cell_a = it;
 
                   // Use the x,y,z coordinates to get the proper cell.
                   const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
@@ -296,7 +296,7 @@ namespace KiLib::Rasters
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
                      a.set( r, c, zindex, b.get_nodata_value() );
-                     continue;
+                     return;
                   }
 
                   double val = 0;
@@ -334,7 +334,7 @@ namespace KiLib::Rasters
                   };
 
                   a.set( r, c, zindex, val );
-            }
+            });
 
                return std::move(a);
 
@@ -345,13 +345,12 @@ namespace KiLib::Rasters
             out.copy_metadata_from(*op1);
 
             // Need to loop through each cell in the larger raster->
-            for ( auto it = out.begin(); it != out.end(); ++it) 
-            {
-               const size_t r = (&it).i();
-               const size_t c = (&it).j();
-               const size_t zindex = (&it).k();
+            std::for_each(EXEC_POLICY, op1->begin(), op1->end(), [&](auto it) {
+               const size_t r = it.i();
+               const size_t c = it.j();
+               const size_t zindex = it.k();
 
-               const auto& cell_a = &(it);
+               const auto& cell_a = it;
 
                   // Use the x,y,z coordinates to get the proper cell.
                   const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
@@ -359,7 +358,7 @@ namespace KiLib::Rasters
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
                      out.set( r, c, zindex, out.get_nodata_value() );
-                     continue;
+                     return;
                   }
 
                   double val = 0;
@@ -397,7 +396,7 @@ namespace KiLib::Rasters
                   };
 
                   out.set( r, c, zindex, val );
-            }
+            });
 
             a = out;
             return std::move(a);
@@ -486,13 +485,12 @@ namespace KiLib::Rasters
             if ( swapped ) {
 
             // Need to loop through each cell in the larger raster->
-            for ( auto it = b.begin(); it != b.end(); ++it) 
-            {
-               const size_t r = (&it).i();
-               const size_t c = (&it).j();
-               const size_t zindex = (&it).k();
+            std::for_each(EXEC_POLICY, op1->begin(), op1->end(), [&](auto it) {
+               const size_t r = it.i();
+               const size_t c = it.j();
+               const size_t zindex = it.k();
 
-               const auto& cell_a = &(it);
+               const auto& cell_a = it;
 
                   // Use the x,y,z coordinates to get the proper cell.
                   const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
@@ -500,7 +498,7 @@ namespace KiLib::Rasters
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
                      b.set( r, c, zindex, b.get_nodata_value() );
-                     continue;
+                     return;
                   }
 
                   double val = 0;
@@ -538,7 +536,7 @@ namespace KiLib::Rasters
                   };
 
                   b.set( r, c, zindex, val );
-            }
+            });
 
                return std::move(b);
 
@@ -548,13 +546,12 @@ namespace KiLib::Rasters
             out.copy_metadata_from(*op1);
 
             // Need to loop through each cell in the larger raster->
-            for ( auto it = out.begin(); it != out.end(); ++it) 
-            {
-               const size_t r = (&it).i();
-               const size_t c = (&it).j();
-               const size_t zindex = (&it).k();
+            std::for_each(EXEC_POLICY, op1->begin(), op1->end(), [&](auto it) {
+               const size_t r = it.i();
+               const size_t c = it.j();
+               const size_t zindex = it.k();
 
-               const auto& cell_a = &(it);
+               const auto& cell_a = it;
 
                   // Use the x,y,z coordinates to get the proper cell.
                   const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
@@ -562,7 +559,7 @@ namespace KiLib::Rasters
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
                      out.set( r, c, zindex, out.get_nodata_value() );
-                     continue;
+                     return;
                   }
 
                   double val = 0;
@@ -600,7 +597,7 @@ namespace KiLib::Rasters
                   };
 
                   out.set( r, c, zindex, val );
-            }
+            });
 
             b = out;
             return std::move(b);
@@ -685,13 +682,12 @@ namespace KiLib::Rasters
             }
 
             // Need to loop through each cell in the larger raster->
-            for ( auto it = op1->begin(); it != op1->end(); ++it) 
-            {
-               const size_t r = (&it).i();
-               const size_t c = (&it).j();
-               const size_t zindex = (&it).k();
+            std::for_each(EXEC_POLICY, op1->begin(), op1->end(), [&](auto it) {
+               const size_t r = it.i();
+               const size_t c = it.j();
+               const size_t zindex = it.k();
 
-               const auto& cell_a = &(it);
+               const auto& cell_a = it;
 
                   // Use the x,y,z coordinates to get the proper cell.
                   const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
@@ -699,7 +695,7 @@ namespace KiLib::Rasters
                   if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
                   {
                      op1->set( r, c, zindex, op1->get_nodata_value() );
-                     continue;
+                     return;
                   }
 
                   double val = 0;
@@ -737,7 +733,7 @@ namespace KiLib::Rasters
                   };
 
                   op1->set( r, c, zindex, val );
-            }
+            });
 
             if ( swapped ) {
                return std::move(b);
