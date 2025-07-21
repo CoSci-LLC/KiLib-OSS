@@ -30,6 +30,65 @@ namespace KiLib::Rasters
    {
    public:
 
+   friend DenseRaster<T> operator*(DenseRaster<T>&& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> operator*(const DenseRaster<T>& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> operator*(const DenseRaster<T>& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> operator*(DenseRaster<T>&& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> operator*(const double k, const DenseRaster<T>& a);
+   friend DenseRaster<T> operator*(const double k, DenseRaster<T>&& a);
+   friend DenseRaster<T> operator*(const DenseRaster<T>& a, const double k);
+   friend DenseRaster<T> operator*(DenseRaster<T>&& a, const double k);
+
+
+
+
+   friend DenseRaster<T> operator+(DenseRaster<T>&& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> operator+(const DenseRaster<T>& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> operator+(const DenseRaster<T>& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> operator+(DenseRaster<T>&& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> operator+(const double k, const DenseRaster<T>& a);
+   friend DenseRaster<T> operator+(const double k, DenseRaster<T>&& a);
+   friend DenseRaster<T> operator+(const DenseRaster<T>& a, const double k);
+   friend DenseRaster<T> operator+(DenseRaster<T>&& a, const double k);
+
+
+
+   friend DenseRaster<T> operator-(DenseRaster<T>&& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> operator-(const DenseRaster<T>& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> operator-(const DenseRaster<T>& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> operator-(DenseRaster<T>&& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> operator-(const double k, const DenseRaster<T>& a);
+   friend DenseRaster<T> operator-(const double k, DenseRaster<T>&& a);
+   friend DenseRaster<T> operator-(const DenseRaster<T>& a, const double k);
+   friend DenseRaster<T> operator-(DenseRaster<T>&& a, const double k);
+
+
+
+   friend DenseRaster<T> operator/(DenseRaster<T>&& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> operator/(const DenseRaster<T>& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> operator/(const DenseRaster<T>& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> operator/(DenseRaster<T>&& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> operator/(const double k, const DenseRaster<T>& a);
+   friend DenseRaster<T> operator/(const double k, DenseRaster<T>&& a);
+   friend DenseRaster<T> operator/(const DenseRaster<T>& a, const double k);
+   friend DenseRaster<T> operator/(DenseRaster<T>&& a, const double k);
+
+
+   friend DenseRaster<T>& operator*=(DenseRaster<T>& a, const DenseRaster<T>& k);
+   friend DenseRaster<T>& operator+=(DenseRaster<T>& a, const DenseRaster<T>& k);
+   friend DenseRaster<T>& operator-=(DenseRaster<T>& a, const DenseRaster<T>& k);
+   friend DenseRaster<T>& operator/=(DenseRaster<T>& a, const DenseRaster<T>& k);
+   friend DenseRaster<T>& operator/=(const DenseRaster<T>& a, DenseRaster<T>& k);
+   friend DenseRaster<T>& operator-=(const DenseRaster<T>& a, DenseRaster<T>& k);
+
+
+   friend DenseRaster<double>& operator*= ( DenseRaster<double>& a, const double k );
+   friend DenseRaster<double>& operator+= ( DenseRaster<double>& a, const double k );
+   friend DenseRaster<double>& operator/= ( DenseRaster<double>& a, const double k );
+   friend DenseRaster<double>& operator-= ( DenseRaster<double>& a, const double k );
+
+
+
       // Just call the other constructor with the zindex = 1
       DenseRaster( size_t rows, size_t cols) : DenseRaster( std::make_tuple(rows, cols, 1))
       {
@@ -187,44 +246,6 @@ namespace KiLib::Rasters
 
       TYPE get_type() const override { return TYPE::DENSE; }
 
-      /**
-       * Element by element multiplication. Returns a Raster class (may be different that what was provided)
-       */
-      DenseRaster<T> operator*( const DenseRaster<T>& other ) const 
-      {
-         return ApplyOperator( *this, other, OPERAND::MULTIPLY );
-      }
-
-      DenseRaster<T> operator*( const T val ) const 
-      {
-         return ApplyOperator( *this, val, OPERAND::MULTIPLY );
-      }
-
-      DenseRaster<T> operator+( const DenseRaster<T>& other ) const
-      {
-         return ApplyOperator( *this, other, OPERAND::PLUS );
-      }
-      DenseRaster<T> operator+( const T val ) const
-      {
-         return ApplyOperator( *this, val, OPERAND::PLUS );
-      }
-      DenseRaster<T> operator-( const DenseRaster<T>& other ) const
-      {
-         return ApplyOperator( *this, other, OPERAND::MINUS );
-      }
-      DenseRaster<T> operator-( const T val ) const
-      {
-         return ApplyOperator( *this, val, OPERAND::MINUS );
-      }
-      DenseRaster<T> operator/( const DenseRaster<T>& other ) const
-      {
-         return ApplyOperator( *this, other, OPERAND::DIVIDE );
-      }
-
-      DenseRaster<T> operator/( const T val ) const
-      {
-         return ApplyOperator( *this, val, OPERAND::DIVIDE );
-      }
 
       bool operator==(const DenseRaster<T>& rhs) const {
          
@@ -291,8 +312,8 @@ namespace KiLib::Rasters
          return m;
       }
 
-      DenseRaster<T> op_divide(const T val) const {
-         return ApplyOperator( val, *this, OPERAND::DIVIDE);
+         void op_divide(const T val) {
+            this->data = val / this->data;
          }  
 
 
@@ -315,6 +336,28 @@ namespace KiLib::Rasters
 
 
    private:
+
+       bool can_perform_operation(const DenseRaster<T>& other) const {
+         // Shortcut true
+         if ( this == &other ) return true;
+
+         // Check each property
+         //if ( this->get_xllcorner() != other.get_xllcorner() ) return false;
+         //if ( this->get_yllcorner() != other.get_yllcorner() ) return false;
+         if ( this->get_height() != other.get_height() ) return false;
+         if ( this->get_width() != other.get_width() ) return false;
+         if ( this->get_cellsize() != other.get_cellsize() ) return false;
+         if ( this->get_rows() != other.get_rows() ) return false;
+         if ( this->get_cols() != other.get_cols() ) return false;
+         if ( this->get_zindex() != other.get_zindex() ) return false;
+
+        return true;
+
+       }
+
+
+
+
       size_t            nnz;
       std::valarray<T>  data;
       std::vector<bool> nodata_mask;

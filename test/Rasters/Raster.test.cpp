@@ -193,7 +193,7 @@ TEST_P(Rasters, exp) {
 // Demonstrate some basic assertions.
 TEST_P(Rasters, Basic_Operations) {
 
-   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+   KiLib::Rasters::Raster<double> init_a( { 2, 2, 2},
     {
          {{0, 0, 0}, 1},
          {{0, 1, 0}, 1},
@@ -204,9 +204,10 @@ TEST_P(Rasters, Basic_Operations) {
          {{1, 0, 1}, 1},
          {{1, 1, 1}, 1},
       }, GetParam());
-   SetBasicRasterProperties(a);
+   SetBasicRasterProperties(init_a);
+   const auto a = init_a;
 
-   KiLib::Rasters::Raster<double> b( { 2, 2, 2},
+   KiLib::Rasters::Raster<double> init_b( { 2, 2, 2},
     {
          {{0, 0, 0}, 5},
          {{0, 1, 0}, 5},
@@ -217,7 +218,9 @@ TEST_P(Rasters, Basic_Operations) {
          {{1, 0, 1}, 5},
          {{1, 1, 1}, 5},
       }, GetParam());
-   SetBasicRasterProperties(b);
+   SetBasicRasterProperties(init_b);
+
+   const auto b = init_b;
 
    // Ensure equality works
    EXPECT_EQ(a, a);
@@ -229,6 +232,7 @@ TEST_P(Rasters, Basic_Operations) {
    auto bb = b;
    EXPECT_EQ(a * std::move(bb), b);
    EXPECT_EQ(std::move(aa) * b, b);
+   EXPECT_EQ(a * a * b * a, b);
 
    // We will get segfault issues if we start messing with rvalue/lvalue things here... so let's make a copy
    aa = a;
@@ -239,18 +243,24 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(b * a, b);
 
    // Test a single multiplication
-   EXPECT_EQ(b * 1, b);
-   EXPECT_EQ(1 * b, b);
+   bb = b;
+   EXPECT_EQ(bb * 1, b);
+   bb = b;
+   EXPECT_EQ(1 * bb, b);
 
-   EXPECT_EQ(a * 5, b);
+   aa = a;
+   EXPECT_EQ(aa * 5, b);
 
    aa = a;
    EXPECT_EQ(std::move(aa) * 5, b);
-   EXPECT_EQ(5 * a, b);
-   aa =a;
+   aa = a;
+   EXPECT_EQ(5 * aa, b);
+   aa = a;
    EXPECT_EQ(5 * std::move(aa), b);
 
-   EXPECT_EQ(b / a, b);
+   bb = b;
+   aa = a;
+   EXPECT_EQ(bb / aa, b);
 
    aa = a;
    bb = b;
@@ -259,18 +269,24 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(std::move(bb) / a, b);
    aa = a;
    EXPECT_EQ(b / std::move(aa), b);
-   EXPECT_NE(a / b, b); // Make sure the ordering matters
+
+   aa = a;
+   bb = b;
+   EXPECT_NE(aa / bb, b); // Make sure the ordering matters
    
-   EXPECT_EQ(1 / a, a);
+   aa = a;
+   EXPECT_EQ(1 / aa, a);
 
    KiLib::Rasters::Raster<double> b_div_result( {2,2,2}, 0.2);
    SetBasicRasterProperties(b_div_result);
    b_div_result.set_name("b_div_result");
    b_div_result.convert_type_to(GetParam());
-   EXPECT_EQ(1 / b, b_div_result);
+
+   bb = b;
+   EXPECT_EQ(1 / bb, b_div_result);
 
    // Testing Addition
-   KiLib::Rasters::Raster<double> c( { 2, 2, 2},
+   KiLib::Rasters::Raster<double> init_c( { 2, 2, 2},
     {
          {{0, 0, 0}, 6},
          {{0, 1, 0}, 6},
@@ -281,22 +297,32 @@ TEST_P(Rasters, Basic_Operations) {
          {{1, 0, 1}, 6},
          {{1, 1, 1}, 6},
       }, GetParam());
-   SetBasicRasterProperties(c);
+   SetBasicRasterProperties(init_c);
+   const auto c = init_c;
 
-   EXPECT_EQ(a + b, c);
+   aa = a;
+   bb = b;
+   EXPECT_EQ(aa + bb, c);
+
    aa = a;
    EXPECT_EQ(std::move(aa) + b, c);
+   
    bb = b;
    EXPECT_EQ(a + std::move(bb), c);
 
    aa = a;
    bb = b;
    EXPECT_EQ(std::move(aa) + std::move(bb), c);
-   EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
-   bb = b;
-   EXPECT_EQ(std::move(bb) + a, c); 
+
    aa = a;
-   EXPECT_EQ(b + std::move(aa), c); 
+   bb = b;
+   EXPECT_EQ(bb + aa, c); // Make sure the order doesn't matter
+   bb = b;
+   aa =a ;
+   EXPECT_EQ(std::move(bb) + aa, c); 
+   aa = a;
+   bb = b;
+   EXPECT_EQ(bb + std::move(aa), c); 
 
    aa = a;
    bb = b;
@@ -306,7 +332,7 @@ TEST_P(Rasters, Basic_Operations) {
 
    //
    // Testing Subtraction
-   KiLib::Rasters::Raster<double> d( { 2, 2, 2},
+   KiLib::Rasters::Raster<double> init_d( { 2, 2, 2},
     {
          {{0, 0, 0}, 4},
          {{0, 1, 0}, 4},
@@ -317,7 +343,8 @@ TEST_P(Rasters, Basic_Operations) {
          {{1, 0, 1}, 4},
          {{1, 1, 1}, 4},
       }, GetParam());
-   SetBasicRasterProperties(d);
+   SetBasicRasterProperties(init_d);
+   const auto d = init_d;
 
 
 
@@ -335,26 +362,31 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_NE(a - b, d); // MAke sure the order does matter
    
    // Make sure that nodata cells are staying no data
-   a.set((size_t)0, 1, a.get_nodata_value());
+   init_a.set((size_t)0, 1, a.get_nodata_value());
+   const auto aaa = init_a;
 
    auto b_r = b; // copying b and making it a result raster for the tests.
    b_r.set((size_t)0, 1, c.get_nodata_value());
 
-   c.set((size_t)0, 1, c.get_nodata_value());
-   d.set((size_t)0, 1, c.get_nodata_value());
+   init_c.set((size_t)0, 1, c.get_nodata_value());
+   const auto ccc = init_c;
+   
+
+   init_d.set((size_t)0, 1, c.get_nodata_value());
+   const auto ddd = init_d;
  
    // This makes sure the nodata values for each operation are respected
-   EXPECT_EQ(a + b, c);
-   EXPECT_EQ(b + a, c); // Make sure the order doesn't matter
-   EXPECT_EQ(b - a, d);
-   EXPECT_NE(a - b, d); // MAke sure the order does matter
-   EXPECT_EQ(a * b, b_r);
-   EXPECT_EQ(b * a, b_r);
-   EXPECT_EQ(a * 5, b_r);
-   EXPECT_EQ(5 * a, b_r);
-   EXPECT_EQ(b / a, b_r);
-   EXPECT_NE(a / b, b_r); // Make sure the ordering matters
-   EXPECT_EQ(1 / a, a);
+   EXPECT_EQ(aaa + b, ccc);
+   EXPECT_EQ(b + aaa, ccc); // Make sure the order doesn't matter
+   EXPECT_EQ(b - aaa, ddd);
+   EXPECT_NE(aaa - b, ddd); // MAke sure the order does matter
+   EXPECT_EQ(aaa * b, b_r);
+   EXPECT_EQ(b * aaa, b_r);
+   EXPECT_EQ(aaa * 5, b_r);
+   EXPECT_EQ(5 * aaa, b_r);
+   EXPECT_EQ(b / aaa, b_r);
+   EXPECT_NE(aaa / b, b_r); // Make sure the ordering matters
+   EXPECT_EQ(1 / aaa, aaa);
 }
 
 TEST_P(Rasters, Different_Sized_Rasters_Operations) {
@@ -427,9 +459,13 @@ TEST_P(Rasters, Different_Sized_Rasters_Operations) {
 
    EXPECT_EQ(b * a, c);
    EXPECT_EQ(a * b, c);
-   EXPECT_EQ(std::move(a) * b, c);
-   EXPECT_EQ(a * std::move(b), c);
-   EXPECT_EQ(std::move(a) * std::move(b), c);
+   auto aa = a;
+   EXPECT_EQ(std::move(aa) * b, c);
+   auto bb = b;
+   EXPECT_EQ(a * std::move(bb), c);
+   aa = a;
+   bb = b;
+   EXPECT_EQ(std::move(aa) * std::move(bb), c);
    EXPECT_EQ(b * a, a * b);
 
 }
@@ -790,11 +826,15 @@ TEST_P(Rasters, operator_multi_rvalue) {
       }, GetParam());
    SetBasicRasterProperties(b);
 
-   EXPECT_EQ(std::move(b) * 1, b);
-   EXPECT_EQ(1 * std::move(b), b);
+   auto bb = b;
+   EXPECT_EQ(std::move(bb) * 1, b);
+   bb = b;
+   EXPECT_EQ(1 * std::move(bb), b);
 
-   EXPECT_EQ(std::move(a) * 5, b);
-   EXPECT_EQ(5 * std::move(a), b);
+   auto aa = a;
+   EXPECT_EQ(std::move(aa) * 5, b);
+   aa = a;
+   EXPECT_EQ(5 * std::move(aa), b);
 }
 
 TEST_P(Rasters, operator_div_rvalue) {
@@ -824,13 +864,15 @@ TEST_P(Rasters, operator_div_rvalue) {
       }, GetParam());
    SetBasicRasterProperties(b);
 
-   EXPECT_EQ(1 / std::move(a), a);
+   auto aa = a;
+   EXPECT_EQ(1 / std::move(aa), a);
 
    KiLib::Rasters::Raster<double> b_div_result( {2,2,2}, 0.2);
    SetBasicRasterProperties(b_div_result);
    b_div_result.set_name("b_div_result");
    b_div_result.convert_type_to(GetParam());
-   EXPECT_EQ(1 / std::move(b), b_div_result);
+   auto bb = b;
+   EXPECT_EQ(1 / std::move(bb), b_div_result);
 }
 
 TEST_P(Rasters, operator_add_rvalue) {
@@ -873,8 +915,10 @@ TEST_P(Rasters, operator_add_rvalue) {
       }, GetParam());
    SetBasicRasterProperties(c);
 
-   EXPECT_EQ(1 + std::move(b), c); // Make sure the order doesn't matter
-   EXPECT_EQ(std::move(b) + 1, c); // Make sure the order doesn't matter
+   auto bb = b;
+   EXPECT_EQ(1 + std::move(bb), c); // Make sure the order doesn't matter
+   bb = b;
+   EXPECT_EQ(std::move(bb) + 1, c); // Make sure the order doesn't matter
 
 }
 
@@ -919,5 +963,6 @@ TEST_P(Rasters, operator_sub_rvalue) {
       }, GetParam());
    SetBasicRasterProperties(d);
 
-   EXPECT_EQ(std::move(b) - 1, d);
+   auto bb = b;
+   EXPECT_EQ(std::move(bb) - 1, d);
 }

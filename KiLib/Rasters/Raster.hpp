@@ -29,41 +29,41 @@ namespace KiLib::Rasters
    {
    public:
 
-   friend Raster<T> operator*(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T>&& operator*(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator*(const Raster<T>& a, const Raster<T>& b) ;
-   friend Raster<T> operator*(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
-   friend Raster<T> operator*(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T>&& operator*(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T>&& operator*(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator*(const double k, const Raster<T>& a);
-   friend Raster<T> operator*(const double k, Raster<T>&& a);
+   friend Raster<T>&& operator*(const double k, Raster<T>&& a);
    friend Raster<T> operator*(const Raster<T>& a, const double k);
-   friend Raster<T> operator*(Raster<T>&& a, const double k);
+   friend Raster<T>&& operator*(Raster<T>&& a, const double k);
 
-   friend Raster<T> operator-(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T>&& operator-(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator-(const Raster<T>& a, const Raster<T>& b) ;
-   friend Raster<T> operator-(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
-   friend Raster<T> operator-(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T>&& operator-(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T>&& operator-(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator-(const double k, const Raster<T>& a);
-   friend Raster<T> operator-(const double k, Raster<T>&& a);
+   friend Raster<T>&& operator-(const double k, Raster<T>&& a);
    friend Raster<T> operator-(const Raster<T>& a, const double k);
-   friend Raster<T> operator-(Raster<T>&& a, const double k);
+   friend Raster<T>&& operator-(Raster<T>&& a, const double k);
 
-   friend Raster<T> operator+(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T>&& operator+(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator+(const Raster<T>& a, const Raster<T>& b) ;
-   friend Raster<T> operator+(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
-   friend Raster<T> operator+(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T>&& operator+(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T>&& operator+(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator+(const double k, const Raster<T>& a);
-   friend Raster<T> operator+(const double k, Raster<T>&& a);
+   friend Raster<T>&& operator+(const double k, Raster<T>&& a);
    friend Raster<T> operator+(const Raster<T>& a, const double k);
-   friend Raster<T> operator+(Raster<T>&& a, const double k);
+   friend Raster<T>&& operator+(Raster<T>&& a, const double k);
 
-   friend Raster<T> operator/(Raster<T>&& a, const Raster<T>& b) ;
+   friend Raster<T>&& operator/(Raster<T>&& a, const Raster<T>& b) ;
    friend Raster<T> operator/(const Raster<T>& a, const Raster<T>& b) ;
-   friend Raster<T> operator/(const Raster<T>& a, Raster<T>&& b) ;
-   friend Raster<T> operator/(Raster<T>&& a, Raster<T>&& b) ;
+   friend Raster<T>&& operator/(const Raster<T>& a, Raster<T>&& b) ;
+   friend Raster<T>&& operator/(Raster<T>&& a, Raster<T>&& b) ;
    friend Raster<T> operator/(const double k, const Raster<T>& a);
-   friend Raster<T> operator/(const double k, Raster<T>&& a);
+   friend Raster<T>&& operator/(const double k, Raster<T>&& a);
    friend Raster<T> operator/(const Raster<T>& a, const double k);
-   friend Raster<T> operator/(Raster<T>&& a, const double k);
+   friend Raster<T>&& operator/(Raster<T>&& a, const double k);
 
 
 
@@ -445,9 +445,9 @@ namespace KiLib::Rasters
 
 
       static Raster<T> ApplyOperator( const Raster<T>& a, const Raster<T>& b, OPERAND op );
-      static Raster<T> ApplyOperator_LR( const Raster<T>& a, Raster<T>&& b, OPERAND op );
-      static Raster<T> ApplyOperator_RL( Raster<T>&& a, const Raster<T>& b, OPERAND op );
-      static Raster<T> ApplyOperator_RR( Raster<T>&& a, Raster<T>&& b, OPERAND op );
+      static Raster<T>&& ApplyOperator_LR( const Raster<T>& a, Raster<T>&& b, OPERAND op );
+      static Raster<T>&& ApplyOperator_RL( Raster<T>&& a, const Raster<T>& b, OPERAND op );
+      static Raster<T>&& ApplyOperator_RR( Raster<T>&& a, Raster<T>&& b, OPERAND op );
     
       static Raster<T> ApplyOperator( const Raster<T>& a, const T b, OPERAND op )
       {
@@ -494,7 +494,7 @@ namespace KiLib::Rasters
             throw NotImplementedException("Other types for operands have not been created");
       }
 
-      static Raster<T> ApplyOperator( Raster<T>&& a, const T b, OPERAND op )
+      static Raster<T>&& ApplyOperator( Raster<T>&& a, const T b, OPERAND op )
       {
          if (a.get_type() == TYPE::DENSE ) {
 
@@ -504,15 +504,17 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  return *ad * b;
+                  *ad *= b;
+                  return std::move(a);
                case OPERAND::DIVIDE:
-                  return *ad / b;
-                  break;
+                  *ad /= b;
+                  return std::move(a);
                case OPERAND::PLUS:
-                  return *ad + b;
-                  break;
+                  *ad += b;
+                  return std::move(a);
                case OPERAND::MINUS:
-                  return *ad - b;
+                  *ad -= b;
+                  return std::move(a);
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -523,15 +525,17 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  return std::move(*ad) * b;
+                  *ad *= b;
+                  return std::move(a);
                case OPERAND::DIVIDE:
-                  return std::move(*ad) / b;
-                  break;
+                  *ad /= b;
+                  return std::move(a);
                case OPERAND::PLUS:
-                  return std::move(*ad) + b;
-                  break;
+                  *ad += b;
+                  return std::move(a);
                case OPERAND::MINUS:
-                  return std::move(*ad) - b;
+                  *ad -= b;
+                  return std::move(a);
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -546,26 +550,7 @@ namespace KiLib::Rasters
          if (a.get_type() == TYPE::DENSE ) {
 
                // Cast to the dense rasters so we can utilize the special methods there
-               KiLib::Rasters::DenseRaster<T>* ad = (KiLib::Rasters::DenseRaster<T>*)a.raster;
-
-               switch ( op )
-               {
-               case OPERAND::MULTIPLY:
-                  return *ad * b;
-               case OPERAND::DIVIDE:
-                  return (*ad).op_divide(b) ;
-                  break;
-               case OPERAND::PLUS:
-                  return *ad + b;
-                  break;
-               case OPERAND::MINUS:
-                  return (*ad).op_minus(b);
-               default:
-                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
-               };
-            } else if ( a.get_type() == TYPE::SPARSE ) {
-               // Cast to the sparse rasters so we can utilize the special methods there
-               KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
+               const KiLib::Rasters::DenseRaster<T>* ad = (KiLib::Rasters::DenseRaster<T>*)a.raster;
 
                switch ( op )
                {
@@ -573,10 +558,25 @@ namespace KiLib::Rasters
                   return *ad * b;
                case OPERAND::DIVIDE:
                   return b / *ad;
-                  break;
                case OPERAND::PLUS:
                   return *ad + b;
-                  break;
+               case OPERAND::MINUS:
+                  return (*ad).op_minus(b);
+               default:
+                  throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
+               };
+            } else if ( a.get_type() == TYPE::SPARSE ) {
+               // Cast to the sparse rasters so we can utilize the special methods there
+               const KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
+
+               switch ( op )
+               {
+               case OPERAND::MULTIPLY:
+                  return *ad * b;
+               case OPERAND::DIVIDE:
+                  return b / *ad;
+               case OPERAND::PLUS:
+                  return *ad + b;
                case OPERAND::MINUS:
                   return b - *ad;
                default:
@@ -586,7 +586,7 @@ namespace KiLib::Rasters
             throw NotImplementedException("Other types for operands have not been created");
       }
 
-      static Raster<T> ApplyOperator(  const T& b, Raster<T>&& a, OPERAND op ) 
+      static Raster<T>&& ApplyOperator(  const T& b, Raster<T>&& a, OPERAND op ) 
       {
          if (a.get_type() == TYPE::DENSE ) {
 
@@ -596,16 +596,17 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  return *ad * b;
+                  *ad *= b;
+                  return std::move(a);
                case OPERAND::DIVIDE:
-                  //return b / *ad;
-                  return (*ad).op_divide(b) ;
-                  break;
+                  (*ad).op_divide(b); 
+                  return std::move(a);
                case OPERAND::PLUS:
-                  return *ad + b;
-                  break;
+                  *ad += b;
+                  return std::move(a);
                case OPERAND::MINUS:
-                  return (*ad).op_minus(b) ;
+                  b - *ad;
+                  return std::move(a);
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -616,15 +617,17 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  return std::move(*ad * b);
+                  *ad *= b;
+                  return std::move(a);
                case OPERAND::DIVIDE:
-                  return std::move(b / *ad);
-                  break;
+                  (*ad).op_divide(b);
+                  return std::move(a);
                case OPERAND::PLUS:
-                  return std::move(*ad + b);
-                  break;
+                  *ad += b;
+                  return std::move(a);
                case OPERAND::MINUS:
-                  return std::move(b - *ad);
+                  (*ad).op_minus(b);
+                  return std::move(a);
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };

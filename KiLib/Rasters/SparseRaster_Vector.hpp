@@ -89,6 +89,23 @@ namespace KiLib::Rasters
    friend SparseRaster<T> operator/(SparseRaster<T>&& a, const double k);
 
 
+   friend SparseRaster<T>& operator*=(SparseRaster<T>& a, const SparseRaster<T>& k);
+   friend SparseRaster<T>& operator+=(SparseRaster<T>& a, const SparseRaster<T>& k);
+   friend SparseRaster<T>& operator-=(SparseRaster<T>& a, const SparseRaster<T>& k);
+   friend SparseRaster<T>& operator/=(SparseRaster<T>& a, const SparseRaster<T>& k);
+   friend SparseRaster<T>& operator/=(const SparseRaster<T>& a, SparseRaster<T>& k);
+   friend SparseRaster<T>& operator-=(const SparseRaster<T>& a, SparseRaster<T>& k);
+
+
+   friend SparseRaster<double>& operator*= ( SparseRaster<double>& a, const double k );
+   friend SparseRaster<double>& operator+= ( SparseRaster<double>& a, const double k );
+   friend SparseRaster<double>& operator/= ( SparseRaster<double>& a, const double k );
+   friend SparseRaster<double>& operator-= ( SparseRaster<double>& a, const double k );
+
+
+
+
+
 
        SparseRaster(const KiLib::Rasters::Raster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)
           {
@@ -269,24 +286,16 @@ namespace KiLib::Rasters
 
       TYPE get_type() const override { return TYPE::SPARSE; }
       
-      SparseRaster<T> op_divide(const T val) const {
-      
-            KiLib::Rasters::SparseRaster<T> out(*this);
+      void op_divide(const T val)  {
 
             const auto nodata = this->get_nodata_value();
-            std::transform(EXEC_POLICY, V.begin(), V.end(), out.V.begin(), [&nodata, &val](T v) { if (v == nodata) {return nodata; } else { return val / v;  } } );
-
-            return out;
+            std::transform(EXEC_POLICY, V.begin(), V.end(), V.begin(), [&nodata, &val](T v) { if (v == nodata) {return nodata; } else { return val / v;  } } );
          }  
 
-      SparseRaster<T> op_minus(const T val) const {
-
-            KiLib::Rasters::SparseRaster<T> out(*this);
+         void op_minus(const T val) {
 
             const auto nodata = this->get_nodata_value();
-            std::transform(EXEC_POLICY, V.begin(), V.end(), out.V.begin(), [&nodata, &val](T v) { if (v == nodata) {return nodata; } else { return val - v;  } } );
-
-            return out;
+            std::transform(EXEC_POLICY, V.begin(), V.end(), V.begin(), [&nodata, &val](T v) { if (v == nodata) {return nodata; } else { return val - v;  } } );
          }  
 
       SparseRaster<T> op_ierfc() const {
