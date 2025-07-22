@@ -16,6 +16,9 @@ add_executable(${projectTestName}
 SetKiLibOptions(${projectTestName})
 
 add_subdirectory(./example)
+add_subdirectory(./Raster)
+add_subdirectory(./Soils)
+add_subdirectory(./Utils)
 # Codecov
 if (KILIB_COMPILER_IS_GNU_LIKE)
     message("-- KILIB: Adding coverage flag")

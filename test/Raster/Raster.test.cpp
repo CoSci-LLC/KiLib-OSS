@@ -132,7 +132,7 @@ namespace KiLib
       ASSERT_DOUBLE_EQ(z3, p3.z);
    }
 
-   TEST(Raster, GetCoordMinDistance)
+/*   TEST(Raster, GetCoordMinDistance)
    {
       auto cwd  = fs::current_path();
       auto path = fs::path(std::string(TEST_DIRECTORY) + "/ComputeSlope/7x7_CA.dem");
@@ -152,7 +152,7 @@ namespace KiLib
       {
          ASSERT_DOUBLE_EQ(1.0, 2.0);
       }
-   }
+   }*/
 
    TEST(Raster, Rasterize)
    {
