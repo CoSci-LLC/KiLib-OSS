@@ -5,6 +5,7 @@ target_sources(${projectName} PRIVATE
 	BaseHydrology.cpp
 	TopModel.cpp
 	TOPOG.cpp
+	Iverson2000STST.cpp
 	BaseInfiltration.cpp
 	Bonetti2021.cpp
 	Stone2008.cpp
