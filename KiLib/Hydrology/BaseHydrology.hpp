@@ -31,5 +31,6 @@ namespace KiLib::Hydrology
 
       double ComputeWetness() const;
       double ComputeWaterPressure() const;
+      double ComputePressureHeadResponseFunction() const;
    };
 } // namespace KiLib::Hydrology

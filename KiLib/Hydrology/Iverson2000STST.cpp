@@ -29,27 +29,8 @@ using namespace KiLib::Hydrology;
 Iverson2000STST::Iverson2000STST(){};
 
 // clang-format off
-double Iverson2000STST::ComputeWetness(
-   const double rainfall,     // Rainfall intensity [L/T]
-   const double A_c,          // Accumulation area [L^2]
-   const double ks,           // Hydraulic conductivity [L/T]
-   const double thickness,    // Soil thickness [L]
-   const double slope_angle,  // Slope angle [rad]
-   const double b) const      // Contour length [L]
-{
-   return std::clamp( (rainfall * A_c) / ( b * ks * thickness * std::sin(slope_angle)), 0.0, 1.0);
-}
-
 double Iverson2000STST::ComputeWaterPressure(
-   const double thickness,         // Soil thickness [L]
-   const double wetness,           // Wetness index [-]
-   const double slope_angle) const // Slope angle [rad]
-{
-   return KiLib::Constants::GRAVITY * KiLib::Constants::WATER_DENSITY * thickness * wetness * std::cos(slope_angle);
-}
-
-double Iverson2000STST::ComputeWaterPressure(
-   const double ks, 
+   const double Ks, 
    const double Ss, 
    const double duration,
    const double thickness,          // Soil thickness [L]
@@ -57,20 +38,19 @@ double Iverson2000STST::ComputeWaterPressure(
    const double Iz, 
    const double water_table_depth,
    const double slope_angle) const // Slope angle [rad]
+// clang-format on
 {
    const double D0    = Ks / Ss;
    const double cos2  = std::pow(std::cos(slope_angle), 2);
    const double Dhat  = 4.0 * D0 * cos2;
    const double beta  = cos2 - Izlt / Ks * std::cos(slope_angle);
-   const double Tstar = T / std::pow(thickness, 2) * Dhat;
+   const double Tstar = duration / std::pow(thickness, 2) * Dhat;
    const double R     = ComputePressureHeadResponseFunction(Tstar);
    return thickness * ( beta * (1 - water_table_depth / thickness) + Iz / Ks * R);
 }
 
 
-double Iverson2000STST::ComputePressureHeadResponseFunction(
-   const double Tstar) const
+double Iverson2000STST::ComputePressureHeadResponseFunction(const double Tstar) const
 {
    return std::sqrt(Tstar/M_PI) * std::exp(-1.0/Tstar) - std::erfc(1/std::sqrt(Tstar));
 }
-// clang-format on

@@ -30,14 +30,6 @@ namespace KiLib::Hydrology
       Iverson2000STST();
 
       // clang-format off
-      //double ComputeWetness(
-      //   const double rainfall,           // Rainfall intensity [L/T]
-      //   const double A_c,                // Accumulation area [L^2]
-      //   const double ks,                 // Hydraulic conductivity [L/T]
-      //   const double thickness,          // Soil thickness [L]
-      //   const double slope_angle,        // Slope angle [rad]
-      //   const double b) const;           // Contour length [L]
-
       double ComputeWaterPressure(
          const double ks,
          const double Ss,
@@ -47,9 +39,8 @@ namespace KiLib::Hydrology
          const double Iz,
          const double water_table_depth,
          const double slope_angle) const; // Slope angle [rad]
-
-      double ComputePressureHeadResponseFunction(
-         const double Tstar) const;       // Normalized time
       // clang-format on
+
+      double ComputePressureHeadResponseFunction(const double Tstar) const;
    };
 } // namespace KiLib::Hydrology

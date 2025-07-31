@@ -27,3 +27,13 @@ double BaseHydrology::ComputeWetness() const
 {
    throw NotImplementedException("Method not implemented");
 }
+
+double BaseHydrology::ComputeWaterPressure() const
+{
+   throw NotImplementedException("Method not implemented");
+}
+
+double BaseHydrology::ComputePressureHeadResponseFunction() const
+{
+   throw NotImplementedException("Method not implemented");
+}
