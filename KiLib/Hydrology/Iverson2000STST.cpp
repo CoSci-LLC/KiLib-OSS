@@ -26,10 +26,10 @@
 
 using namespace KiLib::Hydrology;
 
-Iverson2000::Iverson2000(){};
+Iverson2000STST::Iverson2000STST(){};
 
 // clang-format off
-double Iverson2000::ComputeWetness(
+double Iverson2000STST::ComputeWetness(
    const double rainfall,     // Rainfall intensity [L/T]
    const double A_c,          // Accumulation area [L^2]
    const double ks,           // Hydraulic conductivity [L/T]
@@ -40,7 +40,7 @@ double Iverson2000::ComputeWetness(
    return std::clamp( (rainfall * A_c) / ( b * ks * thickness * std::sin(slope_angle)), 0.0, 1.0);
 }
 
-double Iverson2000::ComputeWaterPressure(
+double Iverson2000STST::ComputeWaterPressure(
    const double thickness,         // Soil thickness [L]
    const double wetness,           // Wetness index [-]
    const double slope_angle) const // Slope angle [rad]
@@ -48,7 +48,7 @@ double Iverson2000::ComputeWaterPressure(
    return KiLib::Constants::GRAVITY * KiLib::Constants::WATER_DENSITY * thickness * wetness * std::cos(slope_angle);
 }
 
-double Iverson2000::ComputeWaterPressure(
+double Iverson2000STST::ComputeWaterPressure(
    const double ks, 
    const double Ss, 
    const double duration,
@@ -68,7 +68,7 @@ double Iverson2000::ComputeWaterPressure(
 }
 
 
-double Iverson2000::ComputePressureHeadResponseFunction(
+double Iverson2000STST::ComputePressureHeadResponseFunction(
    const double Tstar) const
 {
    return std::sqrt(Tstar/M_PI) * std::exp(-1.0/Tstar) - std::erfc(1/std::sqrt(Tstar));

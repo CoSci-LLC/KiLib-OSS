@@ -24,10 +24,10 @@
 
 namespace KiLib::Hydrology
 {
-   class Iverson2000 : public BaseHydrology
+   class Iverson2000STST : public BaseHydrology
    {
    public:
-      Iverson2000();
+      Iverson2000STST();
 
       // clang-format off
       //double ComputeWetness(
