@@ -32,21 +32,23 @@ Iverson2000STST::Iverson2000STST(){};
 double Iverson2000STST::ComputeWaterPressure(
    const double Ks, 
    const double Ss, 
+   const double rainfall, 
+   const double rainfallLT,
    const double duration,
-   const double thickness,          // Soil thickness [L]
-   const double Izlt,
-   const double Iz, 
+   const double soil_depth,
    const double water_table_depth,
-   const double slope_angle) const // Slope angle [rad]
+   const double slope_angle) const
 // clang-format on
 {
+   const double inf   = std::min(rainfall, Ks);
+   const double infLT = std::min(rainfallLT, Ks);
    const double D0    = Ks / Ss;
    const double cos2  = std::pow(std::cos(slope_angle), 2);
    const double Dhat  = 4.0 * D0 * cos2;
-   const double beta  = cos2 - Izlt / Ks * std::cos(slope_angle);
-   const double Tstar = duration / std::pow(thickness, 2) * Dhat;
+   const double beta  = cos2 - infLT / Ks;
+   const double Tstar = duration / std::pow(soil_depth, 2) * Dhat;
    const double R     = ComputePressureHeadResponseFunction(Tstar);
-   return thickness * ( beta * (1 - water_table_depth / thickness) + Iz / Ks * R);
+   return beta * (soil_depth - water_table_depth) + soil_depth * inf / Ks * R;
 }
 
 

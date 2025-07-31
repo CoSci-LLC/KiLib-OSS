@@ -1,6 +1,7 @@
 build*
 .vscode
 .*.swp
+.*.swo
 .vs
 out/
 install/

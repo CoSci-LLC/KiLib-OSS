@@ -31,13 +31,13 @@ namespace KiLib::Hydrology
 
       // clang-format off
       double ComputeWaterPressure(
-         const double ks,
-         const double Ss,
-         const double duration,
-         const double thickness,          // Soil thickness [L]
-         const double Izlt,
-         const double Iz,
-         const double water_table_depth,
+         const double Ks,                 // Saturated vertical hydraulic conductivity [m/s]
+         const double Ss,                 // Specific storage [1/m]
+         const double rainfall,           // Event rainfall rate [m/s]
+         const double rainfallLT,         // Long-term rainfall rate [m/s]
+         const double duration,           // Event duration [s]
+         const double soil_depth,         // Soil depth [m]
+         const double water_table_depth,  // Water table depth [m]
          const double slope_angle) const; // Slope angle [rad]
       // clang-format on
 
