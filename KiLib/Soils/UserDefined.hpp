@@ -67,6 +67,7 @@ namespace KiLib::Soils
       void SetVGWetAlpha1(double value);
       void SetVGWetN1(double value);
       void SetMaxTensileStrain(double value);
+      void SetMatrixCompressibility(double value);
 
       void SetFrictionAngleDistribution(ValueDistribution value);
       void SetDensityDryDistribution(ValueDistribution value);

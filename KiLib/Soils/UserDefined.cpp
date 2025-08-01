@@ -63,10 +63,13 @@ void UserDefined::SetVGWetN1(double value)
 {
    this->vgWetN1 = value;
 }
-
 void UserDefined::SetMaxTensileStrain(double value)
 {
    this->maxTensileStrain = value;
+}
+void UserDefined::SetMatrixCompressibility(double value)
+{
+   this->matrixCompressibility = value;
 }
 
 void UserDefined::SetFrictionAngleDistribution(ValueDistribution value)

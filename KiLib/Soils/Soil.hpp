@@ -81,6 +81,7 @@ namespace KiLib::Soils
       virtual double GetPoreFracMatrix() const        = 0;
       virtual double GetPoreFracFractures() const     = 0;
       virtual double GetMaxTensileStrain() const      = 0;
+      virtual double GetMatrixCompressibility() const = 0;
 
       virtual ValueDistribution GetFrictionAngleDistribution() const = 0;
       virtual ValueDistribution GetDensityDryDistribution() const    = 0;
@@ -106,6 +107,7 @@ namespace KiLib::Soils
       double      GetPoreFracMatrix() const override;
       double      GetPoreFracFractures() const override;
       double      GetMaxTensileStrain() const override;
+      double      GetMatrixCompressibility() const override;
 
       ValueDistribution GetFrictionAngleDistribution() const override;
       ValueDistribution GetDensityDryDistribution() const override;
@@ -128,6 +130,7 @@ namespace KiLib::Soils
       std::optional<double> vgWetAlpha1;
       std::optional<double> vgWetN1;
       std::optional<double> maxTensileStrain;
+      std::optional<double> matrixCompressibility;
 
       ValueDistribution frictionAngle;
       ValueDistribution densityDry;

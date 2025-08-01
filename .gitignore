@@ -7,3 +7,4 @@ out/
 install/
 lib/
 *.bat
+KiLib/Hydrology/*.py

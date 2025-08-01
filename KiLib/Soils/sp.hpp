@@ -41,7 +41,8 @@ namespace KiLib::Soils
          this->waterExchangeTerm     = 3e-06;   // [1/s]
          this->vgWetAlpha1           = 0.00051; // [1/Pa]
          this->vgWetN1               = 1.7;
-         this->maxTensileStrain      = 0; // [Pa]
+         this->maxTensileStrain      = 0;       // [Pa]
+         this->matrixCompressibility = 5e-10;   // [1/Pa] (ChatGPT 2025-08-01)
 
          this->frictionAngle = {
             .constant = 36 * M_PI / 180.0,

@@ -42,6 +42,7 @@ namespace KiLib::Soils
          this->vgWetAlpha1           = 0.00013; // [1/Pa]
          this->vgWetN1               = 1.46;
          this->maxTensileStrain      = 0; // [Pa]
+         this->matrixCompressibility = 5e-08; // [1/Pa] (ChatGPT 2025-08-01)
 
          this->frictionAngle = {
             .constant = 33 * M_PI / 180.0,
