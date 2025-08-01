@@ -86,6 +86,10 @@ double Soil::GetMaxTensileStrain() const
 {
    return this->maxTensileStrain.value();
 }
+double Soil::GetMatrixCompressibility() const
+{
+   return this->matrixCompressibility.value();
+}
 
 ValueDistribution Soil::GetFrictionAngleDistribution() const
 {
