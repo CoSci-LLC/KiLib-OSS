@@ -48,7 +48,7 @@ double Iverson2000STST::ComputeWaterPressure(
    const double beta  = cos2 - infLT / Ks;
    const double Tstar = duration / std::pow(soil_depth, 2) * Dhat;
    const double R     = ComputePressureHeadResponseFunction(Tstar);
-   return beta * (soil_depth - water_table_depth) + soil_depth * inf / Ks * R;
+   return KiLib::Constants::WATER_DENSITY * KiLib::Constants::GRAVITY * (beta * (soil_depth - water_table_depth) + soil_depth * inf / Ks * R);
 }
 
 
