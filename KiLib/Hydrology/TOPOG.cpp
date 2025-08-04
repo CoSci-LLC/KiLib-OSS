@@ -37,7 +37,7 @@ double TOPOG::ComputeWetness(
    const double slope_angle,  // Slope angle [rad]
    const double b) const      // Contour length [L]
 {
-   return std::clamp( (rainfall * A_c) / ( b * ks * thickness * std::sin(slope_angle)), 0.0, 1.0);
+   return std::clamp( (rainfall * A_c) / ( b * ks * thickness * std::tan(slope_angle)), 0.0, 1.0);
 }
 
 double TOPOG::ComputeWaterPressure(
