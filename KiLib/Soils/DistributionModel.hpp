@@ -118,6 +118,10 @@ namespace KiLib::Soils
       {
          return s.GetMaxTensileStrain();
       }
+      double GetMatrixCompressibility() const override
+      {
+         return s.MatrixCompressibility();
+      }
       ValueDistribution GetFrictionAngleDistribution() const override
       {
          return s.GetFrictionAngleDistribution();
