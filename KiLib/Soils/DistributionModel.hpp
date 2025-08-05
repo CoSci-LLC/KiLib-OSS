@@ -120,7 +120,7 @@ namespace KiLib::Soils
       }
       double GetMatrixCompressibility() const override
       {
-         return s.MatrixCompressibility();
+         return s.GetMatrixCompressibility();
       }
       ValueDistribution GetFrictionAngleDistribution() const override
       {
