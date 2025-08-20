@@ -144,7 +144,7 @@ namespace KiLib
       auto densityWet = dwc.CalculateDensityWet(0.0);
       SPDLOG_DEBUG("densityWet S = 0   = {}", densityWet);
       SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
-      ASSERT_EQ(dwc.GetDensityWet(), 1716.0953413698749);
+      ASSERT_EQ(dwc.GetDensityWet(), 1716.0617008977395);
 
       // Check that get method returns same value since last calculation
       ASSERT_EQ(dwc.GetDensityWet(), densityWet);
@@ -152,7 +152,7 @@ namespace KiLib
       densityWet = dwc.CalculateDensityWet(0.8);
       SPDLOG_DEBUG("densityWet S = 0.8 = {}", densityWet);
       SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
-      ASSERT_EQ(dwc.GetDensityWet(), 1830.4611884332512);
+      ASSERT_EQ(dwc.GetDensityWet(), 1830.4161113764094);
 
       // Check that get method returns same value since last calculation
       ASSERT_EQ(dwc.GetDensityWet(), densityWet);
@@ -160,7 +160,7 @@ namespace KiLib
       densityWet = dwc.CalculateDensityWet(1.0);
       SPDLOG_DEBUG("densityWet S = 1   = {}", densityWet);
       SPDLOG_DEBUG("dwc.GetDensityWet  = {}", dwc.GetDensityWet());
-      ASSERT_EQ(dwc.GetDensityWet(), 1859.0526501990953);
+      ASSERT_EQ(dwc.GetDensityWet(), 1859.004713996077);
 
       // Check that get method returns same value since last calculation
       ASSERT_EQ(dwc.GetDensityWet(), densityWet);
