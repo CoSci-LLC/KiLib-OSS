@@ -1,5 +1,5 @@
 # KiLib-OSS 
-#### Version v6.1.0
+#### Version v6.3.0
 
 *A Scientific Library for "Earth" (Ki) surface processes*
 
@@ -73,22 +73,24 @@ target_link_libraries(${projectName} PUBLIC KiLib)
 ## Classes
 
 ### Hydrology
-(`KiLib/Hydrology/Hydrology.hpp`) Implements hydrological models such as TOPMODEL.
+`KiLib/Hydrology/Hydrology.hpp`: Implements hydrological models (TOPMODEL,
+TOPOG, Iverson2000STST ---Iverson, 2000, Saturated-Transient-Short-Term) and
+infiltration models (Stone2008 --- Stone et al 2008, Bonetti2021 --- Bonetti et al 2021)
 
 ### Raster 
-(`KiLib/Raster/Raster.hpp`) Raster class that can read/write DEM (Digital Elevation Model) files in TIFF or ASCII format.
+`KiLib/Raster/Raster.hpp`: Raster class that can read/write DEM (Digital Elevation Model) files in TIFF or ASCII format.
 
 ### SoilDepth
-(`KiLib/SoilDepth/SoilType.hpp`) Implements different models for computing soil depth based on slope or elevation.
+`KiLib/SoilDepth/SoilType.hpp`: Implements different models for computing soil depth based on slope or elevation.
 
 ### Soils
-(`KiLib/Soils/SoilType.hpp`) Includes `SoilType` class that contains soils physical properties.
+`KiLib/Soils/SoilType.hpp`: Includes `SoilType` class that contains soils physical properties.
 
 ### Stability
-(`KiLib/Stability/SafetyFactor/MDSTAB.hpp`) Implements factor of safety calculations using the MD-STAB model of Milledge et al. (2014).
+`KiLib/Stability/SafetyFactor/MDSTAB.hpp`: Implements factor of safety calculations using the MD-STAB model of Milledge et al. (2014).
 
 ### Utils
-(`KiLib/Utils/Distributions.hpp`) Implements several useful probability distribution related functions that are used throughout this code.
+`KiLib/Utils/Distributions.hpp`: Implements several useful probability distribution related functions that are used throughout this code.
 
 (`KiLib/Utils/Vec3.hpp`) General-purpose 3-dimensional vector class. It supports many different operations.
 
