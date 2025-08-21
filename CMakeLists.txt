@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.15)
 set(projectName KiLibObjLib)
 
 # Create the project name and version
-project(KiLib VERSION 6.1.0 LANGUAGES C CXX)
+project(KiLib VERSION 6.3.0 LANGUAGES C CXX)
 
 # Detect compiler and set variable
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")

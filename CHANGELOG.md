@@ -2,6 +2,18 @@
 
 Notable changes to this project will be documented in this file.
 
+## v6.3.0
+---
+
+### Added
+
+- Infiltration models
+- Soil and constant updates
+
+### Fixed
+
+- Updated tests
+
 ## v6.1.0
 ---
 
