@@ -448,7 +448,8 @@ namespace KiLib::Rasters
                   *bd *= *ad;
                   return std::move(b);
                case OPERAND::DIVIDE:
-                  *ad /= *bd;
+//                  *ad /= *bd; //This places the results in bd due to the operator overload
+                  *bd = *ad / *bd;
                   return std::move(b);
                   break;
                case OPERAND::PLUS:
@@ -456,7 +457,8 @@ namespace KiLib::Rasters
                   return std::move(b);
                   break;
                case OPERAND::MINUS:
-                  *ad -= *bd; //This places it in bd!!!! This is because of the operator that is being used
+//                  *ad -= *bd; //This places it in bd!!!! This is because of the operator that is being used
+                  *bd = *ad - *bd;
                   return std::move(b);
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );

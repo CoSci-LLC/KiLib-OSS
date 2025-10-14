@@ -75,19 +75,6 @@ namespace KiLib::Rasters
          this->data = &data;
       }
 
-      KiLib::Vec2<double> get_cell_position(size_t ind) const
-      {
-         size_t r = ind / this->_nCols(); //TODO: Should this be rows???
-         size_t c = ind % this->_nCols();
-         return get_cell_position(r, c);
-      }
-
-      KiLib::Vec2<double> get_cell_position(size_t row,  size_t col) const
-      {
-         KiLib::Vec2<double> pos = KiLib::Vec2<double>(this->parent_raster._xllcorner() + col * this->parent_raster._cellsize()  + this->parent_raster._cellsize() / 2.0, this->parent_raster._yllcorner() + row * this->parent_raster._cellsize()  + this->parent_raster._cellsize() / 2.0);
-         return pos;
-      }
-
       double get_cell_position_x(size_t col) const
       {
          return this->parent_raster.get_xllcorner() + (double)col * this->parent_raster.get_cellsize()  + this->parent_raster.get_cellsize() / 2.0;
@@ -200,18 +187,6 @@ namespace KiLib::Rasters
 
       
 
-      KiLib::Vec3 getCellCenter(size_t ind) const
-      {
-         size_t r = ind / this->nCols;
-         size_t c = ind % this->nCols;
-
-         KiLib::Vec3 pos = KiLib::Vec3(
-            this->xllcorner + c * this->cellsize + this->cellsize / 2.0,
-            this->yllcorner + r * this->cellsize + this->cellsize / 2.0, 0);
-         pos.z = this->getInterpBilinear(pos);
-
-         return pos;
-      }
 
       operator KiLib::Vec2<double>() const 
       {

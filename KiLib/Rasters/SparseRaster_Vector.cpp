@@ -226,7 +226,7 @@ namespace KiLib::Rasters
    { 
       if ( !a.can_perform_operation( b ) ) 
       {
-         throw std::invalid_argument( "Cannot Multiple disimilar rasters" ); 
+         throw std::invalid_argument( "Cannot divide disimilar rasters" ); 
       }
 
       const auto nodata   = a.get_nodata_value();

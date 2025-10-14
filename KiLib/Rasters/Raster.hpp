@@ -67,6 +67,9 @@ namespace KiLib::Rasters
 
 
 
+      Raster () {
+         raster = nullptr;
+      }
 
       // Just call the other constructor with the zindex = 1
       Raster( size_t rows, size_t cols) : Raster( std::make_tuple(rows, cols, 1))
@@ -105,7 +108,6 @@ namespace KiLib::Rasters
       }
 
       ~Raster() override {
-         
          if ( raster != nullptr) {
             delete raster;
             raster = nullptr;
@@ -261,7 +263,9 @@ namespace KiLib::Rasters
       Raster<T>& operator=(Raster<T>&& other) 
       {
          // Just move the pointer
-         delete raster;
+         if ( raster != nullptr ) {
+            delete raster;
+         }
          raster = other.raster;
          other.raster = nullptr;
          return *this;
