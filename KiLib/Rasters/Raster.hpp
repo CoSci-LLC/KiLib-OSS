@@ -31,7 +31,7 @@ namespace KiLib::Rasters
 
    friend Raster<T>&& operator*(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator*(const Raster<T>& a, const Raster<T>& b) ;
-   friend Raster<T>&& operator*(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   //friend Raster<T>&& operator*(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T>&& operator*(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator*(const double k, const Raster<T>& a);
    friend Raster<T>&& operator*(const double k, Raster<T>&& a);
@@ -40,7 +40,7 @@ namespace KiLib::Rasters
 
    friend Raster<T>&& operator-(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator-(const Raster<T>& a, const Raster<T>& b) ;
-   friend Raster<T>&& operator-(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   //friend Raster<T>&& operator-(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T>&& operator-(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator-(const double k, const Raster<T>& a);
    friend Raster<T>&& operator-(const double k, Raster<T>&& a);
@@ -49,7 +49,7 @@ namespace KiLib::Rasters
 
    friend Raster<T>&& operator+(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator+(const Raster<T>& a, const Raster<T>& b) ;
-   friend Raster<T>&& operator+(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   //friend Raster<T>&& operator+(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T>&& operator+(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator+(const double k, const Raster<T>& a);
    friend Raster<T>&& operator+(const double k, Raster<T>&& a);
@@ -58,7 +58,7 @@ namespace KiLib::Rasters
 
    friend Raster<T>&& operator/(Raster<T>&& a, const Raster<T>& b) ;
    friend Raster<T> operator/(const Raster<T>& a, const Raster<T>& b) ;
-   friend Raster<T>&& operator/(const Raster<T>& a, Raster<T>&& b) ;
+   //friend Raster<T>&& operator/(const Raster<T>& a, Raster<T>&& b) ;
    friend Raster<T>&& operator/(Raster<T>&& a, Raster<T>&& b) ;
    friend Raster<T> operator/(const double k, const Raster<T>& a);
    friend Raster<T>&& operator/(const double k, Raster<T>&& a);
@@ -652,6 +652,7 @@ namespace std
    {
       KiLib::Rasters::Raster<T> out(a);
       out.atan();
+      out.set_name( "atan(" + out.get_name() + ")");
       return out;
    }
 
@@ -659,6 +660,7 @@ namespace std
    {
       KiLib::Rasters::Raster<T> out(a);
       out.sin();
+      out.set_name( "sin(" + out.get_name() + ")");
       return out;
    }
 
@@ -666,6 +668,7 @@ namespace std
    {
       KiLib::Rasters::Raster<T> out(a);
       out.cos();
+      out.set_name( "cos(" + out.get_name() + ")");
       return out;
    }
 
@@ -673,12 +676,14 @@ namespace std
    {
       KiLib::Rasters::Raster<T> out(a);
       out.tan();
+      out.set_name( "tan(" + out.get_name() + ")");
       return out;
    }
    template <class T> KiLib::Rasters::Raster<T> exp( const KiLib::Rasters::Raster<T>& a )
    {
       KiLib::Rasters::Raster<T> out(a);
       out.exp();
+      out.set_name( "exp(" + out.get_name() + ")");
       return out;
    }
 
@@ -691,6 +696,54 @@ namespace std
    {
       return a.max();
    }
+
+
+   template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& b, double a) {
+      return max(b, a);
+   }
+
+   template <class T> KiLib::Rasters::Raster<T> max( double b, const KiLib::Rasters::Raster<T>& a)
+   {
+      KiLib::Rasters::Raster<T> out(a);
+
+      //TODO: Make parallel
+      for ( auto it = out.begin(); it != out.end(); ++it) 
+      {
+         size_t r = (&it).i();
+         size_t c = (&it).j();
+         size_t z = (&it).k();
+
+         out.set(r,c, z, std::max( *((&it).data), b ));
+      }
+      return out;
+   }
+
+
+   template <class T> KiLib::Rasters::Raster<T> min( const KiLib::Rasters::Raster<T>& b, double a) {
+      return min(b, a);
+   }
+
+   template <class T> KiLib::Rasters::Raster<T> min( double b, const KiLib::Rasters::Raster<T>& a)
+   {
+      KiLib::Rasters::Raster<T> out(a);
+
+      //TODO: Make parallel
+      for ( auto it = out.begin(); it != out.end(); ++it) 
+      {
+         size_t r = (&it).i();
+         size_t c = (&it).j();
+         size_t z = (&it).k();
+
+         out.set(r,c, z, std::min( *((&it).data), b ));
+      }
+      return out;
+   }
+
+
+
+
+
+
 
 
    template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& a, const KiLib::Rasters::Raster<T>& b)
@@ -730,8 +783,6 @@ namespace std
                op1     = &b;
                op2     = &a;
             }
-
-
 
          KiLib::Rasters::Raster<T> out(*op1);
          out.copy_metadata_from(*op1);
