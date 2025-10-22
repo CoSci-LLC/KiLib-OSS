@@ -36,17 +36,17 @@
 {\
    return Raster<double>::ApplyOperator(k, a, OPERAND:: NAME );\
 }\
-   Raster<double>&& operator OP (const double k, Raster<double>&& a)\
+   Raster<double> operator OP (const double k, Raster<double>&& a)\
 {\
-   return std::move(Raster<double>::ApplyOperator(k, std::move(a), OPERAND:: NAME ));\
+   return Raster<double>::ApplyOperator(k, std::move(a), OPERAND:: NAME );\
 }\
    Raster<double> operator OP (const Raster<double>& a, const double k)\
 {\
    return Raster<double>::ApplyOperator(a, k, OPERAND:: NAME );\
 }\
-   Raster<double>&& operator OP (Raster<double>&& a, const double k)\
+   Raster<double> operator OP (Raster<double>&& a, const double k)\
 {\
-   return std::move(Raster<double>::ApplyOperator(std::move(a), k, OPERAND:: NAME ));\
+   return Raster<double>::ApplyOperator(std::move(a), k, OPERAND:: NAME );\
 }
 
 
@@ -131,7 +131,6 @@ namespace KiLib::Rasters
             out.copy_metadata_from(*op1);
 
             // Need to loop through each cell in the larger raster->
-      // TODO: Make this parllel
             std::for_each(EXEC_POLICY, op1->begin(), op1->end(), [&](auto it) {
                const size_t r = it.i();
                const size_t c = it.j();
@@ -205,7 +204,7 @@ namespace KiLib::Rasters
 
    // && Const&
    template<>
-   Raster<double>&& Raster<double>::ApplyOperator_RL( Raster<double>&& a, const Raster<double>& b, OPERAND op )
+   Raster<double> Raster<double>::ApplyOperator_RL( Raster<double>&& a, const Raster<double>& b, OPERAND op )
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
@@ -222,16 +221,16 @@ namespace KiLib::Rasters
                {
                case OPERAND::MULTIPLY:
                   *ad *= *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::DIVIDE:
                   *ad /= *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::PLUS:
                   *ad += *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::MINUS:
                   *ad -= *bd;
-                  return std::move(a);
+                  return a;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -244,16 +243,16 @@ namespace KiLib::Rasters
                {
                case OPERAND::MULTIPLY:
                   *ad *= *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::DIVIDE:
                   *ad /= *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::PLUS:
                   *ad += *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::MINUS:
                   *ad -= *bd;
-                  return std::move(a);
+                  return a;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -336,7 +335,7 @@ namespace KiLib::Rasters
                   a.set( r, c, zindex, val );
             });
 
-               return std::move(a);
+               return a;
 
             } else {
 
@@ -399,7 +398,7 @@ namespace KiLib::Rasters
             });
 
             a = out;
-            return std::move(a);
+            return a;
 
       }
    }
@@ -407,7 +406,7 @@ namespace KiLib::Rasters
 
    // Const&, &&
    template<>
-   Raster<double>&& Raster<double>::ApplyOperator_LR( const Raster<double>& a, Raster<double>&& b, OPERAND op )
+   Raster<double> Raster<double>::ApplyOperator_LR( const Raster<double>& a, Raster<double>&& b, OPERAND op )
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
@@ -424,16 +423,16 @@ namespace KiLib::Rasters
                {
                case OPERAND::MULTIPLY:
                   *bd *= *ad;
-                  return std::move(b);
+                  return b;
                case OPERAND::DIVIDE:
                   *ad /= *bd;
-                  return std::move(b);
+                  return b;
                case OPERAND::PLUS:
                   *bd += *ad;
-                  return std::move(b);
+                  return b;
                case OPERAND::MINUS:
                   *ad -= *bd;
-                  return std::move(b);
+                  return b;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                }; 
@@ -446,18 +445,17 @@ namespace KiLib::Rasters
                {
                case OPERAND::MULTIPLY:
                   *bd *= *ad;
-                  return std::move(b);
+                  return b;
                case OPERAND::DIVIDE:
                   *ad /= *bd; //This places the results in bd due to the operator overload
-                  return std::move(b);
+                  return b;
                   break;
                case OPERAND::PLUS:
                   *bd += *ad;
-                  return std::move(b);
-                  break;
+                  return b;
                case OPERAND::MINUS:
                   *ad -= *bd; //This places it in bd!!!! This is because of the operator that is being used
-                  return std::move(b);
+                  return b;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -538,7 +536,7 @@ namespace KiLib::Rasters
                   b.set( r, c, zindex, val );
             });
 
-               return std::move(b);
+                  return b;
 
             } else {
             Raster<double> out( *op1 ); // std::make_tuple( op1->get_rows(), op1->get_cols(), op1->get_zindex() ));
@@ -600,7 +598,7 @@ namespace KiLib::Rasters
             });
 
             b = out;
-            return std::move(b);
+                  return b;
 
       }
          }
@@ -609,7 +607,7 @@ namespace KiLib::Rasters
 
    // &&, &&
    template<>
-   Raster<double>&& Raster<double>::ApplyOperator_RR( Raster<double>&& a, Raster<double>&& b, OPERAND op )
+   Raster<double> Raster<double>::ApplyOperator_RR( Raster<double>&& a, Raster<double>&& b, OPERAND op )
       {
          // Either use the index to multiply each element, or if we don't have the same kind of rasters
          // we need to multiply by the location, which is slower
@@ -626,16 +624,16 @@ namespace KiLib::Rasters
                {
                case OPERAND::MULTIPLY:
                   *ad *= *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::DIVIDE:
                   *ad /= *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::PLUS:
                   *ad += *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::MINUS:
                   *ad -= *bd;
-                  return std::move(a);
+                  return a;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -648,16 +646,16 @@ namespace KiLib::Rasters
                {
                case OPERAND::MULTIPLY:
                   *ad *= *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::DIVIDE:
                   *ad /= *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::PLUS:
                   *ad += *bd;
-                  return std::move(a);
+                  return a;
                case OPERAND::MINUS:
                   *ad -= *bd;
-                  return std::move(a);
+                  return a;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
@@ -736,50 +734,50 @@ namespace KiLib::Rasters
             });
 
             if ( swapped ) {
-               return std::move(b);
+                  return b;
             } else {
-               return std::move(a);
+                  return b;
             }
       }
 }
 
    // &&, &&
-   Raster<double>&& operator*(Raster<double>&& a, Raster<double>&& b )
+   Raster<double> operator*(Raster<double>&& a, Raster<double>&& b )
    {
-            return Raster<double>::ApplyOperator_RR( std::move(a), std::move(b), KiLib::Rasters::OPERAND::MULTIPLY );
-      }
-// &&, const&
-   Raster<double>&& operator*(Raster<double>&& a, const Raster<double>& b )
-   {
-         return Raster<double>::ApplyOperator_RL( std::move(a), b, KiLib::Rasters::OPERAND::MULTIPLY );
+      return Raster<double>::ApplyOperator_RR( std::move(a), std::move(b), KiLib::Rasters::OPERAND::MULTIPLY );
    }
-/*
-   Raster<double>&& operator*(const Raster<double>& a, Raster<double>&& b )
+   // &&, const&
+   Raster<double> operator*(Raster<double>&& a, const Raster<double>& b )
    {
-            return Raster<double>::ApplyOperator_LR( a, std::move(b), KiLib::Rasters::OPERAND::MULTIPLY );
-      }
+      return Raster<double>::ApplyOperator_RL( std::move(a), b, KiLib::Rasters::OPERAND::MULTIPLY );
+   }
 
-*/
+   Raster<double> operator*(const Raster<double>& a, Raster<double>&& b )
+   {
+      return Raster<double>::ApplyOperator_LR( a, std::move(b), KiLib::Rasters::OPERAND::MULTIPLY );
+   }
+
+
 
 
 
 
    // &&, &&
-   Raster<double>&& operator-(Raster<double>&& a, Raster<double>&& b )
+   Raster<double> operator-(Raster<double>&& a, Raster<double>&& b )
    {
             return Raster<double>::ApplyOperator_RR( std::move(a), std::move(b), KiLib::Rasters::OPERAND::MINUS );
       }
 // &&, const&
-   Raster<double>&& operator-(Raster<double>&& a, const Raster<double>& b )
+   Raster<double> operator-(Raster<double>&& a, const Raster<double>& b )
    {
             return Raster<double>::ApplyOperator_RL( std::move(a), b, KiLib::Rasters::OPERAND::MINUS );
       }
-/*
-   Raster<double>&& operator-(const Raster<double>& a, Raster<double>&& b )
+
+   Raster<double> operator-(const Raster<double>& a, Raster<double>&& b )
    {
             return Raster<double>::ApplyOperator_LR( a, std::move(b), KiLib::Rasters::OPERAND::MINUS );
       }
-*/
+
 
 
 
@@ -792,49 +790,45 @@ namespace KiLib::Rasters
 
 
    // &&, &&
-   Raster<double>&& operator+(Raster<double>&& a, Raster<double>&& b )
+   Raster<double> operator+(Raster<double>&& a, Raster<double>&& b )
    {
-            return Raster<double>::ApplyOperator_RR( std::move(a), std::move(b), KiLib::Rasters::OPERAND::PLUS );
-      }
+      return Raster<double>::ApplyOperator_RR( std::move(a), std::move(b), KiLib::Rasters::OPERAND::PLUS );
+   }
 // &&, const&
-   Raster<double>&& operator+(Raster<double>&& a, const Raster<double>& b )
+   Raster<double> operator+(Raster<double>&& a, const Raster<double>& b )
    {
-            return Raster<double>::ApplyOperator_RL( std::move(a), b, KiLib::Rasters::OPERAND::PLUS );
-      }
-/*
-   Raster<double>&& operator+(const Raster<double>& a, Raster<double>&& b )
+      return Raster<double>::ApplyOperator_RL( std::move(a), b, KiLib::Rasters::OPERAND::PLUS );
+   }
+   Raster<double> operator+(const Raster<double>& a, Raster<double>&& b )
    {
-            return Raster<double>::ApplyOperator_LR( a, std::move(b), KiLib::Rasters::OPERAND::PLUS );
-      }
-
-
-*/
+      return Raster<double>::ApplyOperator_LR( a, std::move(b), KiLib::Rasters::OPERAND::PLUS );
+   }
 
 
 
-      Raster<double> operator/( const Raster<double>& a, const Raster<double>& b )
-      {
-         return Raster<double>::ApplyOperator( a, b, KiLib::Rasters::OPERAND::DIVIDE );
-      }
+
+
+   Raster<double> operator/( const Raster<double>& a, const Raster<double>& b )
+   {
+      return Raster<double>::ApplyOperator( a, b, KiLib::Rasters::OPERAND::DIVIDE );
+   }
 
 
    // &&, &&
-   Raster<double>&& operator/(Raster<double>&& a, Raster<double>&& b )
+   Raster<double> operator/(Raster<double>&& a, Raster<double>&& b )
    {
-            return Raster<double>::ApplyOperator_RR( std::move(a), std::move(b), KiLib::Rasters::OPERAND::DIVIDE );
-      }
+      return Raster<double>::ApplyOperator_RR( std::move(a), std::move(b), KiLib::Rasters::OPERAND::DIVIDE );
+   }
 // &&, const&
-   Raster<double>&& operator/(Raster<double>&& a, const Raster<double>& b )
+   Raster<double> operator/(Raster<double>&& a, const Raster<double>& b )
    {
-            return Raster<double>::ApplyOperator_RL( std::move(a), b, KiLib::Rasters::OPERAND::DIVIDE );
-      }
-/*
-   Raster<double>&& operator/(const Raster<double>& a, Raster<double>&& b )
+      return Raster<double>::ApplyOperator_RL( std::move(a), b, KiLib::Rasters::OPERAND::DIVIDE );
+   }
+   Raster<double> operator/(const Raster<double>& a, Raster<double>&& b )
    {
-            return Raster<double>::ApplyOperator_LR( a, std::move(b), KiLib::Rasters::OPERAND::DIVIDE );
-      }
+      return Raster<double>::ApplyOperator_LR( a, std::move(b), KiLib::Rasters::OPERAND::DIVIDE );
+   }
 
-*/
 
 
    SINGLE_OPERATOR(*, MULTIPLY);

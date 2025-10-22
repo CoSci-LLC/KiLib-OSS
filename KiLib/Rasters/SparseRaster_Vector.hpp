@@ -499,6 +499,14 @@ namespace KiLib::Rasters
 
 
 
+      using IRaster<T>::apply;
+        void apply( std::function<T(T)> f) override{
+
+            const auto nodata_value = this->get_nodata_value();
+            std::transform( EXEC_POLICY, V.begin(), V.end(), V.begin(), [&f, &nodata_value ](T v) { if (v == nodata_value) {return nodata_value; } else { return f(v);  } } );
+
+        }
+
 
 
 

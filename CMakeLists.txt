@@ -29,6 +29,22 @@ add_library(KiLib STATIC $<TARGET_OBJECTS:${projectName}>)
 target_link_libraries(KiLib PUBLIC TIFF::TIFF spdlog::spdlog stats)
 target_link_libraries(KiLib PUBLIC ${projectName})
 
+
+
+
+find_package(TBB)
+if( NOT TBB_DIR)
+message( WARNING "TBB not found (CODE WILL NOT RUN IN PARALLEL)" )
+else()
+    target_link_libraries(KiLib PUBLIC
+	TBB::tbb
+)
+message( STATUS "TBB found (Required for parallel): ${TBB_DIR}" )
+endif()
+
+
+
+
 # Ensure that the install directory is all setup properly
 message("Install Directory: ${CMAKE_INSTALL_INCLUDEDIR}")
 if ("${CMAKE_INSTALL_INCLUDEDIR}" STREQUAL "")

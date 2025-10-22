@@ -110,6 +110,32 @@ TEST_P(Rasters, atan) {
    }
 }
 
+
+TEST_P(Rasters,set_all_values_to) {
+    KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, -5},
+         {{0, 1, 0}, -5},
+         {{1, 0, 0}, -5},
+         {{1, 1, 0}, -5},
+         {{0, 0, 1}, -5},
+         {{0, 1, 1}, -5},
+         {{1, 0, 1}, -5},
+         {{1, 1, 1}, -5},
+      }, GetParam());
+
+   a.set_all_values_to(0.0);
+
+ 
+   for ( auto it = a.begin(); it != a.end(); ++it) {
+      EXPECT_EQ(*((&it).data), 0.0);
+   } 
+
+}
+
+
+
+
 TEST_P(Rasters, tan) {
    KiLib::Rasters::Raster<double> a( { 2, 2, 2},
     {
@@ -144,6 +170,12 @@ TEST_P(Rasters, cos) {
       }, GetParam());
 
    auto b = std::cos(a);
+
+   for ( auto it = b.begin(); it != b.end(); ++it) {
+      EXPECT_EQ(*((&it).data), std::cos(-5.0));
+   }
+
+   b = std::cos(std::move(a));
 
    for ( auto it = b.begin(); it != b.end(); ++it) {
       EXPECT_EQ(*((&it).data), std::cos(-5.0));
@@ -190,33 +222,34 @@ TEST_P(Rasters, exp) {
    }
 }
 
+std::map<std::tuple<size_t, size_t, size_t>, double> GenerateMap(const std::tuple<size_t, size_t, size_t> dims, double val)
+{
+    std::map<std::tuple<size_t, size_t, size_t>, double> r; 
+    for (size_t i = 0; i < std::get<0>(dims); i++) {
+      for (size_t j = 0; j < std::get<1>(dims); j++) {
+        for (size_t k = 0; k < std::get<2>(dims); k++) {
+            r.insert( { {i,j,k}, val } );
+        }
+      }
+   }
+   return r;
+}
+
+
 // Demonstrate some basic assertions.
 TEST_P(Rasters, Basic_Operations) {
 
-   KiLib::Rasters::Raster<double> init_a( { 2, 2, 2},
-    {
-         {{0, 0, 0}, 1},
-         {{0, 1, 0}, 1},
-         {{1, 0, 0}, 1},
-         {{1, 1, 0}, 1},
-         {{0, 0, 1}, 1},
-         {{0, 1, 1}, 1},
-         {{1, 0, 1}, 1},
-         {{1, 1, 1}, 1},
-      }, GetParam());
+   auto dims_a = std::make_tuple( 60, 60, 1);
+   KiLib::Rasters::Raster<double> init_a(dims_a,
+   {
+      GenerateMap(dims_a, 1)
+   }, GetParam());
    SetBasicRasterProperties(init_a);
    const auto a = init_a;
 
-   KiLib::Rasters::Raster<double> init_b( { 2, 2, 2},
+   KiLib::Rasters::Raster<double> init_b(dims_a,
     {
-         {{0, 0, 0}, 5},
-         {{0, 1, 0}, 5},
-         {{1, 0, 0}, 5},
-         {{1, 1, 0}, 5},
-         {{0, 0, 1}, 5},
-         {{0, 1, 1}, 5},
-         {{1, 0, 1}, 5},
-         {{1, 1, 1}, 5},
+      GenerateMap(dims_a, 5)
       }, GetParam());
    SetBasicRasterProperties(init_b);
 
@@ -231,6 +264,7 @@ TEST_P(Rasters, Basic_Operations) {
    auto aa = a;
    auto bb = b;
    EXPECT_EQ(a * std::move(bb), b);
+   EXPECT_EQ(a * (std::move(bb) * std::move(aa)), b);
    EXPECT_EQ(std::move(aa) * b, b);
    EXPECT_EQ(a * a * b * a, b);
 
@@ -277,7 +311,7 @@ TEST_P(Rasters, Basic_Operations) {
    aa = a;
    EXPECT_EQ(1 / aa, a);
 
-   KiLib::Rasters::Raster<double> b_div_result( {2,2,2}, 0.2);
+   KiLib::Rasters::Raster<double> b_div_result(dims_a, 0.2);
    SetBasicRasterProperties(b_div_result);
    b_div_result.set_name("b_div_result");
    b_div_result.convert_type_to(GetParam());
@@ -286,17 +320,10 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(1 / bb, b_div_result);
 
    // Testing Addition
-   KiLib::Rasters::Raster<double> init_c( { 2, 2, 2},
-    {
-         {{0, 0, 0}, 6},
-         {{0, 1, 0}, 6},
-         {{1, 0, 0}, 6},
-         {{1, 1, 0}, 6},
-         {{0, 0, 1}, 6},
-         {{0, 1, 1}, 6},
-         {{1, 0, 1}, 6},
-         {{1, 1, 1}, 6},
-      }, GetParam());
+   KiLib::Rasters::Raster<double> init_c( dims_a,
+   {
+        GenerateMap(dims_a, 6)
+   }, GetParam());
    SetBasicRasterProperties(init_c);
    const auto c = init_c;
 
@@ -332,17 +359,10 @@ TEST_P(Rasters, Basic_Operations) {
 
    //
    // Testing Subtraction
-   KiLib::Rasters::Raster<double> init_d( { 2, 2, 2},
-    {
-         {{0, 0, 0}, 4},
-         {{0, 1, 0}, 4},
-         {{1, 0, 0}, 4},
-         {{1, 1, 0}, 4},
-         {{0, 0, 1}, 4},
-         {{0, 1, 1}, 4},
-         {{1, 0, 1}, 4},
-         {{1, 1, 1}, 4},
-      }, GetParam());
+   KiLib::Rasters::Raster<double> init_d( dims_a,
+   {
+      GenerateMap(dims_a, 4)
+   }, GetParam());
    SetBasicRasterProperties(init_d);
    const auto d = init_d;
 
@@ -359,8 +379,19 @@ TEST_P(Rasters, Basic_Operations) {
    aa = a;
    bb = b;
    EXPECT_EQ(std::move(bb) - std::move(aa), d);
-   EXPECT_NE(a - b, d); // MAke sure the order does matter
+   EXPECT_NE(a - b, d); // Make sure the order does matter
    
+
+   KiLib::Rasters::Raster<double> init_e(dims_a,
+   {
+      GenerateMap(dims_a, 25)
+   }, GetParam());
+   SetBasicRasterProperties(init_e);
+   const auto e = init_e;
+
+   bb = b;
+   auto ee = e / ( std::cos(bb) * std::cos(bb) );
+
    // Make sure that nodata cells are staying no data
    init_a.set((size_t)0, 1, a.get_nodata_value());
    const auto aaa = init_a;
@@ -387,6 +418,7 @@ TEST_P(Rasters, Basic_Operations) {
    EXPECT_EQ(b / aaa, b_r);
    EXPECT_NE(aaa / b, b_r); // Make sure the ordering matters
    EXPECT_EQ(1 / aaa, aaa);
+
 }
 
 TEST_P(Rasters, Different_Sized_Rasters_Operations) {

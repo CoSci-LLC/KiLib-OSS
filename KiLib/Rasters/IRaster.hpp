@@ -262,7 +262,9 @@ namespace KiLib::Rasters
             return m;
         }
 
-        
+        virtual void set_all_values_to(T val) {
+            apply( [&val](T) { return val; });
+        }
 
         virtual T max() const {
             T m = std::numeric_limits<T>::min();

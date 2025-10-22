@@ -29,41 +29,41 @@ namespace KiLib::Rasters
    {
    public:
 
-   friend Raster<T>&& operator*(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T> operator*(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator*(const Raster<T>& a, const Raster<T>& b) ;
-   //friend Raster<T>&& operator*(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
-   friend Raster<T>&& operator*(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator*(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator*(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator*(const double k, const Raster<T>& a);
-   friend Raster<T>&& operator*(const double k, Raster<T>&& a);
+   friend Raster<T> operator*(const double k, Raster<T>&& a);
    friend Raster<T> operator*(const Raster<T>& a, const double k);
-   friend Raster<T>&& operator*(Raster<T>&& a, const double k);
+   friend Raster<T> operator*(Raster<T>&& a, const double k);
 
-   friend Raster<T>&& operator-(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T> operator-(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator-(const Raster<T>& a, const Raster<T>& b) ;
-   //friend Raster<T>&& operator-(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
-   friend Raster<T>&& operator-(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator-(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator-(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator-(const double k, const Raster<T>& a);
-   friend Raster<T>&& operator-(const double k, Raster<T>&& a);
+   friend Raster<T> operator-(const double k, Raster<T>&& a);
    friend Raster<T> operator-(const Raster<T>& a, const double k);
-   friend Raster<T>&& operator-(Raster<T>&& a, const double k);
+   friend Raster<T> operator-(Raster<T>&& a, const double k);
 
-   friend Raster<T>&& operator+(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
+   friend Raster<T> operator+(KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) ;
    friend Raster<T> operator+(const Raster<T>& a, const Raster<T>& b) ;
-   //friend Raster<T>&& operator+(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
-   friend Raster<T>&& operator+(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator+(const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) ;
+   friend Raster<T> operator+(KiLib::Rasters::Raster<T>&& a, KiLib::Rasters::Raster<T>&& b) ;
    friend Raster<T> operator+(const double k, const Raster<T>& a);
-   friend Raster<T>&& operator+(const double k, Raster<T>&& a);
+   friend Raster<T> operator+(const double k, Raster<T>&& a);
    friend Raster<T> operator+(const Raster<T>& a, const double k);
-   friend Raster<T>&& operator+(Raster<T>&& a, const double k);
+   friend Raster<T> operator+(Raster<T>&& a, const double k);
 
-   friend Raster<T>&& operator/(Raster<T>&& a, const Raster<T>& b) ;
+   friend Raster<T> operator/(Raster<T>&& a, const Raster<T>& b) ;
    friend Raster<T> operator/(const Raster<T>& a, const Raster<T>& b) ;
-   //friend Raster<T>&& operator/(const Raster<T>& a, Raster<T>&& b) ;
-   friend Raster<T>&& operator/(Raster<T>&& a, Raster<T>&& b) ;
+   friend Raster<T> operator/(const Raster<T>& a, Raster<T>&& b) ;
+   friend Raster<T> operator/(Raster<T>&& a, Raster<T>&& b) ;
    friend Raster<T> operator/(const double k, const Raster<T>& a);
-   friend Raster<T>&& operator/(const double k, Raster<T>&& a);
+   friend Raster<T> operator/(const double k, Raster<T>&& a);
    friend Raster<T> operator/(const Raster<T>& a, const double k);
-   friend Raster<T>&& operator/(Raster<T>&& a, const double k);
+   friend Raster<T> operator/(Raster<T>&& a, const double k);
 
 
 
@@ -449,9 +449,9 @@ namespace KiLib::Rasters
 
 
       static Raster<T> ApplyOperator( const Raster<T>& a, const Raster<T>& b, OPERAND op );
-      static Raster<T>&& ApplyOperator_LR( const Raster<T>& a, Raster<T>&& b, OPERAND op );
-      static Raster<T>&& ApplyOperator_RL( Raster<T>&& a, const Raster<T>& b, OPERAND op );
-      static Raster<T>&& ApplyOperator_RR( Raster<T>&& a, Raster<T>&& b, OPERAND op );
+      static Raster<T> ApplyOperator_LR( const Raster<T>& a, Raster<T>&& b, OPERAND op );
+      static Raster<T> ApplyOperator_RL( Raster<T>&& a, const Raster<T>& b, OPERAND op );
+      static Raster<T> ApplyOperator_RR( Raster<T>&& a, Raster<T>&& b, OPERAND op );
     
       static Raster<T> ApplyOperator( const Raster<T>& a, const T b, OPERAND op )
       {
@@ -672,6 +672,15 @@ namespace std
       return out;
    }
 
+   template <class T> KiLib::Rasters::Raster<T> cos( KiLib::Rasters::Raster<T>&& a )
+   {
+      a.cos();
+      a.set_name( "cos(" + a.get_name() + ")");
+      return a;
+   }
+
+
+
    template <class T> KiLib::Rasters::Raster<T> tan( const KiLib::Rasters::Raster<T>& a )
    {
       KiLib::Rasters::Raster<T> out(a);
@@ -706,15 +715,14 @@ namespace std
    {
       KiLib::Rasters::Raster<T> out(a);
 
-      //TODO: Make parallel
-      for ( auto it = out.begin(); it != out.end(); ++it) 
+      std::for_each(EXEC_POLICY, out.begin(), out.end(), [&](auto it)
       {
-         size_t r = (&it).i();
-         size_t c = (&it).j();
-         size_t z = (&it).k();
+         size_t r = it.i();
+         size_t c = it.j();
+         size_t z = it.k();
 
-         out.set(r,c, z, std::max( *((&it).data), b ));
-      }
+         out.set(r,c, z, std::max( *(it.data), b ));
+      });
       return out;
    }
 
@@ -726,20 +734,20 @@ namespace std
    template <class T> KiLib::Rasters::Raster<T> min( double b, const KiLib::Rasters::Raster<T>& a)
    {
       KiLib::Rasters::Raster<T> out(a);
-
-      //TODO: Make parallel
-      for ( auto it = out.begin(); it != out.end(); ++it) 
-      {
-         size_t r = (&it).i();
-         size_t c = (&it).j();
-         size_t z = (&it).k();
-
-         out.set(r,c, z, std::min( *((&it).data), b ));
-      }
+      out->apply( [&b](T t) { return std::min(t, b);} );
       return out;
    }
 
 
+   template <class T> KiLib::Rasters::Raster<T> min( KiLib::Rasters::Raster<T>&& b, double a) {
+      return min(b, a);
+   }
+
+   template <class T> KiLib::Rasters::Raster<T> min( double b, KiLib::Rasters::Raster<T>&& a)
+   {
+      a->apply( [&b](T t) { return std::min(t, b);} );
+      return a;
+   }
 
 
 
@@ -753,20 +761,20 @@ namespace std
 
          KiLib::Rasters::Raster<T> out(a);
 
-         for ( auto it = out.begin(); it != out.end(); ++it) 
-         {
-            size_t r = (&it).i();
-            size_t c = (&it).j();
-            size_t z = (&it).k();
+         std::for_each(EXEC_POLICY, out.begin(), out.end(), [&](auto it) {
+            size_t r = it.i();
+            size_t c = it.j();
+            size_t z = it.k();
 
             // Check if b is a no data cell
-               auto cell_b = b.get(r, c, z);
-               
-               if (cell_b.is_nodata) continue;
+            auto cell_b = b.get(r, c, z);
 
-               out.set(r,c, z, std::max( *((&it).data), *(cell_b.data) ));
+            if (cell_b.is_nodata) return;
 
-         }
+            out.set(r,c, z, std::max( *(it.data), *(cell_b.data) ));
+
+         });
+
          return out;
       }
       else {
@@ -787,21 +795,19 @@ namespace std
          KiLib::Rasters::Raster<T> out(*op1);
          out.copy_metadata_from(*op1);
 
-         for ( auto it = out.begin(); it != out.end(); ++it) 
-         {
-            size_t r = (&it).i();
-            size_t c = (&it).j();
-            size_t z = (&it).k();
-            size_t x = (&it).x();
-            size_t y = (&it).y();
+         std::for_each(EXEC_POLICY, out.begin(), out.end(), [&](auto it) {
+            size_t r = it.i();
+            size_t c = it.j();
+            size_t z = it.k();
+            size_t x = it.x();
+            size_t y = it.y();
 
-               auto cell_b = (*op2).get((double)x,(double)y, z);
-               
-               if (cell_b.is_nodata) continue;
+            auto cell_b = (*op2).get((double)x,(double)y, z);
 
-               out.set(r,c, z, std::max( *((&it).data), *(cell_b.data) ));
+            if (cell_b.is_nodata) return;
 
-         }
+            out.set(r,c, z, std::max( *(it.data), *(cell_b.data) ));
+         });
          return out;
 
       }
