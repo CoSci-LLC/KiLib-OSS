@@ -699,6 +699,15 @@ TEST_P(Rasters, Raster_Min_Max) {
    SetBasicRasterProperties(min);
 
    EXPECT_EQ(std::min(a,b), min);
+
+
+   // Let's check out our min/max for rvalue
+   auto bb = b;
+   EXPECT_EQ(std::max(a, std::move(bb)), max);
+
+   auto aa = a;
+   EXPECT_EQ(std::max(std::move(aa),b), max);
+
 }
 
 

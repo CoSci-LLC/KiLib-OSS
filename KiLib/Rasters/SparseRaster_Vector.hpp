@@ -89,19 +89,21 @@ namespace KiLib::Rasters
    friend SparseRaster<T> operator/(SparseRaster<T>&& a, const double k);
 
 
-   friend SparseRaster<T>& operator*=(SparseRaster<T>& a, const SparseRaster<T>& k);
-   friend SparseRaster<T>& operator+=(SparseRaster<T>& a, const SparseRaster<T>& k);
-   friend SparseRaster<T>& operator-=(SparseRaster<T>& a, const SparseRaster<T>& k);
-   friend SparseRaster<T>& operator/=(SparseRaster<T>& a, const SparseRaster<T>& k);
-   friend SparseRaster<T>& operator/=(const SparseRaster<T>& a, SparseRaster<T>& k);
-   friend SparseRaster<T>& operator-=(const SparseRaster<T>& a, SparseRaster<T>& k);
+   friend SparseRaster<T> operator*=(SparseRaster<T>& a, const SparseRaster<T>& k);
+   friend SparseRaster<T> operator+=(SparseRaster<T>& a, const SparseRaster<T>& k);
+   friend SparseRaster<T> operator-=(SparseRaster<T>& a, const SparseRaster<T>& k);
+   friend SparseRaster<T> operator/=(SparseRaster<T>& a, const SparseRaster<T>& k);
+   friend SparseRaster<T> operator/=(const SparseRaster<T>& a, SparseRaster<T>& k);
+   friend SparseRaster<T> operator-=(const SparseRaster<T>& a, SparseRaster<T>& k);
 
 
-   friend SparseRaster<double>& operator*= ( SparseRaster<double>& a, const double k );
-   friend SparseRaster<double>& operator+= ( SparseRaster<double>& a, const double k );
-   friend SparseRaster<double>& operator/= ( SparseRaster<double>& a, const double k );
-   friend SparseRaster<double>& operator-= ( SparseRaster<double>& a, const double k );
+   friend SparseRaster<double> operator*= ( SparseRaster<double>& a, const double k );
+   friend SparseRaster<double> operator+= ( SparseRaster<double>& a, const double k );
+   friend SparseRaster<double> operator/= ( SparseRaster<double>& a, const double k );
+   friend SparseRaster<double> operator-= ( SparseRaster<double>& a, const double k );
 
+   friend SparseRaster<T> std::max( SparseRaster<T>&& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> std::max( const SparseRaster<T>& a, SparseRaster<T>&& b) ;
 
 
 
@@ -224,6 +226,43 @@ namespace KiLib::Rasters
          this->set_height( other.get_height() );
 
         }
+
+         using IRaster<T>::get_next_valid_cell_index_after;
+        size_t get_next_valid_cell_index_after(size_t idx) const override {
+              if (idx > this->V.size()) return idx;
+               idx++;
+            return idx;
+        }
+
+
+      using IRaster<T>::begin;
+      IRaster<T>::RasterIterator begin() override { return typename IRaster<T>::RasterIterator(this, 0); }
+      IRaster<T>::RasterIterator begin() const override { return typename IRaster<T>::RasterIterator(this, 0); }
+
+      using IRaster<T>::end;
+      IRaster<T>::RasterIterator end() override { return typename IRaster<T>::RasterIterator(this, this->V.size()); }
+      IRaster<T>::RasterIterator end() const override { return typename IRaster<T>::RasterIterator(this, this->V.size()); }
+
+
+      using IRaster<T>::ind2sub;
+      std::tuple<size_t, size_t, size_t> ind2sub(size_t idx) const  override {
+         // take index into array and convert to coordinates
+
+         // Find in the ROW_INDEX what index where the value is greater than idx
+         size_t c;
+         for (c = 0; c < this->ROW_INDEX.size()  -1; c++) {
+            if (this->ROW_INDEX[c + 1] > idx) {
+               break;
+            }
+         }
+
+         if ( c == this->ROW_INDEX.size() - 1) {
+            c--;
+         }
+
+         return { c , this->COL_INDEX[idx] , this->Z_INDEX[idx] };
+      }
+
 
       using IRaster<T>::get;
       KiLib::Rasters::Cell<T> get( size_t i, size_t j, size_t k = 0 ) const override
@@ -496,13 +535,10 @@ namespace KiLib::Rasters
 
       return out;
    }
-
-
-
       using IRaster<T>::apply;
-        void apply( std::function<T(T)> f) override{
+        void apply( std::function<T(T)> f) override {
 
-            const auto nodata_value = this->get_nodata_value();
+            auto nodata_value = this->get_nodata_value();
             std::transform( EXEC_POLICY, V.begin(), V.end(), V.begin(), [&f, &nodata_value ](T v) { if (v == nodata_value) {return nodata_value; } else { return f(v);  } } );
 
         }
@@ -565,4 +601,25 @@ namespace std {
       KiLib::Rasters::SparseRaster<T> out( a, result );
       return out;
    }
+
+
+   template <class T> KiLib::Rasters::SparseRaster<T> max( const KiLib::Rasters::SparseRaster<T>& a, KiLib::Rasters::SparseRaster<T>&& b ) 
+   {
+      return std::max(std::forward(b), a);
+   }
+
+
+   template <class T> KiLib::Rasters::SparseRaster<T> max( KiLib::Rasters::SparseRaster<T>&& a, const KiLib::Rasters::SparseRaster<T>& b )
+   {
+      //Let's take and transform the raster
+      std::transform(EXEC_POLICY, a.V.begin(), a.V.end(), b.V.begin(), a.V.begin(),
+                     [](const T& a, const T& b) { 
+                        return std::max(a, b); 
+                     }
+                     );
+      return a;
+   }
+
+
+
 };

@@ -13,8 +13,9 @@
 #include <tuple>
 #include <valarray>
 
-
-
+#ifndef EXEC_POLICY
+#define EXEC_POLICY std::execution::seq
+#endif
 
 namespace KiLib::Rasters
 {
@@ -87,6 +88,8 @@ namespace KiLib::Rasters
    friend DenseRaster<double>& operator/= ( DenseRaster<double>& a, const double k );
    friend DenseRaster<double>& operator-= ( DenseRaster<double>& a, const double k );
 
+   friend DenseRaster<T> std::max( DenseRaster<T>&& a, const DenseRaster<T>& b );
+   friend DenseRaster<T> std::max( const DenseRaster<T>& a, DenseRaster<T>&& b );
 
 
       // Just call the other constructor with the zindex = 1
@@ -333,9 +336,18 @@ namespace KiLib::Rasters
 
             return n.apply([](T n) -> T { return std::erfc(n); });
          }  
+      using IRaster<T>::apply;
+        void apply( std::function<T(T)> f) override {
+
+            auto nodata_value = this->get_nodata_value();
+            std::transform( EXEC_POLICY, std::begin(this->data), std::end(this->data), std::begin(this->data), [&f, &nodata_value ](T v) { if (v == nodata_value) {return nodata_value; } else { return f(v);  } } );
+
+        }
 
 
-   private:
+
+
+   protected:
 
        bool can_perform_operation(const DenseRaster<T>& other) const {
          // Shortcut true
@@ -573,4 +585,21 @@ return data[this->flatten_index(i,j,k)];
 
 } // namespace KiLib::Rasters
 
+namespace std {
+      template <class T> KiLib::Rasters::DenseRaster<T> max( KiLib::Rasters::DenseRaster<T>&& a, const KiLib::Rasters::DenseRaster<T>& b )
+      {
+         //Let's take and transform the raster
+         std::transform(EXEC_POLICY, begin(a.data), end(a.data), begin(b.data), begin(a.data),
+                        [](const T& a, const T& b) { 
+                           return std::max(a, b); 
+                        }
+                        );
+         return a;
+      }
+   template <class T> KiLib::Rasters::DenseRaster<T> max( const KiLib::Rasters::DenseRaster<T>& a, KiLib::Rasters::DenseRaster<T>&& b ) 
+   {
+      return std::max(std::forward(b), a);
+   }
 
+
+}

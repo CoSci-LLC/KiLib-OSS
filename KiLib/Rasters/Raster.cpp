@@ -67,8 +67,8 @@ namespace KiLib::Rasters
             if (a.get_type() == TYPE::DENSE ) {
 
                // Cast to the dense rasters so we can utilize the special methods there
-               KiLib::Rasters::DenseRaster<double>* ad = (KiLib::Rasters::DenseRaster<double>*)a.raster;
-               KiLib::Rasters::DenseRaster<double>* bd = (KiLib::Rasters::DenseRaster<double>*)b.raster;
+               const KiLib::Rasters::DenseRaster<double>* ad = (KiLib::Rasters::DenseRaster<double>*)a.raster;
+               const KiLib::Rasters::DenseRaster<double>* bd = (KiLib::Rasters::DenseRaster<double>*)b.raster;
 
                switch ( op )
                {
@@ -76,10 +76,8 @@ namespace KiLib::Rasters
                   return *ad * *bd;
                case OPERAND::DIVIDE:
                   return *ad / *bd;
-                  break;
                case OPERAND::PLUS:
                   return *ad + *bd;
-                  break;
                case OPERAND::MINUS:
                   return *ad - *bd;
                default:
@@ -87,8 +85,8 @@ namespace KiLib::Rasters
                };
             } else if ( a.get_type() == TYPE::SPARSE ) {
                 // Cast to the sparse rasters so we can utilize the special methods there
-               KiLib::Rasters::SparseRaster<double>* ad = (KiLib::Rasters::SparseRaster<double>*)a.raster;
-               KiLib::Rasters::SparseRaster<double>* bd = (KiLib::Rasters::SparseRaster<double>*)b.raster;
+               const KiLib::Rasters::SparseRaster<double>* ad = (KiLib::Rasters::SparseRaster<double>*)a.raster;
+               const KiLib::Rasters::SparseRaster<double>* bd = (KiLib::Rasters::SparseRaster<double>*)b.raster;
 
                switch ( op )
                {
@@ -96,10 +94,8 @@ namespace KiLib::Rasters
                   return *ad * *bd;
                case OPERAND::DIVIDE:
                   return *ad / *bd;
-                  break;
                case OPERAND::PLUS:
                   return *ad + *bd;
-                  break;
                case OPERAND::MINUS:
                   return *ad - *bd;
                default:
@@ -220,20 +216,21 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *ad *= *bd;
-                  return a;
+                  *ad = std::move(*ad) * *bd;
+                  break;
                case OPERAND::DIVIDE:
-                  *ad /= *bd;
-                  return a;
+                  *ad = std::move(*ad) / *bd;
+                  break;
                case OPERAND::PLUS:
-                  *ad += *bd;
-                  return a;
+                  *ad = std::move(*ad) + *bd;
+                  break;
                case OPERAND::MINUS:
-                  *ad -= *bd;
-                  return a;
+                  *ad = std::move(*ad) - *bd;
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
+               return a;
             } else if ( a.get_type() == TYPE::SPARSE ) {
                 // Cast to the sparse rasters so we can utilize the special methods there
                KiLib::Rasters::SparseRaster<double>* ad = (KiLib::Rasters::SparseRaster<double>*)a.raster;
@@ -242,20 +239,21 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *ad *= *bd;
-                  return a;
+                  *ad = std::move(*ad) * *bd;
+                  break;
                case OPERAND::DIVIDE:
-                  *ad /= *bd;
-                  return a;
+                  *ad = std::move(*ad) / *bd;
+                  break;
                case OPERAND::PLUS:
-                  *ad += *bd;
-                  return a;
+                  *ad = std::move(*ad) + *bd;
+                  break;
                case OPERAND::MINUS:
-                  *ad -= *bd;
-                  return a;
+                  *ad = std::move(*ad) - *bd;
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
+               return a;
             }
             throw NotImplementedException("Other types for operands have not been created");
          }
@@ -422,20 +420,21 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *bd *= *ad;
-                  return b;
+                  *bd = std::move(*bd) * *ad;
+                  break;
                case OPERAND::DIVIDE:
-                  *ad /= *bd;
-                  return b;
+                  *bd = *ad / std::move(*bd);
+                  break;
                case OPERAND::PLUS:
-                  *bd += *ad;
-                  return b;
+                  *bd = std::move(*bd) + *ad;
+                  break;
                case OPERAND::MINUS:
-                  *ad -= *bd;
-                  return b;
+                  *bd = *ad - std::move(*bd);
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                }; 
+               return b;
             } else if ( a.get_type() == TYPE::SPARSE ) {
                 // Cast to the sparse rasters so we can utilize the special methods there
                const KiLib::Rasters::SparseRaster<double>* ad = (KiLib::Rasters::SparseRaster<double>*)a.raster;
@@ -444,21 +443,21 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *bd *= *ad;
-                  return b;
+                  *bd = std::move(*bd) * *ad;
+                  break;
                case OPERAND::DIVIDE:
-                  *ad /= *bd; //This places the results in bd due to the operator overload
-                  return b;
+                  *bd = *ad / std::move(*bd);
                   break;
                case OPERAND::PLUS:
-                  *bd += *ad;
-                  return b;
+                  *bd = std::move(*bd) + *ad;
+                  break;
                case OPERAND::MINUS:
-                  *ad -= *bd; //This places it in bd!!!! This is because of the operator that is being used
-                  return b;
+                  *bd = *ad - std::move(*bd);
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
+               return b;
             }
             throw NotImplementedException("Other types for operands have not been created");
          }
@@ -620,23 +619,25 @@ namespace KiLib::Rasters
                KiLib::Rasters::DenseRaster<double>* ad = (KiLib::Rasters::DenseRaster<double>*)a.raster;
                const KiLib::Rasters::DenseRaster<double>* bd = (KiLib::Rasters::DenseRaster<double>*)b.raster;
 
+
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *ad *= *bd;
-                  return a;
+                  *ad = std::move(*ad) * *bd;
+                  break;
                case OPERAND::DIVIDE:
-                  *ad /= *bd;
-                  return a;
+                  *ad = std::move(*ad) / *bd;
+                  break;
                case OPERAND::PLUS:
-                  *ad += *bd;
-                  return a;
+                  *ad = std::move(*ad) + *bd;
+                  break;
                case OPERAND::MINUS:
-                  *ad -= *bd;
-                  return a;
+                  *ad = std::move(*ad) - *bd;
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
+               return a;
             } else if ( a.get_type() == TYPE::SPARSE ) {
                 // Cast to the sparse rasters so we can utilize the special methods there
                KiLib::Rasters::SparseRaster<double>* ad = (KiLib::Rasters::SparseRaster<double>*)a.raster;
@@ -645,20 +646,21 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *ad *= *bd;
-                  return a;
+                  *ad = std::move(*ad) * *bd;
+                  break;
                case OPERAND::DIVIDE:
-                  *ad /= *bd;
-                  return a;
+                  *ad = std::move(*ad) / *bd;
+                  break;
                case OPERAND::PLUS:
-                  *ad += *bd;
-                  return a;
+                  *ad = std::move(*ad) + *bd;
+                  break;
                case OPERAND::MINUS:
-                  *ad -= *bd;
-                  return a;
+                  *ad = std::move(*ad) - *bd;
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
+               return a;
             }
             throw NotImplementedException("Other types for operands have not been created");
          }

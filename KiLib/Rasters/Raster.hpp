@@ -18,6 +18,45 @@
 #include <tuple>
 #include <valarray>
 
+
+
+
+namespace std {
+   template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& a, KiLib::Rasters::Raster<T>&& b) {
+      if ( a.get_type() != b.get_type() ||  a.get_rows() != b.get_rows() || a.get_cols() != b.get_cols() || a.get_zindex() != b.get_zindex() ) {
+            throw NotImplementedException("Cannot take max of disimilar rasters at the moment. Feature not implemented");
+      }
+
+      if (a.get_type() == KiLib::Rasters::TYPE::DENSE ) {
+
+         // Cast to the dense rasters so we can utilize the special methods there
+         const KiLib::Rasters::DenseRaster<T>* ad = (KiLib::Rasters::DenseRaster<T>*)a.raster;
+         KiLib::Rasters::DenseRaster<T>* bd = (KiLib::Rasters::DenseRaster<T>*)b.raster;
+         *bd = std::max(std::move(*bd), *ad);
+         return b;
+
+      } else if ( a.get_type() == KiLib::Rasters::TYPE::SPARSE ) {
+         // Cast to the sparse rasters so we can utilize the special methods there
+         const KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
+         KiLib::Rasters::SparseRaster<T>* bd = (KiLib::Rasters::SparseRaster<T>*)b.raster;
+         *bd = std::max(std::move(*bd), *ad);
+         return b;
+      }
+      throw NotImplementedException("Other types for operands have not been created");
+
+
+
+   }
+
+   template <class T> KiLib::Rasters::Raster<T> max( KiLib::Rasters::Raster<T>&& a, const KiLib::Rasters::Raster<T>& b) {
+      return std::max(b, std::move(a));
+   }
+}
+
+
+
+
+
 namespace KiLib::Rasters
 {
 
@@ -65,7 +104,8 @@ namespace KiLib::Rasters
    friend Raster<T> operator/(const Raster<T>& a, const double k);
    friend Raster<T> operator/(Raster<T>&& a, const double k);
 
-
+   friend Raster<T> std::max( Raster<T>&& a, const Raster<T>& b) ;
+   friend Raster<T> std::max( const Raster<T>& a, Raster<T>&& b) ;
 
       Raster () {
          raster = nullptr;
@@ -144,6 +184,10 @@ namespace KiLib::Rasters
          return raster->get(i, j, k); 
       }
 
+      using IRaster<T>::apply;
+      void apply( std::function<T(T)> f) override {
+         raster->apply(f);
+      }
 
       size_t get_valid_cell_count() const override {
          return raster->get_valid_cell_count(); 
@@ -229,8 +273,6 @@ namespace KiLib::Rasters
          }
          return values;
       }
-
-
 
       Raster( const Raster<T>& other, const std::tuple<size_t, size_t, size_t>& dims ) : Raster( { other.get_rows(), other.get_cols(), std::get<2>(dims) }, extract_values(other, std::get<2>(dims)), other.get_type()) {
    
@@ -440,13 +482,24 @@ namespace KiLib::Rasters
          return raster->max();
       }
 
+
+     using IRaster<T>::begin;
+     IRaster<T>::RasterIterator begin() override { return raster->begin(); }
+     IRaster<T>::RasterIterator begin() const override { return raster->begin(); }
+
+     using IRaster<T>::end;
+      IRaster<T>::RasterIterator end() override { return raster->end(); }
+     IRaster<T>::RasterIterator end() const override { return raster->end(); }
+
+
+
+
    private:
       IRaster<T>* raster;
+      using IRaster<T>::name;
       
       bool is_valid_cell(size_t i, size_t j, size_t k) const override { return raster->is_valid_cell(i,j,k); }
       T get_data(size_t i, size_t j, size_t k) const override { return raster->get_data(i,j,k); }
-
-
 
       static Raster<T> ApplyOperator( const Raster<T>& a, const Raster<T>& b, OPERAND op );
       static Raster<T> ApplyOperator_LR( const Raster<T>& a, Raster<T>&& b, OPERAND op );
@@ -498,7 +551,7 @@ namespace KiLib::Rasters
             throw NotImplementedException("Other types for operands have not been created");
       }
 
-      static Raster<T>&& ApplyOperator( Raster<T>&& a, const T b, OPERAND op )
+      static Raster<T> ApplyOperator( Raster<T>&& a, const T b, OPERAND op )
       {
          if (a.get_type() == TYPE::DENSE ) {
 
@@ -508,20 +561,21 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *ad *= b;
-                  return std::move(a);
+                  *ad = std::move(*ad) * b;
+                  break;
                case OPERAND::DIVIDE:
-                  *ad /= b;
-                  return std::move(a);
+                  *ad = std::move(*ad) / b;
+                  break;
                case OPERAND::PLUS:
-                  *ad += b;
-                  return std::move(a);
+                  *ad = std::move(*ad) + b;
+                  break;
                case OPERAND::MINUS:
-                  *ad -= b;
-                  return std::move(a);
+                  *ad = std::move(*ad) - b;
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
+               return a;
             } else if ( a.get_type() == TYPE::SPARSE ) {
                // Cast to the sparse rasters so we can utilize the special methods there
                KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
@@ -529,20 +583,21 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *ad *= b;
-                  return std::move(a);
+                  *ad = std::move(*ad) * b;
+                  break;
                case OPERAND::DIVIDE:
-                  *ad /= b;
-                  return std::move(a);
+                  *ad = std::move(*ad) / b;
+                  break;
                case OPERAND::PLUS:
-                  *ad += b;
-                  return std::move(a);
+                  *ad = std::move(*ad) + b;
+                  break;
                case OPERAND::MINUS:
-                  *ad -= b;
-                  return std::move(a);
+                  *ad = std::move(*ad) - b;
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
+               return a;
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
@@ -590,7 +645,7 @@ namespace KiLib::Rasters
             throw NotImplementedException("Other types for operands have not been created");
       }
 
-      static Raster<T>&& ApplyOperator(  const T& b, Raster<T>&& a, OPERAND op ) 
+      static Raster<T> ApplyOperator(  const T& b, Raster<T>&& a, OPERAND op ) 
       {
          if (a.get_type() == TYPE::DENSE ) {
 
@@ -621,20 +676,21 @@ namespace KiLib::Rasters
                switch ( op )
                {
                case OPERAND::MULTIPLY:
-                  *ad *= b;
-                  return std::move(a);
+                  *ad = std::move(*ad) * b;
+                  break;
                case OPERAND::DIVIDE:
                   (*ad).op_divide(b);
-                  return std::move(a);
+                  break;
                case OPERAND::PLUS:
-                  *ad += b;
-                  return std::move(a);
+                  *ad = std::move(*ad) + b;
+                  break;
                case OPERAND::MINUS:
                   (*ad).op_minus(b);
-                  return std::move(a);
+                  break;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
+               return a;
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
@@ -655,6 +711,12 @@ namespace std
       out.set_name( "atan(" + out.get_name() + ")");
       return out;
    }
+   template <class T> KiLib::Rasters::Raster<T> atan( KiLib::Rasters::Raster<T>&& a )
+   {
+      a.atan();
+      a.set_name( "atan(" + a.get_name() + ")");
+      return a;
+   }
 
    template <class T> KiLib::Rasters::Raster<T> sin( const KiLib::Rasters::Raster<T>& a )
    {
@@ -662,6 +724,12 @@ namespace std
       out.sin();
       out.set_name( "sin(" + out.get_name() + ")");
       return out;
+   }
+   template <class T> KiLib::Rasters::Raster<T> sin( KiLib::Rasters::Raster<T>&& a )
+   {
+      a.sin();
+      a.set_name( "sin(" + a.get_name() + ")");
+      return a;
    }
 
    template <class T> KiLib::Rasters::Raster<T> cos( const KiLib::Rasters::Raster<T>& a )
@@ -688,6 +756,23 @@ namespace std
       out.set_name( "tan(" + out.get_name() + ")");
       return out;
    }
+
+   template <class T> KiLib::Rasters::Raster<T> tan( KiLib::Rasters::Raster<T>&& a )
+   {
+      a.tan();
+      a.set_name( "tan(" + a.get_name() + ")");
+      return a;
+   }
+
+
+
+   template <class T> KiLib::Rasters::Raster<T> exp( KiLib::Rasters::Raster<T>&& a )
+   {
+      a.exp();
+      a.set_name( "exp(" + a.get_name() + ")");
+      return a;
+   }
+
    template <class T> KiLib::Rasters::Raster<T> exp( const KiLib::Rasters::Raster<T>& a )
    {
       KiLib::Rasters::Raster<T> out(a);
@@ -714,17 +799,22 @@ namespace std
    template <class T> KiLib::Rasters::Raster<T> max( double b, const KiLib::Rasters::Raster<T>& a)
    {
       KiLib::Rasters::Raster<T> out(a);
-
-      std::for_each(EXEC_POLICY, out.begin(), out.end(), [&](auto it)
-      {
-         size_t r = it.i();
-         size_t c = it.j();
-         size_t z = it.k();
-
-         out.set(r,c, z, std::max( *(it.data), b ));
-      });
+      out.apply( [&b](T t) { return std::max(t, b);} );
       return out;
    }
+
+   template <class T> KiLib::Rasters::Raster<T> max( KiLib::Rasters::Raster<T>&& b, double a) {
+      return max(a, std::forward(b));
+   }
+
+   template <class T> KiLib::Rasters::Raster<T> max( double b, KiLib::Rasters::Raster<T>&& a)
+   {
+      a.apply( [&b](T t) { return std::min(t, b);} );
+      return a;
+   }
+
+
+
 
 
    template <class T> KiLib::Rasters::Raster<T> min( const KiLib::Rasters::Raster<T>& b, double a) {
@@ -734,24 +824,20 @@ namespace std
    template <class T> KiLib::Rasters::Raster<T> min( double b, const KiLib::Rasters::Raster<T>& a)
    {
       KiLib::Rasters::Raster<T> out(a);
-      out->apply( [&b](T t) { return std::min(t, b);} );
+      out.apply( [&b](T t) { return std::min(t, b);} );
       return out;
    }
 
 
    template <class T> KiLib::Rasters::Raster<T> min( KiLib::Rasters::Raster<T>&& b, double a) {
-      return min(b, a);
+      return min(a, std::forward(b));
    }
 
    template <class T> KiLib::Rasters::Raster<T> min( double b, KiLib::Rasters::Raster<T>&& a)
    {
-      a->apply( [&b](T t) { return std::min(t, b);} );
+      a.apply( [&b](T t) { return std::min(t, b);} );
       return a;
    }
-
-
-
-
 
 
    template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& a, const KiLib::Rasters::Raster<T>& b)
@@ -890,6 +976,12 @@ namespace std
       out.clamp(lo, hi);
       return out;
    }
+   template <class T> KiLib::Rasters::Raster<T> clamp( KiLib::Rasters::Raster<T>&& a, const T& lo, const T& hi)
+   {
+      a.clamp(lo, hi);
+      return a;
+   }
+
 
 
 

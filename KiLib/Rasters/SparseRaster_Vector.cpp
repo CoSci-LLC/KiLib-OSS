@@ -52,7 +52,7 @@
             }\
          } );\
       a.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
-      return std::move(a);\
+      return a;\
    } \
    SparseRaster<double> operator OPERAND( SparseRaster<double>&& a, const SparseRaster<double>& b ) \
   { \
@@ -77,7 +77,7 @@
             }\
          } );\
       a.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
-      return std::move( a );\
+      return  a;\
    }\
    SparseRaster<double> operator OPERAND( const SparseRaster<double>& a, SparseRaster<double>&& b ) \
   { \
@@ -102,9 +102,9 @@
             }\
          } );\
       b.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
-      return std::move( b );\
+      return b ;\
    }\
-   SparseRaster<double>& operator OPERAND2 ( SparseRaster<double>& a, const SparseRaster<double>& b ) \
+   SparseRaster<double> operator OPERAND2 ( SparseRaster<double>& a, const SparseRaster<double>& b ) \
    { \
       if ( !a.can_perform_operation( b ) ) \
       {\
@@ -144,7 +144,7 @@
   {\
       const auto nodata = a.get_nodata_value();\
       std::transform( EXEC_POLICY, a.V.begin(), a.V.end(), a.V.begin(), [&nodata, &k](double v) { if (v == nodata) {return nodata; } else { return k OP v;  } } );\
-      return std::move(a);\
+      return a;\
   }\
   SparseRaster<double> operator OP (const SparseRaster<double>& a, const double k)\
   {\
@@ -157,9 +157,9 @@
   {\
       const auto nodata = a.get_nodata_value();\
       std::transform( EXEC_POLICY, a.V.begin(), a.V.end(), a.V.begin(), [&nodata, &k](double v) { if (v == nodata) {return nodata; } else { return v OP k;  } } );\
-      return std::move(a);\
+      return a;\
   }\
-   SparseRaster<double>& operator OPERAND2 ( SparseRaster<double>& a, const double k ) \
+   SparseRaster<double> operator OPERAND2 ( SparseRaster<double>& a, const double k ) \
    {\
       const auto nodata = a.get_nodata_value();\
       std::transform( EXEC_POLICY, a.V.begin(), a.V.end(), a.V.begin(), [&nodata, &k](double v) { if (v == nodata) {return nodata; } else { return v OP k;  } } );\
@@ -193,7 +193,7 @@ namespace KiLib::Rasters
 
 
 
-   SparseRaster<double>& operator-= ( const SparseRaster<double>& a, SparseRaster<double>& b ) 
+   SparseRaster<double> operator-= ( const SparseRaster<double>& a, SparseRaster<double>& b ) 
    { 
       if ( !a.can_perform_operation( b ) ) 
       {
@@ -222,7 +222,7 @@ namespace KiLib::Rasters
 
 
 
-   SparseRaster<double>& operator/= ( const SparseRaster<double>& a, SparseRaster<double>& b ) 
+   SparseRaster<double> operator/= ( const SparseRaster<double>& a, SparseRaster<double>& b ) 
    { 
       if ( !a.can_perform_operation( b ) ) 
       {

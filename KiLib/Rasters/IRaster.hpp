@@ -316,75 +316,40 @@ namespace KiLib::Rasters
       using pointer           = const T*;
       using reference         = Rasters::Cell<T>;
 
-      RasterIterator( KiLib::Rasters::IRaster<T>* ptr, size_t idx = 0 ) : raster( ptr ), idx(idx)
-      {
-            auto r = raster->ind2sub(this->idx);
-            size_t i = std::get<0>(r);
-            size_t j = std::get<1>(r);
-            size_t k = std::get<2>(r);
-            
-            while ( ! raster->is_valid_cell( i, j, k) && (this->idx < (raster->get_ndata()))) {
-                this->idx++;
-                r = raster->ind2sub(this->idx);
-                i = std::get<0>(r);
-                j = std::get<1>(r);
-                k = std::get<2>(r);
-            }
-      }
 
       RasterIterator( const KiLib::Rasters::IRaster<T>* ptr, size_t idx = 0 ) : raster( ptr ), idx(idx)
       {
+
             auto r = raster->ind2sub(this->idx);
-            size_t i = std::get<0>(r);
-            size_t j = std::get<1>(r);
-            size_t k = std::get<2>(r);
-            
-            while ( ! raster->is_valid_cell( i, j, k) && (this->idx < (raster->get_ndata()))) {
-                this->idx++;
-                r = raster->ind2sub(this->idx);
-                i = std::get<0>(r);
-                j = std::get<1>(r);
-                k = std::get<2>(r);
+            this->i = std::get<0>(r);
+            this->j = std::get<1>(r);
+            this->k = std::get<2>(r);
+
+            if ( ! raster->is_valid_cell( this->i, this->j, this->k) && (this->idx < (raster->get_ndata()))) {
+                 this->idx = raster->get_next_valid_cell_index_after(this->idx);
+                 auto r = raster->ind2sub(this->idx);
+                 this->i = std::get<0>(r);
+                 this->j = std::get<1>(r);
+                 this->k = std::get<2>(r);
             }
       }
 
       reference operator*() const
       {
-
-            size_t i,j,k;
-                auto r = raster->ind2sub(idx);
-                i = std::get<0>(r);
-                j = std::get<1>(r);
-                k = std::get<2>(r);
-         return raster->get( i, j, k);
+         return raster->get( this->i, this->j, this->k);
       }
 
       Cell<T> operator&() const {
-            
-            size_t i,j,k;
-                auto r = raster->ind2sub(idx);
-                i = std::get<0>(r);
-                j = std::get<1>(r);
-                k = std::get<2>(r);
-         return raster->get( i, j, k);
-    
+         return raster->get( this->i, this->j, this->k);
       }
 
       RasterIterator& operator++()
       {
-            size_t i,j,k;
-         do
-         {
-                if (this->idx > (raster->get_rows() * raster->get_cols() * raster->get_zindex()) - 1) break;
-
-                this->idx++;
-
-                auto r = raster->ind2sub(this->idx);
-                i = std::get<0>(r);
-                j = std::get<1>(r);
-                k = std::get<2>(r);
-         } while ( ! raster->is_valid_cell( i, j, k) );
-
+         this->idx = raster->get_next_valid_cell_index_after(this->idx);
+         auto r = raster->ind2sub(idx);
+         this->i = std::get<0>(r);
+         this->j = std::get<1>(r);
+         this->k = std::get<2>(r);
          return *this;
       }
 
@@ -405,9 +370,8 @@ namespace KiLib::Rasters
 
    private:
       const KiLib::Rasters::IRaster<T>* raster;
-      size_t                      idx;
+      size_t                      idx, i, j, k;
    };
-
 
         virtual RasterIterator begin()  { return RasterIterator(this); }
         virtual RasterIterator begin() const  { return RasterIterator(this); }
@@ -419,6 +383,23 @@ namespace KiLib::Rasters
 
 
     protected:
+
+        virtual size_t get_next_valid_cell_index_after(size_t idx) const {
+             size_t i,j,k;
+             do
+             {
+                    if (idx > (this->get_rows() * this->get_cols() * this->get_zindex()) - 1) break;
+
+                    idx++;
+
+                    auto r = this->ind2sub(idx);
+                    i = std::get<0>(r);
+                    j = std::get<1>(r);
+                    k = std::get<2>(r);
+             } while ( ! this->is_valid_cell( i, j, k) );
+            return idx;
+        }
+
         size_t rows, cols, zindex;
         double xllcorner;    // Lower left corner x value in absolute coordinates
         double yllcorner;    // Lower left corner y value in absolute coordinates
