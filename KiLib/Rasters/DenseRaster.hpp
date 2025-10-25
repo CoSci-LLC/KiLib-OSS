@@ -88,8 +88,15 @@ namespace KiLib::Rasters
    friend DenseRaster<double>& operator/= ( DenseRaster<double>& a, const double k );
    friend DenseRaster<double>& operator-= ( DenseRaster<double>& a, const double k );
 
-   friend DenseRaster<T> std::max( DenseRaster<T>&& a, const DenseRaster<T>& b );
-   friend DenseRaster<T> std::max( const DenseRaster<T>& a, DenseRaster<T>&& b );
+   friend DenseRaster<T> std::max( DenseRaster<T>&& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> std::max( const DenseRaster<T>& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> std::max( const DenseRaster<T>& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> std::min( DenseRaster<T>&& a, const DenseRaster<T>& b) ;
+   friend DenseRaster<T> std::min( const DenseRaster<T>& a, DenseRaster<T>&& b) ;
+   friend DenseRaster<T> std::min( const DenseRaster<T>& a, const DenseRaster<T>& b) ;
+
+
+
 
 
       // Just call the other constructor with the zindex = 1
@@ -336,7 +343,8 @@ namespace KiLib::Rasters
 
             return n.apply([](T n) -> T { return std::erfc(n); });
          }  
-      using IRaster<T>::apply;
+
+        using IRaster<T>::apply;
         void apply( std::function<T(T)> f) override {
 
             auto nodata_value = this->get_nodata_value();
@@ -600,6 +608,49 @@ namespace std {
    {
       return std::max(std::forward(b), a);
    }
+
+      template <class T> KiLib::Rasters::DenseRaster<T> min( KiLib::Rasters::DenseRaster<T>&& a, const KiLib::Rasters::DenseRaster<T>& b )
+      {
+         //Let's take and transform the raster
+         std::transform(EXEC_POLICY, begin(a.data), end(a.data), begin(b.data), begin(a.data),
+                        [](const T& a, const T& b) { 
+                           return std::min(a, b); 
+                        }
+                        );
+         return a;
+      }
+   template <class T> KiLib::Rasters::DenseRaster<T> min( const KiLib::Rasters::DenseRaster<T>& a, KiLib::Rasters::DenseRaster<T>&& b ) 
+   {
+      return std::min(std::forward(b), a);
+   }
+
+
+   template <class T> KiLib::Rasters::DenseRaster<T> max(const  KiLib::Rasters::DenseRaster<T>& a, const KiLib::Rasters::DenseRaster<T>& b )
+   {
+      KiLib::Rasters::DenseRaster<T> out(a);
+      //Let's take and transform the raster
+      std::transform(EXEC_POLICY, begin(out.data), end(out.data), begin(b.data), begin(out.data),
+                     [](const T& a, const T& b) { 
+                        return std::max(a, b); 
+                     }
+                     );
+      return out;
+   }
+
+   template <class T> KiLib::Rasters::DenseRaster<T> min(const  KiLib::Rasters::DenseRaster<T>& a, const KiLib::Rasters::DenseRaster<T>& b )
+   {
+      KiLib::Rasters::DenseRaster<T> out(a);
+      //Let's take and transform the raster
+      std::transform(EXEC_POLICY, begin(out.data), end(out.data), begin(b.data), begin(out.data),
+                     [](const T& a, const T& b) { 
+                        return std::min(a, b); 
+                     }
+                     );
+      return out;
+   }
+
+
+
 
 
 }

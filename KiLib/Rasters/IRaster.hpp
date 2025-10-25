@@ -276,6 +276,7 @@ namespace KiLib::Rasters
 
         virtual void apply( std::function<T(T)> f) {
             size_t total = this->get_rows() * this->get_cols() * this->get_zindex();
+            //TODO: Make parallel
             for ( size_t idx = 0; idx < total; idx++ ) {
                 size_t i,j,k;
                 auto r = this->ind2sub(idx);
@@ -294,6 +295,7 @@ namespace KiLib::Rasters
 
         virtual void clamp(const T& lo, const T& hi) {
             size_t total = this->get_rows() * this->get_cols();
+            //TODO:: Make parallel
             for ( size_t idx = 0; idx < total; idx++ ) {
                 size_t i,j,k;
                 auto r = this->ind2sub(idx);

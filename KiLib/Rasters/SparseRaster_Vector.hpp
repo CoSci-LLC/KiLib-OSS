@@ -10,7 +10,7 @@
 #include <vector>
 
 #ifndef EXEC_POLICY
-#define EXEC_POLICY std::execution::seq
+#define EXEC_POLICY std::execution::par_unseq
 #endif
 
 namespace KiLib::Rasters
@@ -104,6 +104,11 @@ namespace KiLib::Rasters
 
    friend SparseRaster<T> std::max( SparseRaster<T>&& a, const SparseRaster<T>& b) ;
    friend SparseRaster<T> std::max( const SparseRaster<T>& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> std::max( const SparseRaster<T>& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> std::min( SparseRaster<T>&& a, const SparseRaster<T>& b) ;
+   friend SparseRaster<T> std::min( const SparseRaster<T>& a, SparseRaster<T>&& b) ;
+   friend SparseRaster<T> std::min( const SparseRaster<T>& a, const SparseRaster<T>& b) ;
+
 
 
 
@@ -373,9 +378,6 @@ namespace KiLib::Rasters
 
     }
 
-        friend KiLib::Rasters::SparseRaster<T> std::clamp( const KiLib::Rasters::SparseRaster<T>&  ,const T&, const T&);
-
-
 
    private:
       size_t           nnz;
@@ -446,97 +448,8 @@ namespace KiLib::Rasters
 
        }
 
-      static SparseRaster<T> ApplyOperator( const SparseRaster<T>& a, const SparseRaster<T>& b, OPERAND op )
-      {
-         auto* op1     = &a;
-         auto* op2     = &b;
-         bool  swapped = false;
-
-         // Find the bigger, more element matrix.
-         if ( a.get_ndata() < b.get_ndata() )
-         {
-            op1     = &b;
-            op2     = &a;
-            swapped = true;
-         }
-
-         std::map<std::tuple<size_t,size_t, size_t>, double> values;
-
-         // Need to loop through each cell in the larger raster.
-         for ( size_t r = 0; r < op1->get_rows(); r++ )
-         {
-            for ( size_t c = 0; c < op1->get_cols(); c++ )
-            {
-               for ( size_t zindex = 0; zindex < op1->get_zindex(); zindex++) {
-
-                  const auto& cell_a = op1->get( r, c, zindex);
-
-                  if ( cell_a.is_nodata || std::isnan( *( cell_a.data ) ) || std::isinf( *( cell_a.data ) ) )
-                  {
-                     continue;
-                  }
-
-                  // Use the x,y,z coordinates to get the proper cell.
-                  const auto& cell_b = op2->get( (double) cell_a.x(), (double) cell_a.y(), zindex );
-
-                  if ( cell_b.is_nodata || std::isnan( *( cell_b.data ) ) || std::isinf( *( cell_b.data ) ) )
-                  {
-                     continue;
-                  }
-
-                  double val = 0;
-
-                  switch ( op )
-                  {
-                  case OPERAND::MULTIPLY:
-                     val = *( cell_a.data ) * *( cell_b.data );
-                     break;
-                  case OPERAND::DIVIDE:
-                     if ( !swapped )
-                     {
-                        val = *( cell_a.data ) / *( cell_b.data );
-                     }
-                     else
-                     {
-                        val = *( cell_b.data ) / *( cell_a.data );
-                     }
-                     break;
-                  case OPERAND::PLUS:
-                     val = *( cell_a.data ) + *( cell_b.data );
-                     break;
-                  case OPERAND::MINUS:
-                     if ( !swapped )
-                     {
-                        val = *( cell_a.data ) - *( cell_b.data );
-                     }
-                     else
-                     {
-                        val = *( cell_b.data ) - *( cell_a.data );
-                     }
-                     break;
-                  default:
-                     throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
-                  };
-
-                  values.insert({{r,c,zindex}, val});
-               }
-            }
-         }
-
-         SparseRaster<T> out( std::make_tuple( op1->get_rows(), op1->get_cols(), op1->get_zindex() ), values);
-
-         out.set_xllcorner( op1->get_xllcorner() );
-         out.set_yllcorner( op1->get_yllcorner() );
-         out.set_cellsize( op1->get_cellsize() );
-         out.set_nodata_value( op1->get_nodata_value() );
-         out.set_width( op1->get_width() );
-         out.set_height( op1->get_height() );
-
-
-      return out;
-   }
       using IRaster<T>::apply;
-        void apply( std::function<T(T)> f) override {
+      void apply( std::function<T(T)> f) override {
 
             auto nodata_value = this->get_nodata_value();
             std::transform( EXEC_POLICY, V.begin(), V.end(), V.begin(), [&f, &nodata_value ](T v) { if (v == nodata_value) {return nodata_value; } else { return f(v);  } } );
@@ -559,46 +472,10 @@ template <class T> KiLib::Rasters::SparseRaster<T> operator-( const KiLib::Raste
 
 
 namespace std {
-   template <class T> KiLib::Rasters::SparseRaster<T> clamp( const KiLib::Rasters::SparseRaster<T>& a, const T& lo, const T& hi)
-   {
-      auto in = a.V;
-      std::transform(EXEC_POLICY, std::begin(in), std::end(in), std::begin(in), [&lo, &hi](T& v) { return std::clamp(v, lo, hi); });
-      KiLib::Rasters::SparseRaster<T> out( a, in );
-      return out;
-   }
-
    template <class T> KiLib::Rasters::SparseRaster<T> ierfc ( const KiLib::Rasters::SparseRaster<T>& a) {
       const auto n = a.V;
       const auto r = 1 / std::sqrt(M_PI) * std::exp( -1 * std::pow(n, 2)) - n * std::erfc(n);
       KiLib::Rasters::SparseRaster<T> out( a, r );
-      return out;
-   }
-
-   template <class T> KiLib::Rasters::SparseRaster<T> atan( const KiLib::Rasters::SparseRaster<T>& a )
-   {
-      std::valarray<T>          result = std::atan( a.V );
-      KiLib::Rasters::SparseRaster<T> out( a, result );
-      return out;
-   }
-
-   template <class T> KiLib::Rasters::SparseRaster<T> sin( const KiLib::Rasters::SparseRaster<T>& a )
-   {
-      std::valarray<T>          result = std::sin( a.V );
-      KiLib::Rasters::SparseRaster<T> out( a, result );
-      return out;
-   }
-
-   template <class T> KiLib::Rasters::SparseRaster<T> cos( const KiLib::Rasters::SparseRaster<T>& a )
-   {
-      std::valarray<T>          result = std::cos( a.V );
-      KiLib::Rasters::SparseRaster<T> out( a, result );
-      return out;
-   }
-
-   template <class T> KiLib::Rasters::SparseRaster<T> tan( const KiLib::Rasters::SparseRaster<T>& a )
-   {
-      std::valarray<T>          result = std::tan( a.V );
-      KiLib::Rasters::SparseRaster<T> out( a, result );
       return out;
    }
 
@@ -620,6 +497,46 @@ namespace std {
       return a;
    }
 
+   template <class T> KiLib::Rasters::SparseRaster<T> max(const  KiLib::Rasters::SparseRaster<T>& a, const KiLib::Rasters::SparseRaster<T>& b )
+   {
+      KiLib::Rasters::SparseRaster<T> out(a);
+      //Let's take and transform the raster
+      std::transform(EXEC_POLICY, out.V.begin(), out.V.end(), b.V.begin(), out.V.begin(),
+                     [](const T& a, const T& b) { 
+                        return std::max(a, b); 
+                     }
+                     );
+      return out;
+   }
 
+
+   template <class T> KiLib::Rasters::SparseRaster<T> min( const KiLib::Rasters::SparseRaster<T>& a, KiLib::Rasters::SparseRaster<T>&& b ) 
+   {
+      return std::min(std::forward(b), a);
+   }
+
+
+   template <class T> KiLib::Rasters::SparseRaster<T> min( KiLib::Rasters::SparseRaster<T>&& a, const KiLib::Rasters::SparseRaster<T>& b )
+   {
+      //Let's take and transform the raster
+      std::transform(EXEC_POLICY, a.V.begin(), a.V.end(), b.V.begin(), a.V.begin(),
+                     [](const T& a, const T& b) { 
+                        return std::min(a, b); 
+                     }
+                     );
+      return a;
+   }
+
+   template <class T> KiLib::Rasters::SparseRaster<T> min(const  KiLib::Rasters::SparseRaster<T>& a, const KiLib::Rasters::SparseRaster<T>& b )
+   {
+      KiLib::Rasters::SparseRaster<T> out(a);
+      //Let's take and transform the raster
+      std::transform(EXEC_POLICY, out.V.begin(), out.V.end(), b.V.begin(), out.V.begin(),
+                     [](const T& a, const T& b) { 
+                        return std::min(a, b); 
+                     }
+                     );
+      return out;
+   }
 
 };

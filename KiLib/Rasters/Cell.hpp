@@ -115,11 +115,10 @@ namespace KiLib::Rasters
       }
 
       size_t k() const 
-   {
-      return _k();
-   }
+      {
+         return _k();
+      }
 
-      
 
       double x() const
       {
@@ -131,8 +130,6 @@ namespace KiLib::Rasters
       {
          return _y();
       }
-
-      
 
       /**
        * @brief Return string representation of this vector
