@@ -29,6 +29,7 @@ namespace KiLib::Rasters
 
       SafeDouble _x, _y;       // The real position on the map cooresponding to the i,j
       Attribute<size_t> _i, _j, _k;       // the row/col position
+      Attribute<size_t> index;  // A special, per raster type meaning, of how to quickly find the index
       const KiLib::Rasters::IRaster<T>& parent_raster;
       const T* data;         // The data at the cell
       bool is_nodata = false;

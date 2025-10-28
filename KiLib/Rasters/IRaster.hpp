@@ -90,10 +90,13 @@ namespace KiLib::Rasters
         }
 
         virtual Cell<T> get(size_t,  size_t , size_t ) const  = 0;
+        virtual Cell<T> get(const Cell<T>&) const  = 0;
        
         virtual void set(double x, double y, const T& value) {
             set(x,y,0, value);
         }
+
+        virtual void set(const Cell<T>&, const T& value) = 0;
 
         virtual void set(double x, double y, size_t z, const T& value) {
             double rF = (y - this->get_yllcorner()) / this->get_cellsize();

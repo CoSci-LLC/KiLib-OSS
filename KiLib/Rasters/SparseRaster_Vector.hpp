@@ -275,12 +275,26 @@ namespace KiLib::Rasters
         auto d = _get_data_index(i, j, k);
 
         if ( d.has_value() && V[d.value()] != this->get_nodata_value()) {
-               return KiLib::Rasters::Cell<T>( *this, i, j, k, V[d.value()] );
+               auto c = KiLib::Rasters::Cell<T>( *this, i, j, k, V[d.value()] );
+               c.index = (unsigned)d.value();
+               return c;
         }
         else {
 
         return KiLib::Rasters::Cell<T>( *this, i, j ,k );
         }
+      }
+
+      Cell<T> get(const Cell<T>& c) const  override 
+      {
+         if ( ! c.is_nodata ) {
+            auto r = KiLib::Rasters::Cell<T>( *this, c.i(), c.j(), c.k(), V[c.index()] );
+            r.index = c.index;
+            return r;
+         }
+         else {
+            return KiLib::Rasters::Cell<T>( *this, c.i(), c.j() ,c.k() );
+         } 
       }
 
       size_t get_valid_cell_count() const override  
@@ -303,6 +317,10 @@ namespace KiLib::Rasters
         else {
             throw std::invalid_argument("Invalid index. Could not set value");
         }
+      }
+
+      void set(const Cell<T>& t, const T& value) override {
+         V[t.index()] = value;
       }
 
       size_t get_ndata() const override

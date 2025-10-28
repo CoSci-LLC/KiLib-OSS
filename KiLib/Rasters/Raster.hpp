@@ -220,6 +220,19 @@ namespace KiLib::Rasters
          return raster->get(i, j, k); 
       }
 
+
+      Cell<T> get(const Cell<T>& c) const  override 
+      {
+         return raster->get(c);
+      }
+
+      void set(const Cell<T>& t, const T& value) override {
+
+         raster->set(t, value);
+      }
+
+
+
       using IRaster<T>::apply;
       void apply( std::function<T(T)> f) override {
          raster->apply(f);
@@ -947,6 +960,9 @@ namespace std
             const KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
             const KiLib::Rasters::SparseRaster<T>* bd = (KiLib::Rasters::SparseRaster<T>*)b.raster;
             return std::max(*bd, *ad);
+         }
+         else {
+            throw NotImplementedException("Raster type not implemented for std::min()");
          }
       }
       else {
