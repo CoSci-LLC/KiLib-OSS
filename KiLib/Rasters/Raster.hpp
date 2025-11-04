@@ -533,12 +533,12 @@ namespace KiLib::Rasters
 
 
      using IRaster<T>::begin;
-     IRaster<T>::RasterIterator begin() override { return raster->begin(); }
-     IRaster<T>::RasterIterator begin() const override { return raster->begin(); }
+     typename IRaster<T>::RasterIterator begin() override { return raster->begin(); }
+     typename IRaster<T>::RasterIterator begin() const override { return raster->begin(); }
 
      using IRaster<T>::end;
-      IRaster<T>::RasterIterator end() override { return raster->end(); }
-     IRaster<T>::RasterIterator end() const override { return raster->end(); }
+     typename IRaster<T>::RasterIterator end() override { return raster->end(); }
+     typename IRaster<T>::RasterIterator end() const override { return raster->end(); }
 
 
 

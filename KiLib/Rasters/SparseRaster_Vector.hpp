@@ -241,12 +241,12 @@ namespace KiLib::Rasters
 
 
       using IRaster<T>::begin;
-      IRaster<T>::RasterIterator begin() override { return typename IRaster<T>::RasterIterator(this, 0); }
-      IRaster<T>::RasterIterator begin() const override { return typename IRaster<T>::RasterIterator(this, 0); }
+      typename IRaster<T>::RasterIterator begin() override { return typename IRaster<T>::RasterIterator(this, 0); }
+      typename IRaster<T>::RasterIterator begin() const override { return typename IRaster<T>::RasterIterator(this, 0); }
 
       using IRaster<T>::end;
-      IRaster<T>::RasterIterator end() override { return typename IRaster<T>::RasterIterator(this, this->V.size()); }
-      IRaster<T>::RasterIterator end() const override { return typename IRaster<T>::RasterIterator(this, this->V.size()); }
+      typename IRaster<T>::RasterIterator end() override { return typename IRaster<T>::RasterIterator(this, this->V.size()); }
+      typename IRaster<T>::RasterIterator end() const override { return typename IRaster<T>::RasterIterator(this, this->V.size()); }
 
 
       using IRaster<T>::ind2sub;
