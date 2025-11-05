@@ -953,13 +953,13 @@ namespace std
             // Cast to the dense rasters so we can utilize the special methods there
             const KiLib::Rasters::DenseRaster<T>* ad = (KiLib::Rasters::DenseRaster<T>*)a.raster;
             const KiLib::Rasters::DenseRaster<T>* bd = (KiLib::Rasters::DenseRaster<T>*)b.raster;
-            return std::max(*bd, *ad);
+            return std::min(*bd, *ad);
 
          } else if ( a.get_type() == KiLib::Rasters::TYPE::SPARSE ) {
             // Cast to the sparse rasters so we can utilize the special methods there
             const KiLib::Rasters::SparseRaster<T>* ad = (KiLib::Rasters::SparseRaster<T>*)a.raster;
             const KiLib::Rasters::SparseRaster<T>* bd = (KiLib::Rasters::SparseRaster<T>*)b.raster;
-            return std::max(*bd, *ad);
+            return std::min(*bd, *ad);
          }
          else {
             throw NotImplementedException("Raster type not implemented for std::min()");
