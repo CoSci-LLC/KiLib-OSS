@@ -10,7 +10,7 @@
 #include <vector>
 
 #ifndef EXEC_POLICY
-#define EXEC_POLICY std::execution::par_unseq
+#define EXEC_POLICY std::execution::par
 #endif
 
 namespace KiLib::Rasters
