@@ -156,6 +156,14 @@ namespace KiLib::Rasters
             {
                throw std::invalid_argument( "Could not retrieve value from netcdf" );
             }
+	    for (size_t t = 0; t < 2; t++) {
+		        indexp[0] = t;
+			indexp[1] = y;
+			indexp[2] = x;
+			nc_get_var1_double(ncid, varid_in, indexp, &result);
+			std::cout << "t=" << t << " value=" << result << std::endl;
+	    }
+
 
             if ( result == -9999) continue;
 
