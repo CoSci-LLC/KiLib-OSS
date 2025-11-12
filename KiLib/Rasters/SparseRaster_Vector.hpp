@@ -26,10 +26,9 @@ namespace KiLib::Rasters
       }
 
       SparseRaster(const KiLib::Rasters::SparseRaster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)
-          {
-             COL_INDEX = from_raster.COL_INDEX;
-             Z_INDEX = from_raster.Z_INDEX;
-            ROW_INDEX = from_raster.ROW_INDEX;
+       {
+            INDEX_MAP = from_raster.INDEX_MAP;
+            SUB_INDEX = from_raster.SUB_INDEX;
               V.resize(from_raster.get_ndata());
             for ( size_t idx = 0; idx < from_raster.get_ndata(); idx++) {
                // We don't need to pass in the i/j right now. Really this is about the values
@@ -116,6 +115,7 @@ namespace KiLib::Rasters
 
        SparseRaster(const KiLib::Rasters::Raster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)
           {
+            std::vector<size_t> COL_INDEX, ROW_INDEX, Z_INDEX;
               nnz = 0;
               for (auto it = from_raster.begin(); it != from_raster.end(); ++it) {
                   nnz++;
@@ -141,10 +141,14 @@ namespace KiLib::Rasters
                            V[v_index] =  get_val(from_raster.get(row,col,z));
 
                            //Link col_index to V
-                           this->COL_INDEX[v_index] = col;
+                           COL_INDEX[v_index] = col;
 
                            // Link z_index to V
                            Z_INDEX[v_index] = z;
+
+                           // Insert into the MAP
+                           INDEX_MAP.insert({ {row, col, z}, v_index  });
+                           SUB_INDEX.push_back( {row, col, z});
 
                           // increase the next index
                           v_index++;
@@ -170,8 +174,9 @@ namespace KiLib::Rasters
 
 
 
-      SparseRaster( const std::tuple<size_t, size_t, size_t>& dims, const std::map<std::tuple<size_t, size_t, size_t>, double>& values ) : nnz( std::get<0>(dims) * std::get<1>(dims) * std::get<2>(dims) ), V(values.size()), COL_INDEX(values.size()), ROW_INDEX(std::get<0>(dims) + 1), Z_INDEX(values.size())
+      SparseRaster( const std::tuple<size_t, size_t, size_t>& dims, const std::map<std::tuple<size_t, size_t, size_t>, double>& values ) : nnz( std::get<0>(dims) * std::get<1>(dims) * std::get<2>(dims) ), V(values.size())
       {
+            std::vector<size_t> COL_INDEX, ROW_INDEX, Z_INDEX;
          const auto rows   = std::get<0>( dims );
          const auto cols   = std::get<1>( dims );
          const auto zindex = std::get<2>( dims );
@@ -188,7 +193,7 @@ namespace KiLib::Rasters
 
          for (size_t row = 0; row < rows; row++)
          {
-            this->ROW_INDEX[row_index] = v_index;
+            ROW_INDEX[row_index] = v_index;
             for (size_t col = 0; col < cols; col++)
             {
                for (size_t z = 0; z < zindex; z++) {
@@ -197,11 +202,13 @@ namespace KiLib::Rasters
                      V[v_index] = values.at( {row,col, z});
 
                      //Link col_index to V
-                     this->COL_INDEX[v_index] = col;
+                     COL_INDEX[v_index] = col;
 
                      // Link z_index to V
                      Z_INDEX[v_index] = z;
 
+                     INDEX_MAP.insert({ {row, col, z}, v_index  });
+                     SUB_INDEX.push_back( {row, col, z});
                     // increase the next index
                     v_index++;
                   }
@@ -214,7 +221,7 @@ namespace KiLib::Rasters
       }
 
 
-        SparseRaster(const SparseRaster<T>& other, const std::vector<T>& new_data) : nnz( other.nnz ), V( new_data ), COL_INDEX(other.COL_INDEX), ROW_INDEX(other.ROW_INDEX), Z_INDEX(other.Z_INDEX)
+        SparseRaster(const SparseRaster<T>& other, const std::vector<T>& new_data) : nnz( other.nnz ), V( new_data ), INDEX_MAP(other.INDEX_MAP), SUB_INDEX(other.SUB_INDEX)
          {
 
          this->nnz  = other.get_ndata();
@@ -251,21 +258,7 @@ namespace KiLib::Rasters
 
       using IRaster<T>::ind2sub;
       std::tuple<size_t, size_t, size_t> ind2sub(size_t idx) const  override {
-         // take index into array and convert to coordinates
-
-         // Find in the ROW_INDEX what index where the value is greater than idx
-         size_t c;
-         for (c = 0; c < this->ROW_INDEX.size()  -1; c++) {
-            if (this->ROW_INDEX[c + 1] > idx) {
-               break;
-            }
-         }
-
-         if ( c == this->ROW_INDEX.size() - 1) {
-            c--;
-         }
-
-         return { c , this->COL_INDEX[idx] , this->Z_INDEX[idx] };
+         return SUB_INDEX[idx];
       }
 
 
@@ -389,9 +382,7 @@ namespace KiLib::Rasters
         if ( ! can_perform_operation(rhs) ) return false;
 
          if ( ! std::equal(std::begin(this->V), std::end(this->V), std::begin(rhs.V) )) return false;
-         if ( ! std::equal(std::begin(this->COL_INDEX), std::end(this->COL_INDEX), std::begin(rhs.COL_INDEX) )) return false;
-         if ( ! std::equal(std::begin(this->ROW_INDEX), std::end(this->ROW_INDEX), std::begin(rhs.ROW_INDEX) )) return false;
-
+         if ( ! std::equal(std::begin(this->SUB_INDEX), std::end(this->SUB_INDEX), std::begin(rhs.SUB_INDEX) )) return false;
         return true;
 
     }
@@ -401,7 +392,39 @@ namespace KiLib::Rasters
       size_t           nnz;
       T                default_value;
       std::vector<T> V;
-      std::vector<size_t> COL_INDEX, ROW_INDEX, Z_INDEX;
+      std::vector<std::tuple<size_t, size_t, size_t>> SUB_INDEX; // Helps with Index to Subscript operations
+
+
+      // A hash function used to hash a tuple
+      struct hash_tuple {
+
+         // Helper function to hash a byte sequence
+         static void fnv1a_hash(size_t& hash, const void* data, size_t size) {
+             const unsigned char* bytes = static_cast<const unsigned char*>(data);
+            const size_t fnv_prime = 0x811C9DC5;
+             for (size_t i = 0; i < size; ++i) {
+                 hash ^= bytes[i];         // XOR the hash with the current byte
+                 hash *= fnv_prime;     // Multiply by the FNV prime
+             }
+         }
+
+
+          template <class T1, class T2, class T3>
+          size_t operator()(
+              const std::tuple<T1, T2, T3>& x)
+              const
+          {
+            size_t hash = 0x811c9dc5; //OFFSET Bias
+
+            fnv1a_hash(hash, &(std::get<0>(x)), sizeof(T1)); 
+            fnv1a_hash(hash, &(std::get<1>(x)), sizeof(T2)); 
+            fnv1a_hash(hash, &(std::get<2>(x)), sizeof(T3)); 
+
+            return hash;
+          }
+      };
+
+      std::unordered_map<std::tuple<size_t, size_t, size_t>, size_t, hash_tuple> INDEX_MAP;
 
       bool is_valid_cell( size_t i, size_t j, size_t k ) const override
       {
@@ -413,40 +436,11 @@ namespace KiLib::Rasters
          }
 
     std::optional<T> _get_data_index(size_t i, size_t j, size_t k) const  {
-
-         // Bounds check
-         if ( i >= this->rows || j >= this->cols || k >= this->zindex ) return {};
-
-         // Get row
-         size_t       row_start = ROW_INDEX[i];
-         const size_t row_end   = ROW_INDEX[i + 1];
-
-         // No data? Return default data
-         if ( row_start == row_end )
-                return {};
-
-
-         for ( ; row_start < row_end; row_start++ )
-         {
-            if ( COL_INDEX[row_start] == j )
-            {
-               size_t zindex_count = 0;
-               for( ; (row_start < row_end) && (zindex_count < this->zindex); row_start++, zindex_count++ ) {
-                  if ( Z_INDEX[row_start] == k ){
-                     return row_start;
-                  }
-               }  
-               return {};
-            }
-            else if ( COL_INDEX[row_start] > j )
-            { // We have gone too far and won't find anything now.
-                return {};
-            }
-         }
-                return {};
-
-         }
-
+       if (auto search = INDEX_MAP.find({i,j,k}); search != INDEX_MAP.end())
+         return search->second;
+       else
+         return {};
+   }
 
         bool can_perform_operation(const SparseRaster<T>& other) const {
          // Shortcut true
