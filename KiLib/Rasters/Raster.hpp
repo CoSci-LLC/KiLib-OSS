@@ -841,8 +841,10 @@ namespace std
    }
 
 
-   template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& b, double a) {
-      return max(b, a);
+   template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& a, double b) {
+      KiLib::Rasters::Raster<T> out(a);
+      out.apply( [&b](T t) { return std::max(t, b);} );
+      return out;
    }
 
    template <class T> KiLib::Rasters::Raster<T> max( double b, const KiLib::Rasters::Raster<T>& a)
@@ -852,22 +854,11 @@ namespace std
       return out;
    }
 
-   template <class T> KiLib::Rasters::Raster<T> max( KiLib::Rasters::Raster<T>&& b, double a) {
-      return max(a, std::forward(b));
-   }
+   template <class T> KiLib::Rasters::Raster<T> min( const KiLib::Rasters::Raster<T>& a, double b) {
+      KiLib::Rasters::Raster<T> out(a);
+      out.apply( [&b](T t) { return std::min(t, b);} );
+      return out;
 
-   template <class T> KiLib::Rasters::Raster<T> max( double b, KiLib::Rasters::Raster<T>&& a)
-   {
-      a.apply( [&b](T t) { return std::min(t, b);} );
-      return a;
-   }
-
-
-
-
-
-   template <class T> KiLib::Rasters::Raster<T> min( const KiLib::Rasters::Raster<T>& b, double a) {
-      return min(b, a);
    }
 
    template <class T> KiLib::Rasters::Raster<T> min( double b, const KiLib::Rasters::Raster<T>& a)
@@ -877,18 +868,18 @@ namespace std
       return out;
    }
 
-
+/*
    template <class T> KiLib::Rasters::Raster<T> min( KiLib::Rasters::Raster<T>&& b, double a) {
-      return min(a, std::forward(b));
+      return std::move(min(a, std::forward(b));
    }
 
    template <class T> KiLib::Rasters::Raster<T> min( double b, KiLib::Rasters::Raster<T>&& a)
    {
       a.apply( [&b](T t) { return std::min(t, b);} );
-      return a;
+      return std::move(a);
    }
 
-
+*/
 
    template <class T> KiLib::Rasters::Raster<T> max( const KiLib::Rasters::Raster<T>& a, const KiLib::Rasters::Raster<T>& b)
    {

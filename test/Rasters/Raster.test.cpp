@@ -727,6 +727,55 @@ TEST(Rasters, Init_Values) {
    EXPECT_EQ(a, b);
 }
 
+
+TEST_P(Rasters, Raster_Min_Max_Element) {
+
+   KiLib::Rasters::Raster<double> a( {2, 2, 2},
+      {
+         { {0,0,1}, 44},
+         { {0,1,1}, 93}, //This is sparse on purpose
+         { {1,1,0}, 42},
+      }
+   , GetParam());
+   SetBasicRasterProperties(a);
+
+
+   KiLib::Rasters::Raster<double> max( {2, 2, 2},
+      {
+         { {0,0,1}, 47},
+         { {0,1,1}, 93}, //This is sparse on purpose
+         { {1,1,0}, 47},
+      }
+   , GetParam());
+   SetBasicRasterProperties(max);
+
+   EXPECT_EQ(std::max(a, 47), max);
+   EXPECT_EQ(std::max(47, a), max);
+
+
+
+   KiLib::Rasters::Raster<double> min( {2, 2, 2},
+      {
+         { {0,0,1}, 44},
+         { {0,1,1}, 45}, //This is sparse on purpose
+         { {1,1,0}, 42},
+      }
+   , GetParam());
+   SetBasicRasterProperties(min);
+
+   EXPECT_EQ(std::min(45, a), min);
+   EXPECT_EQ(std::min(a, 45), min);
+
+
+
+}
+
+
+
+
+
+
+
 TEST(Rasters, Init_Values_Z) {
 
    KiLib::Rasters::Raster<double> a( std::make_tuple (2, 2, 2));
