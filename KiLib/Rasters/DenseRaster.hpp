@@ -11,7 +11,6 @@
 #include <stddef.h>
 #include <stdexcept>
 #include <tuple>
-#include <valarray>
 
 #ifndef EXEC_POLICY
 #define EXEC_POLICY std::execution::seq
@@ -75,18 +74,18 @@ namespace KiLib::Rasters
    friend DenseRaster<T> operator/(DenseRaster<T>&& a, const double k);
 
 
-   friend DenseRaster<T>& operator*=(DenseRaster<T>& a, const DenseRaster<T>& k);
-   friend DenseRaster<T>& operator+=(DenseRaster<T>& a, const DenseRaster<T>& k);
-   friend DenseRaster<T>& operator-=(DenseRaster<T>& a, const DenseRaster<T>& k);
-   friend DenseRaster<T>& operator/=(DenseRaster<T>& a, const DenseRaster<T>& k);
-   friend DenseRaster<T>& operator/=(const DenseRaster<T>& a, DenseRaster<T>& k);
-   friend DenseRaster<T>& operator-=(const DenseRaster<T>& a, DenseRaster<T>& k);
+   friend DenseRaster<T> operator*=(DenseRaster<T>& a, const DenseRaster<T>& k);
+   friend DenseRaster<T> operator+=(DenseRaster<T>& a, const DenseRaster<T>& k);
+   friend DenseRaster<T> operator-=(DenseRaster<T>& a, const DenseRaster<T>& k);
+   friend DenseRaster<T> operator/=(DenseRaster<T>& a, const DenseRaster<T>& k);
+   friend DenseRaster<T> operator/=(const DenseRaster<T>& a, DenseRaster<T>& k);
+   friend DenseRaster<T> operator-=(const DenseRaster<T>& a, DenseRaster<T>& k);
 
 
-   friend DenseRaster<double>& operator*= ( DenseRaster<double>& a, const double k );
-   friend DenseRaster<double>& operator+= ( DenseRaster<double>& a, const double k );
-   friend DenseRaster<double>& operator/= ( DenseRaster<double>& a, const double k );
-   friend DenseRaster<double>& operator-= ( DenseRaster<double>& a, const double k );
+   friend DenseRaster<double> operator*= ( DenseRaster<double>& a, const double k );
+   friend DenseRaster<double> operator+= ( DenseRaster<double>& a, const double k );
+   friend DenseRaster<double> operator/= ( DenseRaster<double>& a, const double k );
+   friend DenseRaster<double> operator-= ( DenseRaster<double>& a, const double k );
 
    friend DenseRaster<T> std::max( DenseRaster<T>&& a, const DenseRaster<T>& b) ;
    friend DenseRaster<T> std::max( const DenseRaster<T>& a, DenseRaster<T>&& b) ;
@@ -192,10 +191,6 @@ namespace KiLib::Rasters
       }
 
 
-      operator std::valarray<T>() const
-      {
-         return data;
-      }
       /*   Raster<T> operator*(const Raster<T>& r) const {
 
              const auto result = (std::valarray<T>)r * data;
@@ -204,8 +199,19 @@ namespace KiLib::Rasters
 
         }*/
 
-      DenseRaster( const DenseRaster<T>& other ) : DenseRaster( other, (std::valarray<T>)other )
+      DenseRaster( const DenseRaster<T>& other ) : nnz( other.nnz ), data( other.data ), nodata_mask(other.nodata_mask)
       {
+         this->rows = other.get_rows();
+         this->cols = other.get_cols();
+         this->zindex = other.get_zindex();
+
+         this->set_xllcorner( other.get_xllcorner() );
+         this->set_yllcorner( other.get_yllcorner() );
+         this->set_cellsize( other.get_cellsize() );
+         this->set_nodata_value( other.get_nodata_value() );
+         this->set_width( other.get_width() );
+         this->set_height( other.get_height() );
+         this->set_name( other.get_name() );
       }
 
       DenseRaster( const DenseRaster<T>& other, double d ) 
@@ -268,11 +274,10 @@ namespace KiLib::Rasters
          this->set_width( other.get_width() );
          this->set_height( other.get_height() );
 
-         this->data.resize( this->nnz );
          this->nodata_mask.resize( this->nnz );
          std::copy( other.nodata_mask.begin(), other.nodata_mask.end(), this->nodata_mask.begin() );
 
-         this->data = std::valarray<double>( &other.data[0], this->nnz );
+         std::copy( other.data.begin(), other.data.end(), this->data.begin() );
       }
 
       TYPE get_type() const override { return TYPE::DENSE; }
@@ -344,18 +349,20 @@ namespace KiLib::Rasters
       }
 
          void op_divide(const T val) {
-            this->data = val / this->data;
+            std::transform(EXEC_POLICY, data.begin(), data.end(), data.begin(), [&val](T v) { return val / v; } );
          }  
 
 
-      DenseRaster<T> op_minus(const T val) const {
-         return ApplyOperator( val, *this, OPERAND::MINUS);
-         }  
+      void op_minus(const T val) const {
+         std::transform(EXEC_POLICY, data.begin(), data.end(), data.begin(), [&val](T v) { return val - v;  } );
+      }
 
       DenseRaster<T> op_ierfc() const {
-            const auto n = data;
-            const auto r = 1 / std::sqrt(M_PI) * std::exp( -1 * std::pow(n, 2)) - n * std::erfc(n);
-            KiLib::Rasters::DenseRaster<T> out( *this,r );
+            KiLib::Rasters::DenseRaster<T> out( *this );
+            std::transform(EXEC_POLICY, data.begin(), data.end(), out.data.begin(), [](T v) {
+
+               return 1 / std::sqrt(M_PI) * std::exp( -1 * std::pow(v, 2)) - v * std::erfc(v);
+          }  );
             return out;
          }  
 
@@ -400,7 +407,7 @@ namespace KiLib::Rasters
 
 
       size_t            nnz;
-      std::valarray<T>  data;
+      std::vector<T>  data;
       std::vector<bool> nodata_mask;
 
          bool is_valid_cell(size_t i, size_t j, size_t k) const override  {
@@ -536,42 +543,6 @@ return data[this->flatten_index(i,j,k)];
 
             return out;
          }
-      }
-      DenseRaster<T> ApplyOperator( const T b, const DenseRaster<T>& a,  OPERAND op ) const
-      {
-         // Either use the index to multiply each element, or if we don't have the same kind of rasters
-         // we need to multiply by the location, which is slower
-
-         DenseRaster<T> out( std::make_tuple( a.get_rows(), a.get_cols(), a.get_zindex() ));
-
-         out.set_xllcorner( a.get_xllcorner() );
-         out.set_yllcorner( a.get_yllcorner() );
-         out.set_cellsize( a.get_cellsize() );
-         out.set_nodata_value( a.get_nodata_value() );
-         out.set_width( a.get_width() );
-         out.set_height( a.get_height() );
-
-         switch ( op )
-         {
-         case OPERAND::MULTIPLY:
-            out.data = a.data * b;
-            break;
-         case OPERAND::DIVIDE:
-            out.data = b / a.data;
-            break;
-         case OPERAND::PLUS:
-            out.data = a.data + b;
-            break;
-         case OPERAND::MINUS:
-            out.data = b - a.data;
-            break;
-         default:
-            throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
-         };
-
-         out.nodata_mask = a.nodata_mask;
-
-         return out;
       }
 
       DenseRaster<T> ApplyOperator( const DenseRaster<T>& a, const T b,  OPERAND op ) const

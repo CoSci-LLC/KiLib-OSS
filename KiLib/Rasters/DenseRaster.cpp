@@ -12,12 +12,17 @@
       } \
       KiLib::Rasters::DenseRaster<double> out( std::make_tuple( a.get_rows(), a.get_cols(), a.get_zindex() )); \
       out.copy_metadata_from(a);\
-      out.data = (std::valarray<double>)a OPERAND (std::valarray<double>)b; \
-      out.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
       for ( size_t i = 0; i < a.get_ndata(); i++ )\
       {\
          out.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];\
       }\
+      std::transform(    \
+         EXEC_POLICY, a.data.begin(), a.data.end(), b.data.begin(), out.data.begin(), \
+         []( const double& a, const double& b ) \
+         { \
+               return a OPERAND b; \
+         } ); \
+      out.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
       return out; \
    } \
    DenseRaster<double> operator OPERAND( DenseRaster<double>&& a, DenseRaster<double>&& b ) \
@@ -26,7 +31,12 @@
       {\
          throw std::invalid_argument( "Cannot Multiple disimilar rasters" ); \
       }\
-      a.data = (std::valarray<double>)a OPERAND (std::valarray<double>)b; \
+      std::transform(\
+         EXEC_POLICY, a.data.begin(), a.data.end(), b.data.begin(), a.data.begin(),\
+         []( const double& a, const double& b )\
+         {\
+               return a OPERAND b;\
+         } );\
       for ( size_t i = 0; i < a.get_ndata(); i++ )\
       {\
          a.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];\
@@ -40,7 +50,12 @@
       {\
          throw std::invalid_argument( "Cannot Multiple disimilar rasters" ); \
       }\
-      a.data = (std::valarray<double>)a OPERAND (std::valarray<double>)b; \
+      std::transform(\
+         EXEC_POLICY, a.data.begin(), a.data.end(), b.data.begin(), a.data.begin(),\
+         []( const double& a, const double& b )\
+         {\
+               return a OPERAND b;\
+         } );\
       for ( size_t i = 0; i < a.get_ndata(); i++ )\
       {\
          a.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];\
@@ -54,7 +69,12 @@
       {\
          throw std::invalid_argument( "Cannot Multiple disimilar rasters" ); \
       }\
-      b.data = (std::valarray<double>)a OPERAND (std::valarray<double>)b; \
+      std::transform(\
+         EXEC_POLICY, a.data.begin(), a.data.end(), b.data.begin(), b.data.begin(),\
+         []( const double& a, const double& b )\
+         {\
+               return a OPERAND b;\
+         } );\
       for ( size_t i = 0; i < b.get_ndata(); i++ )\
       {\
          b.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];\
@@ -62,13 +82,18 @@
       b.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
       return std::move(b);\
    }\
-   DenseRaster<double>& operator OPERAND2 ( DenseRaster<double>& a, const DenseRaster<double>& b ) \
+   DenseRaster<double> operator OPERAND2 ( DenseRaster<double>& a, const DenseRaster<double>& b ) \
    { \
       if ( !a.can_perform_operation( b ) ) \
       {\
          throw std::invalid_argument( "Cannot Multiple disimilar rasters" ); \
       }\
-      a.data = (std::valarray<double>)a OPERAND (std::valarray<double>)b; \
+      std::transform(\
+         EXEC_POLICY, a.data.begin(), a.data.end(), b.data.begin(), a.data.begin(),\
+         []( const double& a, const double& b )\
+         {\
+               return a OPERAND b;\
+         } );\
       for ( size_t i = 0; i < a.get_ndata(); i++ )\
       {\
          a.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];\
@@ -86,31 +111,31 @@
   {\
       DenseRaster<double> out( std::make_tuple( a.get_rows(), a.get_cols(), a.get_zindex() ));\
       out.copy_metadata_from(a);\
-      out.data = k OP a.data;\
+      std::transform( EXEC_POLICY, a.data.begin(), a.data.end(), out.data.begin(), [&k](double v) { return k OP v;  } );\
       out.nodata_mask = a.nodata_mask;\
       return out;\
   }\
   DenseRaster<double> operator OP(const double k, DenseRaster<double>&& a)\
   {\
-      a.data = k OP a.data;\
+      std::transform( EXEC_POLICY, a.data.begin(), a.data.end(), a.data.begin(), [&k](double v) { return k OP v;  } );\
       return std::move(a);\
   }\
   DenseRaster<double> operator OP (const DenseRaster<double>& a, const double k)\
   {\
       DenseRaster<double> out( std::make_tuple( a.get_rows(), a.get_cols(), a.get_zindex() ));\
       out.copy_metadata_from(a);\
-      out.data = a.data OP k;\
+      std::transform( EXEC_POLICY, a.data.begin(), a.data.end(), out.data.begin(), [&k](double v) { return v OP k;  } );\
       out.nodata_mask = a.nodata_mask;\
       return out;\
   }\
   DenseRaster<double> operator OP (DenseRaster<double>&& a, const double k)\
   {\
-      a.data = a.data OP k;\
+      std::transform( EXEC_POLICY, a.data.begin(), a.data.end(), a.data.begin(), [&k](double v) { return v OP k;  } );\
       return std::move(a);\
   }\
-   DenseRaster<double>& operator OPERAND2 ( DenseRaster<double>& a, const double k ) \
+   DenseRaster<double> operator OPERAND2 ( DenseRaster<double>& a, const double k ) \
    {\
-      a.data = a OP k;\
+      std::transform( EXEC_POLICY, a.data.begin(), a.data.end(), a.data.begin(), [&k](double v) { return v OP k;  } );\
       return a;\
   }\
 
@@ -141,14 +166,20 @@ namespace KiLib::Rasters
 
 
 
-   DenseRaster<double>& operator-= ( const DenseRaster<double>& a, DenseRaster<double>& b ) 
+   DenseRaster<double> operator-= ( const DenseRaster<double>& a, DenseRaster<double>& b ) 
    { 
       if ( !a.can_perform_operation( b ) ) 
       {
          throw std::invalid_argument( "Cannot Multiple disimilar rasters" ); 
       }
 
-      b.data = (std::valarray<double>)a - (std::valarray<double>)b; 
+      std::transform(
+         EXEC_POLICY, a.data.begin(), a.data.end(), b.data.begin(), b.data.begin(),
+         []( const double& a, const double& b )
+         {
+               return a - b;
+         } );
+
       for ( size_t i = 0; i < b.get_ndata(); i++ )
       {
          b.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];
@@ -160,15 +191,19 @@ namespace KiLib::Rasters
 
 
 
-   DenseRaster<double>& operator/= ( const DenseRaster<double>& a, DenseRaster<double>& b ) 
+   DenseRaster<double> operator/= ( const DenseRaster<double>& a, DenseRaster<double>& b ) 
    { 
       if ( !a.can_perform_operation( b ) ) 
       {
          throw std::invalid_argument( "Cannot Multiple disimilar rasters" ); 
       }
-
-
-      b.data = (std::valarray<double>)a / (std::valarray<double>)b; 
+      std::transform(
+         EXEC_POLICY, a.data.begin(), a.data.end(), b.data.begin(), b.data.begin(),
+         []( const double& a, const double& b )
+         {
+               return a / b;
+         } );
+ 
       for ( size_t i = 0; i < b.get_ndata(); i++ )
       {
          b.nodata_mask[i] = a.nodata_mask[i] || b.nodata_mask[i];

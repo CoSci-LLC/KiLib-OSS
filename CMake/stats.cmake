@@ -4,7 +4,7 @@
 #
 # Written Owen T. Parkins
 
-CPMAddPackage("gh:kthohr/gcem@1.16.0")
+CPMAddPackage("gh:cosci-llc/gcem@1.16.1")
 target_link_libraries(${projectName} PUBLIC gcem)
 
 # Download stats into a lib/ folder to reduce the amount of time it takes to

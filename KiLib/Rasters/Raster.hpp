@@ -669,7 +669,7 @@ namespace KiLib::Rasters
                case OPERAND::PLUS:
                   return *ad + b;
                case OPERAND::MINUS:
-                  return (*ad).op_minus(b);
+                  return b - *ad;
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
