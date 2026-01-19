@@ -253,7 +253,9 @@ namespace KiLib::Rasters
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
-               return a;
+               Raster<double> r;
+               r = std::move(a);
+               return r;
             }
             throw NotImplementedException("Other types for operands have not been created");
          }
@@ -457,7 +459,9 @@ namespace KiLib::Rasters
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
-               return b;
+               Raster<double> r;
+               r = std::move(b);
+               return r;
             }
             throw NotImplementedException("Other types for operands have not been created");
          }
@@ -660,7 +664,9 @@ namespace KiLib::Rasters
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
-               return a;
+               Raster<double> r;
+               r = std::move(a);
+               return r;
             }
             throw NotImplementedException("Other types for operands have not been created");
          }

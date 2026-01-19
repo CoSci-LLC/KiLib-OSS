@@ -214,6 +214,21 @@ namespace KiLib::Rasters
          }
       }
 
+      Raster<T>& operator=(const Raster<T>&& other) {
+         switch (other.get_type()) {
+            case Rasters::TYPE::DENSE:
+               raster = new KiLib::Rasters::DenseRaster<T>(dynamic_cast<const Rasters::DenseRaster<T>&>(*other.raster) );
+               break;
+            case Rasters::TYPE::SPARSE:
+               // Create new empty raster
+               raster = new KiLib::Rasters::SparseRaster<T>();
+               *raster  =static_cast<SparseRaster<T>&>(*other.raster);
+               break;
+            default:
+               throw NotImplementedException("Other raster types not implemented for this constructor");
+         }
+      }
+
       using IRaster<T>::get;
       KiLib::Rasters::Cell<T> get( size_t i, size_t j, size_t k = 0 ) const override
       {
@@ -363,7 +378,7 @@ namespace KiLib::Rasters
       }
 
       // Copy Operator
-      Raster<T>& operator=( const Raster<T>& other )
+      Raster<T> operator=( const Raster<T>& other )
       {
          delete this->raster;
 
@@ -646,7 +661,9 @@ namespace KiLib::Rasters
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
-               return a;
+               Raster<T> r;
+               r = std::move(a);
+               return r;
             }
             throw NotImplementedException("Other types for operands have not been created");
       }
@@ -740,6 +757,10 @@ namespace KiLib::Rasters
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
                return a;
+               Raster<T> r;
+               r = std::move(a);
+               return r;
+
             }
             throw NotImplementedException("Other types for operands have not been created");
       }

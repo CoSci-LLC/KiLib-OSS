@@ -10,7 +10,7 @@
 #include <vector>
 
 #ifndef EXEC_POLICY
-#define EXEC_POLICY std::execution::par
+#define EXEC_POLICY std::execution::seq
 #endif
 
 namespace KiLib::Rasters
@@ -23,6 +23,31 @@ namespace KiLib::Rasters
    public:
       SparseRaster()
       {
+      }
+
+      SparseRaster(const SparseRaster<T>& from_raster) 
+      {
+            INDEX_MAP = from_raster.INDEX_MAP;
+            SUB_INDEX = from_raster.SUB_INDEX;
+            V = from_raster.V;
+            this->copy_metadata_from(from_raster);
+            this->rows = from_raster.get_rows();
+            this->cols = from_raster.get_cols();
+            this->zindex = from_raster.get_zindex();
+            this->nnz = from_raster.get_ndata();
+      }
+
+      SparseRaster<T>& operator=(const SparseRaster<T>&& from_raster) 
+      {
+            INDEX_MAP = std::move(from_raster.INDEX_MAP);
+            SUB_INDEX = std::move(from_raster.SUB_INDEX);
+            V = std::move(from_raster.V);
+            this->copy_metadata_from(from_raster);
+            this->rows = from_raster.get_rows();
+            this->cols = from_raster.get_cols();
+            this->zindex = from_raster.get_zindex();
+            this->nnz = from_raster.get_ndata();
+            return *this;
       }
 
       SparseRaster(const KiLib::Rasters::SparseRaster<T>& from_raster, std::function<T(const Cell<T>&)> get_val)

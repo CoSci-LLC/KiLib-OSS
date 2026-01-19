@@ -167,17 +167,17 @@ namespace KiLib::Rasters
             return get(row, col, zindex);
         }
 
-        virtual double get_xllcorner() const
+        virtual inline double get_xllcorner() const
         {
             return this->xllcorner;
         }
         virtual void set_xllcorner(double val) { this->xllcorner = val; }
-        virtual double get_yllcorner() const
+        virtual inline double get_yllcorner() const
         {
             return this->yllcorner;
         }
     virtual void set_yllcorner(double val) { this->yllcorner = val; }
-        virtual double get_cellsize() const
+        virtual inline double get_cellsize() const
         {
             return this->cellsize;
         }
@@ -192,23 +192,23 @@ namespace KiLib::Rasters
             return this->height;
         }
     virtual void set_height(double val) { this->height = val; }
-        virtual double get_nodata_value() const
+        virtual inline double get_nodata_value() const
         {
             return this->nodata_value;
         }
 
         virtual void set_nodata_value(double val) { this->nodata_value = val; }
-        virtual size_t get_rows() const
+        virtual inline size_t get_rows() const
         {
             return this->rows;
         }
 
-        virtual size_t get_cols() const
+        virtual inline size_t get_cols() const
         {
             return this->cols;
         }
 
-        virtual size_t get_zindex() const
+        virtual inline size_t get_zindex() const
         {
             return this->zindex;
         }

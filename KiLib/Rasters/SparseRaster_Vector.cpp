@@ -52,7 +52,9 @@
             }\
          } );\
       a.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
-      return a;\
+      SparseRaster<double> r;\
+      r = std::move(a);\
+      return r;\
    } \
    SparseRaster<double> operator OPERAND( SparseRaster<double>&& a, const SparseRaster<double>& b ) \
   { \
@@ -65,7 +67,7 @@
       const auto nodata_b = b.get_nodata_value();\
       std::transform(\
          EXEC_POLICY, a.V.begin(), a.V.end(), b.V.begin(), a.V.begin(),\
-         [&nodata, &nodata_b]( const double& a, const double& b )\
+         [&nodata, &nodata_b]( double a, double b )\
          {\
             if ( a == nodata || b == nodata_b )\
             {\
@@ -77,7 +79,9 @@
             }\
          } );\
       a.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
-      return  a;\
+      SparseRaster<double> r;\
+      r = std::move(a);\
+      return r;\
    }\
    SparseRaster<double> operator OPERAND( const SparseRaster<double>& a, SparseRaster<double>&& b ) \
   { \
@@ -102,7 +106,9 @@
             }\
          } );\
       b.set_name( a.get_name() + " " + #OPERAND + " " +b.get_name() );\
-      return b ;\
+      SparseRaster<double> r;\
+      r = std::move(b);\
+      return r;\
    }\
    SparseRaster<double> operator OPERAND2 ( SparseRaster<double>& a, const SparseRaster<double>& b ) \
    { \
@@ -144,7 +150,9 @@
   {\
       const auto nodata = a.get_nodata_value();\
       std::transform( EXEC_POLICY, a.V.begin(), a.V.end(), a.V.begin(), [&nodata, &k](double v) { if (v == nodata) {return nodata; } else { return k OP v;  } } );\
-      return a;\
+      SparseRaster<double> r;\
+      r = std::move(a);\
+      return r;\
   }\
   SparseRaster<double> operator OP (const SparseRaster<double>& a, const double k)\
   {\
@@ -157,7 +165,9 @@
   {\
       const auto nodata = a.get_nodata_value();\
       std::transform( EXEC_POLICY, a.V.begin(), a.V.end(), a.V.begin(), [&nodata, &k](double v) { if (v == nodata) {return nodata; } else { return v OP k;  } } );\
-      return a;\
+      SparseRaster<double> r;\
+      r = std::move(a);\
+      return r;\
   }\
    SparseRaster<double> operator OPERAND2 ( SparseRaster<double>& a, const double k ) \
    {\
