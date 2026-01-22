@@ -1012,6 +1012,37 @@ TEST_P(Rasters, operator_add_rvalue) {
 
 }
 
+TEST_P(Rasters, std_pow) {
+   KiLib::Rasters::Raster<double> a( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 2},
+         {{0, 1, 0}, 2},
+         {{1, 0, 0}, 2},
+         {{1, 1, 0}, 2},
+         {{0, 0, 1}, 2},
+         {{0, 1, 1}, 2},
+         {{1, 0, 1}, 2},
+         {{1, 1, 1}, 2},
+      }, GetParam());
+   SetBasicRasterProperties(a);
+
+   KiLib::Rasters::Raster<double> b( { 2, 2, 2},
+    {
+         {{0, 0, 0}, 4},
+         {{0, 1, 0}, 4},
+         {{1, 0, 0}, 4},
+         {{1, 1, 0}, 4},
+         {{0, 0, 1}, 4},
+         {{0, 1, 1}, 4},
+         {{1, 0, 1}, 4},
+         {{1, 1, 1}, 4},
+      }, GetParam());
+   SetBasicRasterProperties(b);
+
+
+   EXPECT_EQ(std::pow(a, 2), b);
+
+}
 
 TEST_P(Rasters, operator_sub_rvalue) {
    KiLib::Rasters::Raster<double> a( { 2, 2, 2},

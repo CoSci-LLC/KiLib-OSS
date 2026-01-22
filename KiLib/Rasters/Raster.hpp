@@ -1021,7 +1021,33 @@ namespace std
       return a.op_ierfc();
    }
 
+   template <class T> KiLib::Rasters::Raster<T> pow( const KiLib::Rasters::Raster<T>& a, double b) {
+      KiLib::Rasters::Raster<T> out(a);
+      out.apply( [&b](T t) { return std::pow(t, b);} );
+      return out;
+   }
 
+   template <class T> KiLib::Rasters::Raster<T> pow(KiLib::Rasters::Raster<T>&& a, double b)
+   {
+      a.apply( [&b](T t) { return std::pow(t, b);} );
+      KiLib::Rasters::Raster<T> r;
+      r = a;
+      return r;
+   }
+
+   template <class T> KiLib::Rasters::Raster<T> log( const KiLib::Rasters::Raster<T>& a) {
+      KiLib::Rasters::Raster<T> out(a);
+      out.apply( [](T t) { return std::log(t);} );
+      return out;
+   }
+
+   template <class T> KiLib::Rasters::Raster<T> log(KiLib::Rasters::Raster<T>&& a)
+   {
+      a.apply( [](T t) { return std::log(t);} );
+      KiLib::Rasters::Raster<T> r;
+      r = a;
+      return r;
+   }
 
 } // namespace std
 
