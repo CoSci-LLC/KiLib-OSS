@@ -10,7 +10,7 @@
 #include <vector>
 
 #ifndef EXEC_POLICY
-#define EXEC_POLICY std::execution::seq
+#define EXEC_POLICY std::execution::par
 #endif
 
 namespace KiLib::Rasters
@@ -348,18 +348,18 @@ namespace KiLib::Rasters
 
       T min() const override {
          T m = std::numeric_limits<double>::max();
-         for( size_t i = 0; i < V.size(); i++ ) {
-               if ( V[i] != this->get_nodata_value()) 
-                  m = std::min(m, V[i]);
+         for (const auto& v : V) {
+               if ( v != this->get_nodata_value()) 
+                  m = std::min(m, v);
          }
          return m;
       }
 
       T max() const override {
          T m = std::numeric_limits<double>::min();
-         for( size_t i = 0; i < V.size(); i++ ) {
-               if ( V[i] != this->get_nodata_value()) 
-                  m = std::max(m, V[i]);
+         for (const auto& v : V) {
+               if ( v != this->get_nodata_value()) 
+                  m = std::max(m, v);
          }
          return m;
       }

@@ -756,7 +756,6 @@ namespace KiLib::Rasters
                default:
                   throw std::invalid_argument( "ApplyOperator: Unknown OPERAND" );
                };
-               return a;
                Raster<T> r;
                r = std::move(a);
                return r;
@@ -879,7 +878,7 @@ namespace std
 
    template <class T> KiLib::Rasters::Raster<T> max( double b, KiLib::Rasters::Raster<T>&& a)
    {
-      a.apply( [&b](T t) { return std::min(t, b);} );
+      a.apply( [&b](T t) { return std::max(t, b);} );
       return a;
    }
 
@@ -1007,21 +1006,20 @@ namespace std
          KiLib::Rasters::Raster<T> out(*op1);
          out.copy_metadata_from(*op1);
 
-         for ( auto it = out.begin(); it != out.end(); ++it) 
-         {
-            size_t r = (&it).i();
-            size_t c = (&it).j();
-            size_t z = (&it).k();
-            size_t x = (&it).x();
-            size_t y = (&it).y();
+         std::for_each(EXEC_POLICY, out.begin(), out.end(), [&](auto it) {
+            size_t r = it.i();
+            size_t c = it.j();
+            size_t z = it.k();
+            size_t x = it.x();
+            size_t y = it.y();
 
             // Check if b is a no data cell
                auto cell_b = (*op2).get((double)x,(double)y, z);
                
-               if (cell_b.is_nodata) continue;
+               if (cell_b.is_nodata) return;
 
-               out.set(r,c, z, std::min( *((&it).data), *(cell_b.data) ));
-         }
+               out.set(r,c, z, std::min( *(it.data), *(cell_b.data) ));
+         });
          return out;
       }
    }
