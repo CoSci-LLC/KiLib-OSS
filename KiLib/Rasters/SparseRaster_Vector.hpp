@@ -172,7 +172,7 @@ namespace KiLib::Rasters
                            Z_INDEX[v_index] = z;
 
                            // Insert into the MAP
-                           INDEX_MAP.insert({ {row, col, z}, v_index  });
+                           INDEX_MAP.emplace(std::make_tuple(row, col, z), v_index  );
                            SUB_INDEX.push_back( {row, col, z});
 
                           // increase the next index
@@ -232,7 +232,7 @@ namespace KiLib::Rasters
                      // Link z_index to V
                      Z_INDEX[v_index] = z;
 
-                     INDEX_MAP.insert({ {row, col, z}, v_index  });
+                     INDEX_MAP.emplace(std::make_tuple(row, col, z), v_index  );
                      SUB_INDEX.push_back( {row, col, z});
                     // increase the next index
                     v_index++;
