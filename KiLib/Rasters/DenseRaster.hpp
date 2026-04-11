@@ -13,7 +13,7 @@
 #include <tuple>
 
 #ifndef EXEC_POLICY
-#define EXEC_POLICY std::execution::par
+#define EXEC_POLICY std::execution::seq
 #endif
 
 namespace KiLib::Rasters

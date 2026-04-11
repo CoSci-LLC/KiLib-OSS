@@ -214,6 +214,20 @@ namespace KiLib::Rasters
          }
       }
 
+      Raster (IRaster<T>&& other ) {
+         switch (other.get_type()) {
+            case Rasters::TYPE::DENSE:
+               raster = new KiLib::Rasters::DenseRaster<T>(dynamic_cast<const Rasters::DenseRaster<T>&>(other) );
+               break;
+            case Rasters::TYPE::SPARSE:
+               raster = new KiLib::Rasters::SparseRaster<T>(std::move(static_cast<SparseRaster<T>&>(other)));
+               break;
+            default:
+               throw NotImplementedException("Other raster types not implemented for this constructor");
+         }
+
+      }
+
       Raster<T>& operator=(const Raster<T>&& other) {
          switch (other.get_type()) {
             case Rasters::TYPE::DENSE:
@@ -784,7 +798,7 @@ namespace std
    {
       a.atan();
       a.set_name( "atan(" + a.get_name() + ")");
-      return a;
+      return KiLib::Rasters::Raster<T>(std::move(a));
    }
 
    template <class T> KiLib::Rasters::Raster<T> sin( const KiLib::Rasters::Raster<T>& a )
@@ -798,7 +812,7 @@ namespace std
    {
       a.sin();
       a.set_name( "sin(" + a.get_name() + ")");
-      return a;
+      return KiLib::Rasters::Raster<T>(std::move(a));
    }
 
    template <class T> KiLib::Rasters::Raster<T> cos( const KiLib::Rasters::Raster<T>& a )
@@ -813,7 +827,7 @@ namespace std
    {
       a.cos();
       a.set_name( "cos(" + a.get_name() + ")");
-      return a;
+      return KiLib::Rasters::Raster<T>(std::move(a));
    }
 
 
@@ -830,7 +844,7 @@ namespace std
    {
       a.tan();
       a.set_name( "tan(" + a.get_name() + ")");
-      return a;
+      return KiLib::Rasters::Raster<T>(std::move(a));
    }
 
 
@@ -839,7 +853,7 @@ namespace std
    {
       a.exp();
       a.set_name( "exp(" + a.get_name() + ")");
-      return a;
+      return KiLib::Rasters::Raster<T>(std::move(a));
    }
 
    template <class T> KiLib::Rasters::Raster<T> exp( const KiLib::Rasters::Raster<T>& a )
